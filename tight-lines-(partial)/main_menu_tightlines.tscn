@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://dlmcx3h4vh8ol" path="res://main_menu_tightlines.gd" id="1_5e1ke"]
 [ext_resource type="Texture2D" uid="uid://c66vsem28p4ou" path="res://assets/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg" id="1_bkk01"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://assets/GrapeSoda.ttf" id="2_5e1ke"]
+[ext_resource type="Script" uid="uid://b1syrcxdrwp7g" path="res://fishing_3d.gd" id="4_tumdx"]
+[ext_resource type="PackedScene" uid="uid://b2ms8wkl3xo44" path="res://BaseCharacter.gltf" id="5_v1cdd"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3spmi"]
 texture = ExtResource("1_bkk01")
@@ -17,6 +19,8 @@ corner_radius_bottom_left = 10
 shadow_color = Color(0, 0, 0, 0.45882353)
 shadow_size = 5
 shadow_offset = Vector2(0, 3)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ifokv"]
 
 [node name="MainMenuTightlines" type="Control" unique_id=1662043218]
 layout_mode = 3
@@ -90,6 +94,20 @@ theme_override_font_sizes/font_size = 100
 text = "Tight Lines"
 horizontal_alignment = 1
 
+[node name="Fishing3D" type="Node3D" parent="." unique_id=798941795]
+script = ExtResource("4_tumdx")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Fishing3D" unique_id=1988506235]
+physics_material_override = SubResource("PhysicsMaterial_ifokv")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Fishing3D/StaticBody3D" unique_id=683278813]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fishing3D/StaticBody3D" unique_id=794495943]
+
+[node name="BaseCharacter" parent="Fishing3D" unique_id=2114852934 instance=ExtResource("5_v1cdd")]
+
 [connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
+
+[editable path="Fishing3D/BaseCharacter"]

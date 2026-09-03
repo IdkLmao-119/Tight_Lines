@@ -25,6 +25,25 @@ signal reel_stop(player_id)
 
 const PORT := 9080
 
+# ============================================================================
+# CONNECTIVITY MODE
+# ============================================================================
+# The server itself works identically either way (it listens on ALL network
+# interfaces at once, automatically). What actually changes between these
+# two modes is just WHICH IP ADDRESS you should give to your phones to
+# connect to, since that depends on which network they're joining.
+#
+#   HOTSPOT: The PC creates its own Wi-Fi network (Settings > Mobile Hotspot).
+#            Phones join THAT network directly. No router needed.
+#   LAN:     The PC and phones are already on the same existing network
+#            (e.g. a venue's Wi-Fi router). No hotspot needed.
+#
+# Set this in the Inspector, or change it in code before running.
+# ============================================================================
+enum ConnectivityMode { HOTSPOT, LAN }
+
+@export var connectivity_mode: ConnectivityMode = ConnectivityMode.HOTSPOT
+
 var _tcp_server := TCPServer.new()
 
 # Instead of a simple list of peers, we now use a Dictionary that maps
@@ -45,17 +64,66 @@ func _ready():
 		push_error("FAILED to start server: " + str(err))
 		return
 	print("=== WebSocket server started on port %d ===" % PORT)
-	print("Connect phones to: ws://%s:%d" % [_get_local_ip(), PORT])
+	var suggested_ip = _get_local_ip()
+	print("Connect phones to: ws://%s:%d" % [suggested_ip, PORT])
+
+	# Auto-detection isn't 100% reliable across every Windows setup, so we
+	# always print every available option too — use this list if the
+	# suggested address above doesn't work.
+	_print_all_interfaces()
+
 	set_process(true)
 
-# Tries to find the PC's local network IP address, so you know what
-# address to type into your phones/game to connect. When using a Windows
-# hotspot, this will typically look like 192.168.137.1.
+# Tries to find the correct local IP address for whichever connectivity
+# mode is currently selected. Returns "unknown" if nothing matching was
+# found, in which case check the full interface list printed on startup.
 func _get_local_ip() -> String:
-	for addr in IP.get_local_addresses():
-		if addr.begins_with("192.168.") or addr.begins_with("10."):
-			return addr
+	var interfaces = IP.get_local_interfaces()
+
+	for iface in interfaces:
+		# "friendly" is the human-readable adapter name Windows shows,
+		# e.g. "Wi-Fi", "Ethernet", or a hotspot-specific virtual adapter.
+		var friendly_name: String = iface.get("friendly", "").to_lower()
+
+		for addr in iface.get("addresses", []):
+			# Skip IPv6 and loopback-style addresses — we only want a
+			# normal local IPv4 address phones can actually connect to.
+			if not (addr.begins_with("192.168.") or addr.begins_with("10.")):
+				continue
+
+			match connectivity_mode:
+				ConnectivityMode.HOTSPOT:
+					# Windows' Mobile Hotspot feature almost always hands out
+					# addresses starting with 192.168.137.x by default, and
+					# often names the virtual adapter something involving
+					# "Local Area Connection" or "Wi-Fi Direct".
+					if addr.begins_with("192.168.137.") \
+					or "local area connection" in friendly_name \
+					or "wi-fi direct" in friendly_name:
+						return addr
+
+				ConnectivityMode.LAN:
+					# For LAN mode, prefer a normal Wi-Fi or Ethernet adapter,
+					# and specifically AVOID the hotspot's own virtual adapter
+					# so we don't accidentally suggest the wrong network.
+					if addr.begins_with("192.168.137."):
+						continue
+					if "wi-fi" in friendly_name or "ethernet" in friendly_name:
+						return addr
+
 	return "unknown"
+
+# Prints every detected network interface and its address(es), labeled with
+# a best-guess of what it is. Use this to manually pick the right address if
+# the automatic suggestion above doesn't match what you expect.
+func _print_all_interfaces():
+	print("--- All detected network interfaces (for manual reference) ---")
+	for iface in IP.get_local_interfaces():
+		var friendly_name = iface.get("friendly", "unknown")
+		for addr in iface.get("addresses", []):
+			if addr.begins_with("192.168.") or addr.begins_with("10."):
+				print("  [%s] %s" % [friendly_name, addr])
+	print("----------------------------------------------------------------")
 
 func _process(_delta):
 	# --- STEP 1: Accept any new incoming phone connections ---

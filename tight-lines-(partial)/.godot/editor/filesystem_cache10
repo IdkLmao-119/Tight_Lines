@@ -1,11 +1,11 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1788199442
+::res://::1788439827
 BaseCharacter.gltf::PackedScene::4307445003537226247::1788199442::1788199442::1::::<><><>0<>0<>1bf9ece4a50138ecbca4caae3177e694<>res://.godot/imported/BaseCharacter.gltf-ce22578155fd15a249e340626e365c64.scn::
+fishing_3d.gd::GDScript::4249977124914906338::1788199028::0::1::::<>Node3D<><>0<>0<><>::
 home_base_area.tscn::PackedScene::1108153864886007645::1788198447::0::1::::<><><>0<>0<><>::uid://rxrowf7lwld4::::res://assets/PixAdvent-Grasslands-Basic-v1.1/Grassland-tileset-basic-224x240.png<>uid://dsrcdderhf2vr::::res://Scenes/player.tscn
 main_menu_tightlines.gd::GDScript::7956275854205161299::1788198447::0::1::::<>Control<><>0<>0<><>::
-main_menu_tightlines.tscn::PackedScene::1190147461527028132::1788198447::0::1::::<><><>0<>0<><>::uid://dlmcx3h4vh8ol::::res://main_menu_tightlines.gd<>uid://c66vsem28p4ou::::res://assets/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg<>uid://cfg3ye2rujox0::::res://assets/GrapeSoda.ttf
-MultiplayerWebSocketServer.gd::GDScript::3054689320833993283::1788198932::0::1::::<>Node<><>0<>0<><>::
-fishing_3d.gd::GDScript::4249977124914906338::1788199028::0::1::::<>Node3D<><>0<>0<><>::
+main_menu_tightlines.tscn::PackedScene::1190147461527028132::1788199893::0::1::::<><><>0<>0<><>::uid://dlmcx3h4vh8ol::::res://main_menu_tightlines.gd<>uid://c66vsem28p4ou::::res://assets/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg<>uid://cfg3ye2rujox0::::res://assets/GrapeSoda.ttf<>uid://b1syrcxdrwp7g::::res://fishing_3d.gd<>uid://b2ms8wkl3xo44::::res://BaseCharacter.gltf
+MultiplayerWebSocketServer.gd::GDScript::3054689320833993283::1788409582::0::1::::<>Node<><>0<>0<><>::
 save_manager.gd::GDScript::708042824185826293::1788198447::0::1::::<>Node<><>0<>0<><>::
 save_slot_menu.gd::GDScript::6136663875382178164::1788198447::0::1::::<>Control<><>0<>0<><>::
 save_slot_menu.tscn::PackedScene::1102456417372583930::1788198447::0::1::::<><><>0<>0<><>::uid://c66vsem28p4ou::::res://assets/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg<>uid://ctov7s2usrqns::::res://save_slot_menu.gd<>uid://cfg3ye2rujox0::::res://assets/GrapeSoda.ttf
