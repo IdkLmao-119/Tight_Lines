@@ -1,0 +1,113 @@
+[gd_scene format=3 uid="uid://q7rs4mg0lqfs"]
+
+[ext_resource type="Script" uid="uid://c8g2scxdgbdmo" path="res://UIScenesAndScript/MainMenu/main_menu_tightlines.gd" id="1_5e1ke"]
+[ext_resource type="Texture2D" uid="uid://c66vsem28p4ou" path="res://Assets/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg" id="1_bkk01"]
+[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/GrapeSoda.ttf" id="2_5e1ke"]
+[ext_resource type="Script" uid="uid://bgw1yss2y4hly" path="res://UIScenesAndScript/MainMenu/fishing_3d.gd" id="4_tumdx"]
+[ext_resource type="PackedScene" uid="uid://b2ms8wkl3xo44" path="res://UIScenesAndScript/MainMenu/BaseCharacter.gltf" id="5_v1cdd"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3spmi"]
+texture = ExtResource("1_bkk01")
+modulate_color = Color(0.7371933, 0.7371929, 0.7371927, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7c3kk"]
+bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ifokv"]
+
+[node name="MainMenuTightlines" type="Control" unique_id=1662043218]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_5e1ke")
+
+[node name="Panel" type="Panel" parent="." unique_id=2050093436]
+layout_mode = 0
+offset_left = -578.0
+offset_top = -324.0
+offset_right = 574.0
+offset_bottom = 323.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_3spmi")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1070791132]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -148.40984
+offset_right = 148.40984
+offset_bottom = 205.5
+grow_horizontal = 2
+
+[node name="StartButton" type="Button" parent="VBoxContainer" unique_id=2029253338]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("2_5e1ke")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
+text = "Start"
+
+[node name="OptionsButton" type="Button" parent="VBoxContainer" unique_id=1605044471]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("2_5e1ke")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
+text = "Options"
+
+[node name="ExitButton" type="Button" parent="VBoxContainer" unique_id=775846875]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("2_5e1ke")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
+text = "Exit"
+
+[node name="Label" type="Label" parent="." unique_id=494958756]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -219.0
+offset_top = -221.0
+offset_right = 219.0
+offset_bottom = -121.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.69179237, 0.5244724, 0.39804918, 1)
+theme_override_fonts/font = ExtResource("2_5e1ke")
+theme_override_font_sizes/font_size = 100
+text = "Tight Lines"
+horizontal_alignment = 1
+
+[node name="Fishing3D" type="Node3D" parent="." unique_id=798941795]
+script = ExtResource("4_tumdx")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Fishing3D" unique_id=1988506235]
+physics_material_override = SubResource("PhysicsMaterial_ifokv")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Fishing3D/StaticBody3D" unique_id=683278813]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fishing3D/StaticBody3D" unique_id=794495943]
+
+[node name="BaseCharacter" parent="Fishing3D" unique_id=2114852934 instance=ExtResource("5_v1cdd")]
+
+[connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
+
+[editable path="Fishing3D/BaseCharacter"]
