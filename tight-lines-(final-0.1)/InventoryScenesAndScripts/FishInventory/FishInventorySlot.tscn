@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://d4dalpr80lpbj"]
+
+[ext_resource type="Script" uid="uid://cghnmsbuoord0" path="res://InventoryScenesAndScripts/FishInventory/fish_inventory_slot.gd" id="1_edywb"]
+
+[node name="FishInventory" type="Control" unique_id=1211445040]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_edywb")
+
+[node name="FishInventoryBackground" type="TextureRect" parent="." unique_id=891553094]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="FishIcon" type="TextureRect" parent="." unique_id=1938380612]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Highlight" type="ColorRect" parent="." unique_id=79272609]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0.8666667, 0, 0, 1)
