@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://q7rs4mg0lqfs"]
 
-[ext_resource type="Script" uid="uid://c8g2scxdgbdmo" path="res://UIScenesAndScript/MainMenu/main_menu_tightlines.gd" id="1_5e1ke"]
+[ext_resource type="Script" uid="uid://dlmcx3h4vh8ol" path="res://UIScenesAndScript/MainMenu/main_menu_tightlines.gd" id="1_5e1ke"]
 [ext_resource type="Texture2D" uid="uid://c66vsem28p4ou" path="res://Assets/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg" id="1_bkk01"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/GrapeSoda.ttf" id="2_5e1ke"]
-[ext_resource type="Script" uid="uid://bgw1yss2y4hly" path="res://UIScenesAndScript/MainMenu/fishing_3d.gd" id="4_tumdx"]
+[ext_resource type="Script" uid="uid://b1syrcxdrwp7g" path="res://UIScenesAndScript/MainMenu/fishing_3d.gd" id="4_tumdx"]
 [ext_resource type="PackedScene" uid="uid://b2ms8wkl3xo44" path="res://UIScenesAndScript/MainMenu/BaseCharacter.gltf" id="5_v1cdd"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3spmi"]
