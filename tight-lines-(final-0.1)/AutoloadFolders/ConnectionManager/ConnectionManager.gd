@@ -36,6 +36,11 @@ signal swing_input(player_id, magnitude)
 
 const PORT := 9080
 
+# When true, every gameplay message received from a phone is printed to the
+# Output panel. Handy for confirming that swipes/taps/swings really arrive.
+# Set to false once everything works.
+@export var debug_log := true
+
 # ============================================================================
 # AUTO-DISCOVERY (so phones don't need a hardcoded/manually-typed IP)
 # ============================================================================
@@ -371,11 +376,20 @@ func _process_discovery_requests():
 # Takes a raw text message (expected to be JSON) from a specific phone,
 # figures out what kind of message it is, and emits the matching signal —
 # now tagged with which player_id it came from.
+func _warn_if_unconnected(sig_name: String):
+	if debug_log and get_signal_connection_list(sig_name).is_empty():
+		push_warning("'%s' arrived but NOTHING is connected to the '%s' signal yet." % [sig_name, sig_name])
+
 func _handle_message(player_id: int, message: String):
 	var data = JSON.parse_string(message)
 
 	if typeof(data) != TYPE_DICTIONARY:
+		if debug_log:
+			print("[Player %d] ignored non-JSON-object message: %s" % [player_id, message])
 		return
+
+	if debug_log:
+		print("[Player %d] received: %s" % [player_id, message])
 
 	match data.get("type"):
 		"connected":
@@ -391,6 +405,7 @@ func _handle_message(player_id: int, message: String):
 			# already figured out by the phone app. dx/dy are the raw swipe
 			# distances in case your game wants finer-grained control than
 			# just a direction (e.g. a swipe's exact angle or speed).
+			_warn_if_unconnected("swipe_input")
 			emit_signal(
 				"swipe_input",
 				player_id,
@@ -403,12 +418,14 @@ func _handle_message(player_id: int, message: String):
 			# x/y are normalized screen coordinates (0.0 to 1.0), so they
 			# mean the same thing regardless of the phone's actual screen
 			# resolution.
+			_warn_if_unconnected("tap_input")
 			emit_signal("tap_input", player_id, data.get("x", 0.0), data.get("y", 0.0))
 
 		"swing":
 			# magnitude is how forceful the swing was (peak rotation speed
 			# detected by the phone), useful for things like "harder swing =
 			# stronger cast."
+			_warn_if_unconnected("swing_input")
 			emit_signal("swing_input", player_id, data.get("magnitude", 0.0))
 
 # Sends a message to EVERY connected player at once.
