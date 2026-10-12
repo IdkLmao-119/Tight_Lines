@@ -1,8 +1,8 @@
 extends Control
 class_name FishSlot
 
-@xport var grid_pos: Vector2i
-@export var highlight := $Highlight
+@export var grid_pos: Vector2i
+@export var highlight := $"highlight"
 
 func set_valid(valid: bool):
 	highlight.color = Color(0,1,0,0.3) if valid else Color(1,0,0,0.3)
