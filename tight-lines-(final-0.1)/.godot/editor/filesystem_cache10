@@ -1,41 +1,65 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1791102952
+::res://::1791735124
 icon.svg::CompressedTexture2D::3133281091805535749::1790921214::1790943751::1::::<><><>0<>0<>9b0599e36a7af2489d1bf67509e6ebc6<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex::
-::res://Assets/::1790943751
+::res://3DFishingScene/::1791711884
+3DFishing.tscn::PackedScene::1561164234701485035::1791711869::0::1::::<><><>0<>0<><>::uid://dn2kqyke1omnq::::res://Assets/Sand.jpg<>uid://ddcfr1yb30plo::::res://Assets/Water.png<>uid://btechb8bstqv3::::res://Assets/Rock Texture.jpg<>uid://bc3137nyw5rqh::::res://3DFishingScene/player.gd<>uid://cu06l1k3f7ndc::::res://Assets/download.jpg
+player.gd::GDScript::2586231294074815611::1791711884::0::1::::<>Node3D<><>0<>0<><>::
+::res://Assets/::1791698256
+download.jpg::CompressedTexture2D::6230130936842352748::1791698255::1791698256::1::::<><><>0<>0<>4ea2d8560e7ea39b199e224f56b25eae<>res://.godot/imported/download.jpg-f17400ebb7b32507f11fdeebb51c0563.s3tc.ctex::
 GrapeSoda.ttf::FontFile::5137915039554520647::1790921214::1790943751::1::::<><><>0<>0<>d36fb681b352fd83a19510d4568ab735<>res://.godot/imported/GrapeSoda.ttf-889f9703a492e2b16ae8a2725fef0cf2.fontdata::
 pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg::CompressedTexture2D::7013998661581975628::1790921214::1790943751::1::::<><><>0<>0<>38fb83f1bbabd00b9b704ae2a01e1886<>res://.godot/imported/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg-2e06bce64297a78a0b0e6a5d800b7e04.ctex::
+Rock Texture.jpg::CompressedTexture2D::3728400261946974014::1791444943::1791444946::1::::<><><>0<>0<>944a7d4f3ee792e25d401b8547e4e6d5<>res://.godot/imported/Rock Texture.jpg-72de0527168ac93cf4786674cfb8b0fd.s3tc.ctex::
+Sand.jpg::CompressedTexture2D::8128092236588979722::1791442435::1791442499::1::::<><><>0<>0<>41c7d260d496cf13ab913e9c7f5cae83<>res://.godot/imported/Sand.jpg-9b3d91a93738ef834cf8571b646aaa82.s3tc.ctex::
 tiles and items.png::CompressedTexture2D::6404337774870400782::1790921214::1790943751::1::::<><><>0<>0<>2d73d560e80d677ba263071e57d509cf<>res://.godot/imported/tiles and items.png-ff5744765bc72d28e8557d67cfa40461.ctex::
-::res://AutoloadFolders/::1790921214
+Water.jpg::CompressedTexture2D::6869429047288147258::1791442725::1791442727::1::::<><><>0<>0<>b3be6bcf279c35aebb0bfe8b76b4c3f2<>res://.godot/imported/Water.jpg-498ab29b5cd053a7d69d48a8c340fa88.s3tc.ctex::
+Water.png::CompressedTexture2D::7374292683727998312::1791696256::1791696278::1::::<><><>0<>0<>f7856e28b116c8e61739539e785b5179<>res://.godot/imported/Water.png-b2e18ca3bc1ee31d8f0e6ddd4a76a170.s3tc.ctex::
+::res://AutoloadFolders/::1791441841
+Water.jpg::CompressedTexture2D::7732554999860970635::1791441841::1791441841::1::::<><><>0<>0<>d54862aacdd21bb31a41e703ac0298a1<>res://.godot/imported/Water.jpg-f601a54cd957bc83f153cadbb21720f3.ctex::
 ::res://AutoloadFolders/AudioManager/::1790921214
 AudioManager.gd::GDScript::6136457533104604951::1790921214::0::1::::<>Node<><>0<>0<><>::
-::res://AutoloadFolders/ConnectionManager/::1790945750
-ConnectionManager.gd::GDScript::6032034172288547303::1790945750::0::1::::<>Node<><>0<>0<><>::
+::res://AutoloadFolders/ConnectionManager/::1791102960
+ConnectionManager.gd::GDScript::6032034172288547303::1791102960::0::1::::<>Node<><>0<>0<><>::
+::res://AutoloadFolders/FishingManager/::1791441852
+FishingManager.gd::GDScript::2606118926921271456::1791186172::0::1::::<>Node<><>0<>0<><>::
 ::res://AutoloadFolders/GameDatabase/::1790921214
 GameDB.gd::GDScript::4783034708999509605::1790921214::0::1::::<>Node<><>0<>0<><>::
 ::res://AutoloadFolders/GameManager/::1790921214
 GameManager.gd::GDScript::1064338857108203282::1790921214::0::1::::<>Node<><>0<>0<><>::
-::res://AutoloadFolders/InputManager/::1790921214
-InputManager.gd::GDScript::5564086607848542855::1790921214::0::1::::<>Node<><>0<>0<><>::
+::res://AutoloadFolders/InputManager/::1791123611
+InputManager.gd::GDScript::5564086607848542855::1791123611::0::1::::<>Node<><>0<>0<><>::
 ::res://AutoloadFolders/SaveManager/::1790921214
 SaveManager.gd::GDScript::6655225197262961451::1790921214::0::1::::<>Node<><>0<>0<><>::
 ::res://InventoryScenesAndScripts/::1790921214
 multi_slot_inventory.gd::GDScript::4797623414955649613::1790921214::0::1::::MultiSlotInventory<>Node<><>0<>0<><>::
-::res://InventoryScenesAndScripts/FishInventory/::1790921214
+::res://InventoryScenesAndScripts/FishInventory/::1791451862
 FishData.gd::GDScript::5275307092255602193::1790921214::0::1::::<>Node<><>0<>0<><>::
-FishInventorySlot.tscn::PackedScene::9200952109222529839::1790921214::0::1::::<><><>0<>0<><>::uid://cghnmsbuoord0::::res://InventoryScenesAndScripts/FishInventory/fish_inventory_slot.gd
+FishInventorySlot.tscn::PackedScene::9200952109222529839::1791451862::0::1::::<><><>0<>0<><>::uid://cghnmsbuoord0::::res://InventoryScenesAndScripts/FishInventory/fish_inventory_slot.gd
 FishValue.gd::GDScript::1831545647734529517::1790921214::0::1::::FishResource<>Resource<><>0<>0<><>::
 fish_inventory_slot.gd::GDScript::5209236771818731859::1790921214::0::1::::FishSlot<>Control<><>0<>0<><>::
 ::res://OverWorldSceneAndScript/::1790921214
-::res://OverWorldSceneAndScript/Area01Scene/::1790921214
+::res://OverWorldSceneAndScript/Area01Scene/::1791184843
 Area01_House1.tscn::PackedScene::6966439959252663790::1790921214::0::1::::<><><>0<>0<><>::
+::res://OverWorldSceneAndScript/Area01Scene/House_Folder/::1791185082
+Area01_House1.tscn::PackedScene::6966439959252663790::1791184843::0::1::::<><><>0<>0<><>::uid://hxm03sjg6x1u::::res://OverWorldSceneAndScript/Area01Scene/House_Folder/tiles and items.png<>uid://ceicufuxcu6m7::::res://OverWorldSceneAndScript/Area01Scene/House_Folder/TopDownHouse_DoorsAndWindows.png<>uid://cgnl5fuglqi2u::::res://OverWorldSceneAndScript/Area01Scene/House_Folder/TopDownHouse_FloorsAndWalls.png<>uid://c05g13274hwhs::::res://OverWorldSceneAndScript/Area01Scene/House_Folder/TopDownHouse_FloorsAndWalls_OpenDoors.png<>uid://brgt6citqc88w::::res://OverWorldSceneAndScript/Area01Scene/House_Folder/TopDownHouse_FurnitureState1.png<>uid://b3rhau5a5uga1::::res://OverWorldSceneAndScript/Area01Scene/House_Folder/TopDownHouse_SmallItems.png<>uid://bacxf0eb12pba::::res://OverWorldSceneAndScript/Area01Scene/House_Folder/TopDownHouse_FurnitureState2.png
+Area01_House2.tscn::PackedScene::8407130640429025357::1791184843::0::1::::<><><>0<>0<><>::uid://cgnl5fuglqi2u::::res://OverWorldSceneAndScript/Area01Scene/House_Folder/TopDownHouse_FloorsAndWalls.png<>uid://hxm03sjg6x1u::::res://OverWorldSceneAndScript/Area01Scene/House_Folder/tiles and items.png
+tiles and items.png::CompressedTexture2D::539577341448887772::1791184843::1791185082::1::::<><><>0<>0<>c044b0daac70bb6c2eb6492a04126091<>res://.godot/imported/tiles and items.png-e9ab2934374b9b1c82f300e8c410743c.ctex::
+TopDownHouse_DoorsAndWindows.png::CompressedTexture2D::5070269208395789524::1791184843::1791185082::1::::<><><>0<>0<>556118e7ca435ef0cd7992e1a235ec12<>res://.godot/imported/TopDownHouse_DoorsAndWindows.png-64560a99f61879504edab8c5372c7086.ctex::
+TopDownHouse_FloorsAndWalls.png::CompressedTexture2D::5221533094555541818::1791184843::1791185082::1::::<><><>0<>0<>e98fdc94d9aa8ecf2f0d07ed4c6d5a3f<>res://.godot/imported/TopDownHouse_FloorsAndWalls.png-ef66f0a4a9ed1c80a6905d306c63913d.ctex::
+TopDownHouse_FloorsAndWalls_OpenDoors.png::CompressedTexture2D::6589906037413442464::1791184843::1791185082::1::::<><><>0<>0<>17c6b65eba19f7d0508691d6c1a04eb5<>res://.godot/imported/TopDownHouse_FloorsAndWalls_OpenDoors.png-65b5161220928d002f3e2d32d5b67fe1.ctex::
+TopDownHouse_FurnitureState1.png::CompressedTexture2D::3593226392827532780::1791184843::1791185082::1::::<><><>0<>0<>fb4be96d514bded3033671e92fcb6497<>res://.godot/imported/TopDownHouse_FurnitureState1.png-ecc46abeb3ebd25538d4d6d7e9b19622.ctex::
+TopDownHouse_FurnitureState2.png::CompressedTexture2D::2391956178348603766::1791184843::1791185082::1::::<><><>0<>0<>6fdf75d78d394b21576ad6ae80860964<>res://.godot/imported/TopDownHouse_FurnitureState2.png-5c1160abc7c199230ac45af9424d9a6c.ctex::
+TopDownHouse_SmallItems.png::CompressedTexture2D::4387228843178407730::1791184843::1791185082::1::::<><><>0<>0<>147fe0b7288b28d3b57a2b72ee016f29<>res://.godot/imported/TopDownHouse_SmallItems.png-b7f8a21fbf718534f285543b626ef321.ctex::
+::res://OverWorldSceneAndScript/Area01Scene/MainArea1/::1791185082
+MainArea01.tscn::PackedScene::2614937607463371659::1791184843::0::1::::<><><>0<>0<><>::uid://b2tynnidvoqvc::::res://OverWorldSceneAndScript/Area01Scene/MainArea1/tileset.png
+tileset.png::CompressedTexture2D::4322223757721195948::1791184843::1791185082::1::::<><><>0<>0<>23b403446916c2b9a9184ed207b36ebd<>res://.godot/imported/tileset.png-38534bf27ff963c147a316436a5b6122.ctex::
 ::res://UIScenesAndScript/::1790921214
-::res://UIScenesAndScript/MainMenu/::1790945750
+::res://UIScenesAndScript/MainMenu/::1791102960
 BaseCharacter.gltf::PackedScene::4307445003537226247::1790921214::1790943751::1::::<><><>0<>0<>11634c3ae8b51fb07382b0a92f53e61b<>res://.godot/imported/BaseCharacter.gltf-17c5c73cf692cd63b4be7394a842fe43.scn::
 fishing_3d.gd::GDScript::4249977124914906338::1790921214::0::1::::<>Node3D<><>0<>0<><>::
 fishing_3d.tscn::PackedScene::4343065188676302812::1790921214::0::1::::<><><>0<>0<><>::uid://b1syrcxdrwp7g::::res://fishing_3d.gd<>uid://b2ms8wkl3xo44::::res://BaseCharacter.gltf
 MainMenu.tscn::PackedScene::5938061359458482078::1790921214::0::1::::<><><>0<>0<><>::
 main_menu_tightlines.gd::GDScript::7956275854205161299::1790921214::0::1::::<>Control<><>0<>0<><>::
-main_menu_tightlines.tscn::PackedScene::1190147461527028132::1790945750::0::1::::<><><>0<>0<><>::uid://dlmcx3h4vh8ol::::res://UIScenesAndScript/MainMenu/main_menu_tightlines.gd<>uid://c66vsem28p4ou::::res://Assets/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg<>uid://cfg3ye2rujox0::::res://Assets/GrapeSoda.ttf<>uid://b1syrcxdrwp7g::::res://UIScenesAndScript/MainMenu/fishing_3d.gd<>uid://b2ms8wkl3xo44::::res://UIScenesAndScript/MainMenu/BaseCharacter.gltf
+main_menu_tightlines.tscn::PackedScene::1190147461527028132::1791102960::0::1::::<><><>0<>0<><>::uid://dlmcx3h4vh8ol::::res://UIScenesAndScript/MainMenu/main_menu_tightlines.gd<>uid://c66vsem28p4ou::::res://Assets/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg<>uid://cfg3ye2rujox0::::res://Assets/GrapeSoda.ttf<>uid://b1syrcxdrwp7g::::res://UIScenesAndScript/MainMenu/fishing_3d.gd<>uid://b2ms8wkl3xo44::::res://UIScenesAndScript/MainMenu/BaseCharacter.gltf
 Options.tscn::PackedScene::2071894839832008879::1790921214::0::1::::<><><>0<>0<><>::
 SaveSlot.tscn::PackedScene::9136845405016596899::1790921214::0::1::::<><><>0<>0<><>::
 save_slot_menu.gd::GDScript::6136663875382178164::1790921214::0::1::::<>Control<><>0<>0<><>::

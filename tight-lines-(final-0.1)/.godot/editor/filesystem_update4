@@ -1,3 +1,1 @@
-res://UIScenesAndScript/MainMenu/main_menu_tightlines.tscn
-res://AutoloadFolders/ConnectionManager/ConnectionManager.gd
-res://AutoloadFolders/InputManager/InputManager.gd
+res://3DFishingScene/3DFishing.tscn
