@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://d4dalpr80lpbj"]
+
+[ext_resource type="Script" uid="uid://cghnmsbuoord0" path="res://InventoryScenesAndScripts/FishInventory/fish_inventory_slot.gd" id="1_gtods"]
+
+[node name="FishInventorySlotUi" type="Control" unique_id=1211445040]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gtods")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=765004352]
+layout_mode = 0
+offset_right = 169.0
+offset_bottom = 82.0
+
+[node name="GridContainer" type="GridContainer" parent="PanelContainer" unique_id=1761727020]
+layout_mode = 2
+columns = 10
+
+[node name="Control" type="Control" parent="." unique_id=215184175]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0

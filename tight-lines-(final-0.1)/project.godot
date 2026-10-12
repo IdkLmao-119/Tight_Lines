@@ -31,5 +31,3 @@ AudioManager="*uid://ctostah28mc1l"
 [rendering]
 
 rendering_device/driver.windows="d3d12"
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
