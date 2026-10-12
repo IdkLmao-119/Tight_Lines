@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    By default, Android blocks all unencrypted ("cleartext") network
+    traffic, including plain ws:// WebSocket connections — this is a
+    security default aimed at protecting sensitive data sent over the
+    internet. Since this app ONLY ever talks to a PC on the same local
+    network (never the internet), and never sends sensitive personal data,
+    it's safe and appropriate to allow cleartext traffic here explicitly.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

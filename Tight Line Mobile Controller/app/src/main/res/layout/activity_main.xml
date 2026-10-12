@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Most of the screen is still the input surface (for tap/swipe detection
+    once connected). Before a connection exists, this small "connection
+    setup" panel at the top lets the player either type the PC's IP address
+    manually, or tap "Auto-Discover" to find it automatically on the local
+    network — no hardcoded address needed.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#202020">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="top"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Not connected"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Manual entry: always works, no extra permissions needed -->
+        <EditText
+            android:id="@+id/serverIpInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="PC IP address (e.g. 192.168.137.1)"
+            android:inputType="text"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/connectButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Connect"
+            android:layout_marginTop="8dp" />
+
+        <!-- Auto-discover: finds the PC automatically, no typing needed -->
+        <Button
+            android:id="@+id/discoverButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Auto-Discover PC"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+</FrameLayout>
