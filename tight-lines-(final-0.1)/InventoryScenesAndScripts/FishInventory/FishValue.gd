@@ -6,3 +6,4 @@ class_name FishResource
 @export var size: Vector2i = Vector2i (1,1)
 @export var weight: float = 1.0
 @export var type: String = "small"
+@export var price: int = 0
