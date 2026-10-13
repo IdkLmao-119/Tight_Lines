@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://wiie81b0f3xv"]
+[gd_scene format=3 uid="uid://cffbnwjvavcx0"]
 
 [ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/Sand.jpg" id="1_i1y24"]
 [ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/Water.png" id="2_i1y24"]
@@ -35,17 +35,22 @@ albedo_texture = ExtResource("3_goktk")
 
 [sub_resource type="Environment" id="Environment_i1y24"]
 background_mode = 1
-background_color = Color(0.798135, 1.1016579, 1.2534194, 0.5803922)
+background_color = Color(0.54509807, 0.73333335, 0.79607844, 1)
+background_energy_multiplier = 0.99
 ambient_light_source = 3
 ambient_light_color = Color(0.94509804, 0.94509804, 0.94509804, 1)
 ambient_light_sky_contribution = 0.98
 ambient_light_energy = 14.85
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mhxq0"]
+cull_mode = 1
 albedo_color = Color(1.4348425, 1.4348425, 1.4348425, 1)
 albedo_texture = ExtResource("4_goktk")
+uv1_scale = Vector3(2, 2.055, 1)
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_u4n2x"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_mhxq0"]
+cap_top = false
+cap_bottom = false
 
 [node name="3dFishing" type="Node3D" unique_id=836610391]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.164629, 0)
@@ -75,7 +80,7 @@ ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_goktk")
 
 [node name="Player" type="Node3D" parent="." unique_id=502106798]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.513927, 1.5558467)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3307042, 1.5558467)
 script = ExtResource("3_u4n2x")
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="Player" unique_id=731221113]
@@ -87,18 +92,18 @@ shape = SubResource("CapsuleShape3D_u4n2x")
 mesh = SubResource("CapsuleMesh_ud65s")
 
 [node name="PlayerCamera" type="Camera3D" parent="Player" unique_id=958916476]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0.5, 0)
 
 [node name="Pier" type="Node3D" parent="." unique_id=61710964]
+transform = Transform3D(5, 0, 0, 0, 1, 0, 0, 0, 5, 0, 0, 0)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Pier" unique_id=113582520]
-transform = Transform3D(5, 0, 0, 0, 1, 0, 0, 0, 5, 0, 0.188, 1.9191527)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Pier/StaticBody3D" unique_id=1260455851]
 shape = SubResource("BoxShape3D_y1byi")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Pier/StaticBody3D" unique_id=2003962759]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.04415399)
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0, 0.39070585)
 material_overlay = SubResource("StandardMaterial3D_ncjx7")
 mesh = SubResource("BoxMesh_8navb")
 
@@ -114,9 +119,9 @@ omni_shadow_mode = 0
 environment = SubResource("Environment_i1y24")
 
 [node name="Background" type="Node3D" parent="." unique_id=336146113]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 255)
+transform = Transform3D(-3.278354e-05, 0, 750, 0, 150, 0, -750, 0, -3.278354e-05, 0, 73.4481, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Background" unique_id=1420362856]
-transform = Transform3D(-600, 2.2649371e-07, -1.4850532e-12, 0, -6.556708e-08, -225, -9.059748e-05, -1.5, 9.835062e-06, 0, 183.61758, 0)
+transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 1.0000001, 0, 0.18371171, 0)
 material_overlay = SubResource("StandardMaterial3D_mhxq0")
-mesh = SubResource("PlaneMesh_u4n2x")
+mesh = SubResource("CylinderMesh_mhxq0")

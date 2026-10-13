@@ -1,1 +1,5 @@
 res://3DFishingScene/3DFishing.tscn
+res://AutoloadFolders/ConnectionManager/ConnectionManager.gd
+res://AutoloadFolders/InventoryManager/InventoryManager.gd
+res://AutoloadFolders/GameManager/GameManager.gd
+res://AutoloadFolders/InputManager/InputManager.gd

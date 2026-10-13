@@ -1,251 +1,452 @@
 extends Node
 
 # ============================================================================
-# INPUT MANAGER (autoload) — res://scripts/autoload/input_manager.gd
+# INPUT MANAGER (GODOT / PC SIDE)  — TightLines
 # ============================================================================
-# Listens to ConnectionManager's raw phone signals and translates them into
-# ONE unified set of gameplay signals. Keyboard/mouse feeds the same signals,
-# so game code never needs to know where an input came from.
+# Turns raw input (keyboard + phone gestures relayed by ConnectionManager)
+# into ONE unified API that the rest of the game uses. Gameplay code never
+# needs to know where an input came from.
 #
-# PHONE MAPPING
-#   Swing -> cast_pressed(power)
-#   Swipe -> reel(strength)          (any direction; strength from swipe length)
-#   Tap   -> interact_pressed()      (alternate key for Interact)
+# SETUP
+#   Project Settings > Autoload, in this order:
+#       ConnectionManager  (res://.../ConnectionManager.gd)
+#       InputManager       (res://.../InputManager.gd)
 #
-# KEYBOARD / MOUSE MAPPING
-#   Hold + release Space -> cast_pressed(power)
-#   Hold R / Left Mouse  -> reel(1.0) every frame
-#   E                    -> interact_pressed()
+# HOW GAME CODE USES IT
+#   GameManager sets the context on every scene change:
+#       InputManager.set_context(InputManager.InputContext.FISHING)
+#       InputManager.set_multiplayer_mode(true)   # split-screen 3D session
 #
-# AUTOLOAD ORDER: ConnectionManager must be listed ABOVE InputManager.
+#   Then gameplay either connects to signals...
+#       InputManager.cast_triggered.connect(_on_cast)    # (player_id, power)
+#   ...or polls every frame:
+#       var look := InputManager.get_look(player_id)     # -1..+1, rotate view
+#
+# CONTEXTS
+#   NONE      — all input ignored (loading screens, transitions)
+#   MENU      — menus + cutscenes. Keyboard uses Godot's built-in ui_* actions
+#               natively. Phone gestures are INJECTED as ui_* actions, so
+#               Control focus navigation works with zero extra code.
+#   OVERWORLD — 2D world: move, interact, cancel, pause
+#   FISHING   — 3D minigame: cast, reel, interact, look (view rotation)
+#
+# MULTIPLAYER RULES
+#   Single player : keyboard is Player 1. ANY connected phone also acts as
+#                   Player 1 (its player_id is remapped to 1).
+#   Multiplayer   : phones keep the player_id ConnectionManager gave them.
+#                   In the FISHING context the KEYBOARD IS DISABLED.
+#                   In other contexts the keyboard still works (Player 1).
+#
+# PHONE GESTURE MAP
+#   FISHING   swing         = cast (swing speed -> power)
+#             swipe (any)   = reel
+#             tap           = interact (general button; e.g. set the hook)
+#             tilt L/R      = rotate player's view (get_look())
+#   OVERWORLD swipe = short move pulse | tap = interact | swing = cancel
+#   MENU      swipe = navigate | tap = accept | swing = cancel
+#
+# KEYBOARD (FISHING)
+#   Space/Enter (hold, release) = cast   | R / Down = reel
+#   E = interact                         | A,D / Left,Right = look
 # ============================================================================
 
-signal cast_pressed(power: float)     # power 0.0 - 1.0
-signal reel(strength: float)          # strength 0.0 - 1.0
-signal interact_pressed()             # talk / enter fishing spot / confirm prompt, etc.
+# --- Connection state -------------------------------------------------------
+signal controller_connected(player_id)
+signal controller_disconnected(player_id)
 
-# HUD / debugging helpers
-signal cast_charge_changed(value: float)   # keyboard cast charging, for CastPowerMeter
-signal input_source_changed(source: InputSource)
+# --- Meta -------------------------------------------------------------------
+signal context_changed(new_context)
+# Useful for swapping on-screen prompts ("Press E" vs "Tap").
+signal device_changed(player_id, device)
 
-enum InputSource { KEYBOARD_MOUSE, CONTROLLER }
+# --- Fishing ----------------------------------------------------------------
+# power is 0.0–1.0. Phone: from swing magnitude. Keyboard: from hold time.
+signal cast_triggered(player_id, power)
+signal reel(player_id, strength)
 
-# Which gameplay actions are currently allowed. Interact works in EVERY
-# context (including NONE / Overworld). Cast only fires in CAST, and reel only
-# in REELING, so stray swings/swipes at the wrong moment are ignored.
-# FishingController calls InputManager.set_context(...) as its state changes;
-# the Overworld should leave it at NONE.
-enum Context { NONE, CAST, WAITING, REELING }
+# --- General ----------------------------------------------------------------
+signal interact_pressed(player_id)
+signal cancel_pressed(player_id)
+signal pause_pressed(player_id)
 
-# ----------------------------------------------------------------------------
-# TUNING
-# ----------------------------------------------------------------------------
-# Swing magnitude (rad/s) maps [swing_min, swing_max] -> [min_cast_power, 1.0].
-# swing_min should match SWING_THRESHOLD in MainActivity.java.
-@export var swing_min := 4.0
-@export var swing_max := 12.0
-@export var min_cast_power := 0.2
+# NOTE: view rotation (tilt / A-D keys) is continuous, so it is POLLING ONLY:
+#       call get_look(player_id) each frame.
 
-# Seconds Space must be held for a full-power keyboard cast.
-@export var cast_charge_time := 1.2
+enum InputContext { NONE, MENU, OVERWORLD, FISHING }
 
-# Swipe length (pixels, from dx/dy) that counts as a full-strength reel.
-@export var swipe_reel_full_length := 800.0
-@export var min_reel_strength := 0.3
+const DEVICE_KEYBOARD := &"keyboard"
+const DEVICE_PHONE := &"phone"
 
-# If true, keyboard/mouse keeps working while a phone is connected.
-@export var keyboard_fallback_with_controller := true
+# Player ID used for the keyboard (and for phones in single-player).
+const KEYBOARD_PLAYER_ID := 1
+
+const CONNECTION_MANAGER_PATH := "/root/ConnectionManager"
+
+# --- Tuning -----------------------------------------------------------------
+# Phone swing magnitudes (rad/s) mapped onto 0..1 cast power. The phone app
+# only reports swings above 4.0, so that is the floor.
+const SWING_MIN_MAGNITUDE := 4.0
+const SWING_MAX_MAGNITUDE := 12.0
+const MIN_CAST_POWER := 0.15
+
+# Holding the cast key this long (seconds) gives full power.
+const KEYBOARD_CAST_CHARGE_TIME := 1.0
+
+# The phone has no joystick/hold gestures, so these are approximated by short
+# "pulses" that expire on their own.
+const PHONE_MOVE_PULSE_SEC := 0.35
+const PHONE_REEL_PULSE_SEC := 0.30
+
+# Tilt: values inside the deadzone count as 0 so a phone held roughly level
+# doesn't drift the view. The phone sends -1..+1 where +/-1 = 40 degrees, so
+# 0.12 is roughly a 5 degree deadzone. Raise it if the view creeps.
+const TILT_DEADZONE := 0.12
+# The phone streams tilt ~20x/sec. If nothing arrives for this long, tilt is
+# treated as 0 (protects against a stuck view if the connection stalls).
+const TILT_TIMEOUT_SEC := 0.5
 
 @export var debug_log := false
 
+# --- Keyboard bindings ------------------------------------------------------
+# Registered into Godot's InputMap at startup. If an action with the same
+# name ALREADY exists in your Project Settings > Input Map, it is left alone
+# (so your own mapping wins). Prefix "tl_" avoids clashing with other actions.
+# Menus use Godot's built-in ui_* actions, so they are not listed here.
+const KEY_BINDINGS := {
+	&"tl_move_left": [KEY_A, KEY_LEFT],
+	&"tl_move_right": [KEY_D, KEY_RIGHT],
+	&"tl_move_up": [KEY_W, KEY_UP],
+	&"tl_move_down": [KEY_S, KEY_DOWN],
+	&"tl_interact": [KEY_E],
+	&"tl_cancel": [KEY_BACKSPACE, KEY_X],
+	&"tl_pause": [KEY_ESCAPE],
+	&"tl_cast": [KEY_SPACE, KEY_ENTER],
+	&"tl_reel": [KEY_R, KEY_DOWN],
+	&"tl_look_left": [KEY_A, KEY_LEFT],
+	&"tl_look_right": [KEY_D, KEY_RIGHT],
+}
+
+const MENU_SWIPE_ACTIONS := {
+	"up": &"ui_up",
+	"down": &"ui_down",
+	"left": &"ui_left",
+	"right": &"ui_right",
+}
+
+const SWIPE_VECTORS := {
+	"up": Vector2.UP,
+	"down": Vector2.DOWN,
+	"left": Vector2.LEFT,
+	"right": Vector2.RIGHT,
+}
+
 # ----------------------------------------------------------------------------
-# STATE
+# State
 # ----------------------------------------------------------------------------
-var context: Context = Context.NONE
-var active_source: InputSource = InputSource.KEYBOARD_MOUSE
+var context: InputContext = InputContext.MENU:
+	set(value):
+		if value == context:
+			return
+		context = value
+		_cast_charge_start = -1.0
+		context_changed.emit(context)
+		if debug_log:
+			print("[InputManager] context -> %s" % InputContext.keys()[context])
 
-# Only ONE phone drives the game (ConnectionManager supports many).
-# -1 = no controller connected.
-var controller_player_id := -1
-var _connected_players: Array[int] = []
+var multiplayer_mode := false
 
-var _charging := false
-var _charge := 0.0
+var _connection_manager: Node = null
+var _phones: Array[int] = [] # player_ids of currently connected phones
+var _state: Dictionary = {} # { player_id: Dictionary of pulse/tilt state }
+var _last_device: Dictionary = {} # { player_id: StringName }
+var _cast_charge_start := -1.0 # keyboard cast charge start time, -1 = idle
 
-const ACTION_CAST := "fish_cast"
-const ACTION_REEL := "fish_reel"
-const ACTION_INTERACT := "interact"
-
-
+# ----------------------------------------------------------------------------
+# Setup
+# ----------------------------------------------------------------------------
 func _ready() -> void:
-	_ensure_default_actions()
+	_register_keyboard_actions()
+	# Deferred so ConnectionManager exists regardless of autoload order.
+	_connect_connection_manager.call_deferred()
 
-	var cm := get_node_or_null("/root/ConnectionManager")
-	if cm == null:
-		push_warning("InputManager: ConnectionManager autoload not found — keyboard/mouse only.")
+func _register_keyboard_actions() -> void:
+	for action in KEY_BINDINGS:
+		if InputMap.has_action(action):
+			continue # the user's own mapping takes priority
+		InputMap.add_action(action)
+		for keycode in KEY_BINDINGS[action]:
+			var ev := InputEventKey.new()
+			ev.physical_keycode = keycode
+			InputMap.action_add_event(action, ev)
+
+func _connect_connection_manager() -> void:
+	_connection_manager = get_node_or_null(CONNECTION_MANAGER_PATH)
+	if _connection_manager == null:
+		push_warning("InputManager: no ConnectionManager autoload found at %s — phone input disabled, keyboard only." % CONNECTION_MANAGER_PATH)
 		return
 
-	cm.player_connected.connect(_on_player_connected)
-	cm.player_disconnected.connect(_on_player_disconnected)
-	cm.swing_input.connect(_on_swing)
-	cm.swipe_input.connect(_on_swipe)
-	cm.tap_input.connect(_on_tap)
+	_connection_manager.connect("player_connected", _on_phone_connected)
+	_connection_manager.connect("player_disconnected", _on_phone_disconnected)
+	_connection_manager.connect("swipe_input", _on_phone_swipe)
+	_connection_manager.connect("tap_input", _on_phone_tap)
+	_connection_manager.connect("swing_input", _on_phone_swing)
 
-	# Pick up phones that connected before this node was ready.
-	for id in cm.get_connected_players():
-		_on_player_connected(id)
-
-
-# ----------------------------------------------------------------------------
-# PUBLIC API
-# ----------------------------------------------------------------------------
-func set_context(new_context: Context) -> void:
-	if context == new_context:
-		return
-	context = new_context
-	_cancel_charge()
-	_log("context -> %s" % Context.keys()[new_context])
-
-
-func is_controller_connected() -> bool:
-	return controller_player_id != -1
-
-
-# ----------------------------------------------------------------------------
-# PHONE INPUT  (from ConnectionManager)
-# ----------------------------------------------------------------------------
-# Swing -> Cast. Force of the swing becomes cast power.
-func _on_swing(player_id: int, magnitude: float) -> void:
-	if player_id != controller_player_id or context != Context.CAST:
-		return
-	_set_source(InputSource.CONTROLLER)
-	var t := clampf(inverse_lerp(swing_min, swing_max, magnitude), 0.0, 1.0)
-	var power := lerpf(min_cast_power, 1.0, t)
-	_log("swing %.2f -> cast power %.2f" % [magnitude, power])
-	cast_pressed.emit(power)
-
-
-# Swipe -> Reel. Any direction counts; longer swipe = stronger reel.
-func _on_swipe(player_id: int, _direction: String, dx: float, dy: float) -> void:
-	if player_id != controller_player_id or context != Context.REELING:
-		return
-	_set_source(InputSource.CONTROLLER)
-	var length := Vector2(dx, dy).length()
-	var strength := clampf(length / swipe_reel_full_length, min_reel_strength, 1.0)
-	_log("swipe %.0fpx -> reel %.2f" % [length, strength])
-	reel.emit(strength)
-
-
-# Tap -> Interact. Works in every context (Overworld included).
-func _on_tap(player_id: int, _x: float, _y: float) -> void:
-	if player_id != controller_player_id:
-		return
-	_set_source(InputSource.CONTROLLER)
-	_log("tap -> interact")
-	interact_pressed.emit()
-
-
-func _on_player_connected(player_id: int) -> void:
-	if not _connected_players.has(player_id):
-		_connected_players.append(player_id)
-	if controller_player_id == -1:
-		controller_player_id = player_id
-		_set_source(InputSource.CONTROLLER)
-		_log("controller attached: player %d" % player_id)
-
-
-func _on_player_disconnected(player_id: int) -> void:
-	_connected_players.erase(player_id)
-	if player_id != controller_player_id:
-		return
-	if _connected_players.is_empty():
-		controller_player_id = -1
-		_set_source(InputSource.KEYBOARD_MOUSE)
-		_log("controller detached, using keyboard/mouse")
+	if _connection_manager.has_signal("tilt_input"):
+		_connection_manager.connect("tilt_input", _on_phone_tilt)
 	else:
-		controller_player_id = _connected_players[0]
-		_log("controller switched to player %d" % controller_player_id)
+		push_warning("InputManager: ConnectionManager has no 'tilt_input' signal — update it to the version with tilt support.")
 
-
-# ----------------------------------------------------------------------------
-# KEYBOARD / MOUSE
-# ----------------------------------------------------------------------------
-func _process(delta: float) -> void:
-	if not _keyboard_enabled():
-		_cancel_charge()
-		return
-
-	if _charging:
-		_charge = minf(_charge + delta / cast_charge_time, 1.0)
-		cast_charge_changed.emit(_charge)
-
-	if context == Context.REELING and Input.is_action_pressed(ACTION_REEL):
-		_set_source(InputSource.KEYBOARD_MOUSE)
-		reel.emit(1.0)
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if not _keyboard_enabled():
-		return
-
-	if event.is_action_pressed(ACTION_INTERACT):
-		_set_source(InputSource.KEYBOARD_MOUSE)
-		interact_pressed.emit()
-
-	if context != Context.CAST:
-		return
-
-	if event.is_action_pressed(ACTION_CAST):
-		_set_source(InputSource.KEYBOARD_MOUSE)
-		_charging = true
-		_charge = 0.0
-		cast_charge_changed.emit(0.0)
-	elif event.is_action_released(ACTION_CAST) and _charging:
-		var power := maxf(_charge, min_cast_power)
-		_cancel_charge()
-		cast_pressed.emit(power)
-
-
-func _keyboard_enabled() -> bool:
-	return not is_controller_connected() or keyboard_fallback_with_controller
-
-
-func _cancel_charge() -> void:
-	if _charging or _charge > 0.0:
-		_charging = false
-		_charge = 0.0
-		cast_charge_changed.emit(0.0)
-
+	# Pick up phones that connected before we finished starting.
+	for pid in _connection_manager.get_connected_players():
+		if not _phones.has(pid):
+			_phones.append(pid)
 
 # ----------------------------------------------------------------------------
-# HELPERS
+# Public API — configuration
 # ----------------------------------------------------------------------------
-func _set_source(source: InputSource) -> void:
-	if active_source != source:
-		active_source = source
-		input_source_changed.emit(source)
+func set_context(new_context: InputContext) -> void:
+	context = new_context
 
-
-# Registers default key bindings in code; rebind freely in Project Settings.
-func _ensure_default_actions() -> void:
-	_add_key_action(ACTION_CAST, KEY_SPACE)
-	_add_key_action(ACTION_INTERACT, KEY_E)
-	if not InputMap.has_action(ACTION_REEL):
-		_add_key_action(ACTION_REEL, KEY_R)
-		var lmb := InputEventMouseButton.new()
-		lmb.button_index = MOUSE_BUTTON_LEFT
-		InputMap.action_add_event(ACTION_REEL, lmb)
-
-
-func _add_key_action(action: String, key: Key) -> void:
-	if InputMap.has_action(action):
-		return
-	InputMap.add_action(action)
-	var ev := InputEventKey.new()
-	ev.physical_keycode = key
-	InputMap.action_add_event(action, ev)
-
-
-func _log(msg: String) -> void:
+func set_multiplayer_mode(enabled: bool) -> void:
+	multiplayer_mode = enabled
+	_cast_charge_start = -1.0
 	if debug_log:
-		print("[InputManager] ", msg)
+		print("[InputManager] multiplayer_mode -> %s" % str(enabled))
+
+func is_keyboard_enabled() -> bool:
+	if context == InputContext.NONE:
+		return false
+	# 3D fishing in multiplayer is phones-only.
+	if context == InputContext.FISHING and multiplayer_mode:
+		return false
+	return true
+
+# ----------------------------------------------------------------------------
+# Public API — queries
+# ----------------------------------------------------------------------------
+func is_mobile_controller_connected() -> bool:
+	return not _phones.is_empty()
+
+func get_connected_phone_ids() -> Array[int]:
+	return _phones.duplicate()
+
+func get_last_device(player_id: int = KEYBOARD_PLAYER_ID) -> StringName:
+	return _last_device.get(player_id, DEVICE_KEYBOARD)
+
+# Overworld movement. Keyboard: WASD/arrows. Phone: swipe pulse.
+func get_move_vector(player_id: int = KEYBOARD_PLAYER_ID) -> Vector2:
+	if context == InputContext.NONE:
+		return Vector2.ZERO
+	var v := Vector2.ZERO
+	if player_id == KEYBOARD_PLAYER_ID and is_keyboard_enabled():
+		v = Input.get_vector(&"tl_move_left", &"tl_move_right", &"tl_move_up", &"tl_move_down")
+	var st := _get_state(player_id)
+	if _now() < st["move_until"]:
+		v += st["move"]
+	return v.limit_length(1.0)
+
+# View rotation in the 3D fishing scene: -1.0 (turn left) .. +1.0 (turn right).
+# Phone: tilt the phone left/right (proportional — tilt further, turn faster).
+# Keyboard: A/D or Left/Right (full speed). Multiply by your turn speed and
+# delta, e.g.  camera_yaw -= InputManager.get_look(id) * TURN_SPEED * delta
+func get_look(player_id: int = KEYBOARD_PLAYER_ID) -> float:
+	if context != InputContext.FISHING:
+		return 0.0
+	var v := 0.0
+	if player_id == KEYBOARD_PLAYER_ID and is_keyboard_enabled():
+		v = Input.get_axis(&"tl_look_left", &"tl_look_right")
+	var st := _get_state(player_id)
+	if _now() - st["look_time"] <= TILT_TIMEOUT_SEC:
+		v += _apply_deadzone(st["look"], TILT_DEADZONE)
+	return clampf(v, -1.0, 1.0)
+
+# 1.0 while the player is reeling (key held / phone pulse active), else 0.0.
+func get_reel_strength(player_id: int = KEYBOARD_PLAYER_ID) -> float:
+	if context != InputContext.FISHING:
+		return 0.0
+	if player_id == KEYBOARD_PLAYER_ID and is_keyboard_enabled() and Input.is_action_pressed(&"tl_reel"):
+		return 1.0
+	if _now() < _get_state(player_id)["reel_until"]:
+		return 1.0
+	return 0.0
+
+# 0..1 charge of the KEYBOARD cast (for a power meter UI). Phones cast
+# instantly from the swing, so this is 0 for them.
+func get_cast_charge() -> float:
+	if _cast_charge_start < 0.0:
+		return 0.0
+	return clampf((_now() - _cast_charge_start) / KEYBOARD_CAST_CHARGE_TIME, 0.0, 1.0)
+
+# ----------------------------------------------------------------------------
+# Keyboard input
+# ----------------------------------------------------------------------------
+func _unhandled_input(event: InputEvent) -> void:
+	if not (event is InputEventKey):
+		return
+	if not is_keyboard_enabled():
+		_cast_charge_start = -1.0
+		return
+	if event.pressed and not event.echo:
+		_set_device(KEYBOARD_PLAYER_ID, DEVICE_KEYBOARD)
+
+	match context:
+		InputContext.OVERWORLD:
+			if event.is_action_pressed(&"tl_interact"):
+				interact_pressed.emit(KEYBOARD_PLAYER_ID)
+			elif event.is_action_pressed(&"tl_cancel"):
+				cancel_pressed.emit(KEYBOARD_PLAYER_ID)
+			elif event.is_action_pressed(&"tl_pause"):
+				pause_pressed.emit(KEYBOARD_PLAYER_ID)
+
+		InputContext.FISHING:
+			if event.is_action_pressed(&"tl_cast"):
+				_cast_charge_start = _now()
+			elif event.is_action_released(&"tl_cast") and _cast_charge_start >= 0.0:
+				var power := clampf(get_cast_charge(), MIN_CAST_POWER, 1.0)
+				_cast_charge_start = -1.0
+				if debug_log:
+					print("[InputManager] keyboard cast power %.2f" % power)
+				cast_triggered.emit(KEYBOARD_PLAYER_ID, power)
+			elif event.is_action_pressed(&"tl_reel"):
+				reel.emit(KEYBOARD_PLAYER_ID, 1.0)
+			elif event.is_action_pressed(&"tl_interact"):
+				interact_pressed.emit(KEYBOARD_PLAYER_ID)
+			elif event.is_action_pressed(&"tl_cancel"):
+				cancel_pressed.emit(KEYBOARD_PLAYER_ID)
+			elif event.is_action_pressed(&"tl_pause"):
+				pause_pressed.emit(KEYBOARD_PLAYER_ID)
+
+# ----------------------------------------------------------------------------
+# Phone input (from ConnectionManager signals)
+# ----------------------------------------------------------------------------
+func _on_phone_connected(phone_id: int) -> void:
+	if not _phones.has(phone_id):
+		_phones.append(phone_id)
+	print("[InputManager] controller connected: player %d" % phone_id)
+	controller_connected.emit(phone_id)
+
+func _on_phone_disconnected(phone_id: int) -> void:
+	_phones.erase(phone_id)
+	_state.erase(phone_id)
+	print("[InputManager] controller disconnected: player %d" % phone_id)
+	controller_disconnected.emit(phone_id)
+
+# Which player_id a phone's input should be reported as (-1 = ignore).
+func _phone_player_id(phone_id: int) -> int:
+	if context == InputContext.NONE:
+		return -1
+	return phone_id if multiplayer_mode else KEYBOARD_PLAYER_ID
+
+# Same as above, but also records that this player is now using a phone.
+# (Tilt does NOT use this: it streams constantly and would make the "last
+# device" flip to phone even when the player is using the keyboard.)
+func _accept_phone_input(phone_id: int) -> int:
+	var pid := _phone_player_id(phone_id)
+	if pid >= 0:
+		_set_device(pid, DEVICE_PHONE)
+	return pid
+
+func _on_phone_swipe(phone_id: int, direction: String, _dx: float, _dy: float) -> void:
+	var pid := _accept_phone_input(phone_id)
+	if pid < 0:
+		return
+	match context:
+		InputContext.MENU:
+			if MENU_SWIPE_ACTIONS.has(direction):
+				_inject_ui_action(MENU_SWIPE_ACTIONS[direction])
+		InputContext.OVERWORLD:
+			if SWIPE_VECTORS.has(direction):
+				_pulse_move(pid, SWIPE_VECTORS[direction])
+		InputContext.FISHING:
+			# Any swipe direction reels in.
+			_pulse_reel(pid)
+
+func _on_phone_tap(phone_id: int, _x: float, _y: float) -> void:
+	var pid := _accept_phone_input(phone_id)
+	if pid < 0:
+		return
+	match context:
+		InputContext.MENU:
+			_inject_ui_action(&"ui_accept")
+		InputContext.OVERWORLD, InputContext.FISHING:
+			interact_pressed.emit(pid)
+
+func _on_phone_swing(phone_id: int, magnitude: float) -> void:
+	var pid := _accept_phone_input(phone_id)
+	if pid < 0:
+		return
+	match context:
+		InputContext.MENU:
+			_inject_ui_action(&"ui_cancel")
+		InputContext.OVERWORLD:
+			cancel_pressed.emit(pid)
+		InputContext.FISHING:
+			var power := _swing_to_power(magnitude)
+			if debug_log:
+				print("[InputManager] player %d swing %.2f -> cast power %.2f" % [pid, magnitude, power])
+			cast_triggered.emit(pid, power)
+
+func _on_phone_tilt(phone_id: int, value: float) -> void:
+	if context != InputContext.FISHING:
+		return
+	var pid := _phone_player_id(phone_id)
+	if pid < 0:
+		return
+	var st := _get_state(pid)
+	st["look"] = clampf(value, -1.0, 1.0)
+	st["look_time"] = _now()
+
+# ----------------------------------------------------------------------------
+# Helpers
+# ----------------------------------------------------------------------------
+func _swing_to_power(magnitude: float) -> float:
+	return clampf(inverse_lerp(SWING_MIN_MAGNITUDE, SWING_MAX_MAGNITUDE, magnitude), MIN_CAST_POWER, 1.0)
+
+# Zeroes out small values and rescales the rest so output still reaches +/-1.
+func _apply_deadzone(v: float, deadzone: float) -> float:
+	var a := absf(v)
+	if a <= deadzone:
+		return 0.0
+	return signf(v) * (a - deadzone) / (1.0 - deadzone)
+
+func _pulse_move(pid: int, dir: Vector2) -> void:
+	var st := _get_state(pid)
+	st["move"] = dir
+	st["move_until"] = _now() + PHONE_MOVE_PULSE_SEC
+
+func _pulse_reel(pid: int) -> void:
+	_get_state(pid)["reel_until"] = _now() + PHONE_REEL_PULSE_SEC
+	reel.emit(pid, 1.0)
+
+# Fakes a press+release of a built-in ui_* action so Godot's normal Control
+# focus navigation (buttons, lists, slot menus) responds to phone input.
+func _inject_ui_action(action: StringName) -> void:
+	var press := InputEventAction.new()
+	press.action = action
+	press.pressed = true
+	press.strength = 1.0
+	Input.parse_input_event(press)
+
+	await get_tree().process_frame
+
+	var release := InputEventAction.new()
+	release.action = action
+	release.pressed = false
+	Input.parse_input_event(release)
+
+func _set_device(pid: int, device: StringName) -> void:
+	if _last_device.get(pid, &"") != device:
+		_last_device[pid] = device
+		device_changed.emit(pid, device)
+
+func _get_state(pid: int) -> Dictionary:
+	if not _state.has(pid):
+		_state[pid] = {
+			"move": Vector2.ZERO, "move_until": 0.0,
+			"reel_until": 0.0,
+			"look": 0.0, "look_time": -100.0,
+		}
+	return _state[pid]
+
+func _now() -> float:
+	return Time.get_ticks_msec() / 1000.0

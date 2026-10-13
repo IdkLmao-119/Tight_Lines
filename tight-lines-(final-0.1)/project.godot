@@ -22,8 +22,8 @@ GameDb="*uid://cae65atoms7xh"
 SaveManager="*uid://c123t7gaw6an0"
 InputManager="*uid://cljjxtxv01gi6"
 ConnectionManager="*uid://cr67ysc4wtkx0"
-AudioManager="*uid://ctostah28mc1l"
 FishingManager="*uid://bdeonsbyrbwk3"
+InventoryManager="*uid://b4fcr4orgsjip"
 
 [input]
 
