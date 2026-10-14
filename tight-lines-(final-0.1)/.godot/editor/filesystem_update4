@@ -1,3 +1,6 @@
-res://UIScenesAndScript/MainMenu/main_menu_tightlines.tscn
-res://AutoloadFolders/ConnectionManager/ConnectionManager.gd
-res://AutoloadFolders/InputManager/InputManager.gd
+res://OverWorldSceneAndScript/Area01Scene/RiverPark/RiverPark.tscn
+res://OverWorldSceneAndScript/Area01Scene/RiceFields/RiceField.tscn
+res://OverWorldSceneAndScript/Area01Scene/MainArea1/MainArea01.tscn
+res://OverWorldSceneAndScript/Area02Scene/SeasidePark/SeasidePark.tscn
+res://OverWorldSceneAndScript/Area02Scene/FishPens/FishPens.tscn
+res://OverWorldSceneAndScript/Area02Scene/AbandonedSaltfarm/SaltFarm.tscn
