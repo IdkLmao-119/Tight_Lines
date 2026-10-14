@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://sgugkon0uryw"]
+
+[node name="SaltFarm" type="Node2D" unique_id=1600097924]
+
+[node name="TileMap" type="TileMap" parent="." unique_id=240861762]
+format = 2
