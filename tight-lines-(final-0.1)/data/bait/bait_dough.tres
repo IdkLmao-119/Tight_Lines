@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="BaitData" format=3]
+
+[ext_resource type="Script" path="res://resources/bait_boost.gd" id="1_yvjh5"]
+[ext_resource type="Resource" path="res://data/fish/fish_carp.tres" id="2_xif8t"]
+[ext_resource type="Script" path="res://resources/fish_data.gd" id="3_pid74"]
+[ext_resource type="Resource" path="res://data/fish/fish_bluegill.tres" id="4_wukaa"]
+[ext_resource type="Script" path="res://resources/bait_data.gd" id="5_l0et3"]
+
+[sub_resource type="Resource" id="Resource_q6lep"]
+script = ExtResource("1_yvjh5")
+fish = ExtResource("2_xif8t")
+multiplier = 2.0
+
+[resource]
+script = ExtResource("5_l0et3")
+enables_fish = Array[ExtResource("3_pid74")]([ExtResource("4_wukaa"), ExtResource("2_xif8t")])
+boosts = Array[ExtResource("1_yvjh5")]([SubResource("Resource_q6lep")])
+max_stack = 99
+id = "bait_dough"
+display_name = "Dough Ball"

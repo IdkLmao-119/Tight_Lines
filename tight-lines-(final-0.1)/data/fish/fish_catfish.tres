@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="FishData" format=3]
+
+[ext_resource type="Script" path="res://resources/fish_data.gd" id="1_3j4yc"]
+
+[resource]
+script = ExtResource("1_3j4yc")
+scientific_name = "Ictalurus punctatus"
+description = "A whiskered bottom-feeder, most active after dark, that pulls with slow, heavy strength."
+size_class = "large"
+base_price = 60
+speed = 1.2
+min_size = 30.0
+avg_size = 55.0
+max_size = 90.0
+avg_weight = 2.5
+grid_width = 3
+id = "fish_catfish"
+display_name = "Channel Catfish"

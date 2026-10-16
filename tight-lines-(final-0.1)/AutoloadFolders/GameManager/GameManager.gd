@@ -59,13 +59,33 @@ const SCENES: Dictionary = {
 		"music": "res://audio/music/cutscene.ogg",
 		"pausable": false,
 	},
-	"overworld": {
+	"MainArea": {
 		"path": "res://OverWorldSceneAndScript/Area01Scene/MainArea1/MainArea01.tscn",
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,
 	},
+	"RiceFields": {
+		"path": "res://OverWorldSceneAndScript/Area01Scene/RiceFields/RiceField.tscn",
+		"music": "res://audio/music/overworld.ogg",
+		"pausable": true,
+	},
+	"FishMarket": {
+		"path": "res://OverWorldSceneAndScript/Area01Scene/MainArea1/MainArea01.tscn",
+		"music": "res://audio/music/overworld.ogg",
+		"pausable": true,
+	},
+	"House1": {
+		"path": "res://OverWorldSceneAndScript/Area01Scene/House_Folder/Area01_House1.tscn",
+		"music": "res://audio/music/overworld.ogg",
+		"pausable": true,
+	},
+	"House2": {
+		"path": "res://OverWorldSceneAndScript/Area01Scene/House_Folder/Area01_House2.tscn",
+		"music": "res://audio/music/overworld.ogg",
+		"pausable": true,
+	},
 	"fishing": {
-		"path": "res://fishing/FishingMinigame.tscn",
+		"path": "res://3DFishingScene/3DFishing.tscn",
 		"music": "res://audio/music/fishing.ogg",
 		"pausable": true,
 	},

@@ -3,7 +3,6 @@
 [ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/Sand.jpg" id="1_i1y24"]
 [ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/Water.png" id="2_i1y24"]
 [ext_resource type="Texture2D" uid="uid://btechb8bstqv3" path="res://Assets/Rock Texture.jpg" id="3_goktk"]
-[ext_resource type="Script" uid="uid://bc3137nyw5rqh" path="res://3DFishingScene/player.gd" id="3_u4n2x"]
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/download.jpg" id="4_goktk"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
@@ -81,7 +80,6 @@ mesh = SubResource("PlaneMesh_goktk")
 
 [node name="Player" type="Node3D" parent="." unique_id=502106798]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3307042, 1.5558467)
-script = ExtResource("3_u4n2x")
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="Player" unique_id=731221113]
 

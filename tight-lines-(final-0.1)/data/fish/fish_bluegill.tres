@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FishData" format=3]
+
+[ext_resource type="Script" path="res://resources/fish_data.gd" id="1_iottl"]
+
+[resource]
+script = ExtResource("1_iottl")
+scientific_name = "Lepomis macrochirus"
+description = "A small, round sunfish that darts around shallow weed beds and bites at almost anything."
+base_price = 10
+min_size = 8.0
+avg_size = 15.0
+max_size = 25.0
+avg_weight = 0.15
+id = "fish_bluegill"
+display_name = "Bluegill"

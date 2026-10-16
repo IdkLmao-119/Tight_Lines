@@ -1,5 +1,5 @@
 extends CharacterBody2D
-@export var movement_speed : float = 150
+@export var movement_speed : float = 300
 
 var character_direction : Vector2
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -24,3 +24,24 @@ func _physics_process(_delta):
 			sprite.animation = "idle"
 	
 	move_and_slide()
+
+func _on_area_2_gateway_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("FishMarket")
+
+func _on_house_gateway_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("House1")
+
+func _on_area_1_gateway_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("MainArea")
+
+func _on_house_2_gateway_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("House2")
+
+func _on_rice_fields_gateway_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("RiceFields")
+
+func _on_rice_fishing_spot_1_gateway_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("fishing")
+
+func _on_rice_fishing_spot_2_gateway_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("fishing")

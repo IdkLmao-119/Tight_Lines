@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="LocationData" format=3]
+
+[ext_resource type="Script" path="res://resources/pool_entry.gd" id="1_ii27h"]
+[ext_resource type="Resource" path="res://data/fish/fish_bass.tres" id="2_x51tn"]
+[ext_resource type="Script" path="res://resources/odds_modifier.gd" id="3_rhimc"]
+[ext_resource type="Resource" path="res://data/fish/fish_catfish.tres" id="4_psm6l"]
+[ext_resource type="Resource" path="res://data/fish/fish_carp.tres" id="5_hs5c5"]
+[ext_resource type="Script" path="res://resources/location_data.gd" id="6_6msat"]
+
+[sub_resource type="Resource" id="Resource_0h8xi"]
+script = ExtResource("1_ii27h")
+fish = ExtResource("2_x51tn")
+weight_multiplier = 1.2
+
+[sub_resource type="Resource" id="Resource_1ktmx"]
+script = ExtResource("3_rhimc")
+weather = Array[String](["rain", "storm"])
+multiplier = 1.5
+
+[sub_resource type="Resource" id="Resource_huobd"]
+script = ExtResource("1_ii27h")
+fish = ExtResource("4_psm6l")
+modifiers = Array[ExtResource("3_rhimc")]([SubResource("Resource_1ktmx")])
+
+[sub_resource type="Resource" id="Resource_mlvpc"]
+script = ExtResource("3_rhimc")
+weather = Array[String](["clear"])
+multiplier = 1.5
+
+[sub_resource type="Resource" id="Resource_ymwcy"]
+script = ExtResource("1_ii27h")
+fish = ExtResource("5_hs5c5")
+modifiers = Array[ExtResource("3_rhimc")]([SubResource("Resource_mlvpc")])
+
+[resource]
+script = ExtResource("6_6msat")
+unlock_flag = "unlock_dock"
+fish_pool = Array[ExtResource("1_ii27h")]([SubResource("Resource_0h8xi"), SubResource("Resource_huobd"), SubResource("Resource_ymwcy")])
+id = "location_dock"
+display_name = "Dock"

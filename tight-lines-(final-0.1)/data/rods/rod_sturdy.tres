@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RodData" format=3]
+
+[ext_resource type="Script" path="res://resources/rod_data.gd" id="1_ajxdd"]
+
+[resource]
+script = ExtResource("1_ajxdd")
+rod_price = 150
+chance_small = 0.5
+chance_medium = 0.5
+id = "rod_sturdy"
+display_name = "Sturdy Rod"
