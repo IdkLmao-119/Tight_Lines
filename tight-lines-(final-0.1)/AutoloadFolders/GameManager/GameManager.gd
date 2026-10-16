@@ -60,7 +60,7 @@ const SCENES: Dictionary = {
 		"pausable": false,
 	},
 	"overworld": {
-		"path": "res://overworld/Overworld.tscn",
+		"path": "res://OverWorldSceneAndScript/Area01Scene/MainArea1/MainArea01.tscn",
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,
 	},
