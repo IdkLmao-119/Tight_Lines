@@ -2,3 +2,5 @@
 *.translation
 export_presets.cfg
 .godot/
+.godot/
+Godot_v*.exe/
