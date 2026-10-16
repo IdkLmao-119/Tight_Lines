@@ -1,3 +1,6 @@
+CollisionPolygon2D
+TileMap
+CollisionShape2D
 MeshInstance3D
 Node3D
 WorldEnvironment
