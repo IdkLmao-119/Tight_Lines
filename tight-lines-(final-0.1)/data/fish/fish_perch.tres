@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FishData" format=3]
+
+[ext_resource type="Script" path="res://resources/fish_data.gd" id="1_fqal3"]
+
+[resource]
+script = ExtResource("1_fqal3")
+scientific_name = "Perca flavescens"
+description = "A striped, schooling fish that lingers near the bottom of cool, clear water."
+base_price = 12
+speed = 1.2
+pull_strength = 3.0
+stamina = 14.0
+avg_weight = 0.2
+id = "fish_perch"
+display_name = "Yellow Perch"

@@ -28,7 +28,7 @@ func _on_back_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://UIScenesAndScript/MainMenu/main_menu_tightlines.tscn")
 
 func _on_save_slot_1_pressed() -> void:
-	_select_slot(0)
+	GameManager.change_scene("MainArea")
 
 func _on_save_slot_2_pressed() -> void:
 	_select_slot(1)

@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://brgt6citqc88w" path="res://OverWorldSceneAndScript/Area01Scene/House_Folder/TopDownHouse_FurnitureState1.png" id="5_qkyg0"]
 [ext_resource type="Texture2D" uid="uid://b3rhau5a5uga1" path="res://OverWorldSceneAndScript/Area01Scene/House_Folder/TopDownHouse_SmallItems.png" id="6_473e4"]
 [ext_resource type="Texture2D" uid="uid://bacxf0eb12pba" path="res://OverWorldSceneAndScript/Area01Scene/House_Folder/TopDownHouse_FurnitureState2.png" id="7_tchq4"]
+[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://Character/Player.tscn" id="8_r8hk7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ey0kb"]
 texture = ExtResource("1_2kr7h")
@@ -1002,6 +1003,8 @@ sources/4 = SubResource("TileSetAtlasSource_ssa0a")
 sources/5 = SubResource("TileSetAtlasSource_81gar")
 sources/6 = SubResource("TileSetAtlasSource_nvbqs")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r8hk7"]
+
 [node name="Area01House1" type="Node2D" unique_id=577224538]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=2110315720]
@@ -1014,5 +1017,31 @@ layer_1/tile_data = PackedInt32Array(1507318, 393217, 2, 1441782, 393217, 2, 137
 layer_2/name = "Layer2"
 layer_2/tile_data = PackedInt32Array(1441782, 524289, 1, 1441783, 589825, 1, 1376247, 589825, 0, 1507319, 589825, 2, 1507318, 524289, 2, 1376246, 524289, 0)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="TileMap" unique_id=649338549]
+[node name="StaticBody2D" type="StaticBody2D" parent="TileMap" unique_id=798386517]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="TileMap/StaticBody2D" unique_id=649338549]
 polygon = PackedVector2Array(-193, 364, -192, 602, -193, 608, 402, 608, 400, 576, 418, 576, 418, 562, 432, 562, 432, 416, 417, 415, 416, 366, 293, 366, 253, 367, 253, 382, 222, 382, 209, 382, 192, 382, 192, 399, 207, 399, 207, 414, 191, 414, 192, 492, 191, 539, 154, 539, 129, 539, 129, 462, 128, 398, 108, 398, 107, 378, 90, 378, 8, 377, -12, 377, -13, 364, -47, 364, -115, 364, -189, 364, -107, 268, 113, 270, 263, 215, 374, 280, 598, 360, 516, 590, 430, 756, 162, 700, -98, 687, -348, 571, -334, 375, -276, 244, -145, 302, -205, 347, -181, 353, -190, 364)
+
+[node name="Player" parent="." unique_id=394178850 instance=ExtResource("8_r8hk7")]
+position = Vector2(-130, 587)
+
+[node name="House2Gateway" type="Node2D" parent="." unique_id=1480126398]
+position = Vector2(-145, 379)
+scale = Vector2(2, 1)
+
+[node name="House2Gateway" type="Area2D" parent="House2Gateway" unique_id=2108429831]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="House2Gateway/House2Gateway" unique_id=200780265]
+shape = SubResource("RectangleShape2D_r8hk7")
+
+[node name="Area1Gateway" type="Node2D" parent="." unique_id=100625748]
+position = Vector2(-130, 597)
+scale = Vector2(2, 1)
+
+[node name="Area1Gateway" type="Area2D" parent="Area1Gateway" unique_id=1160086386]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1Gateway/Area1Gateway" unique_id=1191085926]
+shape = SubResource("RectangleShape2D_r8hk7")
+
+[connection signal="body_entered" from="House2Gateway/House2Gateway" to="Player" method="_on_house_2_gateway_body_entered"]
+[connection signal="body_entered" from="Area1Gateway/Area1Gateway" to="Player" method="_on_area_1_gateway_body_entered"]

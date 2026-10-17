@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3]
+
+[ext_resource type="Script" path="res://resources/fish_data.gd" id="1_xfbho"]
+
+[resource]
+script = ExtResource("1_xfbho")
+scientific_name = "Cyprinus carpio"
+description = "A wary, long-lived giant that bolts at the slightest mistake."
+size_class = "large"
+base_price = 90
+speed = 2.0
+pull_strength = 7.5
+stamina = 30.0
+min_size = 40.0
+avg_size = 65.0
+max_size = 100.0
+avg_weight = 4.0
+grid_width = 2
+grid_height = 2
+id = "fish_carp"
+display_name = "Common Carp"
