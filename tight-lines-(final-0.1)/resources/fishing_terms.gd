@@ -37,7 +37,7 @@ const WEATHERS: PackedStringArray = ["clear", "cloudy", "rain", "storm"]
 const SEASONS: PackedStringArray = ["dry", "wet"]
 
 ## The three situation keys. The same names are used as property names on [OddsModifier]
-## and as keys of the runtime context dictionary the game passes to [GameDatabase].
+## and as keys of the runtime context dictionary the game passes to [GameDB].
 const CONDITION_KEYS: PackedStringArray = ["time_of_day", "weather", "season"]
 
 

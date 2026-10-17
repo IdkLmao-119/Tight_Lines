@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BaitData" format=3]
+
+[ext_resource type="Script" path="res://resources/bait_boost.gd" id="1_68xcr"]
+[ext_resource type="Resource" path="res://data/fish/fish_perch.tres" id="2_31xvg"]
+[ext_resource type="Script" path="res://resources/fish_data.gd" id="3_f1egf"]
+[ext_resource type="Resource" path="res://data/fish/fish_bluegill.tres" id="4_u823d"]
+[ext_resource type="Resource" path="res://data/fish/fish_smelt.tres" id="5_54p1k"]
+[ext_resource type="Script" path="res://resources/bait_data.gd" id="6_ofemm"]
+
+[sub_resource type="Resource" id="Resource_4t4wy"]
+script = ExtResource("1_68xcr")
+fish = ExtResource("2_31xvg")
+multiplier = 2.0
+
+[resource]
+script = ExtResource("6_ofemm")
+enables_fish = Array[ExtResource("3_f1egf")]([ExtResource("4_u823d"), ExtResource("2_31xvg"), ExtResource("5_54p1k")])
+boosts = Array[ExtResource("1_68xcr")]([SubResource("Resource_4t4wy")])
+compost_weight = 3.0
+max_stack = 99
+id = "bait_red_worm"
+display_name = "Red Worm"

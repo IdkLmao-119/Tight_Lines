@@ -1,4 +1,0 @@
-; Test fixture: a rod model scene WITHOUT a "LineTip" marker (find_line_tip must return null).
-[gd_scene format=3]
-
-[node name="NoTipRod" type="Node3D"]

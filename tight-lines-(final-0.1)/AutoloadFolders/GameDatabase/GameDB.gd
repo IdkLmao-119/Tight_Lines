@@ -1,13 +1,13 @@
-## GameDatabase (autoload singleton): the game's static reference data.
+## GameDB (autoload singleton): the game's static reference data.
 ##
 ## Scans [code]res://data/[/code] for [code].tres[/code] records ([FishData], [BaitData], [RodData],
 ## [LocationData]), validates them, and serves lookups to both the 2D Overworld and the 3D Fishing
 ## Minigame. Nothing is ever written back at runtime; anything that changes per save (inventory,
 ## equipped items, unlock flags) belongs to SaveManager.
 ##
-## [b]Setup[/b]: Project Settings > Autoload, add this script as "GameDatabase" and place it ABOVE
-## SaveManager in the list (autoloads initialise top to bottom, and SaveManager may want to validate saved
-## ids against this database). The class definitions in [code]res://resources/[/code] must be in the
+## [b]Setup[/b]: Project Settings > Autoload, add this script as "GameDB" and place it FIRST in the list
+## (autoload order: GameDB, SaveManager, ConnectionManager, InputManager, GameManager, InventoryManager,
+## QuestManager; autoloads initialise top to bottom and SaveManager may validate saved ids against this database). The class definitions in [code]res://resources/[/code] must be in the
 ## project (Godot registers their class_name automatically when the project is opened).
 ##
 ## [b]What is a record?[/b] Every .tres file under the data folder whose script is one of the four record
@@ -27,7 +27,7 @@
 ##    time/weather/season modifiers and runtime extra multipliers make chosen fish count more
 ##    (or less) than their classmates. They only ever boost or decrease; nothing forbids a fish.
 ## [/codeblock]
-## The result sums to 1.0. This class never rolls dice itself; CatchRateResolver does.
+## The result sums to 1.0. This class never rolls dice itself; FishingManager owns the catch roll (weighted pick of one fish id, then a size roll).
 ##
 ## [b]Size, weight, price[/b]: the catch logic rolls a size (cm) between a fish's min_size and max_size.
 ## Weight = size x avg_weight / avg_size and sell price = base_price x size / avg_size
@@ -152,7 +152,7 @@ func _ready() -> void:
 	strict_mode = OS.is_debug_build()
 	load_all()
 	if OS.is_debug_build():
-		print("[GameDatabase] ", get_summary())
+		print("[GameDB] ", get_summary())
 
 
 ## Scans [param data_dir] (including subfolders) for .tres records, validates them and indexes them.
@@ -215,7 +215,7 @@ func has_record(kind: String, id: String) -> bool:
 ## All ids of [param kind], in load order.
 func get_ids(kind: String) -> Array:
 	if not _tables.has(kind):
-		push_warning("[GameDatabase] unknown record kind '%s'" % kind)
+		push_warning("[GameDB] unknown record kind '%s'" % kind)
 		return []
 	return (_tables[kind] as Dictionary).keys()
 
@@ -223,7 +223,7 @@ func get_ids(kind: String) -> Array:
 ## All records of [param kind], in load order.
 func get_all(kind: String) -> Array:
 	if not _tables.has(kind):
-		push_warning("[GameDatabase] unknown record kind '%s'" % kind)
+		push_warning("[GameDB] unknown record kind '%s'" % kind)
 		return []
 	return (_tables[kind] as Dictionary).values()
 
@@ -505,7 +505,7 @@ func instantiate_rod_model(rod_id: String) -> Node3D:
 	var instance := rod.model_3d.instantiate()
 	if instance is Node3D:
 		return instance
-	push_warning("[GameDatabase] the model_3d scene of '%s' must have a Node3D as its root" % rod_id)
+	push_warning("[GameDB] the model_3d scene of '%s' must have a Node3D as its root" % rod_id)
 	instance.free()
 	return null
 
@@ -515,7 +515,7 @@ func instantiate_rod_model(rod_id: String) -> Node3D:
 func find_line_tip(model: Node) -> Node3D:
 	var tip := model.find_child(LINE_TIP_NODE_NAME, true, false) as Node3D
 	if tip == null:
-		push_warning("[GameDatabase] rod model '%s' has no Marker3D named '%s'" % [model.name, LINE_TIP_NODE_NAME])
+		push_warning("[GameDB] rod model '%s' has no Marker3D named '%s'" % [model.name, LINE_TIP_NODE_NAME])
 	return tip
 
 
@@ -651,9 +651,9 @@ func _finalize() -> void:
 
 	if not quiet:
 		for message in load_errors:
-			push_error("[GameDatabase] " + message)
+			push_error("[GameDB] " + message)
 		for message in load_warnings:
-			push_warning("[GameDatabase] " + message)
+			push_warning("[GameDB] " + message)
 
 	if usable:
 		is_loaded = true
@@ -670,11 +670,11 @@ func _finalize() -> void:
 # Shared body of the get_*() lookups.
 func _lookup(kind: String, id: String) -> DatabaseEntry:
 	if not is_loaded:
-		push_error("[GameDatabase] queried before a successful load (is_loaded == false)")
+		push_error("[GameDB] queried before a successful load (is_loaded == false)")
 		return null
 	var table: Dictionary = _tables.get(kind, {})
 	if not table.has(id):
-		push_warning("[GameDatabase] unknown %s id '%s'" % [kind, id])
+		push_warning("[GameDB] unknown %s id '%s'" % [kind, id])
 		return null
 	return table[id]
 
@@ -729,12 +729,17 @@ func _validate_fish(fish: FishData, ctx: String) -> void:
 			ctx, str(fish.avg_size), str(fish.min_size), str(fish.max_size)])
 	if fish.avg_weight <= 0.0:
 		_err("%s: avg_weight must be greater than 0" % ctx)
+	# Fight stats: must be above 0 (error); outside the suggested design range is only a warning.
+	_check_stat(fish.pull_strength, "pull_strength", 2.0, 8.0, ctx)
+	_check_stat(fish.stamina, "stamina", 10.0, 30.0, ctx)
 
 
 # Checks the shape of a bait record. Whether the fish are actually in the database is checked later in
 # _validate_references(), once every record is known.
 func _validate_bait(bait: BaitData, ctx: String) -> void:
 	_validate_item(bait, ctx)
+	if bait.compost_weight < 0.0:
+		_err("%s: compost_weight must not be below 0 (got %s; use 0 for 'never made by the Compost Pit')" % [ctx, str(bait.compost_weight)])
 	if bait.enables_fish.is_empty():
 		_err("%s: enables_fish must not be empty (a bait that enables nothing is useless)" % ctx)
 	var enabled := {}
@@ -768,6 +773,10 @@ func _validate_bait(bait: BaitData, ctx: String) -> void:
 
 func _validate_rod(rod: RodData, ctx: String) -> void:
 	_check_min_int(rod.rod_price, 0, "rod_price", ctx)
+	_check_stat(rod.line_strength, "line_strength", 5.0, 20.0, ctx)
+	_check_stat(rod.reel_speed, "reel_speed", 0.5, 2.0, ctx)
+	_check_stat(rod.max_cast_distance, "max_cast_distance", 10.0, 40.0, ctx)
+	_check_stat(rod.control, "control", 0.5, 2.0, ctx)
 	var total := 0.0
 	var shape_ok := true
 	for size_class in FishingTerms.SIZE_CLASSES:
@@ -909,6 +918,15 @@ func _drop_record(table: Dictionary, id: String, ctx: String, field: String, une
 func _check_min_int(value: int, min_value: int, field: String, ctx: String) -> void:
 	if value < min_value:
 		_err("%s: %s is %d but must be at least %d" % [ctx, field, value, min_value])
+
+
+# A fight stat must be above 0 (ERROR). Outside the suggested design range [low, high] is only a WARNING,
+# so a designer may go beyond the range on purpose without failing the load.
+func _check_stat(value: float, field: String, low: float, high: float, ctx: String) -> void:
+	if value <= 0.0:
+		_err("%s: %s must be greater than 0 (got %s)" % [ctx, field, str(value)])
+	elif value < low or value > high:
+		_warn("%s: %s (%s) is outside the suggested range %s to %s" % [ctx, field, str(value), str(low), str(high)])
 
 
 func _check_min_float(value: float, min_value: float, field: String, ctx: String) -> void:

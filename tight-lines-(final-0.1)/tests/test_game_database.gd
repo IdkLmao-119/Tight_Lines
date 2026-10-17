@@ -1,4 +1,4 @@
-## Headless tests for GameDatabase (the .tres version).
+## Headless tests for GameDB (the .tres version).
 ##
 ## Run from the project folder (exit code 0 = all passed, 1 = something failed). The project must have
 ## been imported once so Godot knows the class names:
@@ -17,7 +17,7 @@
 ## The expected numbers come from the PLACEHOLDER data. If you replace the data, update them.
 extends SceneTree
 
-const DatabaseScript := preload("res://scripts/autoload/game_database.gd")
+const DatabaseScript := preload("res://scripts/autoload/GameDB.gd")
 const SampleData := preload("res://tools/sample_data.gd")
 const REAL_DATA_DIR := "res://data/"
 const TMP_DIR := "user://db_test/"
@@ -38,6 +38,9 @@ func _initialize() -> void:
 	_test_size_weight_price()
 	_test_rod_model()
 	_test_validation_rules()
+	_test_fight_stats()
+	_test_new_player_and_grid()
+	_test_unlimited_compost_dock()
 	_test_cascade_and_modes()
 	_test_disk()
 
@@ -85,11 +88,11 @@ func _test_real_data_loads() -> void:
 	_check(db.load_all(REAL_DATA_DIR), "loads in strict mode (errors: %s)" % [db.load_errors])
 	_check(db.load_errors.is_empty(), "no errors")
 	_check(db.load_warnings.is_empty(), "no warnings (got %s)" % [db.load_warnings])
-	_check(db.get_all_fish().size() == 5, "5 fish")
-	_check(db.get_all_bait().size() == 3, "3 bait")
+	_check(db.get_all_fish().size() == 6, "6 fish")
+	_check(db.get_all_bait().size() == 5, "5 bait")
 	_check(db.get_all_rods().size() == 3, "3 rods")
 	_check(db.get_all_locations().size() == 2, "2 locations")
-	_check(db.get_summary().begins_with("loaded: 5 fish"), "summary: " + db.get_summary())
+	_check(db.get_summary().begins_with("loaded: 6 fish"), "summary: " + db.get_summary())
 	db.free()
 
 
@@ -104,7 +107,7 @@ func _test_queries() -> void:
 	_check(bluegill.size_class == "small" and bluegill.base_price == 10, "class and price")
 	_check(db.get_fish("fish_catfish").get_grid_size() == Vector2i(3, 1), "grid width x height")
 	_check(db.get_fish("fish_nope") == null, "unknown fish gives null")
-	_check(db.get_ids("fish").size() == 5 and db.get_all("rod").size() == 3, "get_ids / get_all")
+	_check(db.get_ids("fish").size() == 6 and db.get_all("rod").size() == 3, "get_ids / get_all")
 	_check(db.get_record("bait", "bait_dough") == db.get_bait("bait_dough"), "get_record is the typed record")
 	_check(db.get_bait("bait_worm").max_stack == 99, "bait stack")
 	_check(db.get_rod("rod_heavy").rod_price == 500, "rod price")
@@ -274,6 +277,116 @@ func _test_validation_rules() -> void:
 
 
 # -----------------------------------------------------------------------------
+# Fight stats (DECISIONS.md GameDatabase list, items 1-2) and the new-player rules (items 4-5)
+# -----------------------------------------------------------------------------
+
+func _test_fight_stats() -> void:
+	print("fight stats")
+	# A stat of 0 or less is an ERROR for every stat.
+	_expect_error("pull_strength 0", "pull_strength must be greater than 0", func(w): _fish(w, "fish_bass").pull_strength = 0.0)
+	_expect_error("stamina 0", "stamina must be greater than 0", func(w): _fish(w, "fish_bass").stamina = -1.0)
+	_expect_error("line_strength 0", "line_strength must be greater than 0", func(w): _rod(w, "rod_basic").line_strength = 0.0)
+	_expect_error("reel_speed 0", "reel_speed must be greater than 0", func(w): _rod(w, "rod_basic").reel_speed = 0.0)
+	_expect_error("max_cast_distance 0", "max_cast_distance must be greater than 0", func(w): _rod(w, "rod_basic").max_cast_distance = 0.0)
+	_expect_error("control 0", "control must be greater than 0", func(w): _rod(w, "rod_basic").control = 0.0)
+	# Outside the suggested range is only a WARNING: the load still succeeds.
+	var world := SampleData.build_world()
+	_fish(world, "fish_bass").pull_strength = 9.0
+	_rod(world, "rod_heavy").max_cast_distance = 50.0
+	var db := _new_db(true)
+	_check(db.load_records(world["all"]), "out-of-range stats still load: %s" % [db.load_errors])
+	_check(_any(db.load_warnings, "pull_strength (9.0) is outside the suggested range"), "pull_strength warns: %s" % [db.load_warnings])
+	_check(_any(db.load_warnings, "max_cast_distance (50.0) is outside the suggested range"), "max_cast_distance warns")
+	db.free()
+	# The defaults of a freshly made record are inside the suggested ranges (so old .tres files without
+	# the new fields load without warnings).
+	var fish := FishData.new()
+	var rod := RodData.new()
+	_check(fish.pull_strength == 4.0 and fish.stamina == 20.0, "fish defaults 4 / 20")
+	_check(rod.line_strength == 10.0 and rod.reel_speed == 1.0 and rod.max_cast_distance == 20.0 and rod.control == 1.0, "rod defaults")
+	var real := _loaded()
+	_check(is_equal_approx(real.get_fish("fish_carp").pull_strength, 7.5) and is_equal_approx(real.get_rod("rod_heavy").line_strength, 18.0),
+		"authored stats are read from the .tres files")
+	real.free()
+
+
+func _test_new_player_and_grid() -> void:
+	print("new player / grid")
+	var db := _loaded()
+	# D10 + section 4: a brand-new player (no flags) with the free starter rod and the starter bait can fish.
+	var starter: Dictionary = db.get_catch_odds("location_kawit", "bait_worm", "rod_basic", {"unlocked": []})
+	_check(not starter.is_empty(), "new player: Kawit + worm + basic rod has odds")
+	_check(db.get_unlock_flag("location_kawit") == "" and db.get_rod("rod_basic").rod_price == 0, "starting spot open, starter rod free")
+	# INV-R7: every fish and bait fits its container (fish_box 6x8, tackle_box 8x6), either orientation.
+	for fish in db.get_all_fish():
+		_check(_fits(fish, Vector2i(6, 8)), "%s %s fits the fish box" % [fish.id, fish.get_grid_size()])
+		_check(fish.max_stack == 1, "%s never stacks" % fish.id)
+	for bait in db.get_all_bait():
+		_check(_fits(bait, Vector2i(8, 6)), "%s fits the tackle box" % bait.id)
+	db.free()
+
+
+# True if the item fits inside the container as placed or rotated by 90 degrees.
+func _fits(item: ItemData, box: Vector2i) -> bool:
+	var size := item.get_grid_size()
+	return (size.x <= box.x and size.y <= box.y) or (size.y <= box.x and size.x <= box.y)
+
+
+# -----------------------------------------------------------------------------
+# DECISIONS v3.1: unlimited bait (D12), Compost Pit worms (D13), the dock (section 4)
+# -----------------------------------------------------------------------------
+
+func _test_unlimited_compost_dock() -> void:
+	print("unlimited / compost / dock")
+	var db := _loaded()
+	# D12: bait_worm is unlimited, nothing else is.
+	_check(db.get_bait("bait_worm").unlimited, "bait_worm is unlimited")
+	var unlimited_ids: Array = []
+	for bait in db.get_all_bait():
+		if bait.unlimited:
+			unlimited_ids.append(bait.id)
+	_check(unlimited_ids == ["bait_worm"], "only bait_worm is unlimited (got %s)" % [unlimited_ids])
+	_check(not BaitData.new().unlimited, "default is not unlimited")
+
+	# D13: compost weights. Worm 0; red worm 3; night crawler 1; every pit bait is NOT unlimited.
+	_check(db.get_bait("bait_worm").compost_weight == 0.0, "worm is never made by the pit")
+	_check(db.get_bait("bait_red_worm").compost_weight == 3.0 and db.get_bait("bait_night_crawler").compost_weight == 1.0, "pit weights 3 and 1")
+	_check(BaitData.new().compost_weight == 0.0, "default compost_weight is 0")
+	var pool: Array = []
+	for bait in db.get_all_bait():
+		if bait.compost_weight > 0.0:
+			pool.append(bait.id)
+			_check(not bait.unlimited, "%s (compost_weight > 0) is not unlimited" % bait.id)
+			_check(bait.max_stack == 99 and not bait.enables_fish.is_empty() and not bait.boosts.is_empty(),
+				"%s: stack 99, enables fish, has a boost" % bait.id)
+			# Each fish the pit bait enables must be reachable at some location.
+			for fish in bait.enables_fish:
+				var reachable := false
+				for location in db.get_all_locations():
+					if location.find_entry(fish) != null:
+						reachable = true
+				_check(reachable, "%s: enabled fish %s is offered by a location" % [bait.id, fish.id])
+	pool.sort()
+	_check(pool == ["bait_night_crawler", "bait_red_worm"], "pit pool is the two worms (got %s)" % [pool])
+	_expect_error("negative compost weight", "compost_weight must not be below 0", func(w): _bait(w, "bait_red_worm").compost_weight = -1.0)
+
+	# Dock: closed without the flag, open with it; has a dock-only fish and a fish the worm enables.
+	var flagged := {"unlocked": ["unlock_dock"]}
+	_check(db.get_unlock_flag("location_dock") == "unlock_dock", "dock needs unlock_dock")
+	_check(db.get_catch_odds("location_dock", "bait_worm", "rod_basic", {}).is_empty(), "dock, no flags: {}")
+	_check(db.get_catch_odds("location_dock", "bait_worm", "rod_basic", {"unlocked": []}).is_empty(), "dock, empty flag list: {}")
+	_check(db.get_catch_odds("location_dock", "bait_worm", "rod_basic", {"unlocked": ["other_flag"]}).is_empty(), "dock, wrong flag: {}")
+	_check_odds(db.get_catch_odds("location_dock", "bait_worm", "rod_basic", flagged), {"fish_perch": 1.0}, "dock + flag + worm + basic rod: perch only")
+	_check_odds(db.get_catch_odds("location_dock", "bait_red_worm", "rod_basic", flagged),
+		{"fish_perch": 2.0 / 3.0, "fish_smelt": 1.0 / 3.0}, "dock + red worm: boosted perch, dock-only smelt")
+	var dock_only: Array = db.get_location_fish_pool("location_dock").filter(func(e): return db.get_location_weight_multiplier("location_kawit", e.fish.id) == 0.0)
+	_check(dock_only.size() == 1 and dock_only[0].fish.id == "fish_smelt", "exactly one dock-only fish: smelt")
+	var worm_dock: Array = db.get_catchable_fish_ids("location_dock", "bait_worm", flagged)
+	_check(worm_dock.size() >= 1, "the worm enables at least one dock fish: %s" % [worm_dock])
+	db.free()
+
+
+# -----------------------------------------------------------------------------
 # Cascades, lenient mode, warnings
 # -----------------------------------------------------------------------------
 
@@ -326,7 +439,7 @@ func _test_disk() -> void:
 	# Drop every in-memory reference so the loader really reads the files (the resource cache is weak).
 	var db := _new_db(true)
 	_check(db.load_all(dir), "round trip loads from disk: %s" % [db.load_errors])
-	_check(db.get_all_fish().size() == 5 and db.get_all_locations().size() == 2, "round trip: counts")
+	_check(db.get_all_fish().size() == 6 and db.get_all_locations().size() == 2, "round trip: counts")
 	_check_odds(db.get_catch_odds("location_kawit", "bait_worm", "rod_sturdy", _ctx("day", "clear", "dry")),
 		{"fish_bluegill": 0.375, "fish_perch": 0.125, "fish_bass": 0.5}, "round trip: same odds")
 	_check(db.get_bait("bait_worm").enables_fish[0] == db.get_fish("fish_bluegill"), "bait links to the SAME fish object")

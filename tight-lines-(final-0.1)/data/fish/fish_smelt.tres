@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="FishData" format=3]
+
+[ext_resource type="Script" path="res://resources/fish_data.gd" id="1_boi20"]
+
+[resource]
+script = ExtResource("1_boi20")
+scientific_name = "Osmerus mordax"
+description = "A slim, silvery schooling fish that gathers under the dock lights."
+base_price = 14
+speed = 1.4
+pull_strength = 2.0
+stamina = 10.0
+min_size = 9.0
+avg_size = 16.0
+max_size = 22.0
+avg_weight = 0.1
+id = "fish_smelt"
+display_name = "Rainbow Smelt"

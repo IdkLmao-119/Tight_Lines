@@ -4,5 +4,9 @@
 
 [resource]
 script = ExtResource("1_1bm4i")
+line_strength = 6.0
+reel_speed = 0.8
+max_cast_distance = 15.0
+control = 0.8
 id = "rod_basic"
 display_name = "Basic Rod"

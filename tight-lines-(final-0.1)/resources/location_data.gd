@@ -11,7 +11,7 @@ extends DatabaseEntry
 ## Name of the unlock flag the player needs before they can fish here, lowercase snake_case, e.g.
 ## "unlock_dock". Empty = open from the start. The game grants the flag when the player interacts with
 ## the NPC who opens the spot; SaveManager remembers it and passes the player's flags to
-## GameDatabase as context["unlocked"].
+## GameDB as context["unlocked"].
 @export var unlock_flag: String = ""
 
 @export_group("Fish")

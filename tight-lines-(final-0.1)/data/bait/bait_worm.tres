@@ -1,11 +1,11 @@
-[gd_resource type="Resource" script_class="BaitData" format=3]
+[gd_resource type="Resource" script_class="BaitData" format=3 uid="uid://daw6y72o6u5xi"]
 
-[ext_resource type="Script" path="res://resources/bait_boost.gd" id="1_yhfst"]
+[ext_resource type="Script" uid="uid://boo606ucj5ve8" path="res://resources/bait_boost.gd" id="1_yhfst"]
 [ext_resource type="Resource" path="res://data/fish/fish_bluegill.tres" id="2_hw2so"]
-[ext_resource type="Script" path="res://resources/fish_data.gd" id="3_op0cm"]
+[ext_resource type="Script" uid="uid://dgp5fn0ioqtlm" path="res://resources/fish_data.gd" id="3_op0cm"]
 [ext_resource type="Resource" path="res://data/fish/fish_perch.tres" id="4_phlbd"]
 [ext_resource type="Resource" path="res://data/fish/fish_bass.tres" id="5_176mn"]
-[ext_resource type="Script" path="res://resources/bait_data.gd" id="6_5facc"]
+[ext_resource type="Script" uid="uid://db5begdsvjqd7" path="res://resources/bait_data.gd" id="6_5facc"]
 
 [sub_resource type="Resource" id="Resource_41rla"]
 script = ExtResource("1_yhfst")

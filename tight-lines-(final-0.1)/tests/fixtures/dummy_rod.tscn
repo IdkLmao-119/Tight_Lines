@@ -1,8 +1,0 @@
-; Minimal scene used only by tests/test_game_database.gd to check that
-; GameDatabase.load_asset() / instantiate_rod_model() / find_line_tip() work on a
-; rod model scene: a Node3D root with a Marker3D named "LineTip" as its child.
-[gd_scene format=3]
-
-[node name="DummyRod" type="Node3D"]
-
-[node name="LineTip" type="Marker3D" parent="."]

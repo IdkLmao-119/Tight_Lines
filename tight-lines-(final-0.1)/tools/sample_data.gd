@@ -10,13 +10,13 @@
 ##
 ## [b]Scenario the numbers describe[/b] (used by the documentation's worked examples):
 ## Kawit (open from the start) offers Bluegill, Perch, Bass, Catfish and Carp; Dock (needs the
-## "unlock_dock" flag) offers Bass, Catfish and Carp.
+## "unlock_dock" flag) offers Perch, Smelt (dock only), Bass, Catfish and Carp.
 extends RefCounted
 
 
 ## Builds a brand-new set of records (new objects on every call, none of them saved anywhere).
 ## Returns {"fish": Array, "bait": Array, "rods": Array, "locations": Array, "all": Array} where "all"
-## is the four lists joined in loading order, ready for [method GameDatabase.load_records].
+## is the four lists joined in loading order, ready for [method GameDB.load_records].
 ## The records reference each other directly (a bait points at its FishData objects), exactly as the
 ## .tres files do through ext_resource links.
 static func build_world() -> Dictionary:
@@ -45,7 +45,7 @@ static func find(records: Array, id: String) -> Resource:
 # -----------------------------------------------------------------------------
 
 static func _build_fish() -> Array:
-	return [
+	var list := [
 		_fish("fish_bluegill", "Bluegill", "Lepomis macrochirus",
 			"A small, round sunfish that darts around shallow weed beds and bites at almost anything.",
 			"small", 10, Vector2i(1, 1), 1.0, [8.0, 15.0, 25.0], 0.15),
@@ -61,7 +61,18 @@ static func _build_fish() -> Array:
 		_fish("fish_carp", "Common Carp", "Cyprinus carpio",
 			"A wary, long-lived giant that bolts at the slightest mistake.",
 			"large", 90, Vector2i(2, 2), 2.0, [40.0, 65.0, 100.0], 4.0),
+		# Dock-only fish (not in Kawit's pool): the reward for unlocking the dock.
+		_fish("fish_smelt", "Rainbow Smelt", "Osmerus mordax",
+			"A slim, silvery schooling fish that gathers under the dock lights.",
+			"small", 14, Vector2i(1, 1), 1.4, [9.0, 16.0, 22.0], 0.1),
 	]
+	# Fight stats {id: [pull_strength, stamina_seconds]} (PLACEHOLDERS inside the suggested ranges).
+	var fight := {"fish_bluegill": [2.5, 12.0], "fish_perch": [3.0, 14.0], "fish_bass": [5.0, 20.0],
+		"fish_catfish": [6.0, 26.0], "fish_carp": [7.5, 30.0], "fish_smelt": [2.0, 10.0]}
+	for fish in list:
+		fish.pull_strength = fight[fish.id][0]
+		fish.stamina = fight[fish.id][1]
+	return list
 
 
 # sizes = [min_size, avg_size, max_size] in cm.
@@ -90,11 +101,24 @@ static func _fish(id: String, display_name: String, scientific_name: String, des
 # -----------------------------------------------------------------------------
 
 static func _build_bait(fish: Array) -> Array:
-	return [
+	var list := [
 		_bait("bait_worm", "Worm", fish, ["fish_bluegill", "fish_perch", "fish_bass"], {"fish_bluegill": 1.5}),
 		_bait("bait_minnow", "Minnow", fish, ["fish_bass", "fish_catfish"], {"fish_catfish": 2.0}),
 		_bait("bait_dough", "Dough Ball", fish, ["fish_bluegill", "fish_carp"], {"fish_carp": 2.0}),
+		# The two Compost Pit worms (DECISIONS D13): they also make the dock-only smelt catchable.
+		_bait("bait_red_worm", "Red Worm", fish, ["fish_bluegill", "fish_perch", "fish_smelt"], {"fish_perch": 2.0}),
+		_bait("bait_night_crawler", "Night Crawler", fish, ["fish_bass", "fish_catfish", "fish_smelt"], {"fish_catfish": 2.5}),
 	]
+	# D12: the plain worm is unlimited (never spent, never stored). Everything else is a normal stack.
+	_set_unlimited(list, "bait_worm")
+	# D13: Compost Pit weights (0 = never made). red worm 3 : night crawler 1.
+	for bait in list:
+		bait.compost_weight = {"bait_red_worm": 3.0, "bait_night_crawler": 1.0}.get(bait.id, 0.0)
+	return list
+
+
+static func _set_unlimited(list: Array, id: String) -> void:
+	find(list, id).unlimited = true
 
 
 # enabled = fish ids the bait enables; boosts = {fish_id: multiplier}.
@@ -120,11 +144,20 @@ static func _bait(id: String, display_name: String, fish: Array, enabled: Array,
 # -----------------------------------------------------------------------------
 
 static func _build_rods() -> Array:
-	return [
+	var list := [
 		_rod("rod_basic", "Basic Rod", 0, [1.0, 0.0, 0.0]),
 		_rod("rod_sturdy", "Sturdy Rod", 150, [0.5, 0.5, 0.0]),
 		_rod("rod_heavy", "Heavy Rod", 500, [0.2, 0.3, 0.5]),
 	]
+	# Fight stats [line_strength, reel_speed, max_cast_distance, control] (PLACEHOLDERS, suggested ranges).
+	var stats := {"rod_basic": [6.0, 0.8, 15.0, 0.8], "rod_sturdy": [10.0, 1.0, 22.0, 1.0],
+		"rod_heavy": [18.0, 1.4, 35.0, 1.5]}
+	for rod in list:
+		rod.line_strength = stats[rod.id][0]
+		rod.reel_speed = stats[rod.id][1]
+		rod.max_cast_distance = stats[rod.id][2]
+		rod.control = stats[rod.id][3]
+	return list
 
 
 # chances = [small, medium, large].
@@ -157,6 +190,9 @@ static func _build_locations(fish: Array) -> Array:
 
 	# Dock: closed until the player has the "unlock_dock" flag (granted by talking to an NPC).
 	var dock := _location("location_dock", "Dock", "unlock_dock")
+	# Small fish first so that even the starter rod (small fish only) has something to catch here.
+	dock.fish_pool.append(_entry(find(fish, "fish_perch")))
+	dock.fish_pool.append(_entry(find(fish, "fish_smelt"), 1.0, [_modifier({"time_of_day": ["dusk", "night"]}, 1.5)]))
 	dock.fish_pool.append(_entry(find(fish, "fish_bass"), 1.2))
 	dock.fish_pool.append(_entry(find(fish, "fish_catfish"), 1.0, [_modifier({"weather": ["rain", "storm"]}, 1.5)]))
 	dock.fish_pool.append(_entry(find(fish, "fish_carp"), 1.0, [_modifier({"weather": ["clear"]}, 1.5)]))

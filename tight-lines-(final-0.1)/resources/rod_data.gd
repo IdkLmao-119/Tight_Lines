@@ -23,7 +23,7 @@ extends DatabaseEntry
 
 ## The in-minigame rod model: a scene whose root is a Node3D and that contains a Marker3D named
 ## "LineTip" at the rod's tip, where the fishing line attaches. Leave empty until the model exists.
-## Use [method GameDatabase.instantiate_rod_model] and [method GameDatabase.find_line_tip].
+## Use [method GameDB.instantiate_rod_model] and [method GameDB.find_line_tip].
 @export var model_3d: PackedScene
 
 @export_group("Shop")
@@ -41,6 +41,23 @@ extends DatabaseEntry
 
 ## Chance that a bite comes from a LARGE fish.
 @export_range(0.0, 1.0, 0.01) var chance_large: float = 0.0
+
+
+@export_group("Fight stats (TEMPORARY ranges, to be tuned with FishingManager)")
+
+## How much pull the line survives before it snaps. Compared with the fish's pull_strength by the
+## minigame. Suggested range 5 to 20; must be above 0.
+@export_range(1.0, 100.0, 0.5, "or_greater") var line_strength: float = 10.0
+
+## How fast the reel takes in line (1.0 = baseline). Suggested range 0.5 to 2.0; must be above 0.
+@export_range(0.1, 10.0, 0.05, "or_greater") var reel_speed: float = 1.0
+
+## The farthest cast the rod allows, in metres. Suggested range 10 to 40; must be above 0.
+@export_range(1.0, 200.0, 0.5, "or_greater", "suffix:m") var max_cast_distance: float = 20.0
+
+## How precisely the player steers the reel bar (1.0 = baseline, higher = easier). Suggested range
+## 0.5 to 2.0; must be above 0.
+@export_range(0.1, 10.0, 0.05, "or_greater") var control: float = 1.0
 
 
 func get_id_prefix() -> String:

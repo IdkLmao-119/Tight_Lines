@@ -39,6 +39,14 @@ extends ItemData
 ## tension rise in the minigame. It does NOT change the bite window.
 @export_range(0.0, 10.0, 0.05, "or_greater") var speed: float = 1.0
 
+## How hard the fish pulls on the line (compared with the rod's line_strength). Suggested range
+## 2 to 8; must be above 0. TEMPORARY range, to be tuned with FishingManager.
+@export_range(0.1, 100.0, 0.1, "or_greater") var pull_strength: float = 4.0
+
+## How long the fish can fight before it tires, in seconds. Suggested range 10 to 30; must be above 0.
+## TEMPORARY range, to be tuned with FishingManager.
+@export_range(1.0, 600.0, 0.5, "or_greater", "suffix:s") var stamina: float = 20.0
+
 @export_group("Size and weight")
 
 ## Smallest possible size in centimetres (the catch logic rolls between min_size and max_size).
