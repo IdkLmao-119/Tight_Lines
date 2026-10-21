@@ -26,3 +26,7 @@ func _on_exit_button_pressed() -> void:
 
 func _on_button_pressed() -> void:
 	_ready()
+
+
+func _on_multiplayer_button_pressed() -> void:
+	pass # Replace with function body.
