@@ -37,17 +37,17 @@ offset_right = 574.0
 offset_bottom = 323.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_3spmi")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1070791132]
+[node name="MainMenuButtons" type="VBoxContainer" parent="." unique_id=1070791132]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -148.40984
 offset_right = 148.40984
-offset_bottom = 205.5
+offset_bottom = 203.0
 grow_horizontal = 2
 
-[node name="StartButton" type="Button" parent="VBoxContainer" unique_id=2029253338]
+[node name="StartButton" type="Button" parent="MainMenuButtons" unique_id=2029253338]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_5e1ke")
@@ -55,7 +55,7 @@ theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
 text = "Start"
 
-[node name="OptionsButton" type="Button" parent="VBoxContainer" unique_id=1605044471]
+[node name="OptionsButton" type="Button" parent="MainMenuButtons" unique_id=1605044471]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_5e1ke")
@@ -63,7 +63,7 @@ theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
 text = "Options"
 
-[node name="ExitButton" type="Button" parent="VBoxContainer" unique_id=775846875]
+[node name="ExitButton" type="Button" parent="MainMenuButtons" unique_id=775846875]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_5e1ke")
@@ -79,9 +79,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -219.0
-offset_top = -221.0
+offset_top = -277.0
 offset_right = 219.0
-offset_bottom = -121.0
+offset_bottom = -177.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0.69179237, 0.5244724, 0.39804918, 1)
@@ -90,6 +90,106 @@ theme_override_font_sizes/font_size = 100
 text = "Tight Lines"
 horizontal_alignment = 1
 
-[connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
+[node name="Options" type="Panel" parent="." unique_id=510353207]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -290.0
+offset_top = -179.5
+offset_right = 290.0
+offset_bottom = 269.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OptionsLabel" type="Label" parent="Options" unique_id=220984293]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("2_5e1ke")
+theme_override_font_sizes/font_size = 50
+text = "Options"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BackButton" type="Button" parent="Options" unique_id=1969853326]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -52.0
+offset_top = -51.0
+offset_right = 53.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("2_5e1ke")
+theme_override_font_sizes/font_size = 30
+text = "Back"
+
+[node name="SoundSlider" type="HSlider" parent="Options" unique_id=752723488]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -268.0
+offset_top = -127.75
+offset_right = 273.0
+offset_bottom = -69.25
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Sound" type="Label" parent="Options" unique_id=1168556104]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 55.5
+offset_bottom = 106.5
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("2_5e1ke")
+theme_override_font_sizes/font_size = 40
+text = "Sound"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Music" type="Label" parent="Options" unique_id=2103246259]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 1.0
+offset_top = 150.5
+offset_right = 1.0
+offset_bottom = 201.5
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("2_5e1ke")
+theme_override_font_sizes/font_size = 40
+text = "Music"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MusicSlider" type="HSlider" parent="Options" unique_id=1047060861]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -265.0
+offset_top = -35.75
+offset_right = 276.0
+offset_bottom = 22.75
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="pressed" from="MainMenuButtons/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="MainMenuButtons/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="pressed" from="MainMenuButtons/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="Options/BackButton" to="." method="_on_button_pressed"]
