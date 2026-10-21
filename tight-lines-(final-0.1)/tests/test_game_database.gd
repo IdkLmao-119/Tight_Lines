@@ -17,7 +17,7 @@
 ## The expected numbers come from the PLACEHOLDER data. If you replace the data, update them.
 extends SceneTree
 
-const DatabaseScript := preload("res://scripts/autoload/GameDB.gd")
+const DatabaseScript := preload("res://AutoloadFolders/GameDatabase/GameDB.gd")
 const SampleData := preload("res://tools/sample_data.gd")
 const REAL_DATA_DIR := "res://data/"
 const TMP_DIR := "user://db_test/"

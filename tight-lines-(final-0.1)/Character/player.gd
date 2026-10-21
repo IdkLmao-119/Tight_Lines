@@ -41,7 +41,7 @@ func _on_rice_fields_gateway_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("RiceFields")
 
 func _on_rice_fishing_spot_1_gateway_body_entered(body: Node2D) -> void:
-	GameManager.change_scene("fishing")
+	GameManager.change_scene("3DFishRiceFields")
 
 func _on_rice_fishing_spot_2_gateway_body_entered(body: Node2D) -> void:
-	GameManager.change_scene("fishing")
+	GameManager.change_scene("3DFishRiceFields")

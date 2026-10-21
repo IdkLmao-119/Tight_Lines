@@ -89,6 +89,11 @@ const SCENES: Dictionary = {
 		"music": "res://audio/music/fishing.ogg",
 		"pausable": true,
 	},
+	"3DFishRiceFields": {
+		"path": "res://3DFishingScene/3DFishingRiceField.tscn",
+		"music": "res://audio/music/fishing.ogg",
+		"pausable": true,
+	},
 }
 
 # --- Tuning ----------------------------------------------------------------

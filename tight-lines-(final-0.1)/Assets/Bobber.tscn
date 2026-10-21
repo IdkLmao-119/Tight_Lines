@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://c724smmkgxfdy"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wh1gj"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_iah8q"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y143k"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_0vkbn"]
+
+[node name="Bobber" type="Node3D" unique_id=1561320584]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=2082061706]
+material_override = SubResource("StandardMaterial3D_wh1gj")
+mesh = SubResource("SphereMesh_iah8q")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="." unique_id=1962995083]
+physics_material_override = SubResource("PhysicsMaterial_y143k")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D" unique_id=1883891741]
+shape = SubResource("SphereShape3D_0vkbn")
