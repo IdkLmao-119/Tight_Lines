@@ -25,4 +25,5 @@ func _on_exit_button_pressed() -> void:
 
 
 func _on_button_pressed() -> void:
-	_ready()
+	main_menu_buttons.visible = true
+	options.visible = false
