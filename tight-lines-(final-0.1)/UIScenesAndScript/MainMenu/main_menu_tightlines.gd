@@ -23,7 +23,10 @@ func _on_options_button_pressed() -> void:
 func _on_exit_button_pressed() -> void:
 	get_tree().quit()
 
-
 func _on_button_pressed() -> void:
 	main_menu_buttons.visible = true
 	options.visible = false
+	_ready()
+
+func _on_multiplayer_button_pressed() -> void:
+	pass # Replace with function body.
