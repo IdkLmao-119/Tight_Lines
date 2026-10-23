@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://cgnl5fuglqi2u" path="res://OverWorldSceneAndScript/Area01Scene/House_Folder/TopDownHouse_FloorsAndWalls.png" id="1_id4lf"]
 [ext_resource type="Texture2D" uid="uid://hxm03sjg6x1u" path="res://OverWorldSceneAndScript/Area01Scene/House_Folder/tiles and items.png" id="2_6pvbn"]
+[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://Character/Player.tscn" id="3_6pvbn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_332vo"]
 texture = ExtResource("1_id4lf")
@@ -249,6 +250,8 @@ texture = ExtResource("2_6pvbn")
 sources/0 = SubResource("TileSetAtlasSource_332vo")
 sources/1 = SubResource("TileSetAtlasSource_vlj21")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6pvbn"]
+
 [node name="Area01House2" type="Node2D" unique_id=546978203]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=1637177622]
@@ -258,5 +261,21 @@ layer_0/tile_data = PackedInt32Array(2359309, 196609, 5, 2359310, 196609, 5, 235
 layer_1/name = "Layer1"
 layer_1/tile_data = PackedInt32Array(2293776, 589825, 7, 2228240, 589825, 6, 2228241, 655361, 6, 2293777, 655361, 7, 2228239, 524289, 6, 2293775, 524289, 7)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="TileMap" unique_id=2042690281]
+[node name="StaticBody2D" type="StaticBody2D" parent="TileMap" unique_id=1708007444]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="TileMap/StaticBody2D" unique_id=2042690281]
 polygon = PackedVector2Array(206, 431, 205, 576, 672, 576, 672, 428, 206, 429, 147, 379, 233, 331, 444, 344, 598, 344, 681, 336, 747, 393, 755, 585, 739, 675, 562, 681, 249, 685, 136, 596, 106, 496, 106, 428, 180, 407, 205, 429)
+
+[node name="Player" parent="." unique_id=394178850 instance=ExtResource("3_6pvbn")]
+position = Vector2(263, 555)
+
+[node name="HouseGateway" type="Node2D" parent="." unique_id=1494793175]
+position = Vector2(263, 564)
+scale = Vector2(2, 1)
+
+[node name="HouseGateway" type="Area2D" parent="HouseGateway" unique_id=1519786146]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HouseGateway/HouseGateway" unique_id=1824280079]
+shape = SubResource("RectangleShape2D_6pvbn")
+
+[connection signal="body_entered" from="HouseGateway/HouseGateway" to="Player" method="_on_house_gateway_body_entered"]

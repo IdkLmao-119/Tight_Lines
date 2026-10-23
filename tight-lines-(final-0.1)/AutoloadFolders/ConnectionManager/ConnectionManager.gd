@@ -34,12 +34,21 @@ signal swipe_input(player_id, direction, dx, dy)
 signal tap_input(player_id, x, y)
 signal swing_input(player_id, magnitude)
 
+# tilt — how far the phone is tilted left/right, streamed continuously
+#        (~20x/second) while connected. value is -1.0 (full left) to
+#        +1.0 (full right). Used for rotating the player's view.
+signal tilt_input(player_id, value)
+
 const PORT := 9080
 
 # When true, every gameplay message received from a phone is printed to the
 # Output panel. Handy for confirming that swipes/taps/swings really arrive.
 # Set to false once everything works.
 @export var debug_log := true
+
+# Tilt messages arrive ~20 times per second per phone, which would flood the
+# Output panel, so they are hidden from debug_log unless this is turned on.
+@export var debug_log_tilt := false
 
 # ============================================================================
 # AUTO-DISCOVERY (so phones don't need a hardcoded/manually-typed IP)
@@ -388,7 +397,7 @@ func _handle_message(player_id: int, message: String):
 			print("[Player %d] ignored non-JSON-object message: %s" % [player_id, message])
 		return
 
-	if debug_log:
+	if debug_log and (data.get("type") != "tilt" or debug_log_tilt):
 		print("[Player %d] received: %s" % [player_id, message])
 
 	match data.get("type"):
@@ -427,6 +436,13 @@ func _handle_message(player_id: int, message: String):
 			# stronger cast."
 			_warn_if_unconnected("swing_input")
 			emit_signal("swing_input", player_id, data.get("magnitude", 0.0))
+
+		"tilt":
+			# value is already normalized by the phone to -1.0 .. +1.0
+			# (negative = tilted left, positive = tilted right).
+			# Not passed through _warn_if_unconnected: it streams constantly,
+			# so that warning would spam the log.
+			emit_signal("tilt_input", player_id, data.get("value", 0.0))
 
 # Sends a message to EVERY connected player at once.
 # Useful for things all players should see, like a shared game-state update.

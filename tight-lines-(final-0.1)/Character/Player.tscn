@@ -3,7 +3,8 @@
 [ext_resource type="Script" uid="uid://duilsfqbu6fdu" path="res://Character/player.gd" id="1_schp4"]
 [ext_resource type="Texture2D" uid="uid://b5nlrj4ra2imf" path="res://Assets/Human-Worker-Red.png" id="2_pusnx"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_ssuvf"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_schp4"]
+size = Vector2(7.999999, 14)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dvofn"]
 atlas = ExtResource("2_pusnx")
@@ -66,7 +67,10 @@ motion_mode = 1
 script = ExtResource("1_schp4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=261758353]
-shape = SubResource("CircleShape2D_ssuvf")
+position = Vector2(0, 1.5)
+scale = Vector2(1.5, 1.5)
+shape = SubResource("RectangleShape2D_schp4")
+one_way_collision = true
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=729536495]
 zoom = Vector2(2, 2)

@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/Area01Scene/MainArea1/tileset.png" id="1_dlcpx"]
 [ext_resource type="Texture2D" uid="uid://bmggavb1ybiyg" path="res://OverWorldSceneAndScript/Area01Scene/House_Folder/TightLinesTiles.png" id="2_48lfk"]
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/Area01Scene/MainArea1/TightLinesTiles.png" id="3_fg7ym"]
+[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://Character/Player.tscn" id="4_841g0"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_48lfk"]
 texture = ExtResource("1_dlcpx")
@@ -350,6 +351,8 @@ sources/0 = SubResource("TileSetAtlasSource_48lfk")
 sources/1 = SubResource("TileSetAtlasSource_fg7ym")
 sources/2 = SubResource("TileSetAtlasSource_841g0")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_841g0"]
+
 [node name="MainArea01" type="Node2D" unique_id=903146818]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=682091460]
@@ -359,5 +362,41 @@ layer_0/tile_data = PackedInt32Array(262261, 458753, 2, 196725, 458753, 2, 13118
 layer_1/name = "Layer1"
 layer_1/tile_data = PackedInt32Array(1179730, 851968, 12, 1179731, 917504, 12, 1179732, 983040, 12, 1179733, 1048576, 12, 1179734, 1114112, 12, 1179735, 1179648, 12, 1114194, 851968, 11, 1114195, 917504, 11, 1114196, 983040, 11, 1114197, 1048576, 11, 1114198, 1114112, 11, 1114199, 1179648, 11, 1048658, 851968, 10, 1048659, 917504, 10, 1048660, 983040, 10, 1048661, 1048576, 10, 1048663, 1179648, 10, 1048662, 917504, 10, 983122, 851968, 9, 983123, 917504, 9, 983124, 983040, 9, 983125, 1048576, 9, 983126, 1114112, 9, 983127, 1179648, 9, 983128, 1245184, 9, 983121, 786432, 9, 1310776, 196608, 17, 1310777, 262144, 17, 1245240, 196608, 16, 1245241, 262144, 16)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=647314644]
+[node name="StaticBody2D" type="StaticBody2D" parent="TileMap" unique_id=1030477703]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="TileMap/StaticBody2D" unique_id=647314644]
 polygon = PackedVector2Array(1422, 303, 1422, 441, 1180, 443, 999, 442, 833, 442, 833, 314, 1154, 317, 1157, 77, 1053, 77, 1052, -63, 1188, -63, 1188, -97, 1225, -98, 1225, -66, 1381, -63, 1379, 79, 1304, 79, 1304, 299, 1421, 301, 1436, 171, 1450, -82, 1367, -217, 1153, -216, 926, -207, 825, -98, 773, 19, 755, 245, 759, 396, 776, 526, 1026, 560, 1406, 556, 1562, 485, 1540, 257, 1412, 225)
+
+[node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_841g0")]
+position = Vector2(1206, 377)
+
+[node name="Area2Gateway" type="Node2D" parent="." unique_id=1842640223]
+position = Vector2(1062, 2)
+scale = Vector2(1, 8)
+
+[node name="Area2Gateway" type="Area2D" parent="Area2Gateway" unique_id=1043161883]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2Gateway/Area2Gateway" unique_id=1352416228]
+shape = SubResource("RectangleShape2D_841g0")
+
+[node name="HouseGateway" type="Node2D" parent="." unique_id=1899106149]
+position = Vector2(1352, 315)
+scale = Vector2(2, 1)
+
+[node name="HouseGateway" type="Area2D" parent="HouseGateway" unique_id=276594002]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HouseGateway/HouseGateway" unique_id=475424904]
+shape = SubResource("RectangleShape2D_841g0")
+
+[node name="RiceFieldsGateway" type="Node2D" parent="." unique_id=1963190504]
+position = Vector2(1207, -87)
+scale = Vector2(2, 1)
+
+[node name="RiceFieldsGateway" type="Area2D" parent="RiceFieldsGateway" unique_id=1324166713]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RiceFieldsGateway/RiceFieldsGateway" unique_id=976333946]
+shape = SubResource("RectangleShape2D_841g0")
+
+[connection signal="body_entered" from="Area2Gateway/Area2Gateway" to="Player" method="_on_area_2_gateway_body_entered"]
+[connection signal="body_entered" from="HouseGateway/HouseGateway" to="Player" method="_on_house_gateway_body_entered"]
+[connection signal="body_entered" from="RiceFieldsGateway/RiceFieldsGateway" to="Player" method="_on_rice_fields_gateway_body_entered"]

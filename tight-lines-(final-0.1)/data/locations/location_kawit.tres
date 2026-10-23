@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="LocationData" format=3]
+
+[ext_resource type="Script" path="res://resources/pool_entry.gd" id="1_2vtcw"]
+[ext_resource type="Resource" path="res://data/fish/fish_bluegill.tres" id="2_kgami"]
+[ext_resource type="Script" path="res://resources/odds_modifier.gd" id="3_5eeq3"]
+[ext_resource type="Resource" path="res://data/fish/fish_perch.tres" id="4_s8p3r"]
+[ext_resource type="Resource" path="res://data/fish/fish_bass.tres" id="5_tlyn8"]
+[ext_resource type="Resource" path="res://data/fish/fish_catfish.tres" id="6_53470"]
+[ext_resource type="Resource" path="res://data/fish/fish_carp.tres" id="7_coc24"]
+[ext_resource type="Script" path="res://resources/location_data.gd" id="8_s66uk"]
+
+[sub_resource type="Resource" id="Resource_40gq0"]
+script = ExtResource("1_2vtcw")
+fish = ExtResource("2_kgami")
+
+[sub_resource type="Resource" id="Resource_dnwgt"]
+script = ExtResource("3_5eeq3")
+season = Array[String](["wet"])
+multiplier = 1.5
+
+[sub_resource type="Resource" id="Resource_36anv"]
+script = ExtResource("3_5eeq3")
+season = Array[String](["dry"])
+multiplier = 0.5
+
+[sub_resource type="Resource" id="Resource_vda2r"]
+script = ExtResource("1_2vtcw")
+fish = ExtResource("4_s8p3r")
+modifiers = Array[ExtResource("3_5eeq3")]([SubResource("Resource_dnwgt"), SubResource("Resource_36anv")])
+
+[sub_resource type="Resource" id="Resource_sam3c"]
+script = ExtResource("1_2vtcw")
+fish = ExtResource("5_tlyn8")
+
+[sub_resource type="Resource" id="Resource_e0sko"]
+script = ExtResource("3_5eeq3")
+time_of_day = Array[String](["night"])
+multiplier = 2.0
+
+[sub_resource type="Resource" id="Resource_i5nvc"]
+script = ExtResource("1_2vtcw")
+fish = ExtResource("6_53470")
+modifiers = Array[ExtResource("3_5eeq3")]([SubResource("Resource_e0sko")])
+
+[sub_resource type="Resource" id="Resource_1yufs"]
+script = ExtResource("3_5eeq3")
+time_of_day = Array[String](["dawn", "dusk"])
+multiplier = 3.0
+
+[sub_resource type="Resource" id="Resource_uiypc"]
+script = ExtResource("1_2vtcw")
+fish = ExtResource("7_coc24")
+weight_multiplier = 0.5
+modifiers = Array[ExtResource("3_5eeq3")]([SubResource("Resource_1yufs")])
+
+[resource]
+script = ExtResource("8_s66uk")
+fish_pool = Array[ExtResource("1_2vtcw")]([SubResource("Resource_40gq0"), SubResource("Resource_vda2r"), SubResource("Resource_sam3c"), SubResource("Resource_i5nvc"), SubResource("Resource_uiypc")])
+id = "location_kawit"
+display_name = "Kawit"
