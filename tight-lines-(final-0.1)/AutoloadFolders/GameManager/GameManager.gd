@@ -62,7 +62,7 @@ const SCENES: Dictionary = {
 		"pausable": false,
 	},
 	"overworld_spawn": {
-		"path": "res://OverWorldSceneAndScript/1_MainArea/Spawn/MainArea01.tscn",
+		"path": "res://OverWorldSceneAndScript/Area01Scene/MainArea1/MainArea01.tscn",
 		"input": "overworld",
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,

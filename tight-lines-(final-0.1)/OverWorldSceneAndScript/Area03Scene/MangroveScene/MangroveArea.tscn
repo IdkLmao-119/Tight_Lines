@@ -272,6 +272,12 @@ texture = ExtResource("2_4u8ac")
 sources/0 = SubResource("TileSetAtlasSource_4u8ac")
 sources/1 = SubResource("TileSetAtlasSource_p5lfn")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4u8ac"]
+size = Vector2(49, 87)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p5lfn"]
+size = Vector2(48, 87)
+
 [node name="MangroveArea" type="Node2D" unique_id=749702937]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=921739032]
@@ -281,5 +287,24 @@ layer_0/tile_data = PackedInt32Array(-130998, 589824, 0, -130999, 589824, 0, -13
 layer_1/name = "Layer1"
 layer_1/tile_data = PackedInt32Array(262157, 327681, 6, 262159, 327681, 6, 851981, 327681, 6, 851983, 327681, 6, 1441805, 327681, 6, 1441807, 327681, 6, 1835021, 327681, 6, 1638413, 327681, 6, 1638415, 327681, 6, 1835024, 327681, 6, 1703952, 327681, 6, 1835049, 327681, 6, 1703977, 327681, 6, 1638442, 327681, 6, 1638444, 327681, 6, 1835052, 327681, 6, 720938, 327681, 6, 720940, 327681, 6, 655405, 327681, 6, 524333, 327681, 6, 524330, 327681, 6, 524375, 327681, 6, 655444, 327681, 6, 524372, 327681, 6, 720981, 327681, 6, 720983, 327681, 6, 1114197, 327681, 6, 1114199, 327681, 6, 1179736, 327681, 6, 1310808, 327681, 6, 1179747, 327681, 6, 1310819, 327681, 6, 1376341, 327681, 6, 1376343, 327681, 6, 1769557, 327681, 6, 1769559, 327681, 6, 2359381, 327681, 6, 2359383, 327681, 6, 1376355, 327681, 7, 1376344, 327681, 7, 720980, 327681, 7, 720941, 327681, 7, 655419, 327681, 6, 655431, 327681, 6, 524359, 327681, 6, 524347, 327681, 6, 720955, 327681, 7, 720967, 327681, 7, 1900585, 327681, 7, 1900588, 327681, 7, 1900557, 327681, 7, 1900560, 327681, 7)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=1392170306]
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=2090551911]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=1392170306]
 polygon = PackedVector2Array(208, 103, 256, 103, 256, 416, 672, 416, 672, 128, 1408, 128, 1408, 288, 1408, 334, 1408, 522, 1360, 522, 1360, 176, 720, 176, 720, 464, 208, 464, 208, 111, 95, 308, 102, 533, 224, 564, 556, 624, 821, 640, 1176, 624, 1625, 621, 1869, 557, 1832, 149, 1666, -71, 1215, -79, 712, -74, 388, -79, 146, -58, 149, 51, 166, 184, 208, 111)
+
+[node name="IslandGateway" type="Node2D" parent="." unique_id=1508104580]
+
+[node name="Island" type="Area2D" parent="IslandGateway" unique_id=629016569]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="IslandGateway/Island" unique_id=1610764706]
+position = Vector2(1382.5, 478.5)
+shape = SubResource("RectangleShape2D_4u8ac")
+
+[node name="SaltFarmGateway" type="Node2D" parent="." unique_id=735553913]
+
+[node name="Saltfarm" type="Area2D" parent="SaltFarmGateway" unique_id=1161083995]
+position = Vector2(0, 2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SaltFarmGateway/Saltfarm" unique_id=145847372]
+position = Vector2(231, 146)
+shape = SubResource("RectangleShape2D_p5lfn")

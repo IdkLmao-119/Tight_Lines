@@ -353,6 +353,9 @@ sources/2 = SubResource("TileSetAtlasSource_841g0")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_841g0"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s3d8v"]
+size = Vector2(31, 146)
+
 [node name="MainArea01" type="Node2D" unique_id=903146818]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=682091460]
@@ -397,6 +400,16 @@ scale = Vector2(2, 1)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RiceFieldsGateway/RiceFieldsGateway" unique_id=976333946]
 shape = SubResource("RectangleShape2D_841g0")
 
+[node name="RiverParkGate" type="Node2D" parent="." unique_id=1739409681]
+
+[node name="RiverPark" type="Area2D" parent="RiverParkGate" unique_id=554587951]
+position = Vector2(3, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RiverParkGate/RiverPark" unique_id=2046524497]
+position = Vector2(1364, 8)
+shape = SubResource("RectangleShape2D_s3d8v")
+
 [connection signal="body_entered" from="Area2Gateway/Area2Gateway" to="Player" method="_on_area_2_gateway_body_entered"]
 [connection signal="body_entered" from="HouseGateway/HouseGateway" to="Player" method="_on_house_gateway_body_entered"]
 [connection signal="body_entered" from="RiceFieldsGateway/RiceFieldsGateway" to="Player" method="_on_rice_fields_gateway_body_entered"]
+[connection signal="body_entered" from="RiverParkGate/RiverPark" to="Player" method="_on_river_park_body_entered"]

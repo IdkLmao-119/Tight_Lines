@@ -49,3 +49,11 @@ func _on_rice_fishing_spot_2_gateway_body_entered(body: Node2D) -> void:
 
 func _on_river_park_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_river_park")
+
+
+func _on_main_area_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_spawn")
+
+
+func _on_fish_pens_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_fishing_pens")

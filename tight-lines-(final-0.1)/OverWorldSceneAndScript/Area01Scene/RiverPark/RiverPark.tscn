@@ -340,6 +340,9 @@ sources/0 = SubResource("TileSetAtlasSource_0foi0")
 sources/1 = SubResource("TileSetAtlasSource_ok0l4")
 sources/2 = SubResource("TileSetAtlasSource_eerny")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o34g8"]
+size = Vector2(32, 136)
+
 [node name="RiverPark" type="Node2D" unique_id=1860606683]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=681783368]
@@ -352,8 +355,21 @@ layer_1/name = "Layer1"
 layer_1/y_sort_enabled = true
 layer_1/tile_data = PackedInt32Array(-524245, 524290, 3, -458709, 524290, 3, -393173, 524290, 3, -327637, 524290, 3, -262101, 524290, 3, -196565, 524290, 3, -131029, 524290, 3, -65493, 524290, 3, 43, 524290, 3, 65579, 524290, 3, 131115, 524290, 3, 196651, 524290, 3, 262187, 524290, 3, 327723, 524290, 3, 393259, 524290, 4, 720939, 524290, 3, 786475, 524290, 3, 852011, 524290, 3, 917547, 524290, 3, 983083, 524290, 3, 1048619, 524290, 3, 1114155, 524290, 3, 1179691, 524290, 3, 1245227, 524290, 3, 1310763, 524290, 3, 1376299, 524290, 3, 1441835, 524290, 3, 1507371, 524290, 3, 1572907, 524290, 3, 1638443, 524290, 3, 1703979, 524290, 3, 1769515, 524290, 3, 1835051, 524290, 3, 1900587, 524290, 3, 1966123, 524290, 3, 2031659, 524290, 3, 2097195, 524290, 3, 2162731, 524290, 3, 2228267, 524290, 3, 2293803, 524290, 3, 2359339, 524290, 3, 2424875, 524290, 3, 2490411, 524290, 3, 2555947, 524290, 3, 131116, 393218, 4, 131117, 393218, 4, 131118, 393218, 4, 131119, 327682, 268435460, -196561, 327682, 268435460, 65583, 327682, 3, 47, 327682, 3, -65489, 327682, 3, -131025, 327682, 3, -196562, 393218, 4, -196563, 393218, 4, -196564, 393218, 4)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="TileMap" unique_id=566658653]
-polygon = PackedVector2Array(64, -48, 63, 51, 159, 51, 160, 332, 518, 333, 687, 332, 688, -90, 422, -87, 72, -86, 65, -53, 91, -340, 511, -337, 895, -288, 938, -130, 942, 78, 926, 295, 879, 408, 421, 500, 306, 531, -25, 380, -126, 233, -98, -210, 44, -100, 65, -64)
-
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("3_eerny")]
 position = Vector2(459, 107)
+movement_speed = null
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=169900966]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=566658653]
+polygon = PackedVector2Array(64, -48, 63, 51, 159, 51, 160, 332, 518, 333, 687, 332, 688, -90, 422, -87, 72, -86, 65, -53, 91, -340, 511, -337, 895, -288, 938, -130, 942, 78, 926, 295, 879, 408, 421, 500, 306, 531, -25, 380, -126, 233, -98, -210, 69, -100, 65, -64)
+
+[node name="MainAreaGateway" type="Node2D" parent="." unique_id=2070957893]
+
+[node name="MainArea" type="Area2D" parent="MainAreaGateway" unique_id=346193887]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MainAreaGateway/MainArea" unique_id=97144408]
+position = Vector2(80, -18)
+shape = SubResource("RectangleShape2D_o34g8")
+
+[connection signal="body_entered" from="MainAreaGateway/MainArea" to="Player" method="_on_main_area_body_entered"]

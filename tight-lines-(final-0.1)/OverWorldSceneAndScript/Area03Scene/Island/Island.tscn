@@ -339,6 +339,9 @@ sources/0 = SubResource("TileSetAtlasSource_r48hc")
 sources/1 = SubResource("TileSetAtlasSource_bghp4")
 sources/2 = SubResource("TileSetAtlasSource_2uvn6")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wgax8"]
+size = Vector2(98, 69)
+
 [node name="Island" type="Node2D" unique_id=263984631]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=450276505]
@@ -348,5 +351,15 @@ layer_0/tile_data = PackedInt32Array(0, 589826, 0, 65536, 589826, 0, 131072, 589
 layer_1/name = "Layer1"
 layer_1/tile_data = PackedInt32Array(3145755, 327680, 6, 3014683, 327680, 6, 3014690, 327680, 6, 3145762, 327680, 6, 2949155, 327680, 6, 2949157, 327680, 6, 2621475, 327680, 6, 2621477, 327680, 6, 3211298, 327680, 7, 3211301, 327680, 7, 3211291, 327680, 7, 3145765, 327680, 6, 655421, 327680, 6, 655423, 327680, 6, 196669, 327680, 6, 196671, 327680, 6)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=744556574]
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=622099647]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=744556574]
 polygon = PackedVector2Array(626, 177, 1484, 178, 1487, 574, 1454, 574, 1454, 877, 739, 878, 736, 639, 606, 640, 606, 780, 431, 781, 431, 738, 559, 737, 559, 639, 385, 639, 384, 419, 625, 417, 624, 192, 398, 297, 258, 406, 198, 640, 260, 1031, 636, 1114, 1337, 1125, 1739, 1057, 1951, 539, 1913, 181, 1759, -159, 1285, -190, 898, -164, 538, -87, 304, -27, 404, 295, 624, 190, 624, 176)
+
+[node name="MangroveGateway" type="Node2D" parent="." unique_id=1919325211]
+
+[node name="Mangrove" type="Area2D" parent="MangroveGateway" unique_id=135315034]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MangroveGateway/Mangrove" unique_id=97355999]
+position = Vector2(1004, 212)
+shape = SubResource("RectangleShape2D_wgax8")

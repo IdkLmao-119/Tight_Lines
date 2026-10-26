@@ -28,7 +28,7 @@ func _on_back_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://UIScenesAndScript/MainMenu/main_menu_tightlines.tscn")
 
 func _on_save_slot_1_pressed() -> void:
-	GameManager.change_scene("MainArea")
+	_select_slot(0)
 
 func _on_save_slot_2_pressed() -> void:
 	_select_slot(1)
@@ -47,7 +47,7 @@ func _on_make_save_button_pressed() -> void:
 	refresh_slot_labels()
 
 func _on_load_save_button_pressed() -> void:
-	get_tree().change_scene_to_file("res://home_base_area.tscn")
+	GameManager.change_scene("overworld_spawn")
 	if selected_slot == -1:
 		return
 	var data = SaveManager.load_game(selected_slot)

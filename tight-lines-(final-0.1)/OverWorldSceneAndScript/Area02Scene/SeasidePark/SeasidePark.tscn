@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/Area01Scene/MainArea1/TightLinesTiles.png" id="1_momdn"]
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/Area01Scene/MainArea1/tileset.png" id="2_63e7s"]
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/Area01Scene/MainArea1/Sprite_Essentials.png" id="3_lnoie"]
+[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://Character/Player.tscn" id="4_63e7s"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3kj0j"]
 texture = ExtResource("1_momdn")
@@ -339,6 +340,12 @@ sources/0 = SubResource("TileSetAtlasSource_3kj0j")
 sources/1 = SubResource("TileSetAtlasSource_katm0")
 sources/2 = SubResource("TileSetAtlasSource_vjw8q")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_momdn"]
+size = Vector2(116, 141.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_63e7s"]
+size = Vector2(97.25, 42)
+
 [node name="SeasidePark" type="Node2D" unique_id=156358762]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=2046493268]
@@ -348,5 +355,29 @@ layer_0/tile_data = PackedInt32Array(60, 589825, 0, 59, 589825, 0, 58, 589825, 0
 layer_1/name = "Layer1"
 layer_1/tile_data = PackedInt32Array(524347, 524290, 2, 524346, 524290, 2, 524345, 524290, 2, 524344, 524290, 2, 524343, 524290, 2, 524342, 524290, 2, 524341, 524290, 2, 524340, 524290, 2, 524339, 524290, 2, 524338, 524290, 2, 524337, 524290, 2, 524336, 524290, 2, 524335, 524290, 2, 524334, 524290, 2, 524333, 524290, 2, 524332, 524290, 2, 524331, 524290, 2, 524330, 524290, 2, 524329, 524290, 2, 524328, 524290, 2, 524327, 524290, 2, 524326, 524290, 2, 524325, 524290, 2, 524324, 524290, 2, 524323, 524290, 2, 524348, 524290, 2, 524322, 458754, 2, 524318, 589826, 2, 524317, 524290, 2, 524316, 524290, 2, 524315, 524290, 2, 524314, 524290, 2, 524313, 524290, 2, 524312, 524290, 2, 524311, 524290, 2, 524310, 524290, 2, 524309, 524290, 2, 524308, 524290, 2, 524307, 524290, 2, 524306, 524290, 2, 524305, 524290, 2, 524304, 524290, 2, 524303, 524290, 2, 524302, 524290, 2, 524301, 524290, 2, 524300, 524290, 2, 524299, 524290, 2, 524298, 524290, 2, 524297, 524290, 2, 524296, 524290, 2, 524295, 524290, 2, 524294, 524290, 2, 524293, 524290, 2, 524292, 524290, 2, 524291, 524290, 2, 524290, 524290, 2, 524289, 524290, 2, 524288, 524290, 2)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=100474629]
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=915270106]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=100474629]
 polygon = PackedVector2Array(910, 492, 910, 142, 549, 141, 548, 127, 489, 127, 488, 139, 271, 140, 161, 140, 162, 174, 328, 175, 326, 346, 607, 347, 609, 484, 893, 492, 948, 537, 715, 547, 437, 503, 218, 413, 50, 235, 57, 58, 273, -102, 598, -106, 766, -92, 871, -66, 936, 30, 1043, 136, 1039, 297, 1026, 412, 974, 522, 949, 534, 873, 493)
+
+[node name="MainAreaGateway" type="Node2D" parent="." unique_id=757471948]
+
+[node name="MainArea" type="Area2D" parent="MainAreaGateway" unique_id=1714896040]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MainAreaGateway/MainArea" unique_id=677251775]
+position = Vector2(852, 423.75)
+shape = SubResource("RectangleShape2D_momdn")
+
+[node name="FishPenGateway" type="Node2D" parent="." unique_id=62791079]
+
+[node name="FishPens" type="Area2D" parent="FishPenGateway" unique_id=569932809]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FishPenGateway/FishPens" unique_id=534804101]
+position = Vector2(208.375, 158)
+shape = SubResource("RectangleShape2D_63e7s")
+
+[node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_63e7s")]
+position = Vector2(729, 421)
+
+[connection signal="body_entered" from="MainAreaGateway/MainArea" to="Player" method="_on_main_area_body_entered"]
+[connection signal="body_entered" from="FishPenGateway/FishPens" to="Player" method="_on_fish_pens_body_entered"]
