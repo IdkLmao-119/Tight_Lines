@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://cgk0luhh02rts"]
+
+[ext_resource type="Texture2D" uid="uid://d3p8b8ggw8mjm" path="res://Assets/2D/fish_sprites/Common Carp-25a2.png" id="1_ag54p"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Cyprinus carpio"
+description = "A resourceful and sturdy bottom-feeder known for testing the strength of any angler's tackle."
+size_class = "medium"
+base_price = 35
+speed = 1.2
+pull_strength = 5.5
+min_size = 25.0
+avg_size = 50.0
+max_size = 85.0
+avg_weight = 2.8
+icon = ExtResource("1_ag54p")
+grid_width = 2
+id = "fish_common_carp"
+display_name = "Common Carp"

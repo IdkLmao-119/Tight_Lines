@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://bkeshnfpk5cpe"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://cwct3bekcgli0" path="res://Assets/2D/fish_sprites/Armored Catfish.png" id="1_sutim"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Pterygoplichthys pardalis"
+description = "A heavily armored freshwater fish covered in bony plates for protection against predators."
+size_class = "medium"
+base_price = 30
+speed = 1.1
+pull_strength = 4.5
+min_size = 15.0
+avg_size = 30.0
+max_size = 50.0
+avg_weight = 1.0
+icon = ExtResource("1_sutim")
+grid_width = 2
+id = "fish_armored_catfish"
+display_name = "Armored Catfish"

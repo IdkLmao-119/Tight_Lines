@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="LocationData" format=3 uid="uid://cu1wn42qcuv68"]
+
+[ext_resource type="Script" uid="uid://dx1akc0mc2hlt" path="res://item_class_templates/pool_entry.gd" id="1_2d26a"]
+[ext_resource type="Script" uid="uid://ct4mpw3eqe0jb" path="res://item_class_templates/odds_modifier.gd" id="2_6ed3o"]
+[ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://item_class_templates/location_data.gd" id="3_buvei"]
+
+[sub_resource type="Resource" id="Resource_ymwcy"]
+script = ExtResource("1_2d26a")
+
+[sub_resource type="Resource" id="Resource_ntx5x"]
+script = ExtResource("2_6ed3o")
+time_of_day = Array[String](["dusk", "night"])
+multiplier = 1.5
+
+[sub_resource type="Resource" id="Resource_k77fo"]
+script = ExtResource("1_2d26a")
+modifiers = Array[ExtResource("2_6ed3o")]([SubResource("Resource_ntx5x")])
+
+[sub_resource type="Resource" id="Resource_wcoac"]
+script = ExtResource("1_2d26a")
+weight_multiplier = 1.2
+
+[sub_resource type="Resource" id="Resource_enibr"]
+script = ExtResource("2_6ed3o")
+weather = Array[String](["rain", "storm"])
+multiplier = 1.5
+
+[sub_resource type="Resource" id="Resource_4c14p"]
+script = ExtResource("1_2d26a")
+modifiers = Array[ExtResource("2_6ed3o")]([SubResource("Resource_enibr")])
+
+[sub_resource type="Resource" id="Resource_rxk78"]
+script = ExtResource("2_6ed3o")
+weather = Array[String](["clear"])
+multiplier = 1.5
+
+[sub_resource type="Resource" id="Resource_cjtyl"]
+script = ExtResource("1_2d26a")
+modifiers = Array[ExtResource("2_6ed3o")]([SubResource("Resource_rxk78")])
+
+[resource]
+script = ExtResource("3_buvei")
+unlock_flag = "unlock_dock"
+fish_pool = Array[ExtResource("1_2d26a")]([SubResource("Resource_ymwcy"), SubResource("Resource_k77fo"), SubResource("Resource_wcoac"), SubResource("Resource_4c14p"), SubResource("Resource_cjtyl")])
+id = "location_dock"
+display_name = "Dock"

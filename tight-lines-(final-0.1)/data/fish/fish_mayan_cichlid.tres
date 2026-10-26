@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://b5eo5qr5hu2qq"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://c5u2oivmtiv2g" path="res://Assets/2D/fish_sprites/Mayan_Cichlid.png" id="1_or25i"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Mayaheros urophthalmus"
+description = "A beautifully marked and fiercely defensive cichlid found in shallow, structured waters."
+base_price = 24
+speed = 1.6
+pull_strength = 2.8
+avg_size = 22.0
+max_size = 35.0
+avg_weight = 0.45
+icon = ExtResource("1_or25i")
+id = "fish_mayan_cichlid"
+display_name = "Mayan Cichlid"

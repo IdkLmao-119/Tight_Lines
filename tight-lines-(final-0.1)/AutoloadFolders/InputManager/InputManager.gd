@@ -85,9 +85,9 @@ const CONNECTION_MANAGER_PATH := "/root/ConnectionManager"
 # --- Tuning -----------------------------------------------------------------
 # Phone swing magnitudes (rad/s) mapped onto 0..1 cast power. The phone app
 # only reports swings above 4.0, so that is the floor.
-const SWING_MIN_MAGNITUDE := 4.0
-const SWING_MAX_MAGNITUDE := 12.0
-const MIN_CAST_POWER := 0.15
+const SWING_MIN_MAGNITUDE := 50
+const SWING_MAX_MAGNITUDE := 100
+const MIN_CAST_POWER := 50
 
 # Holding the cast key this long (seconds) gives full power.
 const KEYBOARD_CAST_CHARGE_TIME := 1.0

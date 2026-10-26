@@ -1,13 +1,13 @@
 [gd_scene format=3 uid="uid://chgxbwkf7mlw6"]
 
-[ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/Sand.jpg" id="1_owvor"]
-[ext_resource type="Script" uid="uid://dhj4fll8hgec7" path="res://3DFishingScene/3d_fishing_rice_field.gd" id="1_qjdax"]
-[ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/Water.png" id="2_h20tu"]
+[ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="1_owvor"]
+[ext_resource type="Script" uid="uid://dhj4fll8hgec7" path="res://3DFishingScene/scene_script_3d_fishing_rice_field.gd" id="1_qjdax"]
+[ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="2_h20tu"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="3_h20tu"]
-[ext_resource type="Script" uid="uid://cf0uvfjxgp81c" path="res://3DFishingScene/player_fishing.gd" id="4_b26ca"]
-[ext_resource type="Texture2D" uid="uid://der6y27lfrk8w" path="res://Assets/Grass.png" id="4_owvor"]
-[ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/download.jpg" id="4_rnksl"]
-[ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/Bobber.tscn" id="7_rnksl"]
+[ext_resource type="Texture2D" uid="uid://der6y27lfrk8w" path="res://Assets/3D/Grass.png" id="4_owvor"]
+[ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="4_rnksl"]
+[ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="5_bu0nd"]
+[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="10_b03px"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
 
@@ -64,7 +64,6 @@ alpha_antialiasing_mode = 0
 albedo_texture = ExtResource("4_owvor")
 
 [node name="3dFishing" type="Node3D" unique_id=836610391]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.164629, 0)
 script = ExtResource("1_qjdax")
 
 [node name="Land" type="Node3D" parent="." unique_id=225201374]
@@ -94,12 +93,14 @@ mesh = SubResource("PlaneMesh_goktk")
 
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 1.5558467)
-script = ExtResource("4_b26ca")
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="PlayerFishing" unique_id=731221113]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerFishing/CharacterBody3D" unique_id=1201982006]
 shape = SubResource("CapsuleShape3D_u4n2x")
+
+[node name="FishingRod_Lvl3" parent="PlayerFishing/CharacterBody3D" unique_id=1393842549 instance=ExtResource("5_bu0nd")]
+transform = Transform3D(0.5, 0, 0, 0, 0.41933528, 0.27231953, 0, -0.27231953, 0.41933528, 0.57474726, 0, -0.16362166)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerFishing" unique_id=1698578042]
 mesh = SubResource("CapsuleMesh_ud65s")
@@ -177,78 +178,79 @@ mesh = SubResource("CylinderMesh_mhxq0")
 environment = SubResource("Environment_i1y24")
 
 [node name="Rice" type="MeshInstance3D" parent="." unique_id=870807928]
-transform = Transform3D(-5, -4.371139e-07, 1.9106854e-14, 0, -2.1855695e-07, -5, 4.371139e-07, -5, 2.1855695e-07, -5.870402, 0.9933262, 9.788529)
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, -5.870402, 1.2101002, 9.788529)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice3" type="MeshInstance3D" parent="." unique_id=1378273045]
-transform = Transform3D(-5, -4.3711393e-07, 1.9106856e-14, 1.5529405e-21, -2.1855696e-07, -5, 4.3711393e-07, -5, 2.1855696e-07, -8.989883, 1.0849934, 9.865282)
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, -8.989883, 1.3017673, 9.865282)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice2" type="MeshInstance3D" parent="." unique_id=671246487]
-transform = Transform3D(-5, -4.3711393e-07, 1.9106856e-14, 1.5529405e-21, -2.1855696e-07, -5, 4.3711393e-07, -5, 2.1855696e-07, 6.0599856, 1.0849934, 9.865282)
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, 6.0599856, 1.3017673, 9.865282)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice4" type="MeshInstance3D" parent="." unique_id=1624865842]
-transform = Transform3D(-5, -4.371139e-07, 1.9106854e-14, 0, -2.1855695e-07, -5, 4.371139e-07, -5, 2.1855695e-07, 2.7577863, 1.0849934, 18.7013)
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, 2.7577863, 1.3017673, 18.7013)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice5" type="MeshInstance3D" parent="." unique_id=772633302]
-transform = Transform3D(-5, -4.3711393e-07, 1.9106856e-14, 1.5529405e-21, -2.1855696e-07, -5, 4.3711393e-07, -5, 2.1855696e-07, -8.989883, 1.0849934, 18.7013)
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, -8.989883, 1.3017673, 18.7013)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice6" type="MeshInstance3D" parent="." unique_id=760395318]
-transform = Transform3D(-5, -4.3711393e-07, 1.9106856e-14, 1.5529405e-21, -2.1855696e-07, -5, 4.3711393e-07, -5, 2.1855696e-07, 6.0599856, 1.0849934, 18.7013)
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, 6.0599856, 1.3017673, 18.7013)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice7" type="MeshInstance3D" parent="." unique_id=500293386]
-transform = Transform3D(-3.2405987, -3.8076923, 3.300118e-14, 1.6643949e-07, -1.416511e-07, -5, 3.8076923, -3.2405987, 2.1855695e-07, 12.90588, 1.0849934, 18.7013)
+transform = Transform3D(-3.8887188, -4.56923, 1.997274e-07, 0, -2.6226832e-07, -6, 4.56923, -3.8887188, 1.6998129e-07, 12.90588, 1.3017673, 18.7013)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice8" type="MeshInstance3D" parent="." unique_id=1170165284]
-transform = Transform3D(-3.2405987, -3.8076923, 3.300118e-14, 1.6643949e-07, -1.416511e-07, -5, 3.8076923, -3.2405987, 2.1855695e-07, 16.20808, 1.0849934, 18.7013)
+transform = Transform3D(-3.8887188, -4.56923, 1.997274e-07, 0, -2.6226832e-07, -6, 4.56923, -3.8887188, 1.6998129e-07, 16.20808, 1.3017673, 18.7013)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice9" type="MeshInstance3D" parent="." unique_id=1088425515]
-transform = Transform3D(-3.807692, 3.2405994, 1.664395e-07, -2.1855695e-07, 9.553427e-15, -5, -3.2405994, -3.807692, 1.4165109e-07, -19.67442, 1.0849934, 17.871813)
+transform = Transform3D(-4.5692306, 3.8887186, -1.6998129e-07, 0, -2.6226832e-07, -6, -3.8887186, -4.5692306, 1.9972742e-07, -19.67442, 1.3017673, 17.871813)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice10" type="MeshInstance3D" parent="." unique_id=1524850954]
-transform = Transform3D(-3.807692, 3.2405994, 1.664395e-07, -2.1855695e-07, 9.553427e-15, -5, -3.2405994, -3.807692, 1.4165109e-07, -16.37222, 1.0849934, 17.871813)
+transform = Transform3D(-4.5692306, 3.8887186, -1.6998129e-07, 0, -2.6226832e-07, -6, -3.8887186, -4.5692306, 1.9972742e-07, -16.37222, 1.3017673, 17.871813)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice11" type="MeshInstance3D" parent="." unique_id=2016681576]
-transform = Transform3D(-1.6525724, -4.7190046, 1.6643946e-07, 7.8679804e-08, -2.0390347e-07, -5, 4.7190046, -1.6525724, 1.4165111e-07, 19.79704, 1.0849934, 4.244606)
+transform = Transform3D(-1.983087, -5.6628056, 2.475291e-07, 0, -2.6226832e-07, -6, 5.6628056, -1.983087, 8.6683485e-08, 19.79704, 1.3017673, 4.244606)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice12" type="MeshInstance3D" parent="." unique_id=356227071]
-transform = Transform3D(-2.238796, -4.4707713, 1.6643946e-07, 5.2133146e-08, -2.1224814e-07, -5, 4.4707713, -2.238796, 1.4165111e-07, 16.20808, 1.0849934, 7.880266)
+transform = Transform3D(-2.686555, -5.3649254, 2.3450832e-07, 0, -2.6226832e-07, -6, 5.3649254, -2.686555, 1.17433046e-07, 16.20808, 1.3017673, 7.880266)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice13" type="MeshInstance3D" parent="." unique_id=2073695435]
-transform = Transform3D(-2.2387967, 4.4707713, -1.4165107e-07, -8.5397005e-08, -2.0118276e-07, -5, -4.4707713, -2.2387967, 1.6643952e-07, -18.475307, 1.0849934, 5.476235)
+transform = Transform3D(-2.686556, 5.364925, -2.345083e-07, 0, -2.6226832e-07, -6, -5.364925, -2.686556, 1.174331e-07, -18.475307, 1.3017673, 5.476235)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice14" type="MeshInstance3D" parent="." unique_id=617149103]
-transform = Transform3D(-2.2387967, 4.4707713, -1.4165107e-07, -8.5397005e-08, -2.0118276e-07, -5, -4.4707713, -2.2387967, 1.6643952e-07, -16.37222, 1.0849934, 9.355566)
+transform = Transform3D(-2.686556, 5.364925, -2.345083e-07, 0, -2.6226832e-07, -6, -5.364925, -2.686556, 1.174331e-07, -16.37222, 1.3017673, 9.355566)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
-[node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
+[node name="FishingManager" type="Node3D" parent="." unique_id=1502920418]
 script = ExtResource("3_h20tu")
-player_anchors = [NodePath("../PlayerFishing")]
-rod_holders = [NodePath("../PlayerFishing")]
-bobber_scene = ExtResource("7_rnksl")
-max_players = 1
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
+
+[node name="3DSceneUI" parent="CanvasLayer" unique_id=1628659695 instance=ExtResource("10_b03px")]
+metadata/_edit_use_anchors_ = true

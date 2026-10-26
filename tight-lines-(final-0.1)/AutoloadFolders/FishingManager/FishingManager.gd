@@ -646,7 +646,7 @@ func _on_cast(player_id: int, power: float) -> void:
 			_reject_cast(player_id, "no_bait", "none of '%s' in the Tackle Box" % s.bait_id)
 			return
 
-	power = clampf(power, 0.0, 1.0)
+	power = clampf(power, 0.0, 1.0)*2
 	var max_dist := float(s.rod.get("max_cast_distance", TEMP_ROD_MAX_CAST_DISTANCE))
 	var distance := lerpf(min_cast_distance, maxf(max_dist, min_cast_distance), power)
 
@@ -825,3 +825,12 @@ func _warn_once(key: String, message: String) -> void:
 		return
 	_warned[key] = true
 	push_warning("FishingManager: " + message)
+
+var is_animating: bool = false
+func animation() -> void:
+	if is_animating:
+		return
+	is_animating = true
+	
+	var tween: Tween = create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)

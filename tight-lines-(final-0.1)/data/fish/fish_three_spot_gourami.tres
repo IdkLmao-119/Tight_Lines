@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://blqdafttni45n"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://dacc1yc62cp2x" path="res://Assets/2D/fish_sprites/Three Spot Gourami.png" id="1_iyj7p"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Trichopodus trichopterus"
+description = "A peaceful labyrinth fish characterized by distinct spots on its body and thread-like feelers."
+base_price = 18
+speed = 1.2
+pull_strength = 1.8
+min_size = 6.0
+avg_size = 12.0
+max_size = 18.0
+avg_weight = 0.15
+icon = ExtResource("1_iyj7p")
+id = "fish_three_spot_gourami"
+display_name = "Three Spot Gourami"

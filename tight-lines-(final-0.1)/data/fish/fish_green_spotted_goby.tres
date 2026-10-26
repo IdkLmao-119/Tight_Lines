@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://chy8g0s0n88wh"]
+
+[ext_resource type="Texture2D" uid="uid://dwuvr4vgyeph7" path="res://Assets/2D/fish_sprites/green spotted goby-17cc.png" id="1_bpe8r"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Glossogobius giuris"
+description = "A benthic ambush hunter that blends seamlessly into sandy and muddy bottoms."
+base_price = 18
+speed = 1.5
+pull_strength = 2.2
+min_size = 8.0
+avg_size = 16.0
+max_size = 28.0
+avg_weight = 0.25
+icon = ExtResource("1_bpe8r")
+id = "fish_green_spotted_goby"
+display_name = "Green spotted Goby"

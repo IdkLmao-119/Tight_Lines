@@ -18,7 +18,7 @@
 extends SceneTree
 
 const DatabaseScript := preload("res://AutoloadFolders/GameDatabase/GameDB.gd")
-const SampleData := preload("res://tools/sample_data.gd")
+const SampleData := preload("res://tools/tools_sample_data.gd")
 const REAL_DATA_DIR := "res://data/"
 const TMP_DIR := "user://db_test/"
 const FIXTURE_SCENE := "res://tests/fixtures/dummy_rod.tscn"

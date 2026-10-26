@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="LocationData" format=3 uid="uid://dt7rnrd5ippqe"]
+
+[ext_resource type="Script" uid="uid://dx1akc0mc2hlt" path="res://item_class_templates/pool_entry.gd" id="1_yidx2"]
+[ext_resource type="Script" uid="uid://ct4mpw3eqe0jb" path="res://item_class_templates/odds_modifier.gd" id="2_pu70b"]
+[ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://item_class_templates/location_data.gd" id="3_mbdsi"]
+
+[sub_resource type="Resource" id="Resource_40gq0"]
+script = ExtResource("1_yidx2")
+
+[sub_resource type="Resource" id="Resource_dnwgt"]
+script = ExtResource("2_pu70b")
+season = Array[String](["wet"])
+multiplier = 1.5
+
+[sub_resource type="Resource" id="Resource_36anv"]
+script = ExtResource("2_pu70b")
+season = Array[String](["dry"])
+multiplier = 0.5
+
+[sub_resource type="Resource" id="Resource_vda2r"]
+script = ExtResource("1_yidx2")
+modifiers = Array[ExtResource("2_pu70b")]([SubResource("Resource_dnwgt"), SubResource("Resource_36anv")])
+
+[sub_resource type="Resource" id="Resource_sam3c"]
+script = ExtResource("1_yidx2")
+
+[sub_resource type="Resource" id="Resource_e0sko"]
+script = ExtResource("2_pu70b")
+time_of_day = Array[String](["night"])
+multiplier = 2.0
+
+[sub_resource type="Resource" id="Resource_i5nvc"]
+script = ExtResource("1_yidx2")
+modifiers = Array[ExtResource("2_pu70b")]([SubResource("Resource_e0sko")])
+
+[sub_resource type="Resource" id="Resource_1yufs"]
+script = ExtResource("2_pu70b")
+time_of_day = Array[String](["dawn", "dusk"])
+multiplier = 3.0
+
+[sub_resource type="Resource" id="Resource_uiypc"]
+script = ExtResource("1_yidx2")
+weight_multiplier = 0.5
+modifiers = Array[ExtResource("2_pu70b")]([SubResource("Resource_1yufs")])
+
+[resource]
+script = ExtResource("3_mbdsi")
+fish_pool = Array[ExtResource("1_yidx2")]([SubResource("Resource_40gq0"), SubResource("Resource_vda2r"), SubResource("Resource_sam3c"), SubResource("Resource_i5nvc"), SubResource("Resource_uiypc")])
+id = "location_rice_fields"
+display_name = "Kawit"

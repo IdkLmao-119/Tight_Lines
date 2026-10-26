@@ -76,7 +76,7 @@ signal database_load_failed(errors: PackedStringArray)
 # CONSTANTS
 # =============================================================================
 
-## Folder scanned for records. Overridable per call via [method load_all] (tests use this).
+## Folder scanned for records.
 const DATA_DIR := "res://data/"
 
 ## Allowed floating-point slack when checking that probabilities add up to 1.0

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://dybklgmye57vh"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://c227g2dksf2hp" path="res://Assets/2D/fish_sprites/Mullet.png" id="1_d67mv"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Mugil cephalus"
+description = "A schooling coastal fish famous for its habit of leaping out of the water when startled."
+size_class = "medium"
+base_price = 32
+speed = 1.8
+pull_strength = 4.8
+min_size = 20.0
+avg_size = 38.0
+max_size = 60.0
+avg_weight = 1.4
+icon = ExtResource("1_d67mv")
+grid_width = 2
+id = "fish_mullet"
+display_name = "Mullet"
