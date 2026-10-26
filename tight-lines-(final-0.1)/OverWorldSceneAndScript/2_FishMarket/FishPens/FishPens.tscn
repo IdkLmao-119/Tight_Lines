@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="1_ghw8l"]
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="2_ptis5"]
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="3_mfcao"]
-
+[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="4_yldkx"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cknta"]
 texture = ExtResource("1_ghw8l")
@@ -375,3 +375,9 @@ shape = SubResource("RectangleShape2D_ghw8l")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SaltFarmGateway/Saltfarm" unique_id=1561296253]
 position = Vector2(418.5, 825)
 shape = SubResource("RectangleShape2D_ptis5")
+
+[node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_yldkx")]
+position = Vector2(726, 389)
+
+[connection signal="body_entered" from="SeasideParkGateway/Seaside" to="Player" method="_on_seaside_body_entered"]
+[connection signal="body_entered" from="SaltFarmGateway/Saltfarm" to="Player" method="_on_saltfarm_body_entered"]

@@ -1,15 +1,9 @@
 [gd_scene format=3 uid="uid://8dagwkx0yana"]
 
-<<<<<<< HEAD:tight-lines-(final-0.1)/OverWorldSceneAndScript/Area02Scene/SeasidePark/SeasidePark.tscn
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/Area01Scene/MainArea1/TightLinesTiles.png" id="1_momdn"]
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/Area01Scene/MainArea1/tileset.png" id="2_63e7s"]
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/Area01Scene/MainArea1/Sprite_Essentials.png" id="3_lnoie"]
 [ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://Character/Player.tscn" id="4_63e7s"]
-=======
-[ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="1_momdn"]
-[ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="2_63e7s"]
-[ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="3_lnoie"]
->>>>>>> 08daacc983fe56999bfeb85903325aa68671b8fe:tight-lines-(final-0.1)/OverWorldSceneAndScript/2_FishMarket/SeasidePark/SeasidePark.tscn
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3kj0j"]
 texture = ExtResource("1_momdn")

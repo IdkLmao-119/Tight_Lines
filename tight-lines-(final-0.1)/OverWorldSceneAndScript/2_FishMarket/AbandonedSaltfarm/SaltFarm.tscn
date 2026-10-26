@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="1_13mso"]
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="2_8we6m"]
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="3_ennft"]
-
+[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="4_lleit"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7kw4w"]
 texture = ExtResource("1_13mso")
@@ -376,3 +376,9 @@ position = Vector2(1262.5, 262)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MangroveForestGateway/Mangrove" unique_id=2075980323]
 position = Vector2(24.5, 621)
 shape = SubResource("RectangleShape2D_8we6m")
+
+[node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_lleit")]
+position = Vector2(1294, 321)
+
+[connection signal="body_entered" from="FishPensGateway/FishPens" to="Player" method="_on_fish_pens_body_entered"]
+[connection signal="body_entered" from="MangroveForestGateway/Mangrove" to="Player" method="_on_mangrove_body_entered"]

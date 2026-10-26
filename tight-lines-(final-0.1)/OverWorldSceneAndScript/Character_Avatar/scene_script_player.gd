@@ -54,3 +54,19 @@ func _on_main_area_body_entered(body: Node2D) -> void:
 
 func _on_fish_pens_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_fishing_pens")
+
+
+func _on_seaside_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_fish_market")
+
+
+func _on_saltfarm_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_salt_farm")
+
+
+func _on_mangrove_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_mangrove")
+
+
+func _on_island_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_island")

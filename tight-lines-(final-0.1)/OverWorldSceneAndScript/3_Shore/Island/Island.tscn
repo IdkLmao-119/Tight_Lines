@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="1_xjbdj"]
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="2_uhmaw"]
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="3_hpxxh"]
+[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="4_qdolu"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_r48hc"]
 texture = ExtResource("1_xjbdj")
@@ -363,3 +364,8 @@ polygon = PackedVector2Array(626, 177, 1484, 178, 1487, 574, 1454, 574, 1454, 87
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MangroveGateway/Mangrove" unique_id=97355999]
 position = Vector2(1004, 212)
 shape = SubResource("RectangleShape2D_wgax8")
+
+[node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_qdolu")]
+position = Vector2(1006, 267)
+
+[connection signal="body_entered" from="MangroveGateway/Mangrove" to="Player" method="_on_mangrove_body_entered"]
