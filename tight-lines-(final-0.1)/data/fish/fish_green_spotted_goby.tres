@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="FishData" format=3 uid="uid://chy8g0s0n88wh"]
 
 [ext_resource type="Texture2D" uid="uid://dwuvr4vgyeph7" path="res://Assets/2D/fish_sprites/green spotted goby-17cc.png" id="1_bpe8r"]
-[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
 
 [resource]
 script = ExtResource("1_bs6c8")

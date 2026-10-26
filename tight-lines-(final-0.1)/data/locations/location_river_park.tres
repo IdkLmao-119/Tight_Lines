@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="LocationData" format=3 uid="uid://cu1wn42qcuv68"]
 
-[ext_resource type="Script" uid="uid://dx1akc0mc2hlt" path="res://item_class_templates/pool_entry.gd" id="1_2d26a"]
-[ext_resource type="Script" uid="uid://ct4mpw3eqe0jb" path="res://item_class_templates/odds_modifier.gd" id="2_6ed3o"]
-[ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://item_class_templates/location_data.gd" id="3_buvei"]
+[ext_resource type="Script" uid="uid://dx1akc0mc2hlt" path="res://data/item_class_templates/pool_entry.gd" id="1_2d26a"]
+[ext_resource type="Script" uid="uid://ct4mpw3eqe0jb" path="res://data/item_class_templates/odds_modifier.gd" id="2_6ed3o"]
+[ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://data/item_class_templates/location_data.gd" id="3_buvei"]
 
 [sub_resource type="Resource" id="Resource_ymwcy"]
 script = ExtResource("1_2d26a")

@@ -42,20 +42,15 @@ func _on_rice_fields_gateway_body_entered(body: Node2D) -> void:
 
 func _on_rice_fishing_spot_1_gateway_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("3DFishRiceFields")
+	
 func _on_rice_fishing_spot_2_gateway_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("3DFishRiceFields")
 
 func _on_river_park_body_entered(body: Node2D) -> void:
-<<<<<<< HEAD:tight-lines-(final-0.1)/Character/player.gd
 	GameManager.change_scene("overworld_river_park")
-
 
 func _on_main_area_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_spawn")
 
-
 func _on_fish_pens_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_fishing_pens")
-=======
-	GameManager.change_scene("overworld_river_park")
->>>>>>> 08daacc983fe56999bfeb85903325aa68671b8fe:tight-lines-(final-0.1)/OverWorldSceneAndScript/Character_Avatar/scene_script_player.gd

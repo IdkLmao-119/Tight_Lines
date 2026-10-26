@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="FishData" format=3 uid="uid://b15cagrhd2rpn"]
 
-[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
 [ext_resource type="Texture2D" uid="uid://dmcxdci83gosc" path="res://Assets/2D/fish_sprites/Pangasius Catfish.png" id="1_lqh0m"]
 
 [resource]

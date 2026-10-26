@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="FishData" format=3 uid="uid://c2fr874564kls"]
 
-[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
 [ext_resource type="Texture2D" uid="uid://c2n5bl16mo3gw" path="res://Assets/2D/fish_sprites/Clown Knife Fish.png" id="1_g5wq6"]
 
 [resource]

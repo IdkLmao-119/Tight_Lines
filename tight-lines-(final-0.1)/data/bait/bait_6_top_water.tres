@@ -1,15 +1,15 @@
 [gd_resource type="Resource" script_class="BaitData" format=3 uid="uid://cysqh617jucya"]
 
-[ext_resource type="Script" uid="uid://h6ubxbaaibcr" path="res://item_class_templates/bait_boost.gd" id="1_yvjh5"]
-[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="2_xif8t"]
+[ext_resource type="Script" uid="uid://h6ubxbaaibcr" path="res://data/item_class_templates/bait_boost.gd" id="1_21dyg"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="2_bm5ju"]
 [ext_resource type="Resource" uid="uid://bd41tun5pdiet" path="res://data/fish/fish_african_catfish.tres" id="3_pid74"]
-[ext_resource type="Texture2D" uid="uid://bl35aasg7p2kg" path="res://Assets/2D/bait_sprites/Earthworm.png" id="4_wukaa"]
-[ext_resource type="Script" uid="uid://bx3sigi1jlqjn" path="res://item_class_templates/bait_data.gd" id="5_l0et3"]
+[ext_resource type="Texture2D" uid="uid://cnjd2m0sx1qeb" path="res://Assets/2D/bait_sprites/Top water lure-c64d.png" id="4_w834w"]
+[ext_resource type="Script" uid="uid://bx3sigi1jlqjn" path="res://data/item_class_templates/bait_data.gd" id="5_w8dhe"]
 
 [resource]
-script = ExtResource("5_l0et3")
-enables_fish = Array[ExtResource("2_xif8t")]([ExtResource("3_pid74")])
+script = ExtResource("5_w8dhe")
+enables_fish = Array[ExtResource("2_bm5ju")]([ExtResource("3_pid74")])
 unlimited = true
-icon = ExtResource("4_wukaa")
+icon = ExtResource("4_w834w")
 id = "bait_1"
 display_name = "Earthworm"

@@ -27,10 +27,5 @@ func _on_button_pressed() -> void:
 	options.visible = false
 	_ready()
 
-<<<<<<< HEAD:tight-lines-(final-0.1)/UIScenesAndScript/MainMenu/main_menu_tightlines.gd
-func _on_multiplayer_button_pressed() -> void:
-	pass # Replace with function body.
-=======
 func _on_multi_button_pressed() -> void:
 	GameManager.change_scene("multiplayer")
->>>>>>> 08daacc983fe56999bfeb85903325aa68671b8fe:tight-lines-(final-0.1)/UIScenesAndScript/MainMenu/scene_script_main_menu.gd
