@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://df8yk6ead683c"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://iwlotqiy4mne" path="res://Assets/2D/fish_sprites/Ladyfish-5d7f.png" id="1_xxrf5"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Elops machnata"
+description = "A slender, hyper-active coastal fish prized for its incredible burst speed and acrobatic leaps."
+size_class = "medium"
+base_price = 50
+speed = 2.4
+pull_strength = 6.0
+min_size = 25.0
+avg_size = 45.0
+max_size = 75.0
+avg_weight = 1.8
+icon = ExtResource("1_xxrf5")
+grid_width = 2
+id = "fish_ladyfish"
+display_name = "Ladyfish"

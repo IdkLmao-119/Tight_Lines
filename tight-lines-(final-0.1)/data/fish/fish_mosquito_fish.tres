@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://sojjs2r500xc"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://cr8ukxbklnduc" path="res://Assets/2D/fish_sprites/Mosquito Fish-c258.png" id="1_kiehw"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Gambusia affinis"
+description = "A tiny, swift surface-feeder renowned for consuming vast quantities of mosquito larvae."
+base_price = 10
+speed = 2.2
+pull_strength = 1.0
+min_size = 3.0
+avg_size = 5.0
+max_size = 7.0
+avg_weight = 0.05
+icon = ExtResource("1_kiehw")
+id = "fish_mosquito_fish"
+display_name = "Mosquito Fish"

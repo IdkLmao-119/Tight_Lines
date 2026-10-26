@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://c3u882aui0x3x"]
+
+[ext_resource type="Texture2D" uid="uid://cteik26wnnn48" path="res://Assets/2D/fish_sprites/Archerfish-953b.png" id="1_avwij"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Toxotes jaculatrix"
+description = "Famous for its unique hunting technique of spitting jets of water to knock down terrestrial insects."
+base_price = 25
+speed = 2.0
+pull_strength = 3.0
+avg_size = 18.0
+avg_weight = 0.3
+icon = ExtResource("1_avwij")
+id = "fish_archerfish"
+display_name = "Archerfish"

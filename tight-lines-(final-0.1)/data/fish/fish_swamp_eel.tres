@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://ef3bpq3keirt"]
+
+[ext_resource type="Texture2D" uid="uid://rfn63fhytg1i" path="res://Assets/2D/fish_sprites/Tank_Goby.png" id="1_1nqod"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Monopterus albus"
+description = "An air-breathing, snake-like fish that burrows deep into muddy marshes and rice fields."
+size_class = "medium"
+base_price = 35
+speed = 1.1
+pull_strength = 4.8
+min_size = 25.0
+avg_size = 45.0
+max_size = 80.0
+avg_weight = 1.0
+icon = ExtResource("1_1nqod")
+grid_width = 2
+id = "fish_swamp_eel"
+display_name = "Swamp eel"

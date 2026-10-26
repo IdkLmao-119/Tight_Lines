@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://f4b0v0wwte8v"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://doo5jjm4jgdmu" path="res://Assets/2D/fish_sprites/Tiger Gourami.png" id="1_txl2w"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Trichopodus pectoralis"
+description = "A larger relative of the gourami family displaying prominent vertical tiger-like banding."
+base_price = 25
+speed = 1.3
+pull_strength = 2.4
+avg_size = 18.0
+max_size = 25.0
+avg_weight = 0.3
+icon = ExtResource("1_txl2w")
+id = "fish_tiger_gourami"
+display_name = "Tiger Gourami"

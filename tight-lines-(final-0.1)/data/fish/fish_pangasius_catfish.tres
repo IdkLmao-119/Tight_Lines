@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://b15cagrhd2rpn"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://dmcxdci83gosc" path="res://Assets/2D/fish_sprites/Pangasius Catfish.png" id="1_lqh0m"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Pangasianodon hypophthalmus"
+description = "A large, smooth-skinned schooling catfish known for swift, energetic movements."
+size_class = "large"
+base_price = 50
+speed = 1.6
+pull_strength = 8.0
+min_size = 40.0
+avg_size = 75.0
+max_size = 130.0
+avg_weight = 5.5
+icon = ExtResource("1_lqh0m")
+grid_width = 3
+id = "fish_pangasius_catfish"
+display_name = "Pangasius Catfish"

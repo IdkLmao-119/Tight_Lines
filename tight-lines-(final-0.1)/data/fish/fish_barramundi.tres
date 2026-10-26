@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://c4sjmrakl18ea"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://d0yoje700t0rv" path="res://Assets/2D/fish_sprites/Barramundi final.png" id="1_i6dwi"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Lates calcarifer"
+description = "A powerful, aggressive sport fish that frequently performs spectacular aerial leaps when hooked."
+size_class = "large"
+base_price = 60
+speed = 1.8
+pull_strength = 8.5
+min_size = 45.0
+avg_size = 75.0
+max_size = 120.0
+avg_weight = 5.2
+icon = ExtResource("1_i6dwi")
+grid_width = 3
+id = "fish_barramundi"
+display_name = "Barramundi"
