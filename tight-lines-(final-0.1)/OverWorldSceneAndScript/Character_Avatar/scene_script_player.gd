@@ -26,7 +26,7 @@ func _physics_process(_delta):
 	move_and_slide()
 
 func _on_area_2_gateway_body_entered(body: Node2D) -> void:
-	GameManager.change_scene("FishMarket")
+	GameManager.change_scene("overworld_fish_market")
 
 func _on_house_gateway_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("House1")
@@ -38,7 +38,12 @@ func _on_house_2_gateway_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("House2")
 
 func _on_rice_fields_gateway_body_entered(body: Node2D) -> void:
-	GameManager.change_scene("RiceFields")
+	GameManager.change_scene("overworld_rice_field")
 
 func _on_rice_fishing_spot_1_gateway_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("3DFishRiceFields")
+func _on_rice_fishing_spot_2_gateway_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("3DFishRiceFields")
+
+func _on_river_park_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_river_park")
