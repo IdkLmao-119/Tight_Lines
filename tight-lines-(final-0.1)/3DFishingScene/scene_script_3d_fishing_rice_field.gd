@@ -5,6 +5,8 @@ extends Node3D
 func _ready() -> void:
 	InputManager.set_context(InputManager.InputContext.FISHING)
 	InputManager.debug_log = true
+	print(get_node_or_null("/root/GameDB"))
+	print(get_node("/root/GameDB").get_summary())
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

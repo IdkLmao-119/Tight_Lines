@@ -1,7 +1,7 @@
 extends Node3D
 
 # ============================================================================
-# FISHING MANAGER (SCENE NODE) - TightLines          Version 0.2.2 (2026-10-18)
+# FISHING MANAGER (SCENE NODE) - TightLines          Version 0.3.0 (2026-10-23)
 # ============================================================================
 # Put this script on a Node3D inside FishingMinigame.tscn (or the 2-player
 # versus scene). It is NOT an autoload. It runs one fishing session per
@@ -9,16 +9,7 @@ extends Node3D
 # There is deliberately no class_name: Godot refuses a class_name that equals
 # an autoload's name ("hides an autoload singleton"). If you see that error,
 # delete the FishingManager entry in Project Settings > Autoload.
-#
 # LOOP:  IDLE -> CASTING -> WAITING -> REELING -> CAUGHT / ESCAPED -> IDLE
-#   No hook step: a bite starts the reel fight. interact_pressed (tap / E)
-#   recalls the line while WAITING (DECISIONS C7).
-#
-# WHO OWNS WHAT (DECISIONS.md)
-#   GameManager  : input context, multiplayer flag, pause (C4, C6), overlay
-#   FishingManager (this): the catch roll, bait spending, rod model, catches
-#   FishingManager NEVER calls set_context(), set_multiplayer_mode() or
-#   toggle_pause(), and never reads input in _ready().
 #
 # INPUT (through InputManager only):
 #   cast_triggered(player_id, power)  cast (phone swing / keyboard hold+release)
@@ -80,6 +71,7 @@ enum State { IDLE, CASTING, WAITING, REELING, CAUGHT, ESCAPED }
 @export var bobber_scene: PackedScene
 @export var water_level := 0.0
 @export var max_players := 2                  # versus scene = 2
+@export var weather_system: Node              # optional: WeatherSystem.gd node; found by itself if empty
 
 @export_group("Casting")
 @export var min_cast_distance := 4.0
@@ -100,10 +92,8 @@ enum State { IDLE, CASTING, WAITING, REELING, CAUGHT, ESCAPED }
 @export var debug_spot_id := ""
 @export var debug_rod_id := ""
 @export var debug_bait_id := ""
-@export var debug_log := true
+@export var debug_log := false
 
-# --- Day / weather: a future system sets these to FishingTerms words ---
-# Empty = "not provided": modifiers that look at the key simply do not apply.
 var time_of_day := ""     # e.g. "dawn"
 var weather := ""         # e.g. "rain"
 var season := ""          # e.g. "wet"
@@ -127,7 +117,7 @@ const START_PROGRESS := 0.3         # 0 = fish gets away, 1 = landed
 const SNAP_GRACE_SEC := 0.6         # seconds over the limit before snapping (x control)
 const SURGE_PULL_MULT := 1.6
 const CALM_PULL_MULT := 0.6
-const SURGE_DRAIN := 1.0            # stamina/sec while surging
+const SURGE_DRAIN := 1.0            
 const CALM_DRAIN := 0.4
 const CAST_ARC_BASE := 2.0
 const CAST_ARC_POWER := 3.0
@@ -142,8 +132,8 @@ class FishingSession extends RefCounted:
 	var state := 0                       # FishingManager.State (stored as int)
 	var state_time := 0.0
 
-	var rod_id := "res://data/rods/rod_basic.tres"
-	var bait_id := "res://data/bait/bait_worm.tres"
+	var rod_id := ""
+	var bait_id := ""
 	var rod: Dictionary = {}             # line_strength, reel_speed, max_cast_distance, control
 	var rod_model: Node3D = null
 	var line_tip: Node3D = null
@@ -170,7 +160,6 @@ class FishingSession extends RefCounted:
 	var catches: Array = []
 	var total_weight := 0.0
 
-# --- Internals ---
 var _sessions: Dictionary = {}          # { player_id: FishingSession }
 var _order: Array[int] = []             # player_ids in seat order
 var _input: Node = null
@@ -198,7 +187,6 @@ func _ready() -> void:
 	if _db == null:
 		push_error("FishingManager: GameDB autoload not found - no fish can bite.")
 
-	# Context is read ONCE here (C6). Nothing else is read from input in _ready().
 	if _game_manager != null and _game_manager.has_method("consume_context"):
 		_context = _game_manager.consume_context().duplicate(true)
 	_fill_debug_defaults()
@@ -209,7 +197,6 @@ func _ready() -> void:
 
 	start_session(_pick_player_ids())
 
-
 func _exit_tree() -> void:
 	if _input == null:
 		return
@@ -219,7 +206,6 @@ func _exit_tree() -> void:
 		_input.interact_pressed.disconnect(_on_interact)
 	if _input.cancel_pressed.is_connected(_on_cancel):
 		_input.cancel_pressed.disconnect(_on_cancel)
-
 
 # ----------------------------------------------------------------------------
 # Public API
@@ -255,7 +241,6 @@ func start_session(player_ids: Array[int]) -> void:
 				str(_order), str(_multiplayer), String(_context.get("spot_id", "")), rod_id, bait_id,
 				str(require_bait), str(_input != null), str(_db != null)])
 
-
 # Swap a player's rod. Allowed in IDLE only, so a stronger rod cannot be
 # swapped in while a fish is on. Returns true if the swap happened.
 func set_rod(player_id: int, rod_id: String) -> bool:
@@ -269,7 +254,6 @@ func set_rod(player_id: int, rod_id: String) -> bool:
 	_load_rod(s)
 	rod_changed.emit(player_id, rod_id)
 	return true
-
 
 # Swap a player's bait. IDLE only. Bait itself lives in the Tackle Box; the
 # inventory overlay decides which bait the player may pick.
@@ -511,13 +495,32 @@ func _triangular(lo: float, mode: float, hi: float) -> float:
 # left out, so their modifiers simply do not apply.
 func _build_odds_context() -> Dictionary:
 	var ctx := {"unlocked": _get_unlock_flags()}
-	if time_of_day != "":
-		ctx["time_of_day"] = time_of_day
-	if weather != "":
-		ctx["weather"] = weather
+	var tod := time_of_day
+	var wx := weather
+	# A WeatherSystem node in the scene overrides the two plain variables.
+	var ws := _get_weather_system()
+	if ws != null:
+		var ws_tod := String(ws.get("time_of_day"))
+		var ws_wx := String(ws.get("weather"))
+		if ws_tod != "":
+			tod = ws_tod
+		if ws_wx != "":
+			wx = ws_wx
+	if tod != "":
+		ctx["time_of_day"] = tod
+	if wx != "":
+		ctx["weather"] = wx
 	if season != "":
 		ctx["season"] = season
 	return ctx
+
+
+# The WeatherSystem node (WeatherSystem.gd), found once. Looked up on first use,
+# not in _ready(), so the node order in the scene tree does not matter.
+func _get_weather_system() -> Node:
+	if weather_system == null or not is_instance_valid(weather_system):
+		weather_system = get_tree().get_first_node_in_group("weather_system")
+	return weather_system
 
 
 func _get_unlock_flags() -> Array:
@@ -579,6 +582,7 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 		_fish_escapes(s, "got_away")
 	elif s.progress >= 1.0:
 		_fish_won(s)
+		
 
 
 # The fight was won. The fish is kept (fish_caught) unless the Fish Box is
@@ -598,6 +602,8 @@ func _fish_won(s: FishingSession) -> void:
 		fish_caught.emit(s.player_id, fish)
 	else:
 		fish_released.emit(s.player_id, fish, "fish_box_full")
+		
+	_show_catch_popup(s.player_id, fish, kept)
 
 
 # C8: InventoryManager.add_fish(fish_id, size_cm) returns false when full.
@@ -623,7 +629,6 @@ func _connect_input() -> void:
 
 
 func _on_cast(player_id: int, power: float) -> void:
-	print("FM _on_cast called: ", player_id, " ", power)
 	var s := _sessions.get(player_id) as FishingSession
 	if s == null:
 		if debug_log:
@@ -646,7 +651,7 @@ func _on_cast(player_id: int, power: float) -> void:
 			_reject_cast(player_id, "no_bait", "none of '%s' in the Tackle Box" % s.bait_id)
 			return
 
-	power = clampf(power, 0.0, 1.0)*2
+	power = clampf(power, 0.0, 1.0)
 	var max_dist := float(s.rod.get("max_cast_distance", TEMP_ROD_MAX_CAST_DISTANCE))
 	var distance := lerpf(min_cast_distance, maxf(max_dist, min_cast_distance), power)
 
@@ -802,12 +807,10 @@ func _spawn_bobber(s: FishingSession) -> void:
 	add_child(s.bobber)
 	s.bobber.global_position = s.cast_start
 
-
 func _remove_bobber(s: FishingSession) -> void:
 	if s.bobber != null and is_instance_valid(s.bobber):
 		s.bobber.queue_free()
 	s.bobber = null
-
 
 # Reads a numeric property from a GameDB record by name. Returns the default
 # when the record is null or does not have that property yet.
@@ -819,18 +822,90 @@ func _stat(record: Object, prop: String, default_value: float) -> float:
 		return default_value
 	return float(v)
 
-
 func _warn_once(key: String, message: String) -> void:
 	if _warned.has(key):
 		return
 	_warned[key] = true
 	push_warning("FishingManager: " + message)
-
-var is_animating: bool = false
-func animation() -> void:
-	if is_animating:
-		return
-	is_animating = true
 	
-	var tween: Tween = create_tween()
-	tween.set_trans(Tween.TRANS_QUAD)
+var _fish_layout: Node = null
+var _fish_layout_token := 0
+const CATCH_POPUP_SECONDS := 5.0
+const FISH_IMAGE_PROPERTIES := ["jpg", "image", "icon", "texture"]
+var _popup: CanvasLayer = null
+
+func _show_catch_popup(player_id: int, fish: Dictionary, kept: bool) -> void:
+	# 1. Find the node.
+	if not is_instance_valid(_fish_layout):
+		_fish_layout = get_tree().root.find_child("FishLayout", true, false)
+	if _fish_layout == null:
+		_warn_once("fish_layout", "no node named 'FishLayout' in the scene - nothing to show the catch on.")
+		return
+
+	# 2. The fish's picture, from its database record (a Texture2D or a res:// path).
+	var record: Object = _db.get_fish(String(fish["id"])) if _db != null else null
+	var path := ""
+	var texture: Texture2D = null
+	if record != null:
+		for prop in FISH_IMAGE_PROPERTIES:
+			var value: Variant = record.get(prop)
+			if value is Texture2D:
+				texture = value
+				path = texture.resource_path
+				break
+			if (value is String or value is StringName) and String(value) != "":
+				path = String(value)
+				texture = load(path) as Texture2D
+				break
+	if texture == null:
+		_warn_once("fish_image", "fish '%s' has no picture (tried %s on its record)." % [String(fish["id"]), str(FISH_IMAGE_PROPERTIES)])
+		return
+
+	# 3. Put it on FishLayout: its "jpg" property (a String property gets the
+	#    path, anything else the texture), or the texture of a TextureRect.
+	var jpg_type := -1
+	for p in _fish_layout.get_property_list():
+		if p["name"] == "jpg":
+			jpg_type = int(p["type"])
+			break
+	if jpg_type == TYPE_STRING:
+		_fish_layout.set("jpg", path)
+	elif jpg_type != -1:
+		_fish_layout.set("jpg", texture)
+	elif _fish_layout is TextureRect:
+		(_fish_layout as TextureRect).texture = texture
+	else:
+		_warn_once("fish_layout_prop", "FishLayout has no 'jpg' property and is not a TextureRect.")
+		return
+	
+	if is_instance_valid(_popup):
+		_popup.queue_free()
+	var text := ""
+	if _multiplayer:
+		text += "Player %d caught\n" % player_id
+	text += "%s\n%.1f cm   %.2f kg" % [String(fish["display_name"]), float(fish["size_cm"]), float(fish["weight"])]
+	if not kept:
+		text += "\nFish Box full: released"
+	var layer := CanvasLayer.new()
+	layer.layer = 20
+	add_child(layer)
+	var label := Label.new()
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_size_override("font_size", 32)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 8)
+	layer.add_child(label)
+	label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE, Control.PRESET_MODE_MINSIZE, 40)
+	_popup = layer
+	get_tree().create_timer(CATCH_POPUP_SECONDS).timeout.connect(layer.queue_free)
+	
+	# 4. Visible for 5 seconds, then hidden again.
+	_fish_layout.set("visible", true)
+	_fish_layout_token += 1
+	var token := _fish_layout_token
+	var hide_layout := func() -> void:
+		if token == _fish_layout_token and is_instance_valid(_fish_layout):
+			_fish_layout.set("visible", false)
+	get_tree().create_timer(CATCH_POPUP_SECONDS).timeout.connect(hide_layout)

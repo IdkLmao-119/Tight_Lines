@@ -1,12 +1,13 @@
 [gd_scene format=3 uid="uid://wiie81b0f3xv"]
 
-[ext_resource type="Texture2D" path="res://Assets/Sand.jpg" id="1_i1y24"]
-[ext_resource type="Script" path="res://3DFishingScene/3d_fishing_Default.gd" id="1_u4n2x"]
-[ext_resource type="Texture2D" path="res://Assets/Water.png" id="2_i1y24"]
-[ext_resource type="Texture2D" path="res://Assets/Rock Texture.jpg" id="3_goktk"]
+[ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="1_i1y24"]
+[ext_resource type="Script" uid="uid://dhj4fll8hgec7" path="res://3DFishingScene/scene_script_3d_fishing_rice_field.gd" id="1_u4n2x"]
+[ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="2_i1y24"]
+[ext_resource type="Texture2D" uid="uid://btechb8bstqv3" path="res://Assets/3D/Rock Texture.jpg" id="3_goktk"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="3_mhxq0"]
-[ext_resource type="Texture2D" path="res://Assets/download.jpg" id="4_goktk"]
-[ext_resource type="PackedScene" path="res://Assets/Bobber.tscn" id="7_ud65s"]
+[ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="4_goktk"]
+[ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="7_ud65s"]
+[ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="8_y1byi"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qfde3"]
 transparency = 1
@@ -67,7 +68,7 @@ material_overlay = SubResource("StandardMaterial3D_qfde3")
 mesh = SubResource("PlaneMesh_goktk")
 
 [node name="WaterColor" type="MeshInstance3D" parent="." unique_id=1089644210]
-transform = Transform3D(50, 0, 0, 0, 1, 0, 0, 0, 50, 0, 0, 0)
+transform = Transform3D(50, 0, 0, 0, 1, 0, 0, 0, 50, 0, 0.5495844, 0)
 sorting_use_aabb_center = false
 material_overlay = SubResource("StandardMaterial3D_goktk")
 transparency = 0.6
@@ -76,7 +77,7 @@ ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_goktk")
 
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3307042, 1.5558467)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0151186, 1.5558467)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="PlayerFishing" unique_id=731221113]
 
@@ -90,7 +91,7 @@ mesh = SubResource("CapsuleMesh_ud65s")
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0.5, 0)
 
 [node name="Pier" type="Node3D" parent="." unique_id=61710964]
-transform = Transform3D(5, 0, 0, 0, 1, 0, 0, 0, 5, 0, 0, 0)
+transform = Transform3D(5, 0, 0, 0, 1, 0, 0, 0, 5, 0, 0.50483084, 0)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Pier" unique_id=113582520]
 
@@ -121,9 +122,15 @@ transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0,
 material_overlay = SubResource("StandardMaterial3D_mhxq0")
 mesh = SubResource("CylinderMesh_mhxq0")
 
-[node name="FishingManager" type="Node3D" parent="." unique_id=1080404517 node_paths=PackedStringArray("player_anchors")]
+[node name="FishingManager" type="Node3D" parent="." unique_id=1080404517 node_paths=PackedStringArray("player_anchors", "rod_holders", "weather_system")]
 script = ExtResource("3_mhxq0")
 player_anchors = [NodePath("../PlayerFishing")]
+rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
 bobber_scene = ExtResource("7_ud65s")
-water_level = 1.0
+water_level = 10.0
+max_players = 1
+weather_system = NodePath("../WeatherSystem")
 min_cast_distance = 100.0
+
+[node name="WeatherSystem" type="Node3D" parent="." unique_id=1571988963]
+script = ExtResource("8_y1byi")

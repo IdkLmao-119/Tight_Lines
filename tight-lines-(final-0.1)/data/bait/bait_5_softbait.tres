@@ -2,14 +2,19 @@
 
 [ext_resource type="Script" uid="uid://h6ubxbaaibcr" path="res://data/item_class_templates/bait_boost.gd" id="1_sjnby"]
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="2_d8mme"]
-[ext_resource type="Resource" uid="uid://bd41tun5pdiet" path="res://data/fish/fish_african_catfish.tres" id="3_pid74"]
+[ext_resource type="Resource" uid="uid://cqj0ccuj0k4s8" path="res://data/fish/fish_striped_snakehead.tres" id="3_sjnby"]
+[ext_resource type="Resource" uid="uid://ihk1vhoukqke" path="res://data/fish/fish_giant_snakehead.tres" id="4_dug18"]
 [ext_resource type="Texture2D" uid="uid://cm2b7aetehvjq" path="res://Assets/2D/bait_sprites/Softbait-lure.png" id="4_ldklj"]
+[ext_resource type="Resource" uid="uid://c4sjmrakl18ea" path="res://data/fish/fish_barramundi.tres" id="5_6u1dw"]
 [ext_resource type="Script" uid="uid://bx3sigi1jlqjn" path="res://data/item_class_templates/bait_data.gd" id="5_k6x75"]
+[ext_resource type="Resource" uid="uid://df8yk6ead683c" path="res://data/fish/fish_ladyfish.tres" id="6_uhdih"]
+[ext_resource type="Resource" uid="uid://dsfum6wqo4u6i" path="res://data/fish/fish_shad_fish.tres" id="7_07y4w"]
+[ext_resource type="Resource" uid="uid://c23jtlvkpo8v2" path="res://data/fish/fish_silverperch.tres" id="8_apa0t"]
 
 [resource]
 script = ExtResource("5_k6x75")
-enables_fish = Array[ExtResource("2_d8mme")]([ExtResource("3_pid74")])
+enables_fish = Array[ExtResource("2_d8mme")]([ExtResource("3_sjnby"), ExtResource("4_dug18"), ExtResource("5_6u1dw"), ExtResource("6_uhdih"), ExtResource("7_07y4w"), ExtResource("8_apa0t")])
 unlimited = true
 icon = ExtResource("4_ldklj")
-id = "bait_1"
-display_name = "Earthworm"
+id = "bait_5"
+display_name = "Soft bait"

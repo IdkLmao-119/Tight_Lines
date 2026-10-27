@@ -11,5 +11,5 @@ script = ExtResource("5_w8dhe")
 enables_fish = Array[ExtResource("2_bm5ju")]([ExtResource("3_pid74")])
 unlimited = true
 icon = ExtResource("4_w834w")
-id = "bait_1"
-display_name = "Earthworm"
+id = "bait_6"
+display_name = "Top Water Bait"
