@@ -2,13 +2,14 @@
 
 [ext_resource type="Script" uid="uid://h6ubxbaaibcr" path="res://data/item_class_templates/bait_boost.gd" id="1_21dyg"]
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="2_bm5ju"]
-[ext_resource type="Resource" uid="uid://bd41tun5pdiet" path="res://data/fish/fish_african_catfish.tres" id="3_pid74"]
+[ext_resource type="Resource" uid="uid://cqj0ccuj0k4s8" path="res://data/fish/fish_striped_snakehead.tres" id="3_bm5ju"]
+[ext_resource type="Resource" uid="uid://ihk1vhoukqke" path="res://data/fish/fish_giant_snakehead.tres" id="4_w8dhe"]
 [ext_resource type="Texture2D" uid="uid://cnjd2m0sx1qeb" path="res://Assets/2D/bait_sprites/Top water lure-c64d.png" id="4_w834w"]
 [ext_resource type="Script" uid="uid://bx3sigi1jlqjn" path="res://data/item_class_templates/bait_data.gd" id="5_w8dhe"]
 
 [resource]
 script = ExtResource("5_w8dhe")
-enables_fish = Array[ExtResource("2_bm5ju")]([ExtResource("3_pid74")])
+enables_fish = Array[ExtResource("2_bm5ju")]([ExtResource("3_bm5ju"), ExtResource("4_w8dhe")])
 unlimited = true
 icon = ExtResource("4_w834w")
 id = "bait_6"
