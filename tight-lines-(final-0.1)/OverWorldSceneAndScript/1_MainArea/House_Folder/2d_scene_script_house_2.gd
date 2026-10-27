@@ -9,7 +9,9 @@ func _ready() -> void:
 	var mem: Dictionary = GameManager.recall("overworld_house_2")
 	if mem.has("player_pos"):
 		player.global_position = mem["player_pos"]
-		$Camera2D.reset_smoothing()
+		var cam := get_viewport().get_camera_2d()
+		if cam != null:
+			cam.reset_smoothing()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

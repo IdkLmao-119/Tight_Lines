@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://di5ufndqn8irj"]
 
+[ext_resource type="Script" uid="uid://b4rkq3gbkcjil" path="res://OverWorldSceneAndScript/1_MainArea/RiverPark/2d_scene_script_river_park.gd" id="1_ji4s8"]
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="1_yhofx"]
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="2_o34g8"]
 [ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="3_eerny"]
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="3_o34g8"]
-
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0foi0"]
 texture = ExtResource("1_yhofx")
@@ -345,6 +345,7 @@ sources/2 = SubResource("TileSetAtlasSource_eerny")
 size = Vector2(32, 136)
 
 [node name="RiverPark" type="Node2D" unique_id=1860606683]
+script = ExtResource("1_ji4s8")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=681783368]
 y_sort_enabled = true
@@ -358,19 +359,27 @@ layer_1/tile_data = PackedInt32Array(-524245, 524290, 3, -458709, 524290, 3, -39
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("3_eerny")]
 position = Vector2(459, 107)
-movement_speed = null
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=169900966]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=566658653]
 polygon = PackedVector2Array(64, -48, 63, 51, 159, 51, 160, 332, 518, 333, 687, 332, 688, -90, 422, -87, 72, -86, 65, -53, 91, -340, 511, -337, 895, -288, 938, -130, 942, 78, 926, 295, 879, 408, 421, 500, 306, 531, -25, 380, -126, 233, -98, -210, 69, -100, 65, -64)
 
-[node name="MainAreaGateway" type="Node2D" parent="." unique_id=2070957893]
+[node name="RiverParkToSpawn" type="Node2D" parent="." unique_id=2070957893]
 
-[node name="MainArea" type="Area2D" parent="MainAreaGateway" unique_id=346193887]
+[node name="RiverParkToSpawn" type="Area2D" parent="RiverParkToSpawn" unique_id=346193887]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MainAreaGateway/MainArea" unique_id=97144408]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RiverParkToSpawn/RiverParkToSpawn" unique_id=97144408]
 position = Vector2(80, -18)
 shape = SubResource("RectangleShape2D_o34g8")
 
-[connection signal="body_entered" from="MainAreaGateway/MainArea" to="Player" method="_on_main_area_body_entered"]
+[node name="RiverParkToRiverParkFishingSpot" type="Node2D" parent="." unique_id=572732677]
+
+[node name="RiverParkToRiverParkFishingSpot" type="Area2D" parent="RiverParkToRiverParkFishingSpot" unique_id=738829293]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RiverParkToRiverParkFishingSpot/RiverParkToRiverParkFishingSpot" unique_id=2026334165]
+position = Vector2(80, -18)
+shape = SubResource("RectangleShape2D_o34g8")
+
+[connection signal="body_entered" from="RiverParkToSpawn/RiverParkToSpawn" to="Player" method="_on_river_park_to_spawn_body_entered"]
+[connection signal="body_entered" from="RiverParkToRiverParkFishingSpot/RiverParkToRiverParkFishingSpot" to="Player" method="_on_river_park_to_river_park_fishing_spot_body_entered"]

@@ -53,8 +53,6 @@ func _on_rice_fields_to_spawn_body_entered(body: Node2D) -> void:
 
 # River Park Signal
 func _on_river_park_to_spawn_body_entered(body: Node2D) -> void:
-	pass # Replace with function body.
-
-
+	GameManager.change_scene("overworld_spawn")
 func _on_river_park_to_river_park_fishing_spot_body_entered(body: Node2D) -> void:
-	pass # Replace with function body.
+	GameManager.change_scene("fishing_river_park")

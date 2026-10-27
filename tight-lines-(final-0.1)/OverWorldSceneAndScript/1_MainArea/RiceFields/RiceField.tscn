@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c73oo5k0b7d7k"]
 
-[ext_resource type="Script" uid="uid://1qfcrd8jhhxt" path="res://OverWorldSceneAndScript/1_MainArea/RiceFields/rice_field.gd" id="1_n2vyk"]
+[ext_resource type="Script" uid="uid://1qfcrd8jhhxt" path="res://OverWorldSceneAndScript/1_MainArea/RiceFields/2d_scene_script_rice_field.gd" id="1_n2vyk"]
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="1_oynwi"]
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="2_2sufc"]
 [ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="3_fu8dt"]
