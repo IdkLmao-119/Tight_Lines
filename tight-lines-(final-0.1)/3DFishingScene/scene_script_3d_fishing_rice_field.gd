@@ -8,7 +8,6 @@ func _ready() -> void:
 	print(get_node_or_null("/root/GameDB"))
 	print(get_node("/root/GameDB").get_summary())
 
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass

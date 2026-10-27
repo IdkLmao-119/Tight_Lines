@@ -10,9 +10,12 @@ import android.hardware.SensorManager;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.Surface;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -93,6 +96,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private WebSocket webSocket;
 
+    // --- Auto-reconnect ---
+    // If the connection drops unexpectedly (Wi-Fi blip, PC restarted), keep
+    // retrying the last known address. The PC gives the same player_id back
+    // because it recognizes the device_id.
+    private static final long RECONNECT_DELAY_MS = 2000L;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable reconnectRunnable;
+    private String lastIp = null;
+    private boolean wantConnected = false;
+    // Incremented on every connect attempt so callbacks from an OLD, replaced
+    // socket can be recognized and ignored (they used to overwrite the status
+    // and connection flag of the NEW socket).
+    private int connectionAttempt = 0;
+
     // No hardcoded server address anymore — this is filled in at runtime,
     // either by the player typing it into serverIpInput, or automatically
     // by performDiscovery() below.
@@ -141,6 +158,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Low-pass filter for gravity (0..1). Higher = smoother but laggier.
     private static final float TILT_FILTER_ALPHA = 0.8f;
 
+    // A swing shakes the accelerometer and would jolt the view. While a swing
+    // is being measured (and briefly after), the gravity estimate is frozen.
+    private static final long TILT_HOLD_AFTER_SWING_MS = 250L;
+
     private final float[] gravity = new float[3];
     private boolean gravityInitialized = false;
     private long lastTiltSentMs = 0L;
@@ -149,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // A swing is detected as a spike in rotation speed. SWING_THRESHOLD is
     // how fast (in radians/second) the phone must be rotating to count as
     // an intentional swing rather than normal handling/jitter.
-    private static final float SWING_THRESHOLD = 4.0f;
+    private static final float SWING_THRESHOLD = 8.0f;
 
     // After detecting a swing, we wait this long before allowing another
     // one to be detected — this "cooldown" stops one physical swing motion
@@ -190,6 +211,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         discoverButton = findViewById(R.id.discoverButton);
 
         deviceId = getOrCreateDeviceId();
+
+        // A controller must not let the screen time out mid-game: the sensors
+        // stop when the app is paused.
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        reconnectRunnable = () -> {
+            if (wantConnected && !isConnected && lastIp != null) {
+                connectToServer(lastIp);
+            }
+        };
 
         // Manual entry: player types an IP and taps Connect.
         connectButton.setOnClickListener(v -> {
@@ -261,6 +292,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             webSocket = null;
         }
         isConnected = false;
+        lastIp = ip;
+        wantConnected = true;
+        handler.removeCallbacks(reconnectRunnable);
+        final int attempt = ++connectionAttempt;
 
         serverUrl = "ws://" + ip + ":" + SERVER_PORT;
         Request request = new Request.Builder().url(serverUrl).build();
@@ -270,6 +305,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onOpen(WebSocket ws, Response response) {
+                if (attempt != connectionAttempt) {
+                    return; // callback from a replaced socket
+                }
                 isConnected = true;
                 runOnUiThread(() -> statusText.setText(getConnectionStatus()));
 
@@ -285,14 +323,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             @Override
             public void onFailure(WebSocket ws, Throwable t, Response response) {
+                if (attempt != connectionAttempt) {
+                    return;
+                }
                 isConnected = false;
-                runOnUiThread(() -> statusText.setText("Connection failed: " + t.getMessage()));
+                runOnUiThread(() -> statusText.setText("Connection failed: " + t.getMessage() + " (retrying)"));
+                scheduleReconnect();
             }
 
             @Override
             public void onClosed(WebSocket ws, int code, String reason) {
+                if (attempt != connectionAttempt) {
+                    return;
+                }
                 isConnected = false;
                 runOnUiThread(() -> statusText.setText(getConnectionStatus()));
+                scheduleReconnect();
             }
         });
     }
@@ -428,6 +474,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 runOnUiThread(() -> statusText.setText("Discovery error: " + e.getMessage()));
             }
         }).start();
+    }
+
+    // Retries the last address after a short delay (safe to call from any thread).
+    private void scheduleReconnect() {
+        if (!wantConnected || lastIp == null) {
+            return;
+        }
+        handler.removeCallbacks(reconnectRunnable);
+        handler.postDelayed(reconnectRunnable, RECONNECT_DELAY_MS);
     }
 
     private void sendMessage(JSONObject json) {
@@ -597,10 +652,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //   tilt left  (left edge down)  -> negative
     @SuppressWarnings("deprecation")
     private void handleAccelerometer(SensorEvent event) {
+        long nowMs = System.currentTimeMillis();
+        boolean swingBusy = swingWindowOpen
+                || (nowMs - lastSwingTimeMs < TILT_HOLD_AFTER_SWING_MS);
+
         if (!gravityInitialized) {
             System.arraycopy(event.values, 0, gravity, 0, 3);
             gravityInitialized = true;
-        } else {
+        } else if (!swingBusy) {
             for (int i = 0; i < 3; i++) {
                 gravity[i] = TILT_FILTER_ALPHA * gravity[i]
                         + (1f - TILT_FILTER_ALPHA) * event.values[i];
@@ -674,6 +733,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        wantConnected = false; // the app is closing: do not reconnect
+        handler.removeCallbacks(reconnectRunnable);
         if (webSocket != null) {
             webSocket.close(1000, "App closed");
         }

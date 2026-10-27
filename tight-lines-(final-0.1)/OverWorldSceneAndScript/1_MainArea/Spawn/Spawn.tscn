@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bdixv1ih02gfb"]
 
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="1_dlcpx"]
+[ext_resource type="Script" uid="uid://cbr53v6sjw3q5" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/2d_scene_script_spawn.gd" id="1_npojl"]
 [ext_resource type="Texture2D" uid="uid://bmggavb1ybiyg" path="res://OverWorldSceneAndScript/1_MainArea/House_Folder/TightLinesTiles.png" id="2_48lfk"]
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="3_fg7ym"]
 [ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="4_841g0"]
@@ -356,7 +357,8 @@ sources/2 = SubResource("TileSetAtlasSource_841g0")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s3d8v"]
 size = Vector2(31, 146)
 
-[node name="MainArea01" type="Node2D" unique_id=903146818]
+[node name="Spawn" type="Node2D" unique_id=903146818]
+script = ExtResource("1_npojl")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=682091460]
 tile_set = SubResource("TileSet_fg7ym")

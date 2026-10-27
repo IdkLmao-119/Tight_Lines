@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c6iuipb68tjd3"]
 
 [ext_resource type="Texture2D" uid="uid://hxm03sjg6x1u" path="res://OverWorldSceneAndScript/1_MainArea/House_Folder/tiles and items.png" id="1_2kr7h"]
+[ext_resource type="Script" uid="uid://ut1g1dwy1ekl" path="res://OverWorldSceneAndScript/1_MainArea/House_Folder/2d_scene_script_house_1.gd" id="1_06oxm"]
 [ext_resource type="Texture2D" uid="uid://ceicufuxcu6m7" path="res://OverWorldSceneAndScript/1_MainArea/House_Folder/TopDownHouse_DoorsAndWindows.png" id="2_r8hk7"]
 [ext_resource type="Texture2D" uid="uid://cgnl5fuglqi2u" path="res://OverWorldSceneAndScript/1_MainArea/House_Folder/TopDownHouse_FloorsAndWalls.png" id="3_m2gmy"]
 [ext_resource type="Texture2D" uid="uid://c05g13274hwhs" path="res://OverWorldSceneAndScript/1_MainArea/House_Folder/TopDownHouse_FloorsAndWalls_OpenDoors.png" id="4_ev1kt"]
@@ -1005,7 +1006,8 @@ sources/6 = SubResource("TileSetAtlasSource_nvbqs")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r8hk7"]
 
-[node name="Area01House1" type="Node2D" unique_id=577224538]
+[node name="House1" type="Node2D" unique_id=577224538]
+script = ExtResource("1_06oxm")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=2110315720]
 physics_interpolation_mode = 1

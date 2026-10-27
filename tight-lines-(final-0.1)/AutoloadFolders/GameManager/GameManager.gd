@@ -47,13 +47,13 @@ const SCENES: Dictionary = {
 	"main_menu": {
 		"path": "res://UIScenesAndScript/MainMenu/MainMenu.tscn",
 		"input": "menu",
-		"music": "res://audio/music/main_menu.ogg",
+		"music": "res://Assets/Audio/Reluctance.mp3",
 		"pausable": false,
 	},
 	"save_slots": {
 		"path": "res://UIScenesAndScript/MainMenu/SaveSlots.tscn",
 		"input": "menu",
-		"music": "res://audio/music/main_menu.ogg",   # same track = no restart
+		"music": "res://Assets/Audio/Reluctance.mp3",   # same track = no restart
 		"pausable": false,
 	},
 
@@ -61,19 +61,14 @@ const SCENES: Dictionary = {
 	"cutscene": {
 		"path": "res://cutscenes/Cutscene.tscn",
 		"input": "menu",
-		"music": "res://audio/music/cutscene.ogg",
+		"music": "res://Assets/Audio/Reluctance.mp3",
 		"pausable": false,
 	},
 
 	#2D Scenes
+	#Area 1
 	"overworld_spawn": {
-		"path": "res://OverWorldSceneAndScript/1_MainArea/Spawn/MainArea01.tscn",
-		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
-		"pausable": true,
-	},
-	"overworld_fish_market": {
-		"path": "res://OverWorldSceneAndScript/2_FishMarket/SeasidePark/SeasidePark.tscn",
+		"path": "res://OverWorldSceneAndScript/1_MainArea/Spawn/Spawn.tscn",
 		"input": "overworld",
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,
@@ -90,6 +85,28 @@ const SCENES: Dictionary = {
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,
 	},
+
+	#House Sub-Area
+	"overworld_house_1": {
+		"path": "res://OverWorldSceneAndScript/1_MainArea/House_Folder/House1.tscn",
+		"input": "overworld",
+		"music": "res://audio/music/overworld.ogg",
+		"pausable": true,
+	},
+	"overworld_house_2": {
+		"path": "res://OverWorldSceneAndScript/1_MainArea/House_Folder/House2.tscn",
+		"input": "overworld",
+		"music": "res://audio/music/overworld.ogg",
+		"pausable": true,
+	},
+
+	#Area 2
+	"overworld_fish_market": {
+		"path": "res://OverWorldSceneAndScript/2_FishMarket/SeasidePark/SeasidePark.tscn",
+		"input": "overworld",
+		"music": "res://audio/music/overworld.ogg",
+		"pausable": true,
+	},
 	"overworld_fishing_pens": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/FishPens/FishPens.tscn",
 		"input": "overworld",
@@ -102,6 +119,8 @@ const SCENES: Dictionary = {
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,
 	},
+
+	#Area 3
 	"overworld_mangrove": {
 		"path": "res://OverWorldSceneAndScript/3_Shore/MangroveScene/MangroveArea.tscn",
 		"input": "overworld",
@@ -114,18 +133,7 @@ const SCENES: Dictionary = {
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,
 	},
-	"overworld_house_1": {
-		"path": "res://OverWorldSceneAndScript/1_MainArea/House_Folder/Area01_House1.tscn",
-		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
-		"pausable": true,
-	},
-	"overworld_house_2": {
-		"path": "res://OverWorldSceneAndScript/1_MainArea/House_Folder/Area01_House2.tscn",
-		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
-		"pausable": true,
-	},
+	
 
 	#3D Fishing
 	"fishing_rice_field": {
