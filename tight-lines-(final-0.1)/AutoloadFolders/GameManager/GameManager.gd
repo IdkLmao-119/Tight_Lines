@@ -70,19 +70,19 @@ const SCENES: Dictionary = {
 	"overworld_spawn": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/Spawn/Spawn.tscn",
 		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 	},
 	"overworld_river_park": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/RiverPark/RiverPark.tscn",
 		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 	},
 	"overworld_rice_field": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/RiceFields/RiceField.tscn",
 		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 	},
 
@@ -90,13 +90,13 @@ const SCENES: Dictionary = {
 	"overworld_house_1": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/House_Folder/House1.tscn",
 		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 	},
 	"overworld_house_2": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/House_Folder/House2.tscn",
 		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 	},
 
@@ -104,19 +104,19 @@ const SCENES: Dictionary = {
 	"overworld_fish_market": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/SeasidePark/SeasidePark.tscn",
 		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 	},
 	"overworld_fishing_pens": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/FishPens/FishPens.tscn",
 		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 	},
 	"overworld_salt_farm": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/AbandonedSaltfarm/SaltFarm.tscn",
 		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 	},
 
@@ -124,13 +124,13 @@ const SCENES: Dictionary = {
 	"overworld_mangrove": {
 		"path": "res://OverWorldSceneAndScript/3_Shore/MangroveScene/MangroveArea.tscn",
 		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 	},
 	"overworld_island": {
 		"path": "res://OverWorldSceneAndScript/3_Shore/Island/Island.tscn",
 		"input": "overworld",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 	},
 	
