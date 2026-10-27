@@ -1,8 +1,6 @@
 extends Node
 
-# ============================================================================
-# CONNECTION MANAGER (GODOT / PC SIDE)  — module 2 of 3: the connectivity layer
-# ============================================================================
+# CONNECTION MANAGER (GODOT / PC SIDE) the connectivity layer
 # This script's ONLY job is talking to phones over the network and emitting
 # signals when something happens (a player connects, or sends input). It
 # does not know or care what a "swipe" or "swing" actually DOES in your
@@ -16,23 +14,21 @@ extends Node
 # This runs on the PC, which either hosts its own Wi-Fi hotspot or shares
 # an existing LAN. Each phone connects to it over the local network — no
 # internet required either way.
-# ============================================================================
 
-# Signals now include a "player_id" so the game knows WHICH player sent the
-# input. Any other node listening to these signals should expect this extra
-# first argument now.
+# signals if player connected and disconnected
 signal player_connected(player_id)
 signal player_disconnected(player_id)
 
-# The three input types this project uses:
-#   swipe — player dragged a finger across the phone screen
-#   tap   — player briefly pressed the screen
-#   swing — player physically swung/moved the phone (detected via gyroscope
-#           on the phone itself; the PHONE decides when a "swing" happened,
-#           this server just relays that decision)
+
+#swipe — player dragged a finger across the phone screen
+#tap   — player briefly pressed the screen
+#swing — player physically swung/moved the phone
 signal swipe_input(player_id, direction, dx, dy)
 signal tap_input(player_id, x, y)
 signal swing_input(player_id, magnitude)
+
+# tilt — how far the phone is tilted left/right, streamed continuously
+signal tilt_input(player_id, value)
 
 const PORT := 9080
 
@@ -41,6 +37,9 @@ const PORT := 9080
 # Set to false once everything works.
 @export var debug_log := true
 
+# Tilt messages arrive ~20 times per second per phone, which would flood the
+# Output panel, so they are hidden from debug_log unless this is turned on.
+@export var debug_log_tilt := true
 # ============================================================================
 # AUTO-DISCOVERY (so phones don't need a hardcoded/manually-typed IP)
 # ============================================================================
@@ -388,7 +387,7 @@ func _handle_message(player_id: int, message: String):
 			print("[Player %d] ignored non-JSON-object message: %s" % [player_id, message])
 		return
 
-	if debug_log:
+	if debug_log and (data.get("type") != "tilt" or debug_log_tilt):
 		print("[Player %d] received: %s" % [player_id, message])
 
 	match data.get("type"):
@@ -428,6 +427,13 @@ func _handle_message(player_id: int, message: String):
 			_warn_if_unconnected("swing_input")
 			emit_signal("swing_input", player_id, data.get("magnitude", 0.0))
 
+		"tilt":
+			# value is already normalized by the phone to -1.0 .. +1.0
+			# (negative = tilted left, positive = tilted right).
+			# Not passed through _warn_if_unconnected: it streams constantly,
+			# so that warning would spam the log.
+			emit_signal("tilt_input", player_id, data.get("value", 0.0))
+
 # Sends a message to EVERY connected player at once.
 # Useful for things all players should see, like a shared game-state update.
 func send_to_all(data: Dictionary):
@@ -452,8 +458,6 @@ func send_to_player(player_id: int, data: Dictionary):
 		var buffer = message.to_utf8_buffer()
 		ws.send(buffer)
 
-# Returns a list of all currently connected player IDs.
-# Handy for things like showing a lobby screen of who's currently connected.
 func get_connected_players() -> Array:
 	return _peers.keys()
 

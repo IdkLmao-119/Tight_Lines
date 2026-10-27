@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://bl2r31ww2hogd"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://cpkugb7ksmf8f" path="res://Assets/2D/fish_sprites/Long Comb Sawfish.png" id="1_rder1"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Pristis zijsron"
+description = "A magnificent and rare marine dweller distinguished by its long, tooth-studded rostral saw."
+size_class = "large"
+base_price = 150
+speed = 1.5
+pull_strength = 10.0
+min_size = 100.0
+avg_size = 250.0
+max_size = 400.0
+avg_weight = 45.0
+icon = ExtResource("1_rder1")
+grid_width = 4
+id = "fish_long_comb_sawfish"
+display_name = "Long Comb Sawfish"

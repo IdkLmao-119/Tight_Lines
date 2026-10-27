@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://cmxagj8lvihtk"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://bc1liq4vgixiu" path="res://Assets/2D/fish_sprites/Snubnose Halfbeak.png" id="1_vpc1u"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Hemiramphus archipelagicus"
+description = "A sleek surface dweller recognized by its elongated lower jaw and skimming movement."
+base_price = 20
+speed = 2.3
+pull_strength = 2.0
+min_size = 12.0
+avg_size = 22.0
+max_size = 32.0
+avg_weight = 0.2
+icon = ExtResource("1_vpc1u")
+id = "fish_snubnose_halfbeak"
+display_name = "Snubnose Halfbeak"

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://cx7lymh403hp"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://rfn63fhytg1i" path="res://Assets/2D/fish_sprites/Tank_Goby.png" id="1_kv3l5"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Glossogobius giuris"
+description = "A heavily-built bottom-dweller with a broad head and strong pectoral fins for stability."
+base_price = 22
+speed = 1.3
+pull_strength = 2.6
+avg_size = 18.0
+avg_weight = 0.35
+icon = ExtResource("1_kv3l5")
+id = "fish_tank_goby"
+display_name = "Tank Goby"

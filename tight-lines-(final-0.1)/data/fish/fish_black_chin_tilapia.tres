@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://gvnk0vh6nbp"]
+
+[ext_resource type="Texture2D" uid="uid://drhuijwaeqj0t" path="res://Assets/2D/fish_sprites/Black Chin Tilapia.png" id="1_atb72"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Sarotherodon melanotheron"
+description = "A resilient cichlid easily identified by the distinct dark pigmentation under its chin."
+base_price = 20
+speed = 1.5
+pull_strength = 2.5
+avg_weight = 0.4
+icon = ExtResource("1_atb72")
+id = "fish_black_chin_tilapia"
+display_name = "Black Chin Tilapia"

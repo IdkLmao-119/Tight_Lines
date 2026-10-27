@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://cuxx282o8qa7"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://rjf7v834ye2t" path="res://Assets/2D/fish_sprites/Rohu carp-2a9a.png" id="1_totmr"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Labeo rohita"
+description = "An important column feeder in freshwater rivers, prized for its arched head and strength."
+size_class = "medium"
+base_price = 36
+speed = 1.3
+pull_strength = 5.0
+min_size = 25.0
+avg_size = 45.0
+max_size = 75.0
+avg_weight = 2.3
+icon = ExtResource("1_totmr")
+grid_width = 2
+id = "fish_rohu_carp"
+display_name = "Rohu Carp"

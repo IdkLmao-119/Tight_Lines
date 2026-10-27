@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BaitData" format=3 uid="uid://cmvfuulj6fcdt"]
+
+[ext_resource type="Script" uid="uid://h6ubxbaaibcr" path="res://data/item_class_templates/bait_boost.gd" id="1_0olgc"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="2_xx04s"]
+[ext_resource type="Resource" uid="uid://c2fr874564kls" path="res://data/fish/fish_clown_knife_fish.tres" id="3_60122"]
+[ext_resource type="Texture2D" uid="uid://cppl86nrus71k" path="res://Assets/2D/bait_sprites/Shrimp.png" id="4_wfhup"]
+[ext_resource type="Resource" uid="uid://b15cagrhd2rpn" path="res://data/fish/fish_pangasius_catfish.tres" id="4_xw8w6"]
+[ext_resource type="Resource" uid="uid://bkeshnfpk5cpe" path="res://data/fish/fish_armored_catfish.tres" id="5_bvvor"]
+[ext_resource type="Script" uid="uid://bx3sigi1jlqjn" path="res://data/item_class_templates/bait_data.gd" id="5_fos1t"]
+[ext_resource type="Resource" uid="uid://dylhldsnt88cc" path="res://data/fish/fish_manila_catfish.tres" id="6_rpk0b"]
+[ext_resource type="Resource" uid="uid://c4ju7vgccb2wm" path="res://data/fish/fish_nile_tilapia.tres" id="7_7ns2f"]
+[ext_resource type="Resource" uid="uid://gvnk0vh6nbp" path="res://data/fish/fish_black_chin_tilapia.tres" id="8_dq73s"]
+[ext_resource type="Resource" uid="uid://cmxagj8lvihtk" path="res://data/fish/fish_snubnose_halfbeak.tres" id="9_e5e7u"]
+[ext_resource type="Resource" uid="uid://b086ovljwx3kh" path="res://data/fish/fish_mud_crab.tres" id="10_2gkxx"]
+
+[resource]
+script = ExtResource("5_fos1t")
+enables_fish = Array[ExtResource("2_xx04s")]([ExtResource("3_60122"), ExtResource("4_xw8w6"), ExtResource("5_bvvor"), ExtResource("6_rpk0b"), ExtResource("7_7ns2f"), ExtResource("8_dq73s"), ExtResource("9_e5e7u"), ExtResource("10_2gkxx")])
+unlimited = true
+icon = ExtResource("4_wfhup")
+id = "bait_4"
+display_name = "Shrimp"

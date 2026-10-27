@@ -1,0 +1,283 @@
+[gd_scene format=3 uid="uid://chgxbwkf7mlw6"]
+
+[ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="1_owvor"]
+[ext_resource type="Script" uid="uid://dhj4fll8hgec7" path="res://3DFishingScene/scene_script_3d_fishing_rice_field.gd" id="1_qjdax"]
+[ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="2_h20tu"]
+[ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="3_h20tu"]
+[ext_resource type="Texture2D" uid="uid://der6y27lfrk8w" path="res://Assets/3D/Grass.png" id="4_owvor"]
+[ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="4_rnksl"]
+[ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="5_bu0nd"]
+[ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_b03px"]
+[ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="9_bu0nd"]
+[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="10_b03px"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qfde3"]
+transparency = 1
+albedo_texture = ExtResource("1_owvor")
+metallic_specular = 0.0
+roughness = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_goktk"]
+size = Vector2(10, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_goktk"]
+transparency = 4
+albedo_color = Color(0.6906829, 2.976174, 1.5850055, 1)
+albedo_texture = ExtResource("2_h20tu")
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u4n2x"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ud65s"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_y1byi"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ncjx7"]
+albedo_texture = ExtResource("1_owvor")
+
+[sub_resource type="BoxMesh" id="BoxMesh_8navb"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mhxq0"]
+cull_mode = 1
+albedo_color = Color(1.4348425, 1.4348425, 1.4348425, 1)
+albedo_texture = ExtResource("4_rnksl")
+uv1_scale = Vector3(2, 2.055, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_mhxq0"]
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="Environment" id="Environment_i1y24"]
+background_mode = 1
+background_color = Color(0.54509807, 0.73333335, 0.79607844, 1)
+background_energy_multiplier = 0.99
+ambient_light_source = 3
+ambient_light_color = Color(0.94509804, 0.94509804, 0.94509804, 1)
+ambient_light_sky_contribution = 0.98
+ambient_light_energy = 14.85
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_h20tu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qjdax"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+albedo_texture = ExtResource("4_owvor")
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
+load_path = "res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"
+
+[node name="3dFishing" type="Node3D" unique_id=836610391]
+script = ExtResource("1_qjdax")
+
+[node name="Land" type="Node3D" parent="." unique_id=225201374]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.3714695, 5)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Land" unique_id=870294090]
+transform = Transform3D(50, 0, 0, 0, 49.969543, -1.7449747, 0, 1.7449747, 49.969543, 0, -1, 0)
+
+[node name="SeaFloorCollisionShape3D" type="CollisionShape3D" parent="Land/StaticBody3D" unique_id=881990315]
+transform = Transform3D(10, 0, 0, 0, 9.993908, -0.3489949, 0, 0.3489949, 9.993908, 0, -1, 0)
+shape = SubResource("BoxShape3D_cawde")
+
+[node name="SeaFloorColor" type="MeshInstance3D" parent="Land/StaticBody3D" unique_id=1676985478]
+transform = Transform3D(0.99999976, 0, 0, 0, 0.99939084, -0.034899496, 0, 0.034899496, 0.99939084, 0, 0, 0)
+material_overlay = SubResource("StandardMaterial3D_qfde3")
+mesh = SubResource("PlaneMesh_goktk")
+
+[node name="WaterColor" type="MeshInstance3D" parent="." unique_id=1089644210]
+transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, 0, 0, 0)
+sorting_use_aabb_center = false
+material_overlay = SubResource("StandardMaterial3D_goktk")
+transparency = 0.6
+ignore_occlusion_culling = true
+visibility_range_end = 4096.0
+visibility_range_fade_mode = 1
+mesh = SubResource("PlaneMesh_goktk")
+
+[node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 1.5558467)
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="PlayerFishing" unique_id=731221113]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerFishing/CharacterBody3D" unique_id=1201982006]
+shape = SubResource("CapsuleShape3D_u4n2x")
+
+[node name="FishingRod_Lvl3" parent="PlayerFishing/CharacterBody3D" unique_id=1393842549 instance=ExtResource("5_bu0nd")]
+transform = Transform3D(0.5, 0, 0, 0, 0.41933528, 0.27231953, 0, -0.27231953, 0.41933528, 0.57474726, 0, -0.16362166)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerFishing" unique_id=1698578042]
+mesh = SubResource("CapsuleMesh_ud65s")
+
+[node name="PlayerCamera" type="Camera3D" parent="PlayerFishing" unique_id=958916476]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="Pier" type="Node3D" parent="." unique_id=61710964]
+transform = Transform3D(5, 0, 0, 0, 1, 0, 0, 0, 5, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Pier" unique_id=113582520]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pier/StaticBody3D" unique_id=1260455851]
+shape = SubResource("BoxShape3D_y1byi")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Pier/StaticBody3D" unique_id=2003962759]
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0, 0.39070585)
+material_overlay = SubResource("StandardMaterial3D_ncjx7")
+mesh = SubResource("BoxMesh_8navb")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=2042256277]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 131.48366, 23.190296)
+light_energy = 16.0
+light_size = 1.0
+omni_range = 169.597
+omni_attenuation = 1.077
+omni_shadow_mode = 0
+
+[node name="MudRoads" type="Node3D" parent="." unique_id=867985978]
+transform = Transform3D(5, 0, 0, 0, 1, 0, 0, 0, 5, -19.9149, 0, 8.093548)
+
+[node name="MudRoadRight" type="StaticBody3D" parent="MudRoads" unique_id=2144219306]
+transform = Transform3D(3.999999, 0, 0, 0, 5, 0, 0, 0, 14.999996, -5, -1.620821, 2.624061)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MudRoads/MudRoadRight" unique_id=1850442972]
+shape = SubResource("BoxShape3D_y1byi")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MudRoads/MudRoadRight" unique_id=1114680943]
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0, 0)
+material_overlay = SubResource("StandardMaterial3D_ncjx7")
+mesh = SubResource("BoxMesh_8navb")
+
+[node name="MudRoadLeft" type="StaticBody3D" parent="MudRoads" unique_id=1163355350]
+transform = Transform3D(3.999999, 0, 0, 0, 5, 0, 0, 0, 14.999996, 12.999996, -1.620821, 2.654241)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MudRoads/MudRoadLeft" unique_id=1721354467]
+shape = SubResource("BoxShape3D_y1byi")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MudRoads/MudRoadLeft" unique_id=1311853650]
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0, 0)
+material_overlay = SubResource("StandardMaterial3D_ncjx7")
+mesh = SubResource("BoxMesh_8navb")
+
+[node name="MudRoadBack" type="StaticBody3D" parent="MudRoads" unique_id=1799073048]
+transform = Transform3D(14.999996, 0, 0, 0, 5, 0, 0, 0, 2.9999995, 3.9814932, -1.620821, -3.4111705)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MudRoads/MudRoadBack" unique_id=1968276388]
+transform = Transform3D(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_y1byi")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MudRoads/MudRoadBack" unique_id=110625238]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02032268)
+material_overlay = SubResource("StandardMaterial3D_ncjx7")
+mesh = SubResource("BoxMesh_8navb")
+
+[node name="Background" type="Node3D" parent="." unique_id=336146113]
+transform = Transform3D(-3.278354e-05, 0, 750, 0, 150, 0, -750, 0, -3.278354e-05, 0, 73.4481, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Background" unique_id=1420362856]
+transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 1.0000001, 0, 0.18371171, 0)
+material_overlay = SubResource("StandardMaterial3D_mhxq0")
+mesh = SubResource("CylinderMesh_mhxq0")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2126582781]
+environment = SubResource("Environment_i1y24")
+
+[node name="Rice" type="MeshInstance3D" parent="." unique_id=870807928]
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, -5.870402, 1.2101002, 9.788529)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice3" type="MeshInstance3D" parent="." unique_id=1378273045]
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, -8.989883, 1.3017673, 9.865282)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice2" type="MeshInstance3D" parent="." unique_id=671246487]
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, 6.0599856, 1.3017673, 9.865282)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice4" type="MeshInstance3D" parent="." unique_id=1624865842]
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, 2.7577863, 1.3017673, 18.7013)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice5" type="MeshInstance3D" parent="." unique_id=772633302]
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, -8.989883, 1.3017673, 18.7013)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice6" type="MeshInstance3D" parent="." unique_id=760395318]
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, 6.0599856, 1.3017673, 18.7013)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice7" type="MeshInstance3D" parent="." unique_id=500293386]
+transform = Transform3D(-3.8887188, -4.56923, 1.997274e-07, 0, -2.6226832e-07, -6, 4.56923, -3.8887188, 1.6998129e-07, 12.90588, 1.3017673, 18.7013)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice8" type="MeshInstance3D" parent="." unique_id=1170165284]
+transform = Transform3D(-3.8887188, -4.56923, 1.997274e-07, 0, -2.6226832e-07, -6, 4.56923, -3.8887188, 1.6998129e-07, 16.20808, 1.3017673, 18.7013)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice9" type="MeshInstance3D" parent="." unique_id=1088425515]
+transform = Transform3D(-4.5692306, 3.8887186, -1.6998129e-07, 0, -2.6226832e-07, -6, -3.8887186, -4.5692306, 1.9972742e-07, -19.67442, 1.3017673, 17.871813)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice10" type="MeshInstance3D" parent="." unique_id=1524850954]
+transform = Transform3D(-4.5692306, 3.8887186, -1.6998129e-07, 0, -2.6226832e-07, -6, -3.8887186, -4.5692306, 1.9972742e-07, -16.37222, 1.3017673, 17.871813)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice11" type="MeshInstance3D" parent="." unique_id=2016681576]
+transform = Transform3D(-1.983087, -5.6628056, 2.475291e-07, 0, -2.6226832e-07, -6, 5.6628056, -1.983087, 8.6683485e-08, 19.79704, 1.3017673, 4.244606)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice12" type="MeshInstance3D" parent="." unique_id=356227071]
+transform = Transform3D(-2.686555, -5.3649254, 2.3450832e-07, 0, -2.6226832e-07, -6, 5.3649254, -2.686555, 1.17433046e-07, 16.20808, 1.3017673, 7.880266)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice13" type="MeshInstance3D" parent="." unique_id=2073695435]
+transform = Transform3D(-2.686556, 5.364925, -2.345083e-07, 0, -2.6226832e-07, -6, -5.364925, -2.686556, 1.174331e-07, -18.475307, 1.3017673, 5.476235)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="Rice14" type="MeshInstance3D" parent="." unique_id=617149103]
+transform = Transform3D(-2.686556, 5.364925, -2.345083e-07, 0, -2.6226832e-07, -6, -5.364925, -2.686556, 1.174331e-07, -16.37222, 1.3017673, 9.355566)
+mesh = SubResource("PlaneMesh_h20tu")
+surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
+
+[node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
+script = ExtResource("3_h20tu")
+player_anchors = [NodePath("../PlayerFishing")]
+rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
+bobber_scene = ExtResource("8_b03px")
+debug_spot_id = "location_rice_fields"
+debug_rod_id = "rod_basic"
+debug_bait_id = "bait_1"
+debug_log = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
+
+[node name="3DSceneUI" parent="CanvasLayer" unique_id=1628659695 instance=ExtResource("10_b03px")]
+metadata/_edit_use_anchors_ = true
+
+[node name="FishLayout" type="TextureRect" parent="CanvasLayer" unique_id=729170580]
+visible = false
+custom_minimum_size = Vector2(300, 300)
+offset_left = 485.0
+offset_top = 125.99999
+offset_right = 785.0
+offset_bottom = 426.0
+rotation = 0.43633232
+texture = SubResource("CompressedTexture2D_b03px")
+
+[node name="WeatherSystem" type="Node3D" parent="." unique_id=826944014]
+script = ExtResource("9_bu0nd")
+weather_change_game_minutes = 100.0
+avoid_repeat = false

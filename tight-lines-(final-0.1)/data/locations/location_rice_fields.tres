@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="LocationData" format=3 uid="uid://bhqv8g5yabais"]
+
+[ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://data/item_class_templates/location_data.gd" id="1_loc"]
+[ext_resource type="Resource" uid="uid://cqj0ccuj0k4s8" path="res://data/fish/fish_striped_snakehead.tres" id="2_a5slo"]
+[ext_resource type="Script" uid="uid://dx1akc0mc2hlt" path="res://data/item_class_templates/pool_entry.gd" id="2_pool"]
+[ext_resource type="Script" uid="uid://ct4mpw3eqe0jb" path="res://data/item_class_templates/odds_modifier.gd" id="3_mod"]
+[ext_resource type="Resource" uid="uid://ihk1vhoukqke" path="res://data/fish/fish_giant_snakehead.tres" id="4_l87mk"]
+[ext_resource type="Resource" uid="uid://bd41tun5pdiet" path="res://data/fish/fish_african_catfish.tres" id="5_y3ip3"]
+[ext_resource type="Resource" uid="uid://blqdafttni45n" path="res://data/fish/fish_three_spot_gourami.tres" id="6_fvb2e"]
+[ext_resource type="Resource" uid="uid://f4b0v0wwte8v" path="res://data/fish/fish_tiger_gourami.tres" id="7_w8bkh"]
+[ext_resource type="Resource" uid="uid://4qy7chfumvrp" path="res://data/fish/fish_climbing_perch.tres" id="8_7x6yx"]
+[ext_resource type="Resource" uid="uid://sojjs2r500xc" path="res://data/fish/fish_mosquito_fish.tres" id="9_x16ou"]
+
+[sub_resource type="Resource" id="Resource_pool_bluegill"]
+script = ExtResource("2_pool")
+fish = ExtResource("2_a5slo")
+
+[sub_resource type="Resource" id="Resource_vxfpq"]
+script = ExtResource("2_pool")
+fish = ExtResource("4_l87mk")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_6tuyq"]
+script = ExtResource("2_pool")
+fish = ExtResource("5_y3ip3")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_cq46a"]
+script = ExtResource("2_pool")
+fish = ExtResource("6_fvb2e")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_pefok"]
+script = ExtResource("2_pool")
+fish = ExtResource("7_w8bkh")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_ogobl"]
+script = ExtResource("2_pool")
+fish = ExtResource("8_7x6yx")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_mgvnh"]
+script = ExtResource("2_pool")
+fish = ExtResource("9_x16ou")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[resource]
+script = ExtResource("1_loc")
+fish_pool = Array[ExtResource("2_pool")]([SubResource("Resource_pool_bluegill"), SubResource("Resource_vxfpq"), SubResource("Resource_6tuyq"), SubResource("Resource_cq46a"), SubResource("Resource_pefok"), SubResource("Resource_ogobl"), SubResource("Resource_mgvnh")])
+id = "location_rice_fields"
+display_name = "Rice Fields"

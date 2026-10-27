@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://c4ju7vgccb2wm"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://ctn6wt14k3pfn" path="res://Assets/2D/fish_sprites/Nile-Tilapia-76b4.png" id="1_wiuk4"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Oreochromis niloticus"
+description = "A prominent freshwater species with vertical stripes along its tail fin and a steady pull."
+size_class = "medium"
+base_price = 30
+speed = 1.4
+pull_strength = 4.2
+min_size = 15.0
+avg_size = 32.0
+max_size = 50.0
+avg_weight = 1.2
+icon = ExtResource("1_wiuk4")
+grid_width = 2
+id = "fish_nile_tilapia"
+display_name = "Nile Tilapia"

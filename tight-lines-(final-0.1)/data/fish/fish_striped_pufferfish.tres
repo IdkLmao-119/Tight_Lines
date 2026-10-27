@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://ijthjsfai2kv"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://6lel7ox54fif" path="res://Assets/2D/fish_sprites/Striped Pufferfish.png" id="1_kly28"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Arothron hispidus"
+description = "A round, slow-moving fish capable of inflating itself with water when threatened."
+base_price = 30
+pull_strength = 3.5
+min_size = 12.0
+avg_size = 25.0
+max_size = 40.0
+avg_weight = 0.8
+icon = ExtResource("1_kly28")
+id = "fish_striped_pufferfish"
+display_name = "Striped Pufferfish"

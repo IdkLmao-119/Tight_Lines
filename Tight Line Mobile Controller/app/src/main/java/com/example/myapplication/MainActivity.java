@@ -10,8 +10,12 @@ import android.hardware.SensorManager;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -54,6 +58,8 @@ import okhttp3.WebSocketListener;
 //   SWIPE — dragging a finger across the screen (GestureDetector.onFling)
 //   TAP   — a quick press on the screen (GestureDetector.onSingleTapUp)
 //   SWING — physically moving/swinging the phone (gyroscope spike detection)
+//   TILT  — tilting the phone left/right (accelerometer/gravity), streamed
+//           continuously so the game can rotate the player's view
 //
 // Requires, in app/build.gradle:
 //     implementation("com.squareup.okhttp3:okhttp:4.12.0")
@@ -71,7 +77,6 @@ import okhttp3.WebSocketListener;
 // Android may route app traffic over mobile data, which cannot reach the
 // PC's 192.168.x.x address. Turn mobile data off while testing.
 // ============================================================================
-
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     // --- Networking ---
@@ -90,6 +95,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             .build();
 
     private WebSocket webSocket;
+
+    // --- Auto-reconnect ---
+    // If the connection drops unexpectedly (Wi-Fi blip, PC restarted), keep
+    // retrying the last known address. The PC gives the same player_id back
+    // because it recognizes the device_id.
+    private static final long RECONNECT_DELAY_MS = 2000L;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable reconnectRunnable;
+    private String lastIp = null;
+    private boolean wantConnected = false;
+    // Incremented on every connect attempt so callbacks from an OLD, replaced
+    // socket can be recognized and ignored (they used to overwrite the status
+    // and connection flag of the NEW socket).
+    private int connectionAttempt = 0;
 
     // No hardcoded server address anymore — this is filled in at runtime,
     // either by the player typing it into serverIpInput, or automatically
@@ -126,18 +145,48 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // --- Sensors ---
     private SensorManager sensorManager;
     private Sensor gyroSensor;
+    private Sensor accelSensor;
+
+    // --- Tilt tuning ---
+    // Tilt is streamed to the PC at a fixed rate (even when unchanged) so the
+    // PC can tell "held steady" apart from "connection lost".
+    private static final long TILT_SEND_INTERVAL_MS = 50L; // ~20 messages/sec
+
+    // Tilt angle (degrees from upright) that counts as FULL left/right (-1/+1).
+    private static final float TILT_FULL_ANGLE_DEG = 40f;
+
+    // Low-pass filter for gravity (0..1). Higher = smoother but laggier.
+    private static final float TILT_FILTER_ALPHA = 0.8f;
+
+    // A swing shakes the accelerometer and would jolt the view. While a swing
+    // is being measured (and briefly after), the gravity estimate is frozen.
+    private static final long TILT_HOLD_AFTER_SWING_MS = 250L;
+
+    private final float[] gravity = new float[3];
+    private boolean gravityInitialized = false;
+    private long lastTiltSentMs = 0L;
 
     // --- Swing detection tuning ---
     // A swing is detected as a spike in rotation speed. SWING_THRESHOLD is
     // how fast (in radians/second) the phone must be rotating to count as
     // an intentional swing rather than normal handling/jitter.
-    private static final float SWING_THRESHOLD = 4.0f;
+    private static final float SWING_THRESHOLD = 8.0f;
 
     // After detecting a swing, we wait this long before allowing another
     // one to be detected — this "cooldown" stops one physical swing motion
     // from being counted as many separate swings in a row.
     private static final long SWING_COOLDOWN_MS = 500L;
     private long lastSwingTimeMs = 0L;
+
+    // PEAK CAPTURE: a swing ramps up from zero, so the FIRST sample over
+    // SWING_THRESHOLD is always only just over it (~4), no matter how hard
+    // the swing ends up. To report real strength, crossing the threshold
+    // opens a short window; the strongest reading inside it is what we send.
+    // Longer window = more accurate strength but a slightly later cast.
+    private static final long SWING_PEAK_WINDOW_MS = 120L;
+    private boolean swingWindowOpen = false;
+    private long swingWindowStartMs = 0L;
+    private double swingPeak = 0.0;
 
     // A permanent, unique ID for THIS phone, generated once and saved
     // forever afterward — this is how the PC recognizes "this is the same
@@ -163,6 +212,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         deviceId = getOrCreateDeviceId();
 
+        // A controller must not let the screen time out mid-game: the sensors
+        // stop when the app is paused.
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        reconnectRunnable = () -> {
+            if (wantConnected && !isConnected && lastIp != null) {
+                connectToServer(lastIp);
+            }
+        };
+
         // Manual entry: player types an IP and taps Connect.
         connectButton.setOnClickListener(v -> {
             String ip = serverIpInput.getText().toString().trim();
@@ -183,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        accelSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         // NOTE: connectToServer() is no longer called automatically here —
         // we wait for the player to either type an IP or use Auto-Discover,
@@ -232,6 +292,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             webSocket = null;
         }
         isConnected = false;
+        lastIp = ip;
+        wantConnected = true;
+        handler.removeCallbacks(reconnectRunnable);
+        final int attempt = ++connectionAttempt;
 
         serverUrl = "ws://" + ip + ":" + SERVER_PORT;
         Request request = new Request.Builder().url(serverUrl).build();
@@ -241,6 +305,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onOpen(WebSocket ws, Response response) {
+                if (attempt != connectionAttempt) {
+                    return; // callback from a replaced socket
+                }
                 isConnected = true;
                 runOnUiThread(() -> statusText.setText(getConnectionStatus()));
 
@@ -256,17 +323,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             @Override
             public void onFailure(WebSocket ws, Throwable t, Response response) {
+                if (attempt != connectionAttempt) {
+                    return;
+                }
                 isConnected = false;
-                String reason = t.getMessage();
-                if (t.getCause() != null) reason += " / " + t.getCause().getMessage();
-                final String shown = reason;
-                runOnUiThread(() -> statusText.setText("Connection failed: " + shown));
+                runOnUiThread(() -> statusText.setText("Connection failed: " + t.getMessage() + " (retrying)"));
+                scheduleReconnect();
             }
 
             @Override
             public void onClosed(WebSocket ws, int code, String reason) {
+                if (attempt != connectionAttempt) {
+                    return;
+                }
                 isConnected = false;
                 runOnUiThread(() -> statusText.setText(getConnectionStatus()));
+                scheduleReconnect();
             }
         });
     }
@@ -287,8 +359,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         List<InetAddress> addresses = new ArrayList<>();
 
         try {
-            WifiManager wifiManager =
-                    (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiManager
+                    = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             DhcpInfo dhcp = wifiManager.getDhcpInfo();
 
             if (dhcp != null && dhcp.ipAddress != 0 && dhcp.netmask != 0) {
@@ -404,6 +476,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }).start();
     }
 
+    // Retries the last address after a short delay (safe to call from any thread).
+    private void scheduleReconnect() {
+        if (!wantConnected || lastIp == null) {
+            return;
+        }
+        handler.removeCallbacks(reconnectRunnable);
+        handler.postDelayed(reconnectRunnable, RECONNECT_DELAY_MS);
+    }
+
     private void sendMessage(JSONObject json) {
         if (webSocket != null) {
             webSocket.send(json.toString());
@@ -464,7 +545,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // as a "fling" — that's intentional, it filters out accidental drags.)
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            if (e1 == null) return false;
+            if (e1 == null) {
+                return false;
+            }
 
             float dx = e2.getX() - e1.getX();
             float dy = e2.getY() - e1.getY();
@@ -501,7 +584,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // intentional "swing" happened.
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() != Sensor.TYPE_GYROSCOPE) return;
+        int sensorType = event.sensor.getType();
+        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
+            handleAccelerometer(event);
+            return;
+        }
+        if (sensorType != Sensor.TYPE_GYROSCOPE) {
+            return;
+        }
 
         // Combine rotation speed on all 3 axes into one overall "how fast
         // is this phone rotating right now" number, using the standard
@@ -511,17 +601,105 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         float z = event.values[2];
         double magnitude = Math.sqrt(x * x + y * y + z * z);
 
-        if (magnitude < SWING_THRESHOLD) return; // too gentle — ignore
-
         long now = System.currentTimeMillis();
-        if (now - lastSwingTimeMs < SWING_COOLDOWN_MS) return; // still cooling down
 
-        lastSwingTimeMs = now;
+        // A swing is already being measured: keep the strongest reading,
+        // and send it once the window has elapsed.
+        if (swingWindowOpen) {
+            if (magnitude > swingPeak) {
+                swingPeak = magnitude;
+            }
+            if (now - swingWindowStartMs >= SWING_PEAK_WINDOW_MS) {
+                swingWindowOpen = false;
+                lastSwingTimeMs = now; // cooldown starts when the swing is sent
+                sendSwing(swingPeak);
+            }
+            return;
+        }
 
+        if (magnitude < SWING_THRESHOLD) {
+            return; // too gentle — ignore
+        }
+        if (now - lastSwingTimeMs < SWING_COOLDOWN_MS) {
+            return; // still cooling down
+        }
+
+        // Threshold crossed: start measuring this swing's peak.
+        swingWindowOpen = true;
+        swingWindowStartMs = now;
+        swingPeak = magnitude;
+    }
+
+    private void sendSwing(double magnitude) {
         JSONObject msg = new JSONObject();
         try {
             msg.put("type", "swing");
             msg.put("magnitude", magnitude);
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        sendMessage(msg);
+    }
+
+    // ------------------------------------------------------------------------
+    // ACCELEROMETER INPUT: tilt (view rotation)
+    // ------------------------------------------------------------------------
+    // Separates the steady pull of gravity out of the accelerometer with a
+    // low-pass filter, works out how far the phone leans toward its screen's
+    // left/right, and sends that as a -1..+1 value. Works in portrait or
+    // landscape because it checks which way the screen is currently rotated.
+    //   tilt right (right edge down) -> positive
+    //   tilt left  (left edge down)  -> negative
+    @SuppressWarnings("deprecation")
+    private void handleAccelerometer(SensorEvent event) {
+        long nowMs = System.currentTimeMillis();
+        boolean swingBusy = swingWindowOpen
+                || (nowMs - lastSwingTimeMs < TILT_HOLD_AFTER_SWING_MS);
+
+        if (!gravityInitialized) {
+            System.arraycopy(event.values, 0, gravity, 0, 3);
+            gravityInitialized = true;
+        } else if (!swingBusy) {
+            for (int i = 0; i < 3; i++) {
+                gravity[i] = TILT_FILTER_ALPHA * gravity[i]
+                        + (1f - TILT_FILTER_ALPHA) * event.values[i];
+            }
+        }
+
+        long now = System.currentTimeMillis();
+        if (!isConnected || now - lastTiltSentMs < TILT_SEND_INTERVAL_MS) {
+            return;
+        }
+        lastTiltSentMs = now;
+
+        // Sensor axes are fixed to the phone's natural orientation, so pick
+        // the axis that currently points toward the SCREEN's right side.
+        float screenRight;
+        switch (getWindowManager().getDefaultDisplay().getRotation()) {
+            case Surface.ROTATION_90:
+                screenRight = -gravity[1];
+                break;
+            case Surface.ROTATION_180:
+                screenRight = -gravity[0];
+                break;
+            case Surface.ROTATION_270:
+                screenRight = gravity[1];
+                break;
+            default:
+                screenRight = gravity[0];
+                break;
+        }
+
+        // The accelerometer reads opposite to gravity, so a right tilt gives
+        // a NEGATIVE reading — flip the sign so right = positive.
+        float ratio = Math.max(-1f, Math.min(1f, -screenRight / SensorManager.GRAVITY_EARTH));
+        double angleDeg = Math.toDegrees(Math.asin(ratio));
+        double value = Math.max(-1.0, Math.min(1.0, angleDeg / TILT_FULL_ANGLE_DEG));
+
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("type", "tilt");
+            msg.put("value", value);
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
@@ -540,17 +718,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (gyroSensor != null) {
             sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
         }
+        if (accelSensor != null) {
+            sensorManager.registerListener(this, accelSensor, SensorManager.SENSOR_DELAY_GAME);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        swingWindowOpen = false; // drop any half-measured swing
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        wantConnected = false; // the app is closing: do not reconnect
+        handler.removeCallbacks(reconnectRunnable);
         if (webSocket != null) {
             webSocket.close(1000, "App closed");
         }
