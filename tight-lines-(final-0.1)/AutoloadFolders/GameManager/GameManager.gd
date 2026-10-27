@@ -43,6 +43,7 @@ signal volume_changed(bus_name: String, linear: float)
 #
 # Paths are PLACEHOLDERS - change them to match your project tree.
 const SCENES: Dictionary = {
+	#Main Menu
 	"main_menu": {
 		"path": "res://UIScenesAndScript/MainMenu/MainMenu.tscn",
 		"input": "menu",
@@ -55,12 +56,16 @@ const SCENES: Dictionary = {
 		"music": "res://audio/music/main_menu.ogg",   # same track = no restart
 		"pausable": false,
 	},
+
+	#WTF is this
 	"cutscene": {
 		"path": "res://cutscenes/Cutscene.tscn",
 		"input": "menu",
 		"music": "res://audio/music/cutscene.ogg",
 		"pausable": false,
 	},
+
+	#2D Scenes
 	"overworld_spawn": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/Spawn/MainArea01.tscn",
 		"input": "overworld",
@@ -110,17 +115,19 @@ const SCENES: Dictionary = {
 		"pausable": true,
 	},
 	"overworld_house_1": {
-		"path": "res://OverWorldSceneAndScript/Area01Scene/House_Folder/Area01_House1.tscn",
+		"path": "res://OverWorldSceneAndScript/1_MainArea/House_Folder/Area01_House1.tscn",
 		"input": "overworld",
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,
 	},
 	"overworld_house_2": {
-		"path": "res://OverWorldSceneAndScript/Area01Scene/House_Folder/Area01_House2.tscn",
+		"path": "res://OverWorldSceneAndScript/1_MainArea/House_Folder/Area01_House2.tscn",
 		"input": "overworld",
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,
 	},
+
+	#3D Fishing
 	"fishing_rice_field": {
 		"path": "res://3DFishingScene/3DFishingRiceField.tscn",
 		"input": "fishing",
