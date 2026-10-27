@@ -1025,23 +1025,23 @@ polygon = PackedVector2Array(-193, 364, -192, 602, -193, 608, 402, 608, 400, 576
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("8_r8hk7")]
 position = Vector2(-130, 587)
 
-[node name="House2Gateway" type="Node2D" parent="." unique_id=1480126398]
+[node name="House1ToHouse2" type="Node2D" parent="." unique_id=1480126398]
 position = Vector2(-145, 379)
 scale = Vector2(2, 1)
 
-[node name="House2Gateway" type="Area2D" parent="House2Gateway" unique_id=2108429831]
+[node name="House1ToHouse2" type="Area2D" parent="House1ToHouse2" unique_id=2108429831]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="House2Gateway/House2Gateway" unique_id=200780265]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="House1ToHouse2/House1ToHouse2" unique_id=200780265]
 shape = SubResource("RectangleShape2D_r8hk7")
 
-[node name="Area1Gateway" type="Node2D" parent="." unique_id=100625748]
+[node name="House1ToSpawn" type="Node2D" parent="." unique_id=100625748]
 position = Vector2(-130, 597)
 scale = Vector2(2, 1)
 
-[node name="Area1Gateway" type="Area2D" parent="Area1Gateway" unique_id=1160086386]
+[node name="House1ToSpawn" type="Area2D" parent="House1ToSpawn" unique_id=1160086386]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area1Gateway/Area1Gateway" unique_id=1191085926]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="House1ToSpawn/House1ToSpawn" unique_id=1191085926]
 shape = SubResource("RectangleShape2D_r8hk7")
 
-[connection signal="body_entered" from="House2Gateway/House2Gateway" to="Player" method="_on_house_2_gateway_body_entered"]
-[connection signal="body_entered" from="Area1Gateway/Area1Gateway" to="Player" method="_on_area_1_gateway_body_entered"]
+[connection signal="body_entered" from="House1ToHouse2/House1ToHouse2" to="Player" method="_on_house_1_to_house_2_body_entered"]
+[connection signal="body_entered" from="House1ToSpawn/House1ToSpawn" to="Player" method="_on_house_1_to_spawn_body_entered"]

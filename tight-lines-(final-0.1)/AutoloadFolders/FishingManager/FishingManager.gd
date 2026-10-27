@@ -108,14 +108,14 @@ const TEMP_FISH_STAMINA := 20.0          # real range 10-30 s
 
 # --- Reel fight tuning (guesses, tune after playtest) ---
 # tension is in the same units as a rod's line_strength.
-const REEL_TENSION_FORCE := 4.0     # tension added while reeling (x reel_speed)
-const TENSION_RISE_RATE := 12.0     # units/sec toward a higher target
-const TENSION_FALL_RATE := 6.0      # units/sec toward a lower target
-const REEL_PROGRESS_RATE := 0.12    # progress/sec while reeling (x reel_speed)
-const FISH_DRAG_RATE := 0.012       # progress lost/sec per unit of fish pull
-const START_PROGRESS := 0.3         # 0 = fish gets away, 1 = landed
-const SNAP_GRACE_SEC := 0.6         # seconds over the limit before snapping (x control)
-const SURGE_PULL_MULT := 1.6
+const REEL_TENSION_FORCE := 3.0     # was 4.0
+const TENSION_RISE_RATE := 12.0
+const TENSION_FALL_RATE := 6.0
+const REEL_PROGRESS_RATE := 0.15    # was 0.12
+const FISH_DRAG_RATE := 0.009       # was 0.012
+const START_PROGRESS := 0.35        # was 0.3
+const SNAP_GRACE_SEC := 1.2         # was 0.6
+const SURGE_PULL_MULT := 1.5        # was 1.6
 const CALM_PULL_MULT := 0.6
 const SURGE_DRAIN := 1.0            
 const CALM_DRAIN := 0.4

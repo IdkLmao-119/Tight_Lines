@@ -324,3 +324,4 @@ shape = SubResource("RectangleShape2D_fu8dt")
 
 [connection signal="body_entered" from="RiceFishingSpot1Gateway/RiceFishingSpot1Gateway" to="Player" method="_on_rice_fishing_spot_1_gateway_body_entered"]
 [connection signal="body_entered" from="RiceFishingSpotGateway2/RiceFishingSpot2Gateway" to="Player" method="_on_rice_fishing_spot_2_gateway_body_entered"]
+[connection signal="area_entered" from="RiceFieldsGateway/RiceFieldsGateway" to="Player" method="_on_rice_fields_gateway_area_entered"]

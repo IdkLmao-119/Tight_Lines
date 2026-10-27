@@ -373,43 +373,43 @@ polygon = PackedVector2Array(1422, 303, 1422, 441, 1180, 443, 999, 442, 833, 442
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_841g0")]
 position = Vector2(1206, 377)
 
-[node name="Area2Gateway" type="Node2D" parent="." unique_id=1842640223]
+[node name="SpawnToFishMarket" type="Node2D" parent="." unique_id=1842640223]
 position = Vector2(1062, 2)
 scale = Vector2(1, 8)
 
-[node name="Area2Gateway" type="Area2D" parent="Area2Gateway" unique_id=1043161883]
+[node name="SpawnToFishMarket" type="Area2D" parent="SpawnToFishMarket" unique_id=1043161883]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2Gateway/Area2Gateway" unique_id=1352416228]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnToFishMarket/SpawnToFishMarket" unique_id=1352416228]
 shape = SubResource("RectangleShape2D_841g0")
 
-[node name="HouseGateway" type="Node2D" parent="." unique_id=1899106149]
+[node name="SpawnToHouse1" type="Node2D" parent="." unique_id=1899106149]
 position = Vector2(1352, 315)
 scale = Vector2(2, 1)
 
-[node name="HouseGateway" type="Area2D" parent="HouseGateway" unique_id=276594002]
+[node name="SpawnToHouse1" type="Area2D" parent="SpawnToHouse1" unique_id=276594002]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HouseGateway/HouseGateway" unique_id=475424904]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnToHouse1/SpawnToHouse1" unique_id=475424904]
 shape = SubResource("RectangleShape2D_841g0")
 
-[node name="RiceFieldsGateway" type="Node2D" parent="." unique_id=1963190504]
+[node name="SpawnToRiceFields" type="Node2D" parent="." unique_id=1963190504]
 position = Vector2(1207, -87)
 scale = Vector2(2, 1)
 
-[node name="RiceFieldsGateway" type="Area2D" parent="RiceFieldsGateway" unique_id=1324166713]
+[node name="SpawnToRiceFields" type="Area2D" parent="SpawnToRiceFields" unique_id=1324166713]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RiceFieldsGateway/RiceFieldsGateway" unique_id=976333946]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnToRiceFields/SpawnToRiceFields" unique_id=976333946]
 shape = SubResource("RectangleShape2D_841g0")
 
-[node name="RiverParkGate" type="Node2D" parent="." unique_id=1739409681]
+[node name="SpawnToRiverPark" type="Node2D" parent="." unique_id=1739409681]
 
-[node name="RiverPark" type="Area2D" parent="RiverParkGate" unique_id=554587951]
+[node name="SpawnToRiverPark" type="Area2D" parent="SpawnToRiverPark" unique_id=554587951]
 position = Vector2(3, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RiverParkGate/RiverPark" unique_id=2046524497]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnToRiverPark/SpawnToRiverPark" unique_id=2046524497]
 position = Vector2(1364, 8)
 shape = SubResource("RectangleShape2D_s3d8v")
 
-[connection signal="body_entered" from="Area2Gateway/Area2Gateway" to="Player" method="_on_area_2_gateway_body_entered"]
-[connection signal="body_entered" from="HouseGateway/HouseGateway" to="Player" method="_on_house_gateway_body_entered"]
-[connection signal="body_entered" from="RiceFieldsGateway/RiceFieldsGateway" to="Player" method="_on_rice_fields_gateway_body_entered"]
-[connection signal="body_entered" from="RiverParkGate/RiverPark" to="Player" method="_on_river_park_body_entered"]
+[connection signal="body_entered" from="SpawnToFishMarket/SpawnToFishMarket" to="Player" method="_on_spawn_to_fish_market_body_entered"]
+[connection signal="body_entered" from="SpawnToHouse1/SpawnToHouse1" to="Player" method="_on_spawn_to_house_1_body_entered"]
+[connection signal="body_entered" from="SpawnToRiceFields/SpawnToRiceFields" to="Player" method="_on_spawn_to_rice_fields_body_entered"]
+[connection signal="body_entered" from="SpawnToRiverPark/SpawnToRiverPark" to="Player" method="_on_spawn_to_river_park_body_entered"]

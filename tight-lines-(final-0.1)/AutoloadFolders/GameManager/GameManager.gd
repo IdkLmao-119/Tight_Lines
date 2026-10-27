@@ -122,7 +122,7 @@ const SCENES: Dictionary = {
 		"pausable": true,
 	},
 	"fishing_rice_field": {
-		"path": "res://fishing/FishingMinigame.tscn",
+		"path": "res://3DFishingScene/3DFishingRiceField.tscn",
 		"input": "fishing",
 		"music": "res://audio/music/fishing.ogg",
 		"pausable": true,
@@ -199,6 +199,7 @@ const BUS_SFX := "SFX"
 const REASON_USER := "user"
 const REASON_OVERLAY := "overlay"
 const REASON_DISCONNECT_PREFIX := "disconnect_"
+const DEFAULT_RETURN_SCENE := "overworld_rice_field"
 
 # --- Public state ----------------------------------------------------------
 var current_scene_id: String = ""
@@ -212,7 +213,7 @@ var scene_memory: Dictionary = {}        # { scene_id: Dictionary of saved state
 var _current_input_name: String = ""     # input context of the live scene
 var _current_context: Dictionary = {}    # context the live scene was entered with
 var _previous_context: Dictionary = {}   # context the previous scene had
-var _fishing_return_to: String = "overworld"
+var _fishing_return_to: String = DEFAULT_RETURN_SCENE
 var _pause_reasons: Dictionary = {}
 
 var _fade_rect: ColorRect
@@ -267,7 +268,10 @@ func change_scene(target: String, context: Dictionary = {}) -> void:
 	var scene_id: String = entry["id"]
 	pending_context = context.duplicate(true)
 	if scene_id == "fishing":
-		_fishing_return_to = str(context.get("return_to", "overworld"))
+		if context.has("return_to"):
+			_fishing_return_to = str(context["return_to"])
+		elif current_scene_id != "fishing" and current_scene_id != "":
+			_fishing_return_to = current_scene_id   # the scene we're leaving
 
 	# Let the scene we are leaving save its state (e.g. player position).
 	_save_leaving_scene_state()
