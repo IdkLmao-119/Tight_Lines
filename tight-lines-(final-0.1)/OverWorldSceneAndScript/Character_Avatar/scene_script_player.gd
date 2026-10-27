@@ -43,10 +43,18 @@ func _on_house_1_to_spawn_body_entered(body: Node2D) -> void:
 func _on_house_2_to_house_1_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_house_1")
 
-#Rice Field Signals
+# Rice Field Signals
 func _on_rice_fields_to_rice_fishing_spot_1_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("fishing_rice_field")
 func _on_rice_fields_to_rice_fishing_spot_2_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("fishing_rice_field")
 func _on_rice_fields_to_spawn_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_spawn")
+
+# River Park Signal
+func _on_river_park_to_spawn_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
+
+
+func _on_river_park_to_river_park_fishing_spot_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
