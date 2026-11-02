@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://8dagwkx0yana"]
 
-[ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/Area01Scene/MainArea1/TightLinesTiles.png" id="1_momdn"]
-[ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/Area01Scene/MainArea1/tileset.png" id="2_63e7s"]
-[ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/Area01Scene/MainArea1/Sprite_Essentials.png" id="3_lnoie"]
-[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://Character/Player.tscn" id="4_63e7s"]
+[ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="1_momdn"]
+[ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="2_63e7s"]
+[ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="3_lnoie"]
+[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="4_63e7s"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3kj0j"]
 texture = ExtResource("1_momdn")
@@ -341,7 +341,7 @@ sources/1 = SubResource("TileSetAtlasSource_katm0")
 sources/2 = SubResource("TileSetAtlasSource_vjw8q")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_momdn"]
-size = Vector2(116, 141.5)
+size = Vector2(42, 141.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_63e7s"]
 size = Vector2(97.25, 42)
@@ -365,7 +365,7 @@ polygon = PackedVector2Array(910, 492, 910, 142, 549, 141, 548, 127, 489, 127, 4
 [node name="MainArea" type="Area2D" parent="MainAreaGateway" unique_id=1714896040]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MainAreaGateway/MainArea" unique_id=677251775]
-position = Vector2(852, 423.75)
+position = Vector2(889, 423.75)
 shape = SubResource("RectangleShape2D_momdn")
 
 [node name="FishPenGateway" type="Node2D" parent="." unique_id=62791079]
@@ -377,7 +377,7 @@ position = Vector2(208.375, 158)
 shape = SubResource("RectangleShape2D_63e7s")
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_63e7s")]
-position = Vector2(729, 421)
+position = Vector2(890, 426)
 
 [connection signal="body_entered" from="MainAreaGateway/MainArea" to="Player" method="_on_main_area_body_entered"]
 [connection signal="body_entered" from="FishPenGateway/FishPens" to="Player" method="_on_fish_pens_body_entered"]

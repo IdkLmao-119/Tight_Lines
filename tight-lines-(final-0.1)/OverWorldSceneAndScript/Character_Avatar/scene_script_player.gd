@@ -6,8 +6,13 @@ var character_direction : Vector2
 @onready var collision: CollisionShape2D = $CollisionShape2D
 
 func _physics_process(_delta):
-	character_direction.x = Input.get_axis("Left", "Right")
-	character_direction.y = Input.get_axis("Up", "Down")
+	# Keyboard through YOUR Input Map actions (so your own key mapping still
+	# works) PLUS the phone: InputManager.get_move_vector() turns each phone
+	# swipe into a short move pulse (PHONE_MOVE_PULSE_SEC in InputManager.gd).
+	# InputManager returns zero unless the context is OVERWORLD and the game is
+	# not paused, so this also stays still in menus and the pause screen.
+	var keyboard := Vector2(Input.get_axis("Left", "Right"), Input.get_axis("Up", "Down"))
+	character_direction = (keyboard + InputManager.get_move_vector(1)).limit_length(1.0)
 	
 	if character_direction.x > 0:
 		sprite.flip_h = false
@@ -56,3 +61,5 @@ func _on_river_park_to_spawn_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_spawn")
 func _on_river_park_to_river_park_fishing_spot_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("fishing_river_park")
+
+# Fish Market Signals

@@ -201,6 +201,19 @@ const SILENT_DB := -60.0
 # InputManager is looked up by path at runtime, so GameManager still works
 # (just without input switching) if it isn't installed yet.
 const INPUT_MANAGER_PATH := "/root/InputManager"
+
+# --- Phone screen link -----------------------------------------------------
+# The Android app shows a different screen per game state and changes it when
+# the PC sends {"game_state": "overworld" | "casting" | "reeling"}.
+# GameManager sends the screen for the scene it just entered (and again when a
+# phone connects). Inside a fishing scene FishingManager takes over
+# (casting <-> reeling).
+const CONNECTION_MANAGER_PATH := "/root/ConnectionManager"
+const PHONE_SCREEN_FOR_INPUT: Dictionary = {
+	"menu": "overworld",       # menus: the phone is a navigator, same screen as overworld
+	"overworld": "overworld",
+	"fishing": "casting",
+}
 const INPUT_CONTEXTS: Dictionary = {"none": 0, "menu": 1, "overworld": 2, "fishing": 3}
 
 # --- Audio bus names -------------------------------------------------------
@@ -282,10 +295,10 @@ func change_scene(target: String, context: Dictionary = {}) -> void:
 	is_changing_scene = true
 	var scene_id: String = entry["id"]
 	pending_context = context.duplicate(true)
-	if scene_id == "fishing":
+	if _is_fishing_scene(scene_id):
 		if context.has("return_to"):
 			_fishing_return_to = str(context["return_to"])
-		elif current_scene_id != "fishing" and current_scene_id != "":
+		elif not _is_fishing_scene(current_scene_id) and current_scene_id != "":
 			_fishing_return_to = current_scene_id   # the scene we're leaving
 
 	# Let the scene we are leaving save its state (e.g. player position).
@@ -640,7 +653,7 @@ func is_inventory_open() -> bool:
 func open_inventory() -> void:
 	if _overlay_node != null or is_changing_scene or is_multiplayer:
 		return
-	if current_scene_id != "overworld" and current_scene_id != "fishing":
+	if not _is_overworld_scene(current_scene_id) and not _is_fishing_scene(current_scene_id):
 		return
 	if get_tree().paused:
 		return  # already paused (pause menu or disconnect)
@@ -806,7 +819,7 @@ func _on_inventory_pressed(_player_id: int) -> void:
 
 # A phone dropped during fishing: pause until it comes back (D3).
 func _on_controller_disconnected(player_id: int) -> void:
-	if current_scene_id != "fishing" or is_changing_scene:
+	if not _is_fishing_scene(current_scene_id) or is_changing_scene:
 		return
 	_add_pause_reason("%s%d" % [REASON_DISCONNECT_PREFIX, player_id])
 
@@ -815,6 +828,10 @@ func _on_controller_disconnected(player_id: int) -> void:
 # the game resumes by itself.
 func _on_controller_connected(player_id: int) -> void:
 	_remove_pause_reason("%s%d" % [REASON_DISCONNECT_PREFIX, player_id])
+	# A phone just (re)connected and starts on its overworld screen: tell it
+	# where we are. Not in fishing: FishingManager knows if a fish is on.
+	if _current_input_name != "fishing":
+		_send_phone_screen()
 
 
 # Sets InputManager's context by name ("none", "menu", "overworld", "fishing").
@@ -836,8 +853,32 @@ func _enter_scene_input(entry: Dictionary, context: Dictionary) -> void:
 	if context_name != "":
 		_current_input_name = context_name
 	_set_input_context(_current_input_name)
+	_send_phone_screen()
 
 	is_multiplayer = bool(context.get("multiplayer", false))
 	var im: Node = get_node_or_null(INPUT_MANAGER_PATH)
 	if im != null and im.has_method("set_multiplayer_mode"):
 		im.call("set_multiplayer_mode", is_multiplayer)
+
+
+# ============================================================================
+# PHONE SCREEN + SCENE KIND HELPERS
+# ============================================================================
+# Sends the phone the screen that matches the live scene's input context.
+func _send_phone_screen() -> void:
+	var screen: String = PHONE_SCREEN_FOR_INPUT.get(_current_input_name, "")
+	if screen == "":
+		return
+	var cm: Node = get_node_or_null(CONNECTION_MANAGER_PATH)
+	if cm != null and cm.has_method("send_to_all"):
+		cm.call("send_to_all", {"game_state": screen})
+
+
+# Scene KIND comes from the registry's "input" field, so renaming scenes
+# (fishing_rice_field, overworld_spawn, ...) never breaks these checks.
+func _is_fishing_scene(scene_id: String) -> bool:
+	return SCENES.has(scene_id) and SCENES[scene_id].get("input", "") == "fishing"
+
+
+func _is_overworld_scene(scene_id: String) -> bool:
+	return SCENES.has(scene_id) and SCENES[scene_id].get("input", "") == "overworld"
