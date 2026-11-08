@@ -360,24 +360,24 @@ layer_1/tile_data = PackedInt32Array(524347, 524290, 2, 524346, 524290, 2, 52434
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=100474629]
 polygon = PackedVector2Array(910, 492, 910, 142, 549, 141, 548, 127, 489, 127, 488, 139, 271, 140, 161, 140, 162, 174, 328, 175, 326, 346, 607, 347, 609, 484, 893, 492, 948, 537, 715, 547, 437, 503, 218, 413, 50, 235, 57, 58, 273, -102, 598, -106, 766, -92, 871, -66, 936, 30, 1043, 136, 1039, 297, 1026, 412, 974, 522, 949, 534, 873, 493)
 
-[node name="MainAreaGateway" type="Node2D" parent="." unique_id=757471948]
+[node name="FishMarketToSpawn" type="Node2D" parent="." unique_id=757471948]
 
-[node name="MainArea" type="Area2D" parent="MainAreaGateway" unique_id=1714896040]
+[node name="FishMarketToSpawn" type="Area2D" parent="FishMarketToSpawn" unique_id=1714896040]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MainAreaGateway/MainArea" unique_id=677251775]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FishMarketToSpawn/FishMarketToSpawn" unique_id=677251775]
 position = Vector2(889, 423.75)
 shape = SubResource("RectangleShape2D_momdn")
 
-[node name="FishPenGateway" type="Node2D" parent="." unique_id=62791079]
+[node name="FishMarketToFishPens" type="Node2D" parent="." unique_id=62791079]
 
-[node name="FishPens" type="Area2D" parent="FishPenGateway" unique_id=569932809]
+[node name="FishMarketToFishPens" type="Area2D" parent="FishMarketToFishPens" unique_id=569932809]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FishPenGateway/FishPens" unique_id=534804101]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FishMarketToFishPens/FishMarketToFishPens" unique_id=534804101]
 position = Vector2(208.375, 158)
 shape = SubResource("RectangleShape2D_63e7s")
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_63e7s")]
 position = Vector2(890, 426)
 
-[connection signal="body_entered" from="MainAreaGateway/MainArea" to="Player" method="_on_main_area_body_entered"]
-[connection signal="body_entered" from="FishPenGateway/FishPens" to="Player" method="_on_fish_pens_body_entered"]
+[connection signal="body_entered" from="FishMarketToSpawn/FishMarketToSpawn" to="Player" method="_on_fish_market_to_spawn_body_entered"]
+[connection signal="body_entered" from="FishMarketToFishPens/FishMarketToFishPens" to="Player" method="_on_fish_market_to_fish_pens_body_entered"]

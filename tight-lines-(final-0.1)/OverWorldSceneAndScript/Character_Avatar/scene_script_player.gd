@@ -63,3 +63,8 @@ func _on_river_park_to_river_park_fishing_spot_body_entered(body: Node2D) -> voi
 	GameManager.change_scene("fishing_river_park")
 
 # Fish Market Signals
+
+func _on_fish_market_to_spawn_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_spawn")
+func _on_fish_market_to_fish_pens_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_fishing_pens")
