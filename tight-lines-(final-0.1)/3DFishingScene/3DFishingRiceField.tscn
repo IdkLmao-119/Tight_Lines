@@ -7,6 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://der6y27lfrk8w" path="res://Assets/3D/Grass.png" id="4_owvor"]
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="4_rnksl"]
 [ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="5_bu0nd"]
+[ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_b03px"]
+[ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="9_bu0nd"]
 [ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="10_b03px"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
@@ -62,6 +64,9 @@ transparency = 2
 alpha_scissor_threshold = 0.5
 alpha_antialiasing_mode = 0
 albedo_texture = ExtResource("4_owvor")
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
+load_path = "res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"
 
 [node name="3dFishing" type="Node3D" unique_id=836610391]
 script = ExtResource("1_qjdax")
@@ -247,10 +252,32 @@ transform = Transform3D(-2.686556, 5.364925, -2.345083e-07, 0, -2.6226832e-07, -
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
-[node name="FishingManager" type="Node3D" parent="." unique_id=1502920418]
+[node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
 script = ExtResource("3_h20tu")
+player_anchors = [NodePath("../PlayerFishing")]
+rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
+bobber_scene = ExtResource("8_b03px")
+debug_spot_id = "location_rice_fields"
+debug_rod_id = "rod_basic"
+debug_bait_id = "bait_1"
+debug_log = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
 
 [node name="3DSceneUI" parent="CanvasLayer" unique_id=1628659695 instance=ExtResource("10_b03px")]
 metadata/_edit_use_anchors_ = true
+
+[node name="FishLayout" type="TextureRect" parent="CanvasLayer" unique_id=729170580]
+visible = false
+custom_minimum_size = Vector2(300, 300)
+offset_left = 485.0
+offset_top = 125.99999
+offset_right = 785.0
+offset_bottom = 426.0
+rotation = 0.43633232
+texture = SubResource("CompressedTexture2D_b03px")
+
+[node name="WeatherSystem" type="Node3D" parent="." unique_id=826944014]
+script = ExtResource("9_bu0nd")
+weather_change_game_minutes = 100.0
+avoid_repeat = false

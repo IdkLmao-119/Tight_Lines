@@ -437,13 +437,14 @@ func _handle_message(player_id: int, message: String):
 # Sends a message to EVERY connected player at once.
 # Useful for things all players should see, like a shared game-state update.
 func send_to_all(data: Dictionary):
+	# send_text(), NOT send(buffer): send() on a byte array goes out as a BINARY
+	# frame, which the Android app's onMessage(String) never receives.
 	var message = JSON.stringify(data)
-	var buffer = message.to_utf8_buffer()
 
 	for player_id in _peers.keys():
 		var ws: WebSocketPeer = _peers[player_id]
 		if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
-			ws.send(buffer)
+			ws.send_text(message)
 
 # Sends a message to just ONE specific player, found by their player_id.
 # Useful for things only relevant to a single player, like "you caught a fish!"
@@ -454,9 +455,8 @@ func send_to_player(player_id: int, data: Dictionary):
 
 	var ws: WebSocketPeer = _peers[player_id]
 	if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
-		var message = JSON.stringify(data)
-		var buffer = message.to_utf8_buffer()
-		ws.send(buffer)
+		# send_text(): a TEXT frame (see send_to_all).
+		ws.send_text(JSON.stringify(data))
 
 func get_connected_players() -> Array:
 	return _peers.keys()

@@ -1,7 +1,7 @@
 extends Node
 
 # ============================================================================
-# INPUT MANAGER (GODOT / PC SIDE)  — TightLines
+# INPUT MANAGER (GODOT / PC SIDE)  — TightLines            VERSION 4
 # ============================================================================
 # Turns raw input (keyboard + phone gestures relayed by ConnectionManager)
 # into ONE unified API that the rest of the game uses. Gameplay code never
@@ -30,6 +30,18 @@ extends Node
 #   OVERWORLD — 2D world: move, interact, cancel, pause
 #   FISHING   — 3D minigame: cast, reel, interact, look (view rotation)
 #
+# TILT NEUTRAL
+#   The phone's tilt is measured relative to a NEUTRAL value captured when
+#   the FISHING context starts (and when a phone reconnects), so a phone
+#   propped at an angle doesn't slowly spin the view. Call
+#   InputManager.calibrate_look(player_id) to re-capture it at any time
+#   (for example when a fishing session starts or the player taps "recenter").
+#
+# PAUSE
+#   While the scene tree is paused, OVERWORLD / FISHING behave like MENU: phone
+#   gestures navigate the pause menu (ui_* injection) and gameplay signals
+#   are suppressed. Esc (tl_pause) still emits pause_pressed so you can resume.
+#
 # MULTIPLAYER RULES
 #   Single player : keyboard is Player 1. ANY connected phone also acts as
 #                   Player 1 (its player_id is remapped to 1).
@@ -40,7 +52,8 @@ extends Node
 # PHONE GESTURE MAP
 #   FISHING   swing         = cast (swing speed -> power)
 #             swipe (any)   = reel
-#             tap           = interact (general button; e.g. set the hook)
+#             tap           = interact (general button; the fishing rules decide
+#                             what it does, e.g. recall the line while WAITING)
 #             tilt L/R      = rotate player's view (get_look())
 #   OVERWORLD swipe = short move pulse | tap = interact | swing = cancel
 #   MENU      swipe = navigate | tap = accept | swing = cancel
@@ -69,9 +82,20 @@ signal interact_pressed(player_id)
 signal cancel_pressed(player_id)
 signal pause_pressed(player_id)
 
+# Menus only (e.g. rotate an item in the Tackle Box). Keyboard: R.
+# The phone has no gesture for this yet (swing is already "back").
+signal rotate_pressed(player_id)
+
+# Keyboard I. Emitted in OVERWORLD, FISHING and MENU so the same key can open
+# AND close the inventory overlay. GameManager decides whether it applies
+# (the overlay is single-player only, and keyboard is off in multiplayer fishing).
+signal inventory_pressed(player_id)
+
 # NOTE: view rotation (tilt / A-D keys) is continuous, so it is POLLING ONLY:
 #       call get_look(player_id) each frame.
 
+# CONTRACT: other projects may hardcode these numbers (NONE=0, MENU=1,
+# OVERWORLD=2, FISHING=3). Never reorder or insert values; only append.
 enum InputContext { NONE, MENU, OVERWORLD, FISHING }
 
 const DEVICE_KEYBOARD := &"keyboard"
@@ -84,10 +108,13 @@ const CONNECTION_MANAGER_PATH := "/root/ConnectionManager"
 
 # --- Tuning -----------------------------------------------------------------
 # Phone swing magnitudes (rad/s) mapped onto 0..1 cast power. The phone app
-# only reports swings above 4.0, so that is the floor.
-const SWING_MIN_MAGNITUDE := 50
-const SWING_MAX_MAGNITUDE := 100
-const MIN_CAST_POWER := 50
+# only reports swings above SWING_THRESHOLD (MainActivity.java), and this
+# script ignores anything below SWING_MIN_MAGNITUDE as a second filter.
+# Keep SWING_MIN_MAGNITUDE >= the phone's SWING_THRESHOLD. Real hard swings
+# measured 14-16 rad/s; raise these to make swings LESS sensitive.
+const SWING_MIN_MAGNITUDE := 8.0
+const SWING_MAX_MAGNITUDE := 18.0
+const MIN_CAST_POWER := 0.15
 
 # Holding the cast key this long (seconds) gives full power.
 const KEYBOARD_CAST_CHARGE_TIME := 1.0
@@ -107,6 +134,11 @@ const TILT_TIMEOUT_SEC := 0.5
 
 @export var debug_log := false
 
+# When true, tilt is re-centered automatically when the FISHING context
+# starts and when a phone (re)connects. Turn off if you want to call
+# calibrate_look() yourself.
+@export var auto_calibrate_look := true
+
 # --- Keyboard bindings ------------------------------------------------------
 # Registered into Godot's InputMap at startup. If an action with the same
 # name ALREADY exists in your Project Settings > Input Map, it is left alone
@@ -124,6 +156,8 @@ const KEY_BINDINGS := {
 	&"tl_reel": [KEY_R, KEY_DOWN],
 	&"tl_look_left": [KEY_A, KEY_LEFT],
 	&"tl_look_right": [KEY_D, KEY_RIGHT],
+	&"tl_rotate": [KEY_R],
+	&"tl_inventory": [KEY_I],
 }
 
 const MENU_SWIPE_ACTIONS := {
@@ -147,8 +181,13 @@ var context: InputContext = InputContext.MENU:
 	set(value):
 		if value == context:
 			return
+		var previous := context
 		context = value
 		_cast_charge_start = -1.0
+		# Not when returning from MENU: that is the inventory overlay closing
+		# mid-session, and the neutral from before it is still correct.
+		if value == InputContext.FISHING and previous != InputContext.MENU and auto_calibrate_look:
+			calibrate_look()
 		context_changed.emit(context)
 		if debug_log:
 			print("[InputManager] context -> %s" % InputContext.keys()[context])
@@ -165,6 +204,8 @@ var _cast_charge_start := -1.0 # keyboard cast charge start time, -1 = idle
 # Setup
 # ----------------------------------------------------------------------------
 func _ready() -> void:
+	# Must keep running while paused so pause menus can be driven by phones.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_register_keyboard_actions()
 	# Deferred so ConnectionManager exists regardless of autoload order.
 	_connect_connection_manager.call_deferred()
@@ -207,6 +248,28 @@ func _connect_connection_manager() -> void:
 func set_context(new_context: InputContext) -> void:
 	context = new_context
 
+# Re-centers phone tilt: the phone's CURRENT tilt becomes "straight ahead".
+# Applied when that phone's next tilt message arrives. player_id -1 = everyone.
+func calibrate_look(player_id: int = -1) -> void:
+	if player_id < 0:
+		for st in _state.values():
+			st["calibrate_next"] = true
+	else:
+		_get_state(player_id)["calibrate_next"] = true
+
+# The context gameplay should actually act on right now. While paused, game
+# contexts act like MENU so nothing leaks into a frozen game.
+func _active_context() -> InputContext:
+	if (context == InputContext.OVERWORLD or context == InputContext.FISHING) and get_tree().paused:
+		return InputContext.MENU
+	return context
+
+# Losing window focus mid-charge would otherwise miss the key release and
+# fire a surprise full-power cast later.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		_cast_charge_start = -1.0
+
 func set_multiplayer_mode(enabled: bool) -> void:
 	multiplayer_mode = enabled
 	_cast_charge_start = -1.0
@@ -235,7 +298,7 @@ func get_last_device(player_id: int = KEYBOARD_PLAYER_ID) -> StringName:
 
 # Overworld movement. Keyboard: WASD/arrows. Phone: swipe pulse.
 func get_move_vector(player_id: int = KEYBOARD_PLAYER_ID) -> Vector2:
-	if context == InputContext.NONE:
+	if _active_context() != InputContext.OVERWORLD:
 		return Vector2.ZERO
 	var v := Vector2.ZERO
 	if player_id == KEYBOARD_PLAYER_ID and is_keyboard_enabled():
@@ -250,7 +313,7 @@ func get_move_vector(player_id: int = KEYBOARD_PLAYER_ID) -> Vector2:
 # Keyboard: A/D or Left/Right (full speed). Multiply by your turn speed and
 # delta, e.g.  camera_yaw -= InputManager.get_look(id) * TURN_SPEED * delta
 func get_look(player_id: int = KEYBOARD_PLAYER_ID) -> float:
-	if context != InputContext.FISHING:
+	if _active_context() != InputContext.FISHING:
 		return 0.0
 	var v := 0.0
 	if player_id == KEYBOARD_PLAYER_ID and is_keyboard_enabled():
@@ -262,7 +325,7 @@ func get_look(player_id: int = KEYBOARD_PLAYER_ID) -> float:
 
 # 1.0 while the player is reeling (key held / phone pulse active), else 0.0.
 func get_reel_strength(player_id: int = KEYBOARD_PLAYER_ID) -> float:
-	if context != InputContext.FISHING:
+	if _active_context() != InputContext.FISHING:
 		return 0.0
 	if player_id == KEYBOARD_PLAYER_ID and is_keyboard_enabled() and Input.is_action_pressed(&"tl_reel"):
 		return 1.0
@@ -283,20 +346,36 @@ func get_cast_charge() -> float:
 func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey):
 		return
+	# Pause key works even while paused (so it can resume) and even in
+	# multiplayer fishing, where the rest of the keyboard is disabled.
+	if (context == InputContext.OVERWORLD or context == InputContext.FISHING) \
+			and event.is_action_pressed(&"tl_pause"):
+		pause_pressed.emit(KEYBOARD_PLAYER_ID)
+		return
+
 	if not is_keyboard_enabled():
 		_cast_charge_start = -1.0
 		return
 	if event.pressed and not event.echo:
 		_set_device(KEYBOARD_PLAYER_ID, DEVICE_KEYBOARD)
 
-	match context:
+	if _active_context() != InputContext.FISHING:
+		_cast_charge_start = -1.0
+
+	match _active_context():
+		InputContext.MENU:
+			if event.is_action_pressed(&"tl_rotate"):
+				rotate_pressed.emit(KEYBOARD_PLAYER_ID)
+			elif event.is_action_pressed(&"tl_inventory"):
+				inventory_pressed.emit(KEYBOARD_PLAYER_ID)
+
 		InputContext.OVERWORLD:
 			if event.is_action_pressed(&"tl_interact"):
 				interact_pressed.emit(KEYBOARD_PLAYER_ID)
+			elif event.is_action_pressed(&"tl_inventory"):
+				inventory_pressed.emit(KEYBOARD_PLAYER_ID)
 			elif event.is_action_pressed(&"tl_cancel"):
 				cancel_pressed.emit(KEYBOARD_PLAYER_ID)
-			elif event.is_action_pressed(&"tl_pause"):
-				pause_pressed.emit(KEYBOARD_PLAYER_ID)
 
 		InputContext.FISHING:
 			if event.is_action_pressed(&"tl_cast"):
@@ -311,10 +390,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				reel.emit(KEYBOARD_PLAYER_ID, 1.0)
 			elif event.is_action_pressed(&"tl_interact"):
 				interact_pressed.emit(KEYBOARD_PLAYER_ID)
+			elif event.is_action_pressed(&"tl_inventory"):
+				inventory_pressed.emit(KEYBOARD_PLAYER_ID)
 			elif event.is_action_pressed(&"tl_cancel"):
 				cancel_pressed.emit(KEYBOARD_PLAYER_ID)
-			elif event.is_action_pressed(&"tl_pause"):
-				pause_pressed.emit(KEYBOARD_PLAYER_ID)
 
 # ----------------------------------------------------------------------------
 # Phone input (from ConnectionManager signals)
@@ -350,7 +429,7 @@ func _on_phone_swipe(phone_id: int, direction: String, _dx: float, _dy: float) -
 	var pid := _accept_phone_input(phone_id)
 	if pid < 0:
 		return
-	match context:
+	match _active_context():
 		InputContext.MENU:
 			if MENU_SWIPE_ACTIONS.has(direction):
 				_inject_ui_action(MENU_SWIPE_ACTIONS[direction])
@@ -365,17 +444,19 @@ func _on_phone_tap(phone_id: int, _x: float, _y: float) -> void:
 	var pid := _accept_phone_input(phone_id)
 	if pid < 0:
 		return
-	match context:
+	match _active_context():
 		InputContext.MENU:
 			_inject_ui_action(&"ui_accept")
 		InputContext.OVERWORLD, InputContext.FISHING:
 			interact_pressed.emit(pid)
 
 func _on_phone_swing(phone_id: int, magnitude: float) -> void:
+	if magnitude < SWING_MIN_MAGNITUDE:
+		return # too gentle: ignore (also in menus, so "back" isn't triggered by accident)
 	var pid := _accept_phone_input(phone_id)
 	if pid < 0:
 		return
-	match context:
+	match _active_context():
 		InputContext.MENU:
 			_inject_ui_action(&"ui_cancel")
 		InputContext.OVERWORLD:
@@ -387,13 +468,19 @@ func _on_phone_swing(phone_id: int, magnitude: float) -> void:
 			cast_triggered.emit(pid, power)
 
 func _on_phone_tilt(phone_id: int, value: float) -> void:
-	if context != InputContext.FISHING:
+	if _active_context() != InputContext.FISHING:
 		return
 	var pid := _phone_player_id(phone_id)
 	if pid < 0:
 		return
 	var st := _get_state(pid)
-	st["look"] = clampf(value, -1.0, 1.0)
+	var raw := clampf(value, -1.0, 1.0)
+	if st["calibrate_next"]:
+		st["neutral"] = raw
+		st["calibrate_next"] = false
+		if debug_log:
+			print("[InputManager] player %d tilt neutral set to %.2f" % [pid, raw])
+	st["look"] = clampf(raw - st["neutral"], -1.0, 1.0)
 	st["look_time"] = _now()
 
 # ----------------------------------------------------------------------------
@@ -445,6 +532,7 @@ func _get_state(pid: int) -> Dictionary:
 			"move": Vector2.ZERO, "move_until": 0.0,
 			"reel_until": 0.0,
 			"look": 0.0, "look_time": -100.0,
+			"neutral": 0.0, "calibrate_next": auto_calibrate_look,
 		}
 	return _state[pid]
 

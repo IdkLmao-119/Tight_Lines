@@ -99,7 +99,7 @@ const KINDS := ["fish", "bait", "rod", "location"]
 ## When true, ANY validation error fails the whole load (database stays empty and
 ## [member is_loaded] is false). Set in [method _ready] from [code]OS.is_debug_build()[/code]:
 ## strict while developing, lenient in shipped builds. Set it before calling [method load_all].
-var strict_mode := true
+var strict_mode := false
 
 ## When true, nothing is sent to [code]push_error[/code]/[code]push_warning[/code]
 ## (messages are still collected in [member load_errors]/[member load_warnings]).

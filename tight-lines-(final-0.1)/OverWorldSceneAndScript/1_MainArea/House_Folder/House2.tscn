@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dr1qhivsh335r"]
 
 [ext_resource type="Texture2D" uid="uid://cgnl5fuglqi2u" path="res://OverWorldSceneAndScript/1_MainArea/House_Folder/TopDownHouse_FloorsAndWalls.png" id="1_id4lf"]
+[ext_resource type="Script" uid="uid://pu5yhka51maw" path="res://OverWorldSceneAndScript/1_MainArea/House_Folder/2d_scene_script_house_2.gd" id="1_ut7pq"]
 [ext_resource type="Texture2D" uid="uid://hxm03sjg6x1u" path="res://OverWorldSceneAndScript/1_MainArea/House_Folder/tiles and items.png" id="2_6pvbn"]
 [ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="3_6pvbn"]
 
@@ -252,7 +253,8 @@ sources/1 = SubResource("TileSetAtlasSource_vlj21")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6pvbn"]
 
-[node name="Area01House2" type="Node2D" unique_id=546978203]
+[node name="House2" type="Node2D" unique_id=546978203]
+script = ExtResource("1_ut7pq")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=1637177622]
 tile_set = SubResource("TileSet_tg5ph")
@@ -269,13 +271,13 @@ polygon = PackedVector2Array(206, 431, 205, 576, 672, 576, 672, 428, 206, 429, 1
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("3_6pvbn")]
 position = Vector2(263, 555)
 
-[node name="HouseGateway" type="Node2D" parent="." unique_id=1494793175]
+[node name="House2ToHouse1" type="Node2D" parent="." unique_id=1494793175]
 position = Vector2(263, 564)
 scale = Vector2(2, 1)
 
-[node name="HouseGateway" type="Area2D" parent="HouseGateway" unique_id=1519786146]
+[node name="House2ToHouse1" type="Area2D" parent="House2ToHouse1" unique_id=1519786146]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HouseGateway/HouseGateway" unique_id=1824280079]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="House2ToHouse1/House2ToHouse1" unique_id=1824280079]
 shape = SubResource("RectangleShape2D_6pvbn")
 
-[connection signal="body_entered" from="HouseGateway/HouseGateway" to="Player" method="_on_house_gateway_body_entered"]
+[connection signal="body_entered" from="House2ToHouse1/House2ToHouse1" to="Player" method="_on_house_2_to_house_1_body_entered"]
