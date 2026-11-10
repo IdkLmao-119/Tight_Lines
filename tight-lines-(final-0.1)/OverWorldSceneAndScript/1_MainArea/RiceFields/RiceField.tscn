@@ -288,21 +288,26 @@ layer_0/tile_data = PackedInt32Array(2555904, 0, 2, 2555905, 0, 2, 2555906, 0, 2
 position = Vector2(934, 569)
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=539778915]
+visible = false
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=1257466985]
+visible = false
 polygon = PackedVector2Array(966, 594, 964, 523, 646, 523, 277, 522, 277, 422, 529, 419, 525, 350, 177, 353, 175, 223, 113, 221, 118, 367, 117, 592, 770, 590, 888, 592, 891, 731, 580, 733, 278, 733, 40, 731, 32, 220, 28, 122, 473, 125, 824, 116, 1152, 119, 1152, 354, 1155, 730, 898, 730, 887, 592)
 
 [node name="RiceFieldsToRiceFishingSpot1" type="Node2D" parent="." unique_id=1094637765]
+visible = false
 position = Vector2(231, 471.00003)
 scale = Vector2(5, 5)
 
 [node name="RiceFieldsToRiceFishingSpot1" type="Area2D" parent="RiceFieldsToRiceFishingSpot1" unique_id=17095326]
+visible = false
 position = Vector2(0, -6.1035153e-06)
 
 [node name="RiceFishingSpot1Gateway" type="CollisionShape2D" parent="RiceFieldsToRiceFishingSpot1/RiceFieldsToRiceFishingSpot1" unique_id=686478799]
 shape = SubResource("RectangleShape2D_fu8dt")
 
 [node name="RiceFieldsToRiceFishingSpot2" type="Node2D" parent="." unique_id=1658124404]
+visible = false
 position = Vector2(146, 283.00003)
 scale = Vector2(3, 7)
 
@@ -313,6 +318,7 @@ position = Vector2(0, -6.1035153e-06)
 shape = SubResource("RectangleShape2D_fu8dt")
 
 [node name="RiceFieldsToSpawn" type="Node2D" parent="." unique_id=865686185]
+visible = false
 position = Vector2(933.00006, 563)
 scale = Vector2(3, 3)
 

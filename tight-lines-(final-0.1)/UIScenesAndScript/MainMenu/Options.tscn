@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 [gd_scene format=3 uid="uid://4rv2m6xji1vn"]
+=======
+[gd_scene format=3 uid="uid://dmbmtqqidduq7"]
+>>>>>>> 6da6af35e534cbfdf8ec558d4834929b8a5da732
 
 [node name="Options" type="Control" unique_id=7903518]
 layout_mode = 3

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cffbnwjvavcx0"]
 
 [ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="1_i1y24"]
-[ext_resource type="Script" uid="uid://dk5hdoweke1tf" path="res://3DFishingScene/scene_script_3d_fishing_template.gd" id="1_u4n2x"]
+[ext_resource type="Script" path="res://3DFishingScene/scene_script_3d_fishing_template.gd" id="1_u4n2x"]
 [ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="2_i1y24"]
 [ext_resource type="Texture2D" uid="uid://btechb8bstqv3" path="res://Assets/3D/Rock Texture.jpg" id="3_goktk"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="3_mhxq0"]
@@ -58,9 +58,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.164629, 0)
 script = ExtResource("1_u4n2x")
 
 [node name="Water" type="Node3D" parent="." unique_id=225201374]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.33346224, 5)
 
 [node name="WaterStaticBody" type="StaticBody3D" parent="Water" unique_id=870294090]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.053307533, 0)
 
 [node name="SeaFloorColor" type="MeshInstance3D" parent="Water/WaterStaticBody" unique_id=1676985478]
 transform = Transform3D(50, 0, 0, 0, 1, 0, 0, 0, 50, 0, 0, 0)
