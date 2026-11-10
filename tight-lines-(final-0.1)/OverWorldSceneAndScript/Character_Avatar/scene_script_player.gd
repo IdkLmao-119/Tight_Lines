@@ -1,34 +1,38 @@
 extends CharacterBody2D
-@export var movement_speed : float = 300
 
 var character_direction : Vector2
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision: CollisionShape2D = $CollisionShape2D
 
 func _physics_process(_delta):
-	# Keyboard through YOUR Input Map actions (so your own key mapping still
-	# works) PLUS the phone: InputManager.get_move_vector() turns each phone
-	# swipe into a short move pulse (PHONE_MOVE_PULSE_SEC in InputManager.gd).
-	# InputManager returns zero unless the context is OVERWORLD and the game is
-	# not paused, so this also stays still in menus and the pause screen.
-	var keyboard := Vector2(Input.get_axis("Left", "Right"), Input.get_axis("Up", "Down"))
-	character_direction = (keyboard + InputManager.get_move_vector(1)).limit_length(1.0)
-	
-	if character_direction.x > 0:
-		sprite.flip_h = false
-	elif character_direction.x < 0:
-		sprite.flip_h = true
-	
-	if character_direction:
-		velocity = character_direction * movement_speed
-		if sprite.animation != "walking":
-			sprite.animation = "walking"
-	else:
-		velocity = velocity.move_toward(Vector2.ZERO, movement_speed)
-		if sprite.animation != "idle":
-			sprite.animation = "idle"
-	
+	var dir = Input.get_vector("Left", "Right", "Up", "Down")
+
+	velocity = dir * 200.0
 	move_and_slide()
+
+	if dir != Vector2.ZERO:
+		if abs(dir.x) > abs(dir.y):
+			if dir.x > 0:
+				sprite.play("walking_right")
+			else:
+				sprite.play("walking_left")
+		else:
+			if dir.y > 0:
+				sprite.play("walking_front")
+			else:
+				sprite.play("walking_back")
+	else:
+		match sprite.animation:
+			"walking_front", "idle_front":
+				sprite.play("idle_front")
+			"walking_back", "idle_back":
+				sprite.play("idle_back")
+			"walking_left", "idle_left":
+				sprite.play("idle_left")
+			"walking_right", "idle_right":
+				sprite.play("idle_right")
+			_:
+				sprite.play("idle_front")
 	
 # Spawn Signals
 func _on_spawn_to_fish_market_body_entered(body: Node2D) -> void:
