@@ -161,9 +161,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             getLayoutInflater().inflate(layoutResId, rootContainer, true);
 
-            // Re-bind click listeners if we are on the connection view
+            // Bind specific view listeners depending on state
             if (newState == AppState.CONNECTION) {
                 setupConnectionUI();
+            } else if (newState == AppState.REELING) {
+                FishingReelView reelView = findViewById(R.id.fishingReelView);
+                if (reelView != null) {
+                    reelView.setOnReelListener(deltaDegrees -> {
+                        JSONObject msg = new JSONObject();
+                        try {
+                            msg.put("type", "reel");
+                            msg.put("delta", deltaDegrees);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        sendMessage(msg);
+                    });
+                }
             }
         });
     }

@@ -360,24 +360,24 @@ layer_1/tile_data = PackedInt32Array(1572879, 327680, 6, 1638415, 262146, 134217
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=547560733]
 polygon = PackedVector2Array(843, 350, 843, 434, 468, 437, 470, 590, 551, 591, 552, 638, 468, 639, 469, 727, 470, 799, 438, 799, 439, 851, 399, 851, 399, 399, 286, 399, 213, 400, 213, 501, 213, 692, 172, 691, 172, 513, 172, 403, 172, 347, 521, 348, 836, 349, 775, 255, 373, 248, -17, 288, 31, 502, 135, 858, 396, 1023, 796, 896, 1086, 783, 990, 418, 910, 310, 790, 294, 832, 348)
 
-[node name="SeasideParkGateway" type="Node2D" parent="." unique_id=273643684]
+[node name="FishPensToSeasidePark" type="Node2D" parent="." unique_id=273643684]
 
-[node name="Seaside" type="Area2D" parent="SeasideParkGateway" unique_id=1414159117]
+[node name="FishPensToSeasidePark" type="Area2D" parent="FishPensToSeasidePark" unique_id=1414159117]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SeasideParkGateway/Seaside" unique_id=1296210130]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FishPensToSeasidePark/FishPensToSeasidePark" unique_id=1296210130]
 position = Vector2(792, 390.5)
 shape = SubResource("RectangleShape2D_ghw8l")
 
-[node name="SaltFarmGateway" type="Node2D" parent="." unique_id=1586451410]
+[node name="FishPenToSaltFarm" type="Node2D" parent="." unique_id=1586451410]
 
-[node name="Saltfarm" type="Area2D" parent="SaltFarmGateway" unique_id=557102211]
+[node name="FishPenToSaltFarm" type="Area2D" parent="FishPenToSaltFarm" unique_id=557102211]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SaltFarmGateway/Saltfarm" unique_id=1561296253]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FishPenToSaltFarm/FishPenToSaltFarm" unique_id=1561296253]
 position = Vector2(418.5, 825)
 shape = SubResource("RectangleShape2D_ptis5")
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_yldkx")]
 position = Vector2(726, 389)
 
-[connection signal="body_entered" from="SeasideParkGateway/Seaside" to="Player" method="_on_seaside_body_entered"]
-[connection signal="body_entered" from="SaltFarmGateway/Saltfarm" to="Player" method="_on_saltfarm_body_entered"]
+[connection signal="body_entered" from="FishPensToSeasidePark/FishPensToSeasidePark" to="Player" method="_on_fish_pens_to_seaside_park_body_entered"]
+[connection signal="body_entered" from="FishPenToSaltFarm/FishPenToSaltFarm" to="Player" method="_on_fish_pen_to_salt_farm_body_entered"]

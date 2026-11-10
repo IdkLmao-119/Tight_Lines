@@ -360,25 +360,25 @@ layer_1/tile_data = PackedInt32Array(917576, 458752, 5, 917573, 458752, 5, 91757
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=999052683]
 polygon = PackedVector2Array(1266, 221, 1326, 221, 1325, 400, 1325, 511, 1324, 779, 1324, 899, 1326, 916, 1248, 917, 1244, 759, 1244, 677, 1228, 675, 1227, 634, 1243, 634, 1242, 564, 853, 562, 852, 506, 1241, 507, 1243, 437, 1228, 436, 1227, 395, 1242, 395, 1243, 326, 1202, 324, 1201, 221, 1259, 221, 1124, 134, 974, 229, 830, 330, 768, 438, 780, 589, 837, 766, 997, 856, 1162, 960, 1266, 1049, 1457, 1033, 1605, 910, 1643, 596, 1598, 358, 1551, 148, 1412, 104, 1174, 168, 1259, 221)
 
-[node name="FishPensGateway" type="Node2D" parent="." unique_id=1041793896]
+[node name="SaltFarmToFishPens" type="Node2D" parent="." unique_id=1041793896]
 
-[node name="FishPens" type="Area2D" parent="FishPensGateway" unique_id=2073324160]
+[node name="SaltFarmToFishPens" type="Area2D" parent="SaltFarmToFishPens" unique_id=2073324160]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FishPensGateway/FishPens" unique_id=148273863]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SaltFarmToFishPens/SaltFarmToFishPens" unique_id=148273863]
 position = Vector2(1262.5, 262)
 shape = SubResource("RectangleShape2D_13mso")
 
-[node name="MangroveForestGateway" type="Node2D" parent="." unique_id=1277262295]
+[node name="SaltFarmToMangroveForest" type="Node2D" parent="." unique_id=1277262295]
 position = Vector2(1262.5, 262)
 
-[node name="Mangrove" type="Area2D" parent="MangroveForestGateway" unique_id=968098783]
+[node name="SaltFarmToMangroveForest" type="Area2D" parent="SaltFarmToMangroveForest" unique_id=968098783]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MangroveForestGateway/Mangrove" unique_id=2075980323]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SaltFarmToMangroveForest/SaltFarmToMangroveForest" unique_id=2075980323]
 position = Vector2(24.5, 621)
 shape = SubResource("RectangleShape2D_8we6m")
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_lleit")]
 position = Vector2(1294, 321)
 
-[connection signal="body_entered" from="FishPensGateway/FishPens" to="Player" method="_on_fish_pens_body_entered"]
-[connection signal="body_entered" from="MangroveForestGateway/Mangrove" to="Player" method="_on_mangrove_body_entered"]
+[connection signal="body_entered" from="SaltFarmToFishPens/SaltFarmToFishPens" to="Player" method="_on_salt_farm_to_fish_pens_body_entered"]
+[connection signal="body_entered" from="SaltFarmToMangroveForest/SaltFarmToMangroveForest" to="Player" method="_on_salt_farm_to_mangrove_forest_body_entered"]
