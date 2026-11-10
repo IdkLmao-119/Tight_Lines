@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b2wg36t11o40t" path="res://UIScenesAndScript/3d_ui/3DsceneUI.gd" id="1_5frun"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_51xn0"]
+[ext_resource type="Script" uid="uid://ce48sexwsj167" path="res://UIScenesAndScript/3d_ui/AlmanacButton.gd" id="3_0ycej"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qbet6"]
 bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
@@ -145,6 +146,16 @@ offset_right = 276.0
 offset_bottom = 22.75
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Button" type="Button" parent="." unique_id=1020407596]
+layout_mode = 0
+offset_left = 728.0
+offset_top = 19.0
+offset_right = 903.0
+offset_bottom = 113.0
+theme_override_fonts/font = ExtResource("2_51xn0")
+text = "Almanac"
+script = ExtResource("3_0ycej")
 
 [connection signal="pressed" from="OverworldButton" to="." method="_on_overworld_button_pressed"]
 [connection signal="pressed" from="StartButton" to="." method="_on_Pause_button_pressed"]
