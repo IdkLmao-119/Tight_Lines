@@ -135,7 +135,7 @@ enum State { IDLE, CASTING, WAITING, REELING, CAUGHT, ESCAPED }
 @export var debug_rod_id := ""
 @export var debug_bait_id := ""
 @export var debug_multiplayer := false        # F6 test of the 2-player scene without GameManager context
-@export var debug_log := false
+@export var debug_log := true
 
 # --- Day / weather words (FishingTerms) used when NO WeatherSystem node is in the scene ---
 # With a WeatherSystem node its time_of_day and weather win over these two.

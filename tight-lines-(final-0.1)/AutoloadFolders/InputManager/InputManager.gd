@@ -132,7 +132,7 @@ const TILT_DEADZONE := 0.12
 # treated as 0 (protects against a stuck view if the connection stalls).
 const TILT_TIMEOUT_SEC := 0.5
 
-@export var debug_log := false
+@export var debug_log := true
 
 # When true, tilt is re-centered automatically when the FISHING context
 # starts and when a phone (re)connects. Turn off if you want to call

@@ -179,8 +179,8 @@ const SCENES: Dictionary = {
 		"pausable": true,
 	},
 	"multiplayer": {
-		"path": "res://OverWorldSceneAndScript/Area01Scene/MainArea1/MainArea01.tscn",
-		"input": "overworld",
+		"path": "res://3DFishingScene/3d_fishing_multiplayer.tscn",
+		"input": "fishing",
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,
 	},
