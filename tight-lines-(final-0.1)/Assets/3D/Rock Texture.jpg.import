@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://btechb8bstqv3"
 path.s3tc="res://.godot/imported/Rock Texture.jpg-b9f26f195af6e773e81b2c47b51f1912.s3tc.ctex"
+path.etc2="res://.godot/imported/Rock Texture.jpg-b9f26f195af6e773e81b2c47b51f1912.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://Assets/3D/Rock Texture.jpg"
-dest_files=["res://.godot/imported/Rock Texture.jpg-b9f26f195af6e773e81b2c47b51f1912.s3tc.ctex"]
+dest_files=["res://.godot/imported/Rock Texture.jpg-b9f26f195af6e773e81b2c47b51f1912.s3tc.ctex", "res://.godot/imported/Rock Texture.jpg-b9f26f195af6e773e81b2c47b51f1912.etc2.ctex"]
 
 [params]
 

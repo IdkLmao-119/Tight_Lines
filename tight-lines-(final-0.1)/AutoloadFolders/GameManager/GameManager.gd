@@ -137,13 +137,13 @@ const SCENES: Dictionary = {
 
 	#3D Fishing
 	"fishing_rice_field": {
-		"path": "res://3DFishingScene/3DFishingRiceField.tscn",
+		"path": "res://3DFishingScene/Are1FishingScenes/3DFishingRiceField.tscn",
 		"input": "fishing",
 		"music": "res://audio/music/fishing.ogg",
 		"pausable": true,
 	},
 	"fishing_river_park": {
-		"path": "res://OverWorldSceneAndScript/Area01Scene/MainArea1/MainArea01.tscn",
+		"path": "res://3DFishingScene/Area1FishingScenes/3DFishingRiverPark.tscn",
 		"input": "overworld",
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,
@@ -179,7 +179,7 @@ const SCENES: Dictionary = {
 		"pausable": true,
 	},
 	"multiplayer": {
-		"path": "res://3DFishingScene/3d_fishing_multiplayer.tscn",
+		"path": "res://3DFishingScene/MultiplayerFishingScene/3d_fishing_multiplayer.tscn",
 		"input": "fishing",
 		"music": "res://audio/music/overworld.ogg",
 		"pausable": true,

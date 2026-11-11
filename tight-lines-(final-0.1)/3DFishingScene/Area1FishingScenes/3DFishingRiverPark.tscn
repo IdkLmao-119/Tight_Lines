@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://epk5xvv8khbx"]
+[gd_scene format=3 uid="uid://liei5q300h37"]
 
 [ext_resource type="Script" uid="uid://dhj4fll8hgec7" path="res://3DFishingScene/Area1FishingScenes/scene_script_3d_fishing_rice_field.gd" id="1_wl0bg"]
 [ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="2_7waym"]
