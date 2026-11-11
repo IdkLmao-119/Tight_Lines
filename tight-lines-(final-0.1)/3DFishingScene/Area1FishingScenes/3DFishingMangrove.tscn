@@ -1,0 +1,309 @@
+[gd_scene format=3 uid="uid://b6iyc76awf46c"]
+
+[ext_resource type="Script" uid="uid://dhj4fll8hgec7" path="res://3DFishingScene/Area1FishingScenes/scene_script_3d_fishing_rice_field.gd" id="1_xtqfu"]
+[ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="2_wmgrq"]
+[ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="3_hkyyo"]
+[ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="4_rhqmc"]
+[ext_resource type="Texture2D" uid="uid://ba0o3vbsajlw" path="res://Assets/3D/360_F_303980038_En0H1ql0dT7hRUiOnnbjATa4lYC9FYKK (1).jpg" id="5_wmgrq"]
+[ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="6_by57o"]
+[ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="7_nxvdb"]
+[ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_ineg3"]
+[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="9_mat8c"]
+[ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="10_d2cf7"]
+[ext_resource type="PackedScene" uid="uid://cr7vsvvcu5ioi" path="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/tree_mangrove_01.glb" id="11_wmgrq"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qfde3"]
+transparency = 1
+albedo_texture = ExtResource("2_wmgrq")
+metallic_specular = 0.0
+roughness = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_goktk"]
+size = Vector2(10, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_goktk"]
+albedo_texture = ExtResource("3_hkyyo")
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u4n2x"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ud65s"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_y1byi"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ncjx7"]
+albedo_texture = ExtResource("5_wmgrq")
+uv1_scale = Vector3(6, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8navb"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mhxq0"]
+cull_mode = 1
+albedo_color = Color(1.4348425, 1.4348425, 1.4348425, 1)
+albedo_texture = ExtResource("6_by57o")
+emission_enabled = true
+uv1_scale = Vector3(2, 2.055, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_mhxq0"]
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="Environment" id="Environment_i1y24"]
+background_mode = 1
+background_color = Color(0.54509807, 0.73333335, 0.79607844, 1)
+background_energy_multiplier = 1.45
+ambient_light_sky_contribution = 0.98
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
+load_path = "res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"
+
+[node name="3dFishing" type="Node3D" unique_id=836610391]
+script = ExtResource("1_xtqfu")
+
+[node name="Land" type="Node3D" parent="." unique_id=225201374]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.3714695, 5)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Land" unique_id=870294090]
+transform = Transform3D(50, 0, 0, 0, 49.969543, -1.7449747, 0, 1.7449747, 49.969543, 0, -1, 0)
+
+[node name="SeaFloorCollisionShape3D" type="CollisionShape3D" parent="Land/StaticBody3D" unique_id=881990315]
+transform = Transform3D(10, 0, 0, 0, 9.993908, -0.3489949, 0, 0.3489949, 9.993908, 0, -1, 0)
+shape = SubResource("BoxShape3D_cawde")
+
+[node name="SeaFloorColor" type="MeshInstance3D" parent="Land/StaticBody3D" unique_id=1676985478]
+transform = Transform3D(0.99999976, 0, 0, 0, 0.99939084, -0.034899496, 0, 0.034899496, 0.99939084, 0, 0, 0)
+material_overlay = SubResource("StandardMaterial3D_qfde3")
+mesh = SubResource("PlaneMesh_goktk")
+
+[node name="WaterColor" type="MeshInstance3D" parent="." unique_id=1089644210]
+transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, -0.004896164, 0.05063963, -0.0073547363)
+sorting_use_aabb_center = false
+material_overlay = SubResource("StandardMaterial3D_goktk")
+ignore_occlusion_culling = true
+mesh = SubResource("PlaneMesh_goktk")
+
+[node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 1.5558467)
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="PlayerFishing" unique_id=731221113]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerFishing/CharacterBody3D" unique_id=1201982006]
+shape = SubResource("CapsuleShape3D_u4n2x")
+
+[node name="FishingRod_Lvl3" parent="PlayerFishing/CharacterBody3D" unique_id=1393842549 instance=ExtResource("4_rhqmc")]
+transform = Transform3D(0.5, 0, 0, 0, 0.41933528, 0.27231953, 0, -0.27231953, 0.41933528, 0.57474726, 0, -0.16362166)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerFishing" unique_id=1698578042]
+mesh = SubResource("CapsuleMesh_ud65s")
+
+[node name="PlayerCamera" type="Camera3D" parent="PlayerFishing" unique_id=958916476]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="Pier" type="Node3D" parent="." unique_id=61710964]
+transform = Transform3D(50, 0, 0, 0, 1, 0, 0, 0, 5, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Pier" unique_id=113582520]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pier/StaticBody3D" unique_id=1260455851]
+shape = SubResource("BoxShape3D_y1byi")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Pier/StaticBody3D" unique_id=2003962759]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.39070585)
+material_overlay = SubResource("StandardMaterial3D_ncjx7")
+mesh = SubResource("BoxMesh_8navb")
+
+[node name="tree_mangrove_012" parent="Pier/StaticBody3D" unique_id=1207271443 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(0.020000003, 0, 0, 0, 1, 0, 0, 0, 0.2, -0.5083748, -0.14626455, -1.6634911)
+
+[node name="tree_mangrove_013" parent="Pier/StaticBody3D" unique_id=173649406 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(0.020000003, 0, 0, 0, 1, 0, 0, 0, 0.2, -0.4013452, -0.13497472, 0.5095377)
+
+[node name="tree_mangrove_014" parent="Pier/StaticBody3D" unique_id=1014593104 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(0.020000003, 0, 0, 0, 1, 0, 0, 0, 0.2, -0.38598028, -0.11024952, -0.6022579)
+
+[node name="tree_mangrove_015" parent="Pier/StaticBody3D" unique_id=177996807 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(0.020000003, 0, 0, 0, 1, 0, 0, 0, 0.2, 0.4442842, -0.20570219, 0.37105188)
+
+[node name="tree_mangrove_016" parent="Pier/StaticBody3D" unique_id=448292994 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(0.020000003, 0, 0, 0, 1, 0, 0, 0, 0.2, 0.44467872, 0.0013798475, -0.65519965)
+
+[node name="tree_mangrove_017" parent="Pier/StaticBody3D" unique_id=598543144 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(0.020000003, 0, 0, 0, 1, 0, 0, 0, 0.2, 0.25798282, 0.13039231, -0.5953587)
+
+[node name="tree_mangrove_018" parent="Pier/StaticBody3D" unique_id=693713751 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(0.020000003, 0, 0, 0, 1, 0, 0, 0, 0.2, -0.38570982, -0.38230944, -0.749018)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=2042256277]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 131.48366, 23.190296)
+light_energy = 16.0
+light_size = 1.0
+omni_range = 169.597
+omni_attenuation = 1.077
+omni_shadow_mode = 0
+
+[node name="MudRoads" type="Node3D" parent="." unique_id=867985978]
+transform = Transform3D(5, 0, 0, 0, 1, 0, 0, 0, 5, -19.9149, 0, 8.093548)
+
+[node name="MudRoadRight" type="StaticBody3D" parent="MudRoads" unique_id=2144219306]
+transform = Transform3D(3.999999, 0, 0, 0, 5, 0, 0, 0, 14.999996, -5, -1.620821, 2.624061)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MudRoads/MudRoadRight" unique_id=1850442972]
+shape = SubResource("BoxShape3D_y1byi")
+
+[node name="MudRoadLeft" type="StaticBody3D" parent="MudRoads" unique_id=1163355350]
+transform = Transform3D(3.999999, 0, 0, 0, 5, 0, 0, 0, 14.999996, 12.999996, -1.620821, 2.654241)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MudRoads/MudRoadLeft" unique_id=1721354467]
+shape = SubResource("BoxShape3D_y1byi")
+
+[node name="MudRoadBack" type="StaticBody3D" parent="MudRoads" unique_id=1799073048]
+transform = Transform3D(14.999996, 0, 0, 0, 5, 0, 0, 0, 2.9999995, 3.9814932, -1.620821, -3.4111705)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MudRoads/MudRoadBack" unique_id=1968276388]
+transform = Transform3D(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_y1byi")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MudRoads/MudRoadBack" unique_id=110625238]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02032268)
+material_overlay = SubResource("StandardMaterial3D_ncjx7")
+mesh = SubResource("BoxMesh_8navb")
+
+[node name="Background" type="Node3D" parent="." unique_id=336146113]
+transform = Transform3D(-3.278354e-05, 0, 750, 0, 150, 0, -750, 0, -3.278354e-05, 0, 73.4481, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Background" unique_id=1420362856]
+transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 1.0000001, 0, 0.18371171, 0)
+material_overlay = SubResource("StandardMaterial3D_mhxq0")
+mesh = SubResource("CylinderMesh_mhxq0")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2126582781]
+environment = SubResource("Environment_i1y24")
+
+[node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
+script = ExtResource("7_nxvdb")
+player_anchors = [NodePath("../PlayerFishing")]
+rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
+bobber_scene = ExtResource("8_ineg3")
+debug_spot_id = "location_rice_fields"
+debug_rod_id = "rod_basic"
+debug_bait_id = "bait_1"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
+
+[node name="3DSceneUI" parent="CanvasLayer" unique_id=1628659695 instance=ExtResource("9_mat8c")]
+metadata/_edit_use_anchors_ = true
+
+[node name="FishLayout" type="TextureRect" parent="CanvasLayer" unique_id=729170580]
+visible = false
+custom_minimum_size = Vector2(300, 300)
+offset_left = 485.0
+offset_top = 125.99999
+offset_right = 785.0
+offset_bottom = 426.0
+rotation = 0.43633232
+texture = SubResource("CompressedTexture2D_b03px")
+
+[node name="WeatherSystem" type="Node3D" parent="." unique_id=826944014]
+script = ExtResource("10_d2cf7")
+weather_change_game_minutes = 100.0
+avoid_repeat = false
+
+[node name="tree_mangrove_047" parent="." unique_id=1046064209 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.320671, -0.7568927, 23.754726)
+
+[node name="tree_mangrove_048" parent="." unique_id=1785751125 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.328541, -0.999902, 29.035263)
+
+[node name="tree_mangrove_049" parent="." unique_id=1938134492 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.519139, -1.0505106, 33.819656)
+
+[node name="tree_mangrove_050" parent="." unique_id=1546863991 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.241608, -1.3401325, 33.424164)
+
+[node name="tree_mangrove_051" parent="." unique_id=669474556 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.256907, -0.9447801, 36.66749)
+
+[node name="tree_mangrove_052" parent="." unique_id=667367301 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.236929, -0.8242059, 35.02483)
+
+[node name="tree_mangrove_053" parent="." unique_id=1790287370 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.580618, -1.1579618, 38.372456)
+
+[node name="tree_mangrove_054" parent="." unique_id=1500580302 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.181059, -0.9114828, 36.002815)
+
+[node name="tree_mangrove_055" parent="." unique_id=149168051 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.746184, -0.7840543, 36.7555)
+
+[node name="tree_mangrove_056" parent="." unique_id=1101377859 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.721739, -0.9278712, 37.263973)
+
+[node name="tree_mangrove_057" parent="." unique_id=1720658197 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.258021, -0.9712033, 40.4744)
+
+[node name="tree_mangrove_058" parent="." unique_id=47929260 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.806795, -0.6679013, 40.600655)
+
+[node name="tree_mangrove_059" parent="." unique_id=1451531126 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.370743, -1.1105309, 40.48637)
+
+[node name="tree_mangrove_060" parent="." unique_id=567284434 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.424171, -0.86797893, 14.292587)
+
+[node name="tree_mangrove_061" parent="." unique_id=1005516271 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.66165, -1.0688561, 8.197378)
+
+[node name="tree_mangrove_062" parent="." unique_id=1616892705 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.262568, -0.71100974, 6.904026)
+
+[node name="tree_mangrove_063" parent="." unique_id=2042770647 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.048826, -0.6438791, 10.855238)
+
+[node name="tree_mangrove_064" parent="." unique_id=1612894976 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.776953, -0.6795088, 8.069991)
+
+[node name="tree_mangrove_065" parent="." unique_id=1128184104 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.31216, -0.7352747, 16.748657)
+
+[node name="tree_mangrove_067" parent="." unique_id=1220827804 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.872822, -0.6300354, 15.625863)
+
+[node name="tree_mangrove_068" parent="." unique_id=525698104 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.84493, -0.76541615, 17.909922)
+
+[node name="tree_mangrove_069" parent="." unique_id=429437743 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.617771, -0.7223159, 6.5059214)
+
+[node name="tree_mangrove_012" parent="." unique_id=567711589 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.275671, -0.7353784, 20.865177)
+
+[node name="tree_mangrove_013" parent="." unique_id=446132351 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.411206, -0.851341, 23.995213)
+
+[node name="tree_mangrove_014" parent="." unique_id=1298311734 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5853453, -0.759575, 26.152004)
+
+[node name="tree_mangrove_015" parent="." unique_id=1029783496 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4481773, -0.84931266, 23.350302)
+
+[node name="tree_mangrove_016" parent="." unique_id=1370860823 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.79888225, -1.0870636, 22.895405)
+
+[node name="tree_mangrove_017" parent="." unique_id=581588401 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.1361065, -0.7327744, 18.195656)
+
+[node name="tree_mangrove_018" parent="." unique_id=1487539176 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.376582, -0.6586964, 18.246933)
+
+[node name="tree_mangrove_019" parent="." unique_id=954678025 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.179722, -0.5889139, 7.3124256)
+
+[node name="tree_mangrove_020" parent="." unique_id=1165635202 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.272247, -0.9307227, 5.1399317)
+
+[node name="tree_mangrove_021" parent="." unique_id=443384920 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.34652, -0.9323454, 9.745971)
+
+[node name="tree_mangrove_022" parent="." unique_id=73438317 instance=ExtResource("11_wmgrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.406263, -0.78146935, 6.044913)
