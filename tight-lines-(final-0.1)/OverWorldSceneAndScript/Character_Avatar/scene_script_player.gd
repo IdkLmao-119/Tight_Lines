@@ -84,3 +84,12 @@ func _on_salt_farm_to_fish_pens_body_entered(body: Node2D) -> void:
 func _on_salt_farm_to_mangrove_forest_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_mangrove")
 	
+# Mangrove Signals
+func _on_mangrove_to_island_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_island")
+func _on_mangrove_to_salt_farm_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_salt_farm")
+
+# Island Signals
+func _on_island_to_mangrove_body_entered(body: Node2D) -> void:
+	GameManager.change_scene("overworld_mangrove")

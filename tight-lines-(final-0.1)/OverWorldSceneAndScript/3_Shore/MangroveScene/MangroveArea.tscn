@@ -294,28 +294,25 @@ visible = false
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=1392170306]
 polygon = PackedVector2Array(208, 103, 256, 103, 256, 416, 672, 416, 672, 128, 1408, 128, 1408, 288, 1408, 334, 1408, 522, 1360, 522, 1360, 176, 720, 176, 720, 464, 208, 464, 208, 111, 95, 308, 102, 533, 224, 564, 556, 624, 821, 640, 1176, 624, 1625, 621, 1869, 557, 1832, 149, 1666, -71, 1215, -79, 712, -74, 388, -79, 146, -58, 149, 51, 166, 184, 208, 111)
 
-[node name="IslandGateway" type="Node2D" parent="." unique_id=1508104580]
-visible = false
+[node name="MangroveToIsland" type="Node2D" parent="." unique_id=1508104580]
 
-[node name="Island" type="Area2D" parent="IslandGateway" unique_id=629016569]
+[node name="MangroveToIsland" type="Area2D" parent="MangroveToIsland" unique_id=629016569]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="IslandGateway/Island" unique_id=1610764706]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MangroveToIsland/MangroveToIsland" unique_id=1610764706]
 position = Vector2(1382.5, 478.5)
 shape = SubResource("RectangleShape2D_4u8ac")
 
-[node name="SaltFarmGateway" type="Node2D" parent="." unique_id=735553913]
-visible = false
+[node name="MangroveToSaltFarm" type="Node2D" parent="." unique_id=735553913]
 
-[node name="Saltfarm" type="Area2D" parent="SaltFarmGateway" unique_id=1161083995]
+[node name="MangroveToSaltFarm" type="Area2D" parent="MangroveToSaltFarm" unique_id=1161083995]
 position = Vector2(0, 2)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SaltFarmGateway/Saltfarm" unique_id=145847372]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MangroveToSaltFarm/MangroveToSaltFarm" unique_id=145847372]
 position = Vector2(231, 146)
 shape = SubResource("RectangleShape2D_p5lfn")
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("3_wgxyk")]
-visible = false
 position = Vector2(228, 213)
 
-[connection signal="body_entered" from="IslandGateway/Island" to="Player" method="_on_island_body_entered"]
-[connection signal="body_entered" from="SaltFarmGateway/Saltfarm" to="Player" method="_on_saltfarm_body_entered"]
+[connection signal="body_entered" from="MangroveToIsland/MangroveToIsland" to="Player" method="_on_mangrove_to_island_body_entered"]
+[connection signal="body_entered" from="MangroveToSaltFarm/MangroveToSaltFarm" to="Player" method="_on_mangrove_to_salt_farm_body_entered"]

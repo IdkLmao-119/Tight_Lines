@@ -358,17 +358,15 @@ visible = false
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=744556574]
 polygon = PackedVector2Array(626, 177, 1484, 178, 1487, 574, 1454, 574, 1454, 877, 739, 878, 736, 639, 606, 640, 606, 780, 431, 781, 431, 738, 559, 737, 559, 639, 385, 639, 384, 419, 625, 417, 624, 192, 398, 297, 258, 406, 198, 640, 260, 1031, 636, 1114, 1337, 1125, 1739, 1057, 1951, 539, 1913, 181, 1759, -159, 1285, -190, 898, -164, 538, -87, 304, -27, 404, 295, 624, 190, 624, 176)
 
-[node name="MangroveGateway" type="Node2D" parent="." unique_id=1919325211]
-visible = false
+[node name="IslandToMangrove" type="Node2D" parent="." unique_id=1919325211]
 
-[node name="Mangrove" type="Area2D" parent="MangroveGateway" unique_id=135315034]
+[node name="IslandToMangrove" type="Area2D" parent="IslandToMangrove" unique_id=135315034]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MangroveGateway/Mangrove" unique_id=97355999]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="IslandToMangrove/IslandToMangrove" unique_id=97355999]
 position = Vector2(1004, 212)
 shape = SubResource("RectangleShape2D_wgax8")
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_qdolu")]
-visible = false
 position = Vector2(1006, 267)
 
-[connection signal="body_entered" from="MangroveGateway/Mangrove" to="Player" method="_on_mangrove_body_entered"]
+[connection signal="body_entered" from="IslandToMangrove/IslandToMangrove" to="Player" method="_on_island_to_mangrove_body_entered"]

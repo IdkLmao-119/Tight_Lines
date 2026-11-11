@@ -380,7 +380,6 @@ position = Vector2(418.5, 825)
 shape = SubResource("RectangleShape2D_ptis5")
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_yldkx")]
-visible = false
 position = Vector2(710, 391)
 
 [connection signal="body_entered" from="FishPensToSeasidePark/FishPensToSeasidePark" to="Player" method="_on_fish_pens_to_seaside_park_body_entered"]

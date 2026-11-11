@@ -1,21 +1,21 @@
 [gd_scene format=3 uid="uid://chgxbwkf7mlw6"]
 
-[ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="1_owvor"]
-[ext_resource type="Script" uid="uid://dhj4fll8hgec7" path="res://3DFishingScene/scene_script_3d_fishing_rice_field.gd" id="1_qjdax"]
-[ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="2_h20tu"]
-[ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="3_h20tu"]
-[ext_resource type="Texture2D" uid="uid://der6y27lfrk8w" path="res://Assets/3D/Grass.png" id="4_owvor"]
-[ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="4_rnksl"]
-[ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="5_bu0nd"]
-[ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_b03px"]
-[ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="9_bu0nd"]
-[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="10_b03px"]
+[ext_resource type="Script" uid="uid://dhj4fll8hgec7" path="res://3DFishingScene/Area1FishingScenes/scene_script_3d_fishing_rice_field.gd" id="1_lwidx"]
+[ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="2_d6y1a"]
+[ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="3_03g4m"]
+[ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="4_5ivq8"]
+[ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="5_ed3u3"]
+[ext_resource type="Texture2D" uid="uid://der6y27lfrk8w" path="res://Assets/3D/Grass.png" id="6_t1afk"]
+[ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="7_op18d"]
+[ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_1dwb6"]
+[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="9_s4xdn"]
+[ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="10_q70uh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qfde3"]
 transparency = 1
-albedo_texture = ExtResource("1_owvor")
+albedo_texture = ExtResource("2_d6y1a")
 metallic_specular = 0.0
 roughness = 0.0
 
@@ -23,9 +23,7 @@ roughness = 0.0
 size = Vector2(10, 10)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_goktk"]
-transparency = 4
-albedo_color = Color(0.6906829, 2.976174, 1.5850055, 1)
-albedo_texture = ExtResource("2_h20tu")
+albedo_texture = ExtResource("3_03g4m")
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u4n2x"]
 
@@ -34,14 +32,15 @@ albedo_texture = ExtResource("2_h20tu")
 [sub_resource type="BoxShape3D" id="BoxShape3D_y1byi"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ncjx7"]
-albedo_texture = ExtResource("1_owvor")
+albedo_texture = ExtResource("2_d6y1a")
 
 [sub_resource type="BoxMesh" id="BoxMesh_8navb"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mhxq0"]
 cull_mode = 1
 albedo_color = Color(1.4348425, 1.4348425, 1.4348425, 1)
-albedo_texture = ExtResource("4_rnksl")
+albedo_texture = ExtResource("5_ed3u3")
+emission_enabled = true
 uv1_scale = Vector3(2, 2.055, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_mhxq0"]
@@ -51,11 +50,8 @@ cap_bottom = false
 [sub_resource type="Environment" id="Environment_i1y24"]
 background_mode = 1
 background_color = Color(0.54509807, 0.73333335, 0.79607844, 1)
-background_energy_multiplier = 0.99
-ambient_light_source = 3
-ambient_light_color = Color(0.94509804, 0.94509804, 0.94509804, 1)
+background_energy_multiplier = 1.45
 ambient_light_sky_contribution = 0.98
-ambient_light_energy = 14.85
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_h20tu"]
 
@@ -63,13 +59,13 @@ ambient_light_energy = 14.85
 transparency = 2
 alpha_scissor_threshold = 0.5
 alpha_antialiasing_mode = 0
-albedo_texture = ExtResource("4_owvor")
+albedo_texture = ExtResource("6_t1afk")
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
 load_path = "res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"
 
 [node name="3dFishing" type="Node3D" unique_id=836610391]
-script = ExtResource("1_qjdax")
+script = ExtResource("1_lwidx")
 
 [node name="Land" type="Node3D" parent="." unique_id=225201374]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.3714695, 5)
@@ -90,10 +86,7 @@ mesh = SubResource("PlaneMesh_goktk")
 transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, 0, 0, 0)
 sorting_use_aabb_center = false
 material_overlay = SubResource("StandardMaterial3D_goktk")
-transparency = 0.6
 ignore_occlusion_culling = true
-visibility_range_end = 4096.0
-visibility_range_fade_mode = 1
 mesh = SubResource("PlaneMesh_goktk")
 
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
@@ -104,7 +97,7 @@ transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerFishing/CharacterBody3D" unique_id=1201982006]
 shape = SubResource("CapsuleShape3D_u4n2x")
 
-[node name="FishingRod_Lvl3" parent="PlayerFishing/CharacterBody3D" unique_id=1393842549 instance=ExtResource("5_bu0nd")]
+[node name="FishingRod_Lvl3" parent="PlayerFishing/CharacterBody3D" unique_id=1393842549 instance=ExtResource("4_5ivq8")]
 transform = Transform3D(0.5, 0, 0, 0, 0.41933528, 0.27231953, 0, -0.27231953, 0.41933528, 0.57474726, 0, -0.16362166)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerFishing" unique_id=1698578042]
@@ -253,18 +246,17 @@ mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
-script = ExtResource("3_h20tu")
+script = ExtResource("7_op18d")
 player_anchors = [NodePath("../PlayerFishing")]
 rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
-bobber_scene = ExtResource("8_b03px")
+bobber_scene = ExtResource("8_1dwb6")
 debug_spot_id = "location_rice_fields"
 debug_rod_id = "rod_basic"
 debug_bait_id = "bait_1"
-debug_log = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
 
-[node name="3DSceneUI" parent="CanvasLayer" unique_id=1628659695 instance=ExtResource("10_b03px")]
+[node name="3DSceneUI" parent="CanvasLayer" unique_id=1628659695 instance=ExtResource("9_s4xdn")]
 metadata/_edit_use_anchors_ = true
 
 [node name="FishLayout" type="TextureRect" parent="CanvasLayer" unique_id=729170580]
@@ -278,6 +270,6 @@ rotation = 0.43633232
 texture = SubResource("CompressedTexture2D_b03px")
 
 [node name="WeatherSystem" type="Node3D" parent="." unique_id=826944014]
-script = ExtResource("9_bu0nd")
+script = ExtResource("10_q70uh")
 weather_change_game_minutes = 100.0
 avoid_repeat = false

@@ -380,7 +380,6 @@ position = Vector2(208.375, 158)
 shape = SubResource("RectangleShape2D_63e7s")
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_63e7s")]
-visible = false
 position = Vector2(890, 426)
 
 [connection signal="body_entered" from="FishMarketToSpawn/FishMarketToSpawn" to="Player" method="_on_fish_market_to_spawn_body_entered"]
