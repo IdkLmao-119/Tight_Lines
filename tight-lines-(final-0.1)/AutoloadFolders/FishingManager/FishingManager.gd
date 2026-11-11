@@ -1068,6 +1068,7 @@ func _fill_debug_defaults() -> void:
 
 
 func _pick_player_ids() -> Array[int]:
+	print("[FM DEBUG] phones=%s max_players=%d" % [_input.get_connected_phone_ids(), max_players])
 	var ids: Array[int] = []
 	if _multiplayer and _input != null:
 		ids.assign(_input.get_connected_phone_ids())

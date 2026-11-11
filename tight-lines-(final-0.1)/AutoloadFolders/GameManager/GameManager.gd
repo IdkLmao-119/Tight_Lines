@@ -294,6 +294,7 @@ func change_scene(target: String, context: Dictionary = {}) -> void:
 
 	is_changing_scene = true
 	var scene_id: String = entry["id"]
+	var wants_multiplayer: bool = bool(context.get("multiplayer", false)) or scene_id == "multiplayer"
 	pending_context = context.duplicate(true)
 	if _is_fishing_scene(scene_id):
 		if context.has("return_to"):
@@ -340,7 +341,7 @@ func change_scene(target: String, context: Dictionary = {}) -> void:
 	_current_context = context.duplicate(true)
 
 	_play_scene_music(entry)
-	_enter_scene_input(entry, context)
+	_enter_scene_input(entry, wants_multiplayer)   # at line 343
 
 	await _fade_to(0.0, FADE_TIME)
 	_fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -482,7 +483,7 @@ func _sync_initial_scene() -> void:
 			var e: Dictionary = SCENES[id].duplicate()
 			e["id"] = id
 			_play_scene_music(e)
-			_enter_scene_input(e, {})
+			_enter_scene_input(e, id == "multiplayer")
 			return
 
 
@@ -848,19 +849,17 @@ func _set_input_context(context_name: String) -> void:
 # Called once the new scene exists: applies its input context and the
 # multiplayer flag. The flag is applied on EVERY scene change (default false),
 # so phones return to single-player ids after a multiplayer round.
-func _enter_scene_input(entry: Dictionary, context: Dictionary) -> void:
-	var context_name: String = entry.get("input", "")
-	if context_name != "":
-		_current_input_name = context_name
-	_set_input_context(_current_input_name)
-	_send_phone_screen()
+func _enter_scene_input(entry: Dictionary, wants_multiplayer: bool) -> void:
+	_current_input_name = str(entry.get("input", ""))
+	if _current_input_name == "":
+		_current_input_name = "menu"   # unregistered path: safe default
+	is_multiplayer = wants_multiplayer
 
-	is_multiplayer = bool(context.get("multiplayer", false))
 	var im: Node = get_node_or_null(INPUT_MANAGER_PATH)
 	if im != null and im.has_method("set_multiplayer_mode"):
-		im.call("set_multiplayer_mode", is_multiplayer)
-
-
+		im.call("set_multiplayer_mode", wants_multiplayer)   # before the context
+	_set_input_context(_current_input_name)
+	_send_phone_screen()
 # ============================================================================
 # PHONE SCREEN + SCENE KIND HELPERS
 # ============================================================================

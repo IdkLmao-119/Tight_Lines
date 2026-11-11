@@ -1,11 +1,11 @@
 extends Node3D
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	InputManager.set_context(InputManager.InputContext.FISHING)
-	InputManager.set_multiplayer_mode(true)
-	InputManager.debug_log = true
+@onready var fishing_manager = $FishingManager   # adjust the path to your node
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+func _ready() -> void:
+	# Deferred so FishingManager's own _ready() has finished first.
+	_start_two_player_round.call_deferred()
+
+func _start_two_player_round() -> void:
+	var ids: Array[int] = [1, 2]
+	fishing_manager.start_session(ids)

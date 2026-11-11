@@ -22,8 +22,6 @@ roughness = 0.0
 size = Vector2(10, 10)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_goktk"]
-transparency = 4
-albedo_color = Color(0.6906829, 2.976174, 1.5850055, 1)
 albedo_texture = ExtResource("3_1a7uq")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_y1byi"]
@@ -35,8 +33,10 @@ albedo_texture = ExtResource("2_t4bt6")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mhxq0"]
 cull_mode = 1
-albedo_color = Color(1.4348425, 1.4348425, 1.4348425, 1)
 albedo_texture = ExtResource("4_mme05")
+emission_enabled = true
+emission = Color(0.012617188, 0.012617188, 0.012617188, 1)
+emission_energy_multiplier = 4.57
 uv1_scale = Vector3(2, 2.055, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_mhxq0"]
@@ -46,11 +46,12 @@ cap_bottom = false
 [sub_resource type="Environment" id="Environment_i1y24"]
 background_mode = 1
 background_color = Color(0.54509807, 0.73333335, 0.79607844, 1)
-background_energy_multiplier = 0.99
+background_energy_multiplier = 1.45
 ambient_light_source = 3
 ambient_light_color = Color(0.94509804, 0.94509804, 0.94509804, 1)
-ambient_light_sky_contribution = 0.98
-ambient_light_energy = 14.85
+ambient_light_sky_contribution = 0.0
+ambient_light_energy = 0.81
+reflected_light_source = 2
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
 load_path = "res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"
@@ -69,11 +70,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.3714695, 5)
 transform = Transform3D(50, 0, 0, 0, 50.000004, 0, 0, 0, 50.000004, 0, -1, 0)
 
 [node name="SeaFloorCollisionShape3D" type="CollisionShape3D" parent="Land/StaticBody3D" unique_id=881990315]
-transform = Transform3D(10, 0, 0, 0, 9.993908, -0.3489949, 0, 0.3489949, 9.993908, 0, -1, 0)
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, -1, 0)
 shape = SubResource("BoxShape3D_cawde")
 
 [node name="SeaFloorColor" type="MeshInstance3D" parent="Land/StaticBody3D" unique_id=1676985478]
-transform = Transform3D(0.99999976, 0, 0, 0, 0.99939084, -0.034899496, 0, 0.034899496, 0.99939084, 0, 0, 0)
+transform = Transform3D(0.99999976, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 material_overlay = SubResource("StandardMaterial3D_qfde3")
 mesh = SubResource("PlaneMesh_goktk")
 
@@ -81,14 +82,12 @@ mesh = SubResource("PlaneMesh_goktk")
 transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, 0, 0, 0)
 sorting_use_aabb_center = false
 material_overlay = SubResource("StandardMaterial3D_goktk")
-transparency = 0.6
 ignore_occlusion_culling = true
-visibility_range_end = 4096.0
 visibility_range_fade_mode = 1
 mesh = SubResource("PlaneMesh_goktk")
 
 [node name="Pier" type="Node3D" parent="." unique_id=61710964]
-transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, -2.329001)
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, -2.1451278)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Pier" unique_id=113582520]
 
@@ -104,12 +103,10 @@ mesh = SubResource("BoxMesh_8navb")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 131.48366, 23.190296)
 light_energy = 16.0
 light_size = 1.0
-omni_range = 169.597
-omni_attenuation = 1.077
-omni_shadow_mode = 0
+light_specular = 16.0
 
 [node name="Background" type="Node3D" parent="." unique_id=336146113]
-transform = Transform3D(-3.278354e-05, 0, 750, 0, 150, 0, -750, 0, -3.278354e-05, 0, 73.4481, 0)
+transform = Transform3D(-2.6226833e-05, 0, 600, 0, 120, 0, -600, 0, -2.6226833e-05, 0, 73.4481, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Background" unique_id=1420362856]
 transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 1.0000001, 0, 0.18371171, 0)
@@ -210,6 +207,7 @@ script = ExtResource("5_dm488")
 player_anchors = [NodePath("../GridContainer/SubViewportContainer/SubViewport/PlayerFishing"), NodePath("../GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2")]
 rod_holders = [NodePath("../GridContainer/SubViewportContainer/SubViewport/PlayerFishing/CharacterBody3D"), NodePath("../GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2/CharacterBody3D")]
 bobber_scene = ExtResource("6_2gyo2")
+max_players = 3
 debug_spot_id = "location_rice_fields"
 debug_rod_id = "rod_basic"
 debug_bait_id = "bait_1"
