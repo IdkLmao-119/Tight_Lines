@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_1dwb6"]
 [ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="9_s4xdn"]
 [ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="10_q70uh"]
+[ext_resource type="PackedScene" uid="uid://gs0b8245xrex" path="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/rock_02.glb" id="11_03g4m"]
+[ext_resource type="PackedScene" uid="uid://bupjsnur3jhb5" path="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/flower_sunflower_01.glb" id="12_5ivq8"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
 
@@ -273,3 +275,21 @@ texture = SubResource("CompressedTexture2D_b03px")
 script = ExtResource("10_q70uh")
 weather_change_game_minutes = 100.0
 avoid_repeat = false
+
+[node name="rock_022" parent="." unique_id=993234929 instance=ExtResource("11_03g4m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.3945656, 0, 1.7369537)
+
+[node name="flower_sunflower_012" parent="." unique_id=274622197 instance=ExtResource("12_5ivq8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.395243, 0.8031566, -4.3745766)
+
+[node name="flower_sunflower_013" parent="." unique_id=427343808 instance=ExtResource("12_5ivq8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.711777, 0.8819656, -2.2260509)
+
+[node name="flower_sunflower_014" parent="." unique_id=1581382351 instance=ExtResource("12_5ivq8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.994673, 0.8819658, -2.2823608)
+
+[node name="flower_sunflower_015" parent="." unique_id=1838197225 instance=ExtResource("12_5ivq8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.833794, 0.88196534, -3.1558132)
+
+[node name="flower_sunflower_016" parent="." unique_id=777968990 instance=ExtResource("12_5ivq8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.732382, 0.8819651, -2.6456232)
