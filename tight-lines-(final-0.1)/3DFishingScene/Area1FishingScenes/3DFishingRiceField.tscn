@@ -186,7 +186,7 @@ mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
 [node name="Rice2" type="MeshInstance3D" parent="." unique_id=671246487]
-transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, 6.0599856, 1.3017673, 9.865282)
+transform = Transform3D(-6, -9.0597484e-07, 3.9601416e-14, 0, -2.6226832e-07, -6, 9.0597484e-07, -6, 2.6226832e-07, 6.0599856, 1.3017673, 9.232817)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 
