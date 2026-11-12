@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="3_jowko"]
 [ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="4_o8555"]
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="5_n7478"]
-[ext_resource type="Texture2D" uid="uid://yxmhgxnri5ry" path="res://3DFishingScene/Area2FishingScenes/GrassTexture.jpg" id="5_xm36h"]
+[ext_resource type="Texture2D" uid="uid://yxmhgxnri5ry" path="res://Assets/3D/GrassTexture.jpg" id="5_xm36h"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="7_8sce2"]
 [ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_mifwt"]
 [ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="9_qipro"]
@@ -179,7 +179,7 @@ transform = Transform3D(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("BoxShape3D_y1byi")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="MudRoads/MudRoadBack" unique_id=110625238]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.06692013, 0.3919584)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000113042224, -0.06881699, 0.39289498)
 material_overlay = SubResource("StandardMaterial3D_ncjx7")
 mesh = SubResource("BoxMesh_8navb")
 

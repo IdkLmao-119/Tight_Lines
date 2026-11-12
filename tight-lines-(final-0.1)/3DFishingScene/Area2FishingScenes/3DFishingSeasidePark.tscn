@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="3_bfyk2"]
 [ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="4_70uaa"]
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="5_bdru8"]
-[ext_resource type="Texture2D" uid="uid://df64qb6j4353e" path="res://3DFishingScene/Area1FishingScenes/Texture_FishMarket.jpg" id="5_q11hr"]
+[ext_resource type="Texture2D" uid="uid://df64qb6j4353e" path="res://Assets/3D/Texture_FishMarket.jpg" id="5_q11hr"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="6_wy0o4"]
 [ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="7_jly4b"]
 [ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="8_royd4"]

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://df64qb6j4353e"
-path.s3tc="res://.godot/imported/Texture_FishMarket.jpg-5c291448a44873a2639b757f27e3608c.s3tc.ctex"
+uid="uid://yxmhgxnri5ry"
+path.s3tc="res://.godot/imported/GrassTexture.jpg-fac57c1232441e7fe1d025ae5b621d8f.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://3DFishingScene/Area1FishingScenes/Texture_FishMarket.jpg"
-dest_files=["res://.godot/imported/Texture_FishMarket.jpg-5c291448a44873a2639b757f27e3608c.s3tc.ctex"]
+source_file="res://Assets/3D/GrassTexture.jpg"
+dest_files=["res://.godot/imported/GrassTexture.jpg-fac57c1232441e7fe1d025ae5b621d8f.s3tc.ctex"]
 
 [params]
 
