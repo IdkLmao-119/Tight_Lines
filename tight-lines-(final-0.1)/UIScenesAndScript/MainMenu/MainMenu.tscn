@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dlmcx3h4vh8ol" path="res://UIScenesAndScript/MainMenu/scene_script_main_menu.gd" id="1_w82c0"]
 [ext_resource type="Texture2D" uid="uid://c66vsem28p4ou" path="res://Assets/2D/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg" id="2_yyhqq"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="3_0pent"]
-[ext_resource type="Script" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="4_yyhqq"]
+[ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="4_yyhqq"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3spmi"]
 texture = ExtResource("2_yyhqq")
@@ -71,6 +71,15 @@ theme_override_fonts/font = ExtResource("3_0pent")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
 text = "Multiplayer"
+
+[node name="AlmanacButton" type="Button" parent="MainMenuButtons" unique_id=1879945648]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("3_0pent")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
+text = "Almanac
+"
 
 [node name="ExitButton" type="Button" parent="MainMenuButtons" unique_id=775846875]
 layout_mode = 2
