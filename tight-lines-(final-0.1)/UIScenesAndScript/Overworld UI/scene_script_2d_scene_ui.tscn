@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bmoettm0ijjix" path="res://UIScenesAndScript/Overworld UI/2DsceneUI.gd" id="1_avfof"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_kpllj"]
+[ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="3_0yhp3"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qbet6"]
 bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
@@ -186,7 +187,25 @@ theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
 text = "Back"
 
+[node name="AlmanacButton" type="Button" parent="." unique_id=935523045]
+layout_mode = 0
+offset_left = 965.0
+offset_top = 142.0
+offset_right = 1136.0
+offset_bottom = 239.0
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("2_kpllj")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
+text = "Almanac
+"
+
+[node name="AlmanacUi" parent="." unique_id=479802253 instance=ExtResource("3_0yhp3")]
+visible = false
+layout_mode = 1
+
 [connection signal="pressed" from="OverworldButton" to="." method="_on_overworld_button_pressed"]
 [connection signal="pressed" from="PauseButton" to="." method="_on_Pause_button_pressed"]
 [connection signal="pressed" from="Options/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="Map/MapBackButton" to="." method="_on_map_back_button_pressed"]
+[connection signal="pressed" from="AlmanacButton" to="." method="_on_almanac_button_pressed"]

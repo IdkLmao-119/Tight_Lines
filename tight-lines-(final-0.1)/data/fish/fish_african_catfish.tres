@@ -7,6 +7,7 @@
 script = ExtResource("1_bs6c8")
 scientific_name = "Clarias gariepinus"
 description = "A hardy bottom-dweller known for its resilience and ability to survive brief periods out of water."
+icon_3d = ExtResource("1_mbknm")
 size_class = "large"
 base_price = 45
 speed = 1.2

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b2wg36t11o40t" path="res://UIScenesAndScript/3d_ui/3DsceneUI.gd" id="1_5frun"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_51xn0"]
+[ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="3_0ycej"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qbet6"]
 bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
@@ -146,6 +147,23 @@ offset_bottom = 22.75
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="AlmanacButton" type="Button" parent="." unique_id=745865452]
+layout_mode = 0
+offset_left = 921.0
+offset_top = 130.0
+offset_right = 1143.0
+offset_bottom = 227.0
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
+text = "Almanac"
+
+[node name="AlmanacUi" parent="." unique_id=479802253 instance=ExtResource("3_0ycej")]
+visible = false
+layout_mode = 1
+
 [connection signal="pressed" from="OverworldButton" to="." method="_on_overworld_button_pressed"]
 [connection signal="pressed" from="StartButton" to="." method="_on_Pause_button_pressed"]
 [connection signal="pressed" from="Options/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="AlmanacButton" to="." method="_on_almanac_button_pressed"]

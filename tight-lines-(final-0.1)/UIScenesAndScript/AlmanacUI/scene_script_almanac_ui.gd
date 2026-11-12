@@ -1,18 +1,41 @@
 extends Control
 
+@onready var FishName: Label = $MainPanel/AlmanacPanel/FishName
+@onready var Description: RichTextLabel = $MainPanel/AlmanacPanel/FishDescription
+@onready var FishPicture: TextureRect = $MainPanel/AlmanacPanel/FishPicture
 
-# Called when the node enters the scene tree for the first time.
+var fish_array: Array[FishData] = []
+var fish_array_pointer: int = 0
+
+
 func _ready() -> void:
-	print(GameDB.get_all_fish())
-	var fish_array: Array[FishData] = GameDB.get_all_fish()
-	var fish_array_pointer: int = 0
-	var fish: FishData = fish_array[fish_array_pointer]
+	fish_array = GameDB.get_all_fish()
+	if fish_array.is_empty():
+		push_warning("Almanac: GameDB has no fish.")
+		return
+	_show_fish()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+
+func _show_fish() -> void:
+	var fish: FishData = fish_array[fish_array_pointer]
+	FishName.text = fish.display_name
+	Description.text = fish.description
+	# icon_3d is empty in your .tres files, so fall back to the 2D icon.
+	FishPicture.texture = fish.icon_3d if fish.icon_3d != null else fish.icon
+
 
 func _on_previous_button_pressed() -> void:
-	pass # Replace with function body.
+	if fish_array.is_empty():
+		return
+	fish_array_pointer = (fish_array_pointer - 1 + fish_array.size()) % fish_array.size()
+	_show_fish()
+
+
 func _on_next_button_pressed() -> void:
-	pass # Replace with function body.
+	if fish_array.is_empty():
+		return
+	fish_array_pointer = (fish_array_pointer + 1) % fish_array.size()
+	_show_fish()
+
+func _on_back_button_pressed() -> void:
+	visible = false
