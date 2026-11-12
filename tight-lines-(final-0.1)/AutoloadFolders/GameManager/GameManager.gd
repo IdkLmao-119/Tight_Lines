@@ -137,7 +137,7 @@ const SCENES: Dictionary = {
 
 	#3D Fishing
 	"fishing_rice_field": {
-		"path": "res://3DFishingScene/Are1FishingScenes/3DFishingRiceField.tscn",
+		"path": "res://3DFishingScene/Area1FishingScenes/3DFishingRiceField.tscn",
 		"input": "fishing",
 		"music": "res://audio/music/fishing.ogg",
 		"pausable": true,
