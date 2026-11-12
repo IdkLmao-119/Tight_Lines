@@ -3,17 +3,16 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://df64qb6j4353e"
-path.s3tc="res://.godot/imported/Texture_FishMarket.jpg-5c291448a44873a2639b757f27e3608c.s3tc.ctex"
-path.etc2="res://.godot/imported/Texture_FishMarket.jpg-5c291448a44873a2639b757f27e3608c.etc2.ctex"
+path.s3tc="res://.godot/imported/Texture_FishMarket.jpg-bedb833cdf3619f41f0ea6c7ba358931.s3tc.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
-source_file="res://3DFishingScene/Area1FishingScenes/Texture_FishMarket.jpg"
-dest_files=["res://.godot/imported/Texture_FishMarket.jpg-5c291448a44873a2639b757f27e3608c.s3tc.ctex", "res://.godot/imported/Texture_FishMarket.jpg-5c291448a44873a2639b757f27e3608c.etc2.ctex"]
+source_file="res://Assets/3D/Texture_FishMarket.jpg"
+dest_files=["res://.godot/imported/Texture_FishMarket.jpg-bedb833cdf3619f41f0ea6c7ba358931.s3tc.ctex"]
 
 [params]
 

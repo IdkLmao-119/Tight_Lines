@@ -2,31 +2,30 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<<< HEAD:tight-lines-(final-0.1)/android/build/src/instrumented/assets/icon.svg.import
+uid="uid://srnrli5m8won"
+path="res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex"
+========
 uid="uid://yxmhgxnri5ry"
-<<<<<<< HEAD:tight-lines-(final-0.1)/3DFishingScene/Area2FishingScenes/GrassTexture.jpg.import
-path.s3tc="res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.s3tc.ctex"
-path.etc2="res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.etc2.ctex"
-=======
 path.s3tc="res://.godot/imported/GrassTexture.jpg-fac57c1232441e7fe1d025ae5b621d8f.s3tc.ctex"
->>>>>>> d1a6acb1c19f67ef5911441f2943c28b3be48481:tight-lines-(final-0.1)/Assets/3D/GrassTexture.jpg.import
+>>>>>>>> d1a6acb1c19f67ef5911441f2943c28b3be48481:tight-lines-(final-0.1)/Assets/3D/GrassTexture.jpg.import
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
-<<<<<<< HEAD:tight-lines-(final-0.1)/3DFishingScene/Area2FishingScenes/GrassTexture.jpg.import
-source_file="res://3DFishingScene/Area2FishingScenes/GrassTexture.jpg"
-dest_files=["res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.s3tc.ctex", "res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.etc2.ctex"]
-=======
+<<<<<<<< HEAD:tight-lines-(final-0.1)/android/build/src/instrumented/assets/icon.svg.import
+source_file="res://icon.svg"
+dest_files=["res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex"]
+========
 source_file="res://Assets/3D/GrassTexture.jpg"
 dest_files=["res://.godot/imported/GrassTexture.jpg-fac57c1232441e7fe1d025ae5b621d8f.s3tc.ctex"]
->>>>>>> d1a6acb1c19f67ef5911441f2943c28b3be48481:tight-lines-(final-0.1)/Assets/3D/GrassTexture.jpg.import
+>>>>>>>> d1a6acb1c19f67ef5911441f2943c28b3be48481:tight-lines-(final-0.1)/Assets/3D/GrassTexture.jpg.import
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -34,7 +33,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -48,4 +47,7 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false
