@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://sgugkon0uryw"]
 
-[ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="1_13mso"]
-[ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="2_8we6m"]
-[ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="3_ennft"]
-[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="4_lleit"]
+[ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="1_usnfm"]
+[ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="2_hu1lq"]
+[ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="3_6jju4"]
+[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="4_i7p7j"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7kw4w"]
-texture = ExtResource("1_13mso")
+texture = ExtResource("1_usnfm")
 1:1/0 = 0
 2:1/0 = 0
 3:1/0 = 0
@@ -60,7 +60,7 @@ texture = ExtResource("1_13mso")
 3:15/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8jxve"]
-texture = ExtResource("2_8we6m")
+texture = ExtResource("2_hu1lq")
 0:0/0 = 0
 1:0/0 = 0
 4:0/0 = 0
@@ -125,7 +125,7 @@ texture = ExtResource("2_8we6m")
 8:8/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xm6pl"]
-texture = ExtResource("3_ennft")
+texture = ExtResource("3_6jju4")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -346,6 +346,9 @@ size = Vector2(127, 80)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8we6m"]
 size = Vector2(78, 60)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8hiio"]
+size = Vector2(130.5, 59)
+
 [node name="SaltFarm" type="Node2D" unique_id=1600097924]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=240861762]
@@ -356,10 +359,8 @@ layer_1/name = "Layer1"
 layer_1/tile_data = PackedInt32Array(917576, 458752, 5, 917573, 458752, 5, 917570, 458752, 5, 917567, 458752, 5, 917564, 458752, 5, 917561, 458752, 5, 917558, 458752, 5, 720950, 458752, 5, 720953, 458752, 5, 720956, 458752, 5, 720959, 458752, 5, 720962, 458752, 5, 720965, 458752, 5, 720968, 458752, 5, 524360, 458752, 5, 524357, 458752, 5, 524354, 458752, 5, 524351, 458752, 5, 524348, 458752, 5, 524345, 458752, 5, 524342, 458752, 5, 327734, 458752, 5, 327737, 458752, 5, 327740, 458752, 5, 327743, 458752, 5, 327746, 458752, 5, 327749, 458752, 5, 327752, 458752, 5, 131144, 458752, 5, 131141, 458752, 5, 131138, 458752, 5, 131135, 458752, 5, 131132, 458752, 5, 131129, 458752, 5, 131126, 458752, 5, 1441877, 458752, 5, 1900629, 458752, 5, 1900632, 458752, 5, 1900635, 458752, 5, 1441883, 458752, 5, 1441886, 458752, 5, 1900638, 458752, 5, 1900641, 458752, 5, 1900644, 458752, 5, 1441889, 458752, 5, 1441892, 458752, 5, 1441895, 458752, 5, 1900647, 458752, 5, 1441898, 458752, 5, 1900650, 458752, 5, 1441880, 458752, 5, 2424917, 458752, 5, 2424920, 458752, 5, 2424923, 458752, 5, 2424926, 458752, 5, 2424929, 458752, 5, 2424932, 458752, 5, 2424935, 458752, 5, 2424938, 458752, 5, 2883669, 458752, 5, 2883672, 458752, 5, 2883675, 458752, 5, 2883678, 458752, 5, 2883681, 458752, 5, 2883684, 458752, 5, 2883687, 458752, 5, 2883690, 458752, 5, 1441837, 458752, 5, 1638445, 458752, 5, 1835053, 458752, 5, 1835050, 458752, 5, 1638442, 458752, 5, 1441834, 458752, 5, 1441831, 458752, 5, 1638439, 458752, 5, 1835047, 458752, 5, 2424877, 458752, 5, 2621485, 458752, 5, 2818093, 458752, 5, 2818090, 458752, 5, 2621482, 458752, 5, 2424874, 458752, 5, 2424871, 458752, 5, 2621479, 458752, 5, 2818087, 458752, 5, 2818084, 458752, 5, 2621476, 458752, 5, 2424868, 458752, 5, 1835044, 458752, 5, 1638436, 458752, 5, 1441828, 458752, 5)
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=105108871]
-visible = false
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=999052683]
-visible = false
 polygon = PackedVector2Array(1266, 221, 1326, 221, 1325, 400, 1325, 511, 1324, 779, 1324, 899, 1326, 916, 1248, 917, 1244, 759, 1244, 677, 1228, 675, 1227, 634, 1243, 634, 1242, 564, 853, 562, 852, 506, 1241, 507, 1243, 437, 1228, 436, 1227, 395, 1242, 395, 1243, 326, 1202, 324, 1201, 221, 1259, 221, 1124, 134, 974, 229, 830, 330, 768, 438, 780, 589, 837, 766, 997, 856, 1162, 960, 1266, 1049, 1457, 1033, 1605, 910, 1643, 596, 1598, 358, 1551, 148, 1412, 104, 1174, 168, 1259, 221)
 
 [node name="SaltFarmToFishPens" type="Node2D" parent="." unique_id=1041793896]
@@ -381,8 +382,16 @@ position = Vector2(1262.5, 262)
 position = Vector2(24.5, 621)
 shape = SubResource("RectangleShape2D_8we6m")
 
-[node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_lleit")]
+[node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_i7p7j")]
 position = Vector2(1289, 444)
+
+[node name="Node2D" type="Node2D" parent="." unique_id=1844142663]
+
+[node name="Area2D" type="Area2D" parent="Node2D" unique_id=91527580]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Node2D/Area2D" unique_id=461064309]
+position = Vector2(917.75, 535)
+shape = SubResource("RectangleShape2D_8hiio")
 
 [connection signal="body_entered" from="SaltFarmToFishPens/SaltFarmToFishPens" to="Player" method="_on_salt_farm_to_fish_pens_body_entered"]
 [connection signal="body_entered" from="SaltFarmToMangroveForest/SaltFarmToMangroveForest" to="Player" method="_on_salt_farm_to_mangrove_forest_body_entered"]

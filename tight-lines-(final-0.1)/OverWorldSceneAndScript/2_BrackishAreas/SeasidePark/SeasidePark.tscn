@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://8dagwkx0yana"]
 
-[ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="1_momdn"]
-[ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="2_63e7s"]
-[ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="3_lnoie"]
-[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="4_63e7s"]
+[ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="1_14wdk"]
+[ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="2_ho383"]
+[ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="3_7h4qw"]
+[ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="4_psfcu"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3kj0j"]
-texture = ExtResource("1_momdn")
+texture = ExtResource("1_14wdk")
 0:0/0 = 0
 1:0/0 = 0
 4:0/0 = 0
@@ -71,7 +71,7 @@ texture = ExtResource("1_momdn")
 8:8/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_katm0"]
-texture = ExtResource("2_63e7s")
+texture = ExtResource("2_ho383")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -282,7 +282,7 @@ texture = ExtResource("2_63e7s")
 4:20/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vjw8q"]
-texture = ExtResource("3_lnoie")
+texture = ExtResource("3_7h4qw")
 1:1/0 = 0
 2:1/0 = 0
 3:1/0 = 0
@@ -346,6 +346,9 @@ size = Vector2(42, 141.5)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_63e7s"]
 size = Vector2(97.25, 42)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rdwqf"]
+size = Vector2(56, 51)
+
 [node name="SeasidePark" type="Node2D" unique_id=156358762]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=2046493268]
@@ -356,13 +359,11 @@ layer_1/name = "Layer1"
 layer_1/tile_data = PackedInt32Array(524347, 524290, 2, 524346, 524290, 2, 524345, 524290, 2, 524344, 524290, 2, 524343, 524290, 2, 524342, 524290, 2, 524341, 524290, 2, 524340, 524290, 2, 524339, 524290, 2, 524338, 524290, 2, 524337, 524290, 2, 524336, 524290, 2, 524335, 524290, 2, 524334, 524290, 2, 524333, 524290, 2, 524332, 524290, 2, 524331, 524290, 2, 524330, 524290, 2, 524329, 524290, 2, 524328, 524290, 2, 524327, 524290, 2, 524326, 524290, 2, 524325, 524290, 2, 524324, 524290, 2, 524323, 524290, 2, 524348, 524290, 2, 524322, 458754, 2, 524318, 589826, 2, 524317, 524290, 2, 524316, 524290, 2, 524315, 524290, 2, 524314, 524290, 2, 524313, 524290, 2, 524312, 524290, 2, 524311, 524290, 2, 524310, 524290, 2, 524309, 524290, 2, 524308, 524290, 2, 524307, 524290, 2, 524306, 524290, 2, 524305, 524290, 2, 524304, 524290, 2, 524303, 524290, 2, 524302, 524290, 2, 524301, 524290, 2, 524300, 524290, 2, 524299, 524290, 2, 524298, 524290, 2, 524297, 524290, 2, 524296, 524290, 2, 524295, 524290, 2, 524294, 524290, 2, 524293, 524290, 2, 524292, 524290, 2, 524291, 524290, 2, 524290, 524290, 2, 524289, 524290, 2, 524288, 524290, 2)
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=915270106]
-visible = false
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=100474629]
 polygon = PackedVector2Array(910, 492, 910, 142, 549, 141, 548, 127, 489, 127, 488, 139, 271, 140, 161, 140, 162, 174, 328, 175, 326, 346, 607, 347, 606, 496, 892, 494, 948, 537, 715, 547, 437, 503, 218, 413, 50, 235, 57, 58, 273, -102, 598, -106, 766, -92, 871, -66, 936, 30, 1043, 136, 1039, 297, 1026, 412, 974, 522, 949, 534, 873, 493)
 
 [node name="FishMarketToSpawn" type="Node2D" parent="." unique_id=757471948]
-visible = false
 
 [node name="FishMarketToSpawn" type="Area2D" parent="FishMarketToSpawn" unique_id=1714896040]
 
@@ -371,7 +372,6 @@ position = Vector2(889, 423.75)
 shape = SubResource("RectangleShape2D_momdn")
 
 [node name="FishMarketToFishPens" type="Node2D" parent="." unique_id=62791079]
-visible = false
 
 [node name="FishMarketToFishPens" type="Area2D" parent="FishMarketToFishPens" unique_id=569932809]
 
@@ -379,8 +379,16 @@ visible = false
 position = Vector2(208.375, 158)
 shape = SubResource("RectangleShape2D_63e7s")
 
-[node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_63e7s")]
+[node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_psfcu")]
 position = Vector2(890, 426)
+
+[node name="Node2D" type="Node2D" parent="." unique_id=402342294]
+
+[node name="Area2D" type="Area2D" parent="Node2D" unique_id=1154404230]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Node2D/Area2D" unique_id=1455214434]
+position = Vector2(515, 140)
+shape = SubResource("RectangleShape2D_rdwqf")
 
 [connection signal="body_entered" from="FishMarketToSpawn/FishMarketToSpawn" to="Player" method="_on_fish_market_to_spawn_body_entered"]
 [connection signal="body_entered" from="FishMarketToFishPens/FishMarketToFishPens" to="Player" method="_on_fish_market_to_fish_pens_body_entered"]

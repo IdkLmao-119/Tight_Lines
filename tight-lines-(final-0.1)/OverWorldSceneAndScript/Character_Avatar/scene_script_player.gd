@@ -65,18 +65,28 @@ func _on_river_park_to_spawn_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_spawn")
 func _on_river_park_to_river_park_fishing_spot_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("fishing_river_park")
+	
+# Rivepark 3D Scene
 
 # Fish Market Signals
 func _on_fish_market_to_spawn_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_spawn")
 func _on_fish_market_to_fish_pens_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_fishing_pens")
+	
+#Seaside Park 3D Scene
+
+
 
 # Fish Pens Signals
 func _on_fish_pens_to_seaside_park_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_fish_market")
 func _on_fish_pen_to_salt_farm_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_salt_farm")
+	
+# Fish Pens 3D Signal
+func _on_fish_pen_3d_scene_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
 
 # Salt Farm Signals
 func _on_salt_farm_to_fish_pens_body_entered(body: Node2D) -> void:
@@ -84,12 +94,31 @@ func _on_salt_farm_to_fish_pens_body_entered(body: Node2D) -> void:
 func _on_salt_farm_to_mangrove_forest_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_mangrove")
 	
+# Salt Farm 3D Signal
+func _on_salt_farm_3d_scene_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
+	
 # Mangrove Signals
 func _on_mangrove_to_island_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_island")
 func _on_mangrove_to_salt_farm_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_salt_farm")
+	
+# Mangrove 3D Signal
+func _on_mangrove_3d_scene_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
 
 # Island Signals
 func _on_island_to_mangrove_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_mangrove")
+
+#Island 3D Signal
+
+func _on_island_3d_scene_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
+
+
+
+
+func _on_seaside_park_3d_scene_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
