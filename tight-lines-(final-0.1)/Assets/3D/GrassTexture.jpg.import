@@ -3,8 +3,12 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://yxmhgxnri5ry"
+<<<<<<< HEAD:tight-lines-(final-0.1)/3DFishingScene/Area2FishingScenes/GrassTexture.jpg.import
 path.s3tc="res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.s3tc.ctex"
 path.etc2="res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.etc2.ctex"
+=======
+path.s3tc="res://.godot/imported/GrassTexture.jpg-fac57c1232441e7fe1d025ae5b621d8f.s3tc.ctex"
+>>>>>>> d1a6acb1c19f67ef5911441f2943c28b3be48481:tight-lines-(final-0.1)/Assets/3D/GrassTexture.jpg.import
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +16,13 @@ metadata={
 
 [deps]
 
+<<<<<<< HEAD:tight-lines-(final-0.1)/3DFishingScene/Area2FishingScenes/GrassTexture.jpg.import
 source_file="res://3DFishingScene/Area2FishingScenes/GrassTexture.jpg"
 dest_files=["res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.s3tc.ctex", "res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.etc2.ctex"]
+=======
+source_file="res://Assets/3D/GrassTexture.jpg"
+dest_files=["res://.godot/imported/GrassTexture.jpg-fac57c1232441e7fe1d025ae5b621d8f.s3tc.ctex"]
+>>>>>>> d1a6acb1c19f67ef5911441f2943c28b3be48481:tight-lines-(final-0.1)/Assets/3D/GrassTexture.jpg.import
 
 [params]
 
