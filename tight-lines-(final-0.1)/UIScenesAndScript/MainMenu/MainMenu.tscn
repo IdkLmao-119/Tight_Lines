@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dlmcx3h4vh8ol" path="res://UIScenesAndScript/MainMenu/scene_script_main_menu.gd" id="1_w82c0"]
 [ext_resource type="Texture2D" uid="uid://c66vsem28p4ou" path="res://Assets/2D/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg" id="2_yyhqq"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="3_0pent"]
-[ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="4_yyhqq"]
+[ext_resource type="Script" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="4_yyhqq"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3spmi"]
 texture = ExtResource("2_yyhqq")
@@ -39,7 +39,6 @@ offset_bottom = 323.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_3spmi")
 
 [node name="MainMenuButtons" type="VBoxContainer" parent="." unique_id=1070791132]
-visible = false
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -101,6 +100,7 @@ text = "Tight Lines"
 horizontal_alignment = 1
 
 [node name="Options" type="Panel" parent="." unique_id=510353207]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

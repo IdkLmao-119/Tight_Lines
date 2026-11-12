@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="2_o34g8"]
 [ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="3_eerny"]
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="3_o34g8"]
+[ext_resource type="PackedScene" uid="uid://cbxf3bfas3m8g" path="res://UIScenesAndScript/Overworld UI/scene_script_2d_scene_ui.tscn" id="6_saxhw"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0foi0"]
 texture = ExtResource("1_yhofx")
@@ -359,6 +360,10 @@ layer_1/tile_data = PackedInt32Array(-524245, 524290, 3, -458709, 524290, 3, -39
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("3_eerny")]
 position = Vector2(78, -16)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Player" unique_id=220890166]
+
+[node name="2DSceneUI" parent="Player/CanvasLayer" unique_id=1628659695 instance=ExtResource("6_saxhw")]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=169900966]
 visible = false
