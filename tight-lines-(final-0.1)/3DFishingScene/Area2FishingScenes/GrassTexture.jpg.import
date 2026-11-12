@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://yxmhgxnri5ry"
 path.s3tc="res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.s3tc.ctex"
+path.etc2="res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://3DFishingScene/Area2FishingScenes/GrassTexture.jpg"
-dest_files=["res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.s3tc.ctex"]
+dest_files=["res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.s3tc.ctex", "res://.godot/imported/GrassTexture.jpg-f497d506328561b35ba04b4fbbeff992.etc2.ctex"]
 
 [params]
 

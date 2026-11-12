@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bpx1b7884nkxf"
 path.s3tc="res://.godot/imported/mushroom_glow_01_NaturePalette3.png-b59230024e38a13d848ef09389740f61.s3tc.ctex"
+path.etc2="res://.godot/imported/mushroom_glow_01_NaturePalette3.png-b59230024e38a13d848ef09389740f61.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/mushroom_glow_01_NaturePalette3.png"
-dest_files=["res://.godot/imported/mushroom_glow_01_NaturePalette3.png-b59230024e38a13d848ef09389740f61.s3tc.ctex"]
+dest_files=["res://.godot/imported/mushroom_glow_01_NaturePalette3.png-b59230024e38a13d848ef09389740f61.s3tc.ctex", "res://.godot/imported/mushroom_glow_01_NaturePalette3.png-b59230024e38a13d848ef09389740f61.etc2.ctex"]
 
 [params]
 

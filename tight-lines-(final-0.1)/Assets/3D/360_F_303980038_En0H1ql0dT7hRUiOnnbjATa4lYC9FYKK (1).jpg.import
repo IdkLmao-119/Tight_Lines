@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://ba0o3vbsajlw"
 path.s3tc="res://.godot/imported/360_F_303980038_En0H1ql0dT7hRUiOnnbjATa4lYC9FYKK (1).jpg-57a3f85222f50be530eaad73a4500f86.s3tc.ctex"
+path.etc2="res://.godot/imported/360_F_303980038_En0H1ql0dT7hRUiOnnbjATa4lYC9FYKK (1).jpg-57a3f85222f50be530eaad73a4500f86.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://Assets/3D/360_F_303980038_En0H1ql0dT7hRUiOnnbjATa4lYC9FYKK (1).jpg"
-dest_files=["res://.godot/imported/360_F_303980038_En0H1ql0dT7hRUiOnnbjATa4lYC9FYKK (1).jpg-57a3f85222f50be530eaad73a4500f86.s3tc.ctex"]
+dest_files=["res://.godot/imported/360_F_303980038_En0H1ql0dT7hRUiOnnbjATa4lYC9FYKK (1).jpg-57a3f85222f50be530eaad73a4500f86.s3tc.ctex", "res://.godot/imported/360_F_303980038_En0H1ql0dT7hRUiOnnbjATa4lYC9FYKK (1).jpg-57a3f85222f50be530eaad73a4500f86.etc2.ctex"]
 
 [params]
 

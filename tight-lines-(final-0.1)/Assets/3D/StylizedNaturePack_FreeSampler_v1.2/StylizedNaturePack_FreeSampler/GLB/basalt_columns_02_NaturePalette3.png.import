@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://d4i4atfhut56c"
 path.s3tc="res://.godot/imported/basalt_columns_02_NaturePalette3.png-e75f3eb8ceaec3c540a19cb18dfb22a5.s3tc.ctex"
+path.etc2="res://.godot/imported/basalt_columns_02_NaturePalette3.png-e75f3eb8ceaec3c540a19cb18dfb22a5.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/basalt_columns_02_NaturePalette3.png"
-dest_files=["res://.godot/imported/basalt_columns_02_NaturePalette3.png-e75f3eb8ceaec3c540a19cb18dfb22a5.s3tc.ctex"]
+dest_files=["res://.godot/imported/basalt_columns_02_NaturePalette3.png-e75f3eb8ceaec3c540a19cb18dfb22a5.s3tc.ctex", "res://.godot/imported/basalt_columns_02_NaturePalette3.png-e75f3eb8ceaec3c540a19cb18dfb22a5.etc2.ctex"]
 
 [params]
 

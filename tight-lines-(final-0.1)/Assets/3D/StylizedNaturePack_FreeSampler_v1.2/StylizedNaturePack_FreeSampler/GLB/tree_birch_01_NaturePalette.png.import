@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cid0xyd7a1wtg"
 path.s3tc="res://.godot/imported/tree_birch_01_NaturePalette.png-1ff5216b69b75daeaad99db03bdf4b5b.s3tc.ctex"
+path.etc2="res://.godot/imported/tree_birch_01_NaturePalette.png-1ff5216b69b75daeaad99db03bdf4b5b.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/tree_birch_01_NaturePalette.png"
-dest_files=["res://.godot/imported/tree_birch_01_NaturePalette.png-1ff5216b69b75daeaad99db03bdf4b5b.s3tc.ctex"]
+dest_files=["res://.godot/imported/tree_birch_01_NaturePalette.png-1ff5216b69b75daeaad99db03bdf4b5b.s3tc.ctex", "res://.godot/imported/tree_birch_01_NaturePalette.png-1ff5216b69b75daeaad99db03bdf4b5b.etc2.ctex"]
 
 [params]
 
