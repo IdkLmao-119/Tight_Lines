@@ -387,11 +387,12 @@ position = Vector2(710, 391)
 
 [node name="Node2D" type="Node2D" parent="." unique_id=2000324526]
 
-[node name="Area2D" type="Area2D" parent="Node2D" unique_id=1399383615]
+[node name="FishPen3DScene" type="Area2D" parent="Node2D" unique_id=1399383615]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Node2D/Area2D" unique_id=1346964164]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Node2D/FishPen3DScene" unique_id=1346964164]
 position = Vector2(525, 616)
 shape = SubResource("RectangleShape2D_jsx4f")
 
 [connection signal="body_entered" from="FishPensToSeasidePark/FishPensToSeasidePark" to="Player" method="_on_fish_pens_to_seaside_park_body_entered"]
 [connection signal="body_entered" from="FishPenToSaltFarm/FishPenToSaltFarm" to="Player" method="_on_fish_pen_to_salt_farm_body_entered"]
+[connection signal="body_entered" from="Node2D/FishPen3DScene" to="Player" method="_on_fish_pen_3d_scene_body_entered"]

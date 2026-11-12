@@ -384,11 +384,12 @@ position = Vector2(890, 426)
 
 [node name="Node2D" type="Node2D" parent="." unique_id=402342294]
 
-[node name="Area2D" type="Area2D" parent="Node2D" unique_id=1154404230]
+[node name="SeasidePark3DScene" type="Area2D" parent="Node2D" unique_id=1154404230]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Node2D/Area2D" unique_id=1455214434]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Node2D/SeasidePark3DScene" unique_id=1455214434]
 position = Vector2(515, 140)
 shape = SubResource("RectangleShape2D_rdwqf")
 
 [connection signal="body_entered" from="FishMarketToSpawn/FishMarketToSpawn" to="Player" method="_on_fish_market_to_spawn_body_entered"]
 [connection signal="body_entered" from="FishMarketToFishPens/FishMarketToFishPens" to="Player" method="_on_fish_market_to_fish_pens_body_entered"]
+[connection signal="body_entered" from="Node2D/SeasidePark3DScene" to="Player" method="_on_seaside_park_3d_scene_body_entered"]

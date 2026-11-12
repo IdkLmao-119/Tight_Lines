@@ -66,8 +66,6 @@ func _on_river_park_to_spawn_body_entered(body: Node2D) -> void:
 func _on_river_park_to_river_park_fishing_spot_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("fishing_river_park")
 	
-# Rivepark 3D Scene
-
 # Fish Market Signals
 func _on_fish_market_to_spawn_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("overworld_spawn")
@@ -76,7 +74,8 @@ func _on_fish_market_to_fish_pens_body_entered(body: Node2D) -> void:
 	
 #Seaside Park 3D Scene
 
-
+func _on_seaside_park_3d_scene_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
 
 # Fish Pens Signals
 func _on_fish_pens_to_seaside_park_body_entered(body: Node2D) -> void:
@@ -115,10 +114,4 @@ func _on_island_to_mangrove_body_entered(body: Node2D) -> void:
 #Island 3D Signal
 
 func _on_island_3d_scene_body_entered(body: Node2D) -> void:
-	pass # Replace with function body.
-
-
-
-
-func _on_seaside_park_3d_scene_body_entered(body: Node2D) -> void:
 	pass # Replace with function body.

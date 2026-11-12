@@ -387,11 +387,12 @@ position = Vector2(1289, 444)
 
 [node name="Node2D" type="Node2D" parent="." unique_id=1844142663]
 
-[node name="Area2D" type="Area2D" parent="Node2D" unique_id=91527580]
+[node name="SaltFarm3DScene" type="Area2D" parent="Node2D" unique_id=91527580]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Node2D/Area2D" unique_id=461064309]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Node2D/SaltFarm3DScene" unique_id=461064309]
 position = Vector2(917.75, 535)
 shape = SubResource("RectangleShape2D_8hiio")
 
 [connection signal="body_entered" from="SaltFarmToFishPens/SaltFarmToFishPens" to="Player" method="_on_salt_farm_to_fish_pens_body_entered"]
 [connection signal="body_entered" from="SaltFarmToMangroveForest/SaltFarmToMangroveForest" to="Player" method="_on_salt_farm_to_mangrove_forest_body_entered"]
+[connection signal="body_entered" from="Node2D/SaltFarm3DScene" to="Player" method="_on_salt_farm_3d_scene_body_entered"]
