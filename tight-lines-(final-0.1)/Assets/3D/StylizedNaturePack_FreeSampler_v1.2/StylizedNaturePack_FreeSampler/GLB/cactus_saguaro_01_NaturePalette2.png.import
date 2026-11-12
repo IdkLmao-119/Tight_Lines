@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://sss67ja2w0dv"
 path.s3tc="res://.godot/imported/cactus_saguaro_01_NaturePalette2.png-b9193569d774986f13ce953cdc0f6989.s3tc.ctex"
+path.etc2="res://.godot/imported/cactus_saguaro_01_NaturePalette2.png-b9193569d774986f13ce953cdc0f6989.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/cactus_saguaro_01_NaturePalette2.png"
-dest_files=["res://.godot/imported/cactus_saguaro_01_NaturePalette2.png-b9193569d774986f13ce953cdc0f6989.s3tc.ctex"]
+dest_files=["res://.godot/imported/cactus_saguaro_01_NaturePalette2.png-b9193569d774986f13ce953cdc0f6989.s3tc.ctex", "res://.godot/imported/cactus_saguaro_01_NaturePalette2.png-b9193569d774986f13ce953cdc0f6989.etc2.ctex"]
 
 [params]
 

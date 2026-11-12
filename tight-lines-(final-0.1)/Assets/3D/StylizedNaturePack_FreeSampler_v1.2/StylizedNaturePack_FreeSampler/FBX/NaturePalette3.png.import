@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cgstepejcmf8d"
 path.s3tc="res://.godot/imported/NaturePalette3.png-d3ac0448c0431dabe518963df4dccbdf.s3tc.ctex"
+path.etc2="res://.godot/imported/NaturePalette3.png-d3ac0448c0431dabe518963df4dccbdf.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/FBX/NaturePalette3.png"
-dest_files=["res://.godot/imported/NaturePalette3.png-d3ac0448c0431dabe518963df4dccbdf.s3tc.ctex"]
+dest_files=["res://.godot/imported/NaturePalette3.png-d3ac0448c0431dabe518963df4dccbdf.s3tc.ctex", "res://.godot/imported/NaturePalette3.png-d3ac0448c0431dabe518963df4dccbdf.etc2.ctex"]
 
 [params]
 

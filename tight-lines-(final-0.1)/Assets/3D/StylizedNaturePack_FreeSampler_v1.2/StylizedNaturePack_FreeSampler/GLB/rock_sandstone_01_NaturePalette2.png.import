@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cdojy3fakax44"
 path.s3tc="res://.godot/imported/rock_sandstone_01_NaturePalette2.png-fe7918ac74ded5ffcf6ab0116921d683.s3tc.ctex"
+path.etc2="res://.godot/imported/rock_sandstone_01_NaturePalette2.png-fe7918ac74ded5ffcf6ab0116921d683.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/rock_sandstone_01_NaturePalette2.png"
-dest_files=["res://.godot/imported/rock_sandstone_01_NaturePalette2.png-fe7918ac74ded5ffcf6ab0116921d683.s3tc.ctex"]
+dest_files=["res://.godot/imported/rock_sandstone_01_NaturePalette2.png-fe7918ac74ded5ffcf6ab0116921d683.s3tc.ctex", "res://.godot/imported/rock_sandstone_01_NaturePalette2.png-fe7918ac74ded5ffcf6ab0116921d683.etc2.ctex"]
 
 [params]
 

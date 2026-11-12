@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://bifxgh0b75x84"
 path.s3tc="res://.godot/imported/tree_alpine_pine_03_NaturePalette3.png-3095a0b2ac41c02bbcd18c8946b95841.s3tc.ctex"
+path.etc2="res://.godot/imported/tree_alpine_pine_03_NaturePalette3.png-3095a0b2ac41c02bbcd18c8946b95841.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/tree_alpine_pine_03_NaturePalette3.png"
-dest_files=["res://.godot/imported/tree_alpine_pine_03_NaturePalette3.png-3095a0b2ac41c02bbcd18c8946b95841.s3tc.ctex"]
+dest_files=["res://.godot/imported/tree_alpine_pine_03_NaturePalette3.png-3095a0b2ac41c02bbcd18c8946b95841.s3tc.ctex", "res://.godot/imported/tree_alpine_pine_03_NaturePalette3.png-3095a0b2ac41c02bbcd18c8946b95841.etc2.ctex"]
 
 [params]
 
