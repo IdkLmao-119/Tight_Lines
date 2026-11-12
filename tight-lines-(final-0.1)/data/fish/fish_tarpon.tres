@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://deme8b0f3v6sm"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://bmug77wrp6g8w" path="res://Assets/2D/fish_sprites/tarpon-4764.png" id="1_k5up2"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Megalops atlanticus"
+description = "A legendary game fish covered in giant silver scales, known for explosive, high-flying fights."
+size_class = "large"
+base_price = 120
+speed = 2.5
+pull_strength = 9.8
+min_size = 50.0
+avg_size = 110.0
+max_size = 180.0
+avg_weight = 15.0
+icon = ExtResource("1_k5up2")
+grid_width = 4
+id = "fish_tarpon"
+display_name = "Tarpon"

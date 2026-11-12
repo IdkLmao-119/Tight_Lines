@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="BaitData" format=3 uid="uid://dcwtnx4epgtir"]
+
+[ext_resource type="Script" uid="uid://h6ubxbaaibcr" path="res://data/item_class_templates/bait_boost.gd" id="1_ya7il"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="2_oxr0f"]
+[ext_resource type="Resource" uid="uid://c4sjmrakl18ea" path="res://data/fish/fish_barramundi.tres" id="3_hhj85"]
+[ext_resource type="Texture2D" uid="uid://dreonnrtnn7ej" path="res://Assets/2D/bait_sprites/Hardbait lure-c4e0.png" id="4_adyjf"]
+[ext_resource type="Resource" uid="uid://df8yk6ead683c" path="res://data/fish/fish_ladyfish.tres" id="4_beway"]
+[ext_resource type="Resource" uid="uid://c23jtlvkpo8v2" path="res://data/fish/fish_silverperch.tres" id="5_bajyx"]
+[ext_resource type="Script" uid="uid://bx3sigi1jlqjn" path="res://data/item_class_templates/bait_data.gd" id="5_hhj85"]
+[ext_resource type="Resource" uid="uid://deme8b0f3v6sm" path="res://data/fish/fish_tarpon.tres" id="6_ic2qu"]
+
+[resource]
+script = ExtResource("5_hhj85")
+enables_fish = Array[ExtResource("2_oxr0f")]([ExtResource("3_hhj85"), ExtResource("4_beway"), ExtResource("5_bajyx"), ExtResource("6_ic2qu")])
+unlimited = true
+icon = ExtResource("4_adyjf")
+id = "bait_3"
+display_name = "Hard Bait"

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://b086ovljwx3kh"]
+
+[ext_resource type="Texture2D" uid="uid://c11rhk8jqksww" path="res://Assets/2D/fish_sprites/mud-crab.png" id="1_6suok"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Scylla serrata"
+description = "A heavy-clawed crustacean inhabiting muddy mangrove estuaries and coastal flats."
+size_class = "medium"
+base_price = 55
+speed = 0.9
+pull_strength = 7.8
+min_size = 12.0
+max_size = 35.0
+avg_weight = 1.5
+icon = ExtResource("1_6suok")
+grid_width = 2
+id = "fish_mud_crab"
+display_name = "Mud crab"

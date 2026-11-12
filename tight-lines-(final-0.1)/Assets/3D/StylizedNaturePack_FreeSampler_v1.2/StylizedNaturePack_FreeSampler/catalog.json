@@ -1,0 +1,268 @@
+[
+ {
+  "name": "tree_oak_01",
+  "category": "trees",
+  "physics": "static",
+  "mass_kg": 0.0,
+  "wind": true,
+  "tris_lod0": 848,
+  "tris_lod1": 424,
+  "collider_tris": 16,
+  "size_m": [
+   2.73,
+   3.42,
+   3.93
+  ],
+  "from_pack": "Stylized Nature Pack 1"
+ },
+ {
+  "name": "tree_pine_02",
+  "category": "trees",
+  "physics": "static",
+  "mass_kg": 0.0,
+  "wind": true,
+  "tris_lod0": 218,
+  "tris_lod1": 140,
+  "collider_tris": 30,
+  "size_m": [
+   3.18,
+   3.27,
+   5.49
+  ],
+  "from_pack": "Stylized Nature Pack 1"
+ },
+ {
+  "name": "tree_birch_01",
+  "category": "trees",
+  "physics": "static",
+  "mass_kg": 0.0,
+  "wind": true,
+  "tris_lod0": 832,
+  "tris_lod1": 399,
+  "collider_tris": 42,
+  "size_m": [
+   1.45,
+   1.57,
+   4.83
+  ],
+  "from_pack": "Stylized Nature Pack 1"
+ },
+ {
+  "name": "bush_flower_01",
+  "category": "plants",
+  "physics": "none",
+  "mass_kg": 0.0,
+  "wind": true,
+  "tris_lod0": 1040,
+  "tris_lod1": 520,
+  "collider_tris": 0,
+  "size_m": [
+   1.08,
+   1.52,
+   1.03
+  ],
+  "from_pack": "Stylized Nature Pack 1"
+ },
+ {
+  "name": "rock_02",
+  "category": "rocks",
+  "physics": "static",
+  "mass_kg": 2949.8,
+  "wind": false,
+  "tris_lod0": 80,
+  "tris_lod1": 52,
+  "collider_tris": 72,
+  "size_m": [
+   1.95,
+   1.41,
+   1.08
+  ],
+  "from_pack": "Stylized Nature Pack 1"
+ },
+ {
+  "name": "mushroom_red_01",
+  "category": "props",
+  "physics": "none",
+  "mass_kg": 0.0,
+  "wind": false,
+  "tris_lod0": 284,
+  "tris_lod1": 184,
+  "collider_tris": 0,
+  "size_m": [
+   0.39,
+   0.4,
+   0.4
+  ],
+  "from_pack": "Stylized Nature Pack 1"
+ },
+ {
+  "name": "tree_cherry_02",
+  "category": "spring",
+  "physics": "static",
+  "mass_kg": 0.0,
+  "wind": true,
+  "tris_lod0": 1400,
+  "tris_lod1": 700,
+  "collider_tris": 20,
+  "colliders": 1,
+  "size_m": [
+   3.68,
+   3.9,
+   4.51
+  ],
+  "from_pack": "Stylized Nature Pack 2 - Biomes"
+ },
+ {
+  "name": "tree_palm_02",
+  "category": "tropical",
+  "physics": "static",
+  "mass_kg": 0.0,
+  "wind": true,
+  "tris_lod0": 2772,
+  "tris_lod1": 1386,
+  "collider_tris": 66,
+  "colliders": 1,
+  "size_m": [
+   6.48,
+   6.47,
+   7.38
+  ],
+  "from_pack": "Stylized Nature Pack 2 - Biomes"
+ },
+ {
+  "name": "cactus_saguaro_01",
+  "category": "desert",
+  "physics": "static",
+  "mass_kg": 0.0,
+  "wind": false,
+  "tris_lod0": 274,
+  "tris_lod1": 178,
+  "collider_tris": 60,
+  "colliders": 1,
+  "size_m": [
+   2.23,
+   0.67,
+   3.2
+  ],
+  "from_pack": "Stylized Nature Pack 2 - Biomes"
+ },
+ {
+  "name": "rock_sandstone_01",
+  "category": "desert",
+  "physics": "static",
+  "mass_kg": 1640.3,
+  "wind": false,
+  "tris_lod0": 80,
+  "tris_lod1": 52,
+  "collider_tris": 74,
+  "colliders": 1,
+  "size_m": [
+   1.64,
+   1.08,
+   0.93
+  ],
+  "from_pack": "Stylized Nature Pack 2 - Biomes"
+ },
+ {
+  "name": "flower_sunflower_01",
+  "category": "spring",
+  "physics": "none",
+  "mass_kg": 0.0,
+  "wind": true,
+  "tris_lod0": 1362,
+  "tris_lod1": 664,
+  "collider_tris": 0,
+  "colliders": 0,
+  "size_m": [
+   0.92,
+   0.64,
+   1.28
+  ],
+  "from_pack": "Stylized Nature Pack 2 - Biomes"
+ },
+ {
+  "name": "tree_autumn_maple_01",
+  "category": "autumn",
+  "physics": "static",
+  "mass_kg": 0.0,
+  "wind": true,
+  "tris_lod0": 1280,
+  "tris_lod1": 640,
+  "collider_tris": 18,
+  "colliders": 1,
+  "size_m": [
+   3.66,
+   3.62,
+   4.42
+  ],
+  "from_pack": "Stylized Nature Pack 3 - Wild Lands"
+ },
+ {
+  "name": "tree_mangrove_01",
+  "category": "swamp",
+  "physics": "static",
+  "mass_kg": 0.0,
+  "wind": true,
+  "tris_lod0": 1236,
+  "tris_lod1": 618,
+  "collider_tris": 38,
+  "colliders": 1,
+  "size_m": [
+   3.84,
+   4.25,
+   4.21
+  ],
+  "from_pack": "Stylized Nature Pack 3 - Wild Lands"
+ },
+ {
+  "name": "basalt_columns_02",
+  "category": "volcano",
+  "physics": "static",
+  "mass_kg": 18331.5,
+  "wind": false,
+  "tris_lod0": 384,
+  "tris_lod1": 192,
+  "collider_tris": 240,
+  "colliders": 12,
+  "size_m": [
+   2.29,
+   2.54,
+   2.91
+  ],
+  "from_pack": "Stylized Nature Pack 3 - Wild Lands"
+ },
+ {
+  "name": "mushroom_glow_01",
+  "category": "swamp",
+  "physics": "none",
+  "mass_kg": 0.0,
+  "wind": false,
+  "tris_lod0": 744,
+  "tris_lod1": 372,
+  "collider_tris": 0,
+  "colliders": 0,
+  "size_m": [
+   0.62,
+   0.41,
+   0.34
+  ],
+  "from_pack": "Stylized Nature Pack 3 - Wild Lands"
+ },
+ {
+  "name": "tree_alpine_pine_03",
+  "category": "mountain",
+  "physics": "static",
+  "mass_kg": 0.0,
+  "wind": true,
+  "tris_lod0": 418,
+  "tris_lod1": 208,
+  "collider_tris": 26,
+  "colliders": 1,
+  "size_m": [
+   2.54,
+   2.52,
+   6.4
+  ],
+  "from_pack": "Stylized Nature Pack 3 - Wild Lands"
+ }
+]

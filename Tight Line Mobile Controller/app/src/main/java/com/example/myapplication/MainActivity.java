@@ -9,11 +9,20 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.VibrationEffect;
+import android.util.Log;
+import android.os.Vibrator;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,52 +46,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
-
-// ============================================================================
-// CONNECTION MANAGER (ANDROID SIDE)  — module 1 of 3
-// ============================================================================
-// This Activity IS the phone's connection manager: it owns the WebSocket
-// connection to the PC, detects the three input types this project uses
-// (swipe, tap, swing), and reports simple connection/ping status.
-//
-// The PC's address is NOT hardcoded — the player either types it in
-// manually, or taps "Auto-Discover" to find it automatically via a UDP
-// broadcast on the local network (see performDiscovery() below). This is
-// what makes the app safe to distribute to other people's devices, since
-// every player's PC will have a different IP address.
-//
-//   SWIPE — dragging a finger across the screen (GestureDetector.onFling)
-//   TAP   — a quick press on the screen (GestureDetector.onSingleTapUp)
-//   SWING — physically moving/swinging the phone (gyroscope spike detection)
-//
-// Requires, in app/build.gradle:
-//     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-// And in AndroidManifest.xml, inside <manifest>, above <application>:
-//     <uses-permission android:name="android.permission.INTERNET" />
-//     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-//
-// ALSO REQUIRED (this was missing before): the connection uses plain ws://
-// (not wss://), and Android 9+ blocks cleartext traffic by default. Add this
-// attribute to the <application> tag in AndroidManifest.xml:
-//     android:usesCleartextTraffic="true"
-// Without it, connecting fails with "CLEARTEXT communication ... not permitted".
-//
-// TIP: if your Wi-Fi network has no internet (e.g. a PC-hosted hotspot),
-// Android may route app traffic over mobile data, which cannot reach the
-// PC's 192.168.x.x address. Turn mobile data off while testing.
-// ============================================================================
+import okio.ByteString;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    // --- Networking ---
-    // IMPORTANT: readTimeout/writeTimeout are explicitly disabled (set to
-    // 0 = no timeout) here. OkHttp's default 10-second read timeout is
-    // meant for regular one-off HTTP requests, NOT a persistent WebSocket
-    // connection that's supposed to sit open and wait indefinitely for the
-    // next message. Leaving the default active can cause the connection to
-    // be killed as "timed out" during any quiet gap longer than 10 seconds
-    // (e.g. the player just isn't moving the phone right now). pingInterval
-    // is what actually keeps the connection alive/monitored instead.
     private final OkHttpClient client = new OkHttpClient.Builder()
             .pingInterval(15, TimeUnit.SECONDS)
             .readTimeout(0, TimeUnit.MILLISECONDS)
@@ -91,60 +58,51 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private WebSocket webSocket;
 
-    // No hardcoded server address anymore — this is filled in at runtime,
-    // either by the player typing it into serverIpInput, or automatically
-    // by performDiscovery() below.
+    private static final long RECONNECT_DELAY_MS = 2000L;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable reconnectRunnable;
+    private String lastIp = null;
+    private boolean wantConnected = false;
+    private int connectionAttempt = 0;
+
     private String serverUrl = null;
-
-    // The port your ConnectionManager.gd listens on — this stays constant
-    // even though the IP address varies per PC.
     private static final int SERVER_PORT = 9080;
-
-    // --- Auto-discovery settings ---
-    // A separate, fixed port used ONLY for the discovery broadcast/response
-    // — kept different from SERVER_PORT so discovery traffic and game
-    // traffic never get confused with each other.
     private static final int DISCOVERY_PORT = 9081;
-
-    // The exact text the phone broadcasts, and that ConnectionManager.gd
-    // listens for. Both sides must agree on this exact string.
     private static final String DISCOVERY_MESSAGE = "DISCOVER_FISHING_SERVER";
-
-    // How long to wait for a PC to respond before giving up.
     private static final int DISCOVERY_TIMEOUT_MS = 3000;
 
-    // --- Connection / ping status ---
-    // Tracks whether the WebSocket connection is currently open.
     private boolean isConnected = false;
-
-    // Stores the most recently measured round-trip ping time, in milliseconds.
-    // NOTE: this is only ever set if you wire up an actual ping/pong
-    // round-trip (see the note at the bottom of this file) — as written,
-    // it stays at -1 (unknown) since no round-trip measurement exists yet.
     private long latencyMs = -1;
 
-    // --- Sensors ---
     private SensorManager sensorManager;
     private Sensor gyroSensor;
+    private Sensor accelSensor;
 
-    // --- Swing detection tuning ---
-    // A swing is detected as a spike in rotation speed. SWING_THRESHOLD is
-    // how fast (in radians/second) the phone must be rotating to count as
-    // an intentional swing rather than normal handling/jitter.
-    private static final float SWING_THRESHOLD = 4.0f;
+    private static final long TILT_SEND_INTERVAL_MS = 50L;
+    private static final float TILT_FULL_ANGLE_DEG = 40f;
+    private static final float TILT_FILTER_ALPHA = 0.8f;
+    private static final long TILT_HOLD_AFTER_SWING_MS = 250L;
 
-    // After detecting a swing, we wait this long before allowing another
-    // one to be detected — this "cooldown" stops one physical swing motion
-    // from being counted as many separate swings in a row.
+    private final float[] gravity = new float[3];
+    private boolean gravityInitialized = false;
+    private long lastTiltSentMs = 0L;
+
+    private static final float SWING_THRESHOLD = 8.0f;
     private static final long SWING_COOLDOWN_MS = 500L;
     private long lastSwingTimeMs = 0L;
 
-    // A permanent, unique ID for THIS phone, generated once and saved
-    // forever afterward — this is how the PC recognizes "this is the same
-    // device as before" even if its IP address changes between sessions.
+    private static final long SWING_PEAK_WINDOW_MS = 120L;
+    private boolean swingWindowOpen = false;
+    private long swingWindowStartMs = 0L;
+    private double swingPeak = 0.0;
+
     private String deviceId;
 
-    // --- UI ---
+    // --- Dynamic UI State Management ---
+    private enum AppState { CONNECTION, OVERWORLD, CASTING, REELING }
+    private AppState currentState = null;
+
+    // UI elements (re-bound dynamically per screen)
     private TextView statusText;
     private EditText serverIpInput;
     private Button connectButton;
@@ -156,14 +114,82 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        deviceId = getOrCreateDeviceId();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        reconnectRunnable = () -> {
+            if (wantConnected && !isConnected && lastIp != null) {
+                connectToServer(lastIp);
+            }
+        };
+
+        gestureDetector = new GestureDetector(this, new GestureListener());
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        accelSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        // Start on the connection setup view
+        switchToState(AppState.CONNECTION);
+    }
+
+    private void switchToState(AppState newState) {
+        if (currentState == newState) return;
+        currentState = newState;
+
+        runOnUiThread(() -> {
+            FrameLayout rootContainer = findViewById(R.id.rootContainer);
+            rootContainer.removeAllViews();
+
+            int layoutResId;
+            switch (newState) {
+                case CONNECTION:
+                    layoutResId = R.layout.view_connection;
+                    break;
+                case OVERWORLD:
+                    layoutResId = R.layout.view_overworld;
+                    break;
+                case CASTING:
+                    layoutResId = R.layout.view_casting;
+                    break;
+                case REELING:
+                    layoutResId = R.layout.view_reeling;
+                    break;
+                default:
+                    layoutResId = R.layout.view_connection;
+                    break;
+            }
+
+            getLayoutInflater().inflate(layoutResId, rootContainer, true);
+
+            // Bind specific view listeners depending on state
+            if (newState == AppState.CONNECTION) {
+                setupConnectionUI();
+            } else if (newState == AppState.REELING) {
+                FishingReelView reelView = findViewById(R.id.fishingReelView);
+                if (reelView != null) {
+                    reelView.setOnReelListener(deltaDegrees -> {
+                        JSONObject msg = new JSONObject();
+                        try {
+                            msg.put("type", "reel");
+                            msg.put("delta", deltaDegrees);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        sendMessage(msg);
+                    });
+                }
+            }
+        });
+    }
+
+    private void setupConnectionUI() {
         statusText = findViewById(R.id.statusText);
         serverIpInput = findViewById(R.id.serverIpInput);
         connectButton = findViewById(R.id.connectButton);
         discoverButton = findViewById(R.id.discoverButton);
 
-        deviceId = getOrCreateDeviceId();
+        statusText.setText(getConnectionStatus());
 
-        // Manual entry: player types an IP and taps Connect.
         connectButton.setOnClickListener(v -> {
             String ip = serverIpInput.getText().toString().trim();
             if (ip.isEmpty()) {
@@ -173,76 +199,54 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             connectToServer(ip);
         });
 
-        // Auto-discover: finds the PC's IP automatically, no typing needed.
         discoverButton.setOnClickListener(v -> performDiscovery());
-
-        // GestureDetector is Android's built-in helper for recognizing
-        // common touch patterns (taps, swipes/flings, etc.) so we don't have
-        // to manually track finger movement math ourselves.
-        gestureDetector = new GestureDetector(this, new GestureListener());
-
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-
-        // NOTE: connectToServer() is no longer called automatically here —
-        // we wait for the player to either type an IP or use Auto-Discover,
-        // since we no longer have any address to connect to by default.
     }
 
-    // Forwards all touch events on the whole screen to the GestureDetector,
-    // which figures out whether they form a tap, swipe, etc.
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        gestureDetector.onTouchEvent(event);
+        if (gestureDetector != null) {
+            gestureDetector.onTouchEvent(event);
+        }
         return true;
     }
 
-    // ------------------------------------------------------------------------
-    // PERSISTENT DEVICE ID
-    // ------------------------------------------------------------------------
-    // SharedPreferences is Android's built-in simple key-value storage that
-    // survives app restarts (and even phone restarts) — it only goes away
-    // if the app is uninstalled. We use it to store one random ID, created
-    // the very first time the app runs, and reused every time after that.
     private String getOrCreateDeviceId() {
         SharedPreferences prefs = getSharedPreferences("controller_prefs", MODE_PRIVATE);
         String existingId = prefs.getString("device_id", null);
+        if (existingId != null) return existingId;
 
-        if (existingId != null) {
-            return existingId; // already had one — reuse it
-        }
-
-        // First launch ever — generate a new random unique ID and save it
-        // permanently so every future launch finds it above instead.
         String newId = UUID.randomUUID().toString();
         prefs.edit().putString("device_id", newId).apply();
         return newId;
     }
 
-    // ------------------------------------------------------------------------
-    // CONNECTION MANAGEMENT
-    // ------------------------------------------------------------------------
     private void connectToServer(String ip) {
-        // FIX: close any previous connection first, so tapping Connect (or
-        // Auto-Discover) more than once doesn't leave stale sockets open,
-        // which the PC would see as duplicate connections.
         if (webSocket != null) {
             webSocket.close(1000, "Reconnecting");
             webSocket = null;
         }
         isConnected = false;
+        lastIp = ip;
+        wantConnected = true;
+        handler.removeCallbacks(reconnectRunnable);
+        final int attempt = ++connectionAttempt;
 
         serverUrl = "ws://" + ip + ":" + SERVER_PORT;
         Request request = new Request.Builder().url(serverUrl).build();
 
-        runOnUiThread(() -> statusText.setText("Connecting to " + ip + "..."));
+        runOnUiThread(() -> {
+            if (statusText != null) statusText.setText("Connecting to " + ip + "...");
+        });
 
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onOpen(WebSocket ws, Response response) {
+                if (attempt != connectionAttempt) return;
                 isConnected = true;
-                runOnUiThread(() -> statusText.setText(getConnectionStatus()));
+
+                // Jump straight to Overworld controller screen on connection success
+                switchToState(AppState.OVERWORLD);
 
                 JSONObject msg = new JSONObject();
                 try {
@@ -254,53 +258,72 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sendMessage(msg);
             }
 
+            // Safety net: if the PC ever sends a BINARY frame, read it as text too.
+            @Override
+            public void onMessage(WebSocket ws, ByteString bytes) {
+                onMessage(ws, bytes.utf8());
+            }
+
+            @Override
+            public void onMessage(WebSocket ws, String text) {
+                if (attempt != connectionAttempt) return;
+                Log.d("TightLines", "from PC: " + text);
+                try {
+                    JSONObject json = new JSONObject(text);
+
+                    // Vibration from the PC: {"type":"vibrate","reason":"bite"|"escape"}
+                    if ("vibrate".equals(json.optString("type"))) {
+                        if ("bite".equals(json.optString("reason"))) {
+                            vibrateOnce(300);                                  // one firm buzz
+                        } else {
+                            vibratePattern(new long[]{0, 120, 80, 120});       // double buzz
+                        }
+                    }
+
+                    if (json.has("game_state")) {
+                        String stateStr = json.getString("game_state");
+                        switch (stateStr) {
+                            case "overworld":
+                                switchToState(AppState.OVERWORLD);
+                                break;
+                            case "casting":
+                                switchToState(AppState.CASTING);
+                                break;
+                            case "reeling":
+                                switchToState(AppState.REELING);
+                                break;
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
             @Override
             public void onFailure(WebSocket ws, Throwable t, Response response) {
+                if (attempt != connectionAttempt) return;
                 isConnected = false;
-                String reason = t.getMessage();
-                if (t.getCause() != null) reason += " / " + t.getCause().getMessage();
-                final String shown = reason;
-                runOnUiThread(() -> statusText.setText("Connection failed: " + shown));
+                switchToState(AppState.CONNECTION);
+                scheduleReconnect();
             }
 
             @Override
             public void onClosed(WebSocket ws, int code, String reason) {
+                if (attempt != connectionAttempt) return;
                 isConnected = false;
-                runOnUiThread(() -> statusText.setText(getConnectionStatus()));
+                switchToState(AppState.CONNECTION);
+                scheduleReconnect();
             }
         });
     }
 
-    // ------------------------------------------------------------------------
-    // AUTO-DISCOVERY
-    // ------------------------------------------------------------------------
-    // Computes this phone's ACTUAL subnet broadcast address (e.g.
-    // 192.168.137.255 for a typical /24 hotspot network), rather than
-    // relying only on the generic 255.255.255.255 address. This matters
-    // because 255.255.255.255 is known to be unreliable on Android — some
-    // devices/Wi-Fi stacks don't route it out onto the Wi-Fi interface
-    // correctly, whereas a network's own specific directed broadcast
-    // address is delivered far more consistently.
-    //
-    // Requires android.permission.ACCESS_WIFI_STATE in AndroidManifest.xml.
     private List<InetAddress> getBroadcastAddresses() {
         List<InetAddress> addresses = new ArrayList<>();
-
         try {
-            WifiManager wifiManager =
-                    (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             DhcpInfo dhcp = wifiManager.getDhcpInfo();
-
             if (dhcp != null && dhcp.ipAddress != 0 && dhcp.netmask != 0) {
-                // Standard bitwise trick: (ip AND netmask) gives the network
-                // address, then OR-ing with the INVERSE of the netmask fills
-                // in the "host" bits with 1s, producing the broadcast address.
                 int broadcastInt = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
-
-                // Android stores these ints in little-endian byte order,
-                // opposite of standard network byte order, so we extract
-                // each byte manually with bit-shifting rather than using
-                // a direct int-to-bytes conversion.
                 byte[] quads = new byte[4];
                 for (int k = 0; k < 4; k++) {
                     quads[k] = (byte) ((broadcastInt >> (k * 8)) & 0xFF);
@@ -308,34 +331,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 addresses.add(InetAddress.getByAddress(quads));
             }
         } catch (Exception e) {
-            // If anything goes wrong computing the specific address, we
-            // still have the generic fallback added below.
             e.printStackTrace();
         }
 
-        // Always include the generic broadcast address too, as a fallback
-        // — harmless to try both, and covers networks/devices where the
-        // specific address computation above doesn't apply cleanly.
         try {
             addresses.add(InetAddress.getByName("255.255.255.255"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return addresses;
     }
 
-    // Sends a UDP broadcast onto the local network asking "is there a game
-    // server here?" and listens briefly for a reply containing the PC's IP.
-    // This works for BOTH connectivity modes (PC-hosted hotspot or shared
-    // LAN) since in either case, phone and PC share the same local network
-    // segment, and UDP broadcasts reach every device on that segment.
-    //
-    // This must run on a background thread — Android does not allow network
-    // operations (even simple ones like this) on the main/UI thread, since
-    // they could block the app from responding and freeze the interface.
     private void performDiscovery() {
-        runOnUiThread(() -> statusText.setText("Searching for PC..."));
+        runOnUiThread(() -> {
+            if (statusText != null) statusText.setText("Searching for PC...");
+        });
 
         new Thread(() -> {
             try (DatagramSocket socket = new DatagramSocket()) {
@@ -343,65 +353,79 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 socket.setSoTimeout(DISCOVERY_TIMEOUT_MS);
 
                 byte[] sendData = DISCOVERY_MESSAGE.getBytes();
-
-                // Send to every candidate broadcast address (the computed
-                // subnet-specific one AND the generic 255.255.255.255) —
-                // only one needs to actually reach the PC.
-                // FIX: each send is wrapped individually. Before, if ONE
-                // address failed (255.255.255.255 often throws on some
-                // devices), the whole discovery aborted even though the
-                // other broadcast had already been sent successfully.
                 boolean anySent = false;
                 IOException lastSendError = null;
+
                 for (InetAddress addr : getBroadcastAddresses()) {
                     try {
-                        DatagramPacket sendPacket = new DatagramPacket(
-                                sendData, sendData.length, addr, DISCOVERY_PORT
-                        );
+                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, addr, DISCOVERY_PORT);
                         socket.send(sendPacket);
                         anySent = true;
                     } catch (IOException sendError) {
                         lastSendError = sendError;
                     }
                 }
-                if (!anySent && lastSendError != null) {
-                    throw lastSendError;
-                }
+                if (!anySent && lastSendError != null) throw lastSendError;
 
-                // Wait for a reply. ConnectionManager.gd sends back a plain
-                // text string like "192.168.137.1" when it hears our request.
                 byte[] receiveBuffer = new byte[256];
                 DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-                socket.receive(receivePacket); // blocks until a reply arrives, or times out
+                socket.receive(receivePacket);
 
-                // FIX: use the reply packet's SOURCE address as the PC's IP.
-                // That is, by definition, an address the phone just
-                // successfully received traffic from, so it is far more
-                // reliable than trusting the PC's own guess in the text.
-                // The text payload is only used as a fallback.
                 String discoveredIp = receivePacket.getAddress().getHostAddress();
                 if (discoveredIp == null || discoveredIp.isEmpty()) {
-                    discoveredIp = new String(
-                            receivePacket.getData(), 0, receivePacket.getLength()
-                    ).trim();
+                    discoveredIp = new String(receivePacket.getData(), 0, receivePacket.getLength()).trim();
                 }
                 final String foundIp = discoveredIp;
 
                 runOnUiThread(() -> {
-                    serverIpInput.setText(foundIp);
-                    statusText.setText("Found PC at " + foundIp);
+                    if (serverIpInput != null) serverIpInput.setText(foundIp);
+                    if (statusText != null) statusText.setText("Found PC at " + foundIp);
                     connectToServer(foundIp);
                 });
 
             } catch (SocketTimeoutException e) {
                 runOnUiThread(() -> {
-                    statusText.setText("No PC found — try entering the IP manually");
+                    if (statusText != null) statusText.setText("No PC found — enter IP manually");
                     Toast.makeText(this, "Discovery timed out", Toast.LENGTH_SHORT).show();
                 });
             } catch (IOException e) {
-                runOnUiThread(() -> statusText.setText("Discovery error: " + e.getMessage()));
+                runOnUiThread(() -> {
+                    if (statusText != null) statusText.setText("Discovery error: " + e.getMessage());
+                });
             }
         }).start();
+    }
+
+    // ------------------------------------------------------------------------
+    // VIBRATION (needs <uses-permission android:name="android.permission.VIBRATE" />)
+    // ------------------------------------------------------------------------
+    @SuppressWarnings("deprecation")
+    private void vibrateOnce(long ms) {
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (v == null || !v.hasVibrator()) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            v.vibrate(ms);
+        }
+    }
+
+    // pattern = {delay, on, off, on, ...} in ms, played once.
+    @SuppressWarnings("deprecation")
+    private void vibratePattern(long[] pattern) {
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (v == null || !v.hasVibrator()) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createWaveform(pattern, -1));
+        } else {
+            v.vibrate(pattern, -1);
+        }
+    }
+
+    private void scheduleReconnect() {
+        if (!wantConnected || lastIp == null) return;
+        handler.removeCallbacks(reconnectRunnable);
+        handler.postDelayed(reconnectRunnable, RECONNECT_DELAY_MS);
     }
 
     private void sendMessage(JSONObject json) {
@@ -410,40 +434,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    // Returns a simple human-readable string describing connection status.
     public String getConnectionStatus() {
         return isConnected ? "Connected" : "Not connected";
     }
 
-    // Returns a simple human-readable string describing the last known ping.
-    // See the NOTE at the bottom of this file — latencyMs is only populated
-    // once an actual ping/pong round trip is implemented.
-    public String getPingStatus() {
-        if (latencyMs < 0) {
-            return "Ping: unknown";
-        } else {
-            return "Ping: " + latencyMs + "ms";
-        }
-    }
-
-    // ------------------------------------------------------------------------
-    // TOUCH INPUT: tap and swipe, handled via GestureDetector callbacks
-    // ------------------------------------------------------------------------
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        // Required override — must return true for other gesture callbacks
-        // (like onFling) to actually fire.
         @Override
         public boolean onDown(MotionEvent e) {
             return true;
         }
 
-        // Fires on a quick, precise press-and-release: a TAP.
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            // Normalize the tap position to a 0.0–1.0 range based on screen
-            // size, so the PC doesn't need to know this phone's specific
-            // screen resolution to make sense of the coordinates.
             float normalizedX = e.getX() / getResources().getDisplayMetrics().widthPixels;
             float normalizedY = e.getY() / getResources().getDisplayMetrics().heightPixels;
 
@@ -459,9 +461,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             return true;
         }
 
-        // Fires when a finger drags across the screen and lifts off with
-        // some speed: a SWIPE. (A slow drag that just stops doesn't count
-        // as a "fling" — that's intentional, it filters out accidental drags.)
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             if (e1 == null) return false;
@@ -469,8 +468,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float dx = e2.getX() - e1.getX();
             float dy = e2.getY() - e1.getY();
 
-            // Figure out the dominant direction by comparing how far the
-            // swipe moved horizontally vs vertically.
             String direction;
             if (Math.abs(dx) > Math.abs(dy)) {
                 direction = (dx > 0) ? "right" : "left";
@@ -492,32 +489,41 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    // ------------------------------------------------------------------------
-    // GYROSCOPE INPUT: swing detection
-    // ------------------------------------------------------------------------
-    // Unlike tap/swipe (single discrete events from Android's gesture
-    // system), the gyroscope streams continuous data many times per second.
-    // We watch that stream ourselves and decide when it looks like an
-    // intentional "swing" happened.
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() != Sensor.TYPE_GYROSCOPE) return;
+        int sensorType = event.sensor.getType();
+        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
+            handleAccelerometer(event);
+            return;
+        }
+        if (sensorType != Sensor.TYPE_GYROSCOPE) return;
 
-        // Combine rotation speed on all 3 axes into one overall "how fast
-        // is this phone rotating right now" number, using the standard
-        // 3D magnitude formula: sqrt(x² + y² + z²).
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
         double magnitude = Math.sqrt(x * x + y * y + z * z);
 
-        if (magnitude < SWING_THRESHOLD) return; // too gentle — ignore
-
         long now = System.currentTimeMillis();
-        if (now - lastSwingTimeMs < SWING_COOLDOWN_MS) return; // still cooling down
 
-        lastSwingTimeMs = now;
+        if (swingWindowOpen) {
+            if (magnitude > swingPeak) swingPeak = magnitude;
+            if (now - swingWindowStartMs >= SWING_PEAK_WINDOW_MS) {
+                swingWindowOpen = false;
+                lastSwingTimeMs = now;
+                sendSwing(swingPeak);
+            }
+            return;
+        }
 
+        if (magnitude < SWING_THRESHOLD) return;
+        if (now - lastSwingTimeMs < SWING_COOLDOWN_MS) return;
+
+        swingWindowOpen = true;
+        swingWindowStartMs = now;
+        swingPeak = magnitude;
+    }
+
+    private void sendSwing(double magnitude) {
         JSONObject msg = new JSONObject();
         try {
             msg.put("type", "swing");
@@ -528,17 +534,65 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sendMessage(msg);
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Not needed for this use case.
+    @SuppressWarnings("deprecation")
+    private void handleAccelerometer(SensorEvent event) {
+        long nowMs = System.currentTimeMillis();
+        boolean swingBusy = swingWindowOpen || (nowMs - lastSwingTimeMs < TILT_HOLD_AFTER_SWING_MS);
+
+        if (!gravityInitialized) {
+            System.arraycopy(event.values, 0, gravity, 0, 3);
+            gravityInitialized = true;
+        } else if (!swingBusy) {
+            for (int i = 0; i < 3; i++) {
+                gravity[i] = TILT_FILTER_ALPHA * gravity[i] + (1f - TILT_FILTER_ALPHA) * event.values[i];
+            }
+        }
+
+        long now = System.currentTimeMillis();
+        if (!isConnected || now - lastTiltSentMs < TILT_SEND_INTERVAL_MS) return;
+        lastTiltSentMs = now;
+
+        float screenRight;
+        switch (getWindowManager().getDefaultDisplay().getRotation()) {
+            case Surface.ROTATION_90:
+                screenRight = -gravity[1];
+                break;
+            case Surface.ROTATION_180:
+                screenRight = -gravity[0];
+                break;
+            case Surface.ROTATION_270:
+                screenRight = gravity[1];
+                break;
+            default:
+                screenRight = gravity[0];
+                break;
+        }
+
+        float ratio = Math.max(-1f, Math.min(1f, -screenRight / SensorManager.GRAVITY_EARTH));
+        double angleDeg = Math.toDegrees(Math.asin(ratio));
+        double value = Math.max(-1.0, Math.min(1.0, angleDeg / TILT_FULL_ANGLE_DEG));
+
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("type", "tilt");
+            msg.put("value", value);
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        sendMessage(msg);
     }
 
-    // --- Lifecycle ---
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
     @Override
     protected void onResume() {
         super.onResume();
         if (gyroSensor != null) {
             sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
+        }
+        if (accelSensor != null) {
+            sensorManager.registerListener(this, accelSensor, SensorManager.SENSOR_DELAY_GAME);
         }
     }
 
@@ -546,27 +600,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        swingWindowOpen = false;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        wantConnected = false;
+        handler.removeCallbacks(reconnectRunnable);
         if (webSocket != null) {
             webSocket.close(1000, "App closed");
         }
     }
-
-    // ============================================================================
-    // NOTE ON PING MEASUREMENT
-    // ============================================================================
-    // latencyMs is currently never set to a real value. To measure actual
-    // round-trip ping:
-    //   1. Record System.currentTimeMillis() right before sending a small
-    //      {"type": "ping"} message.
-    //   2. Have the PC-side ConnectionManager.gd echo back a matching
-    //      {"type": "pong"} message immediately upon receiving "ping".
-    //   3. When that "pong" arrives (in a message-received callback), take
-    //      a new System.currentTimeMillis() and subtract the timestamp from
-    //      step 1 — the result is your round-trip latencyMs.
-    // ============================================================================
 }

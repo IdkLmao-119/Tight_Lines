@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://bd41tun5pdiet"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://qefc6hydaym3" path="res://Assets/2D/fish_sprites/African_Catfish.png" id="1_mbknm"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Clarias gariepinus"
+description = "A hardy bottom-dweller known for its resilience and ability to survive brief periods out of water."
+size_class = "large"
+base_price = 45
+speed = 1.2
+pull_strength = 7.5
+min_size = 40.0
+avg_size = 70.0
+max_size = 140.0
+avg_weight = 4.5
+icon = ExtResource("1_mbknm")
+grid_width = 3
+id = "fish_african_catfish"
+display_name = "African Catfish"

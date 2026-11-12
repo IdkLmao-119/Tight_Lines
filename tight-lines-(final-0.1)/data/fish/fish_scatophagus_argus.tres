@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://fnlddxoudhw1"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://ckrq8fyw5eyyd" path="res://Assets/2D/fish_sprites/Scatophagus-Argus.png" id="1_qmfex"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Scatophagus argus"
+description = "A deep-bodied brackish fish adorned with dark spots over an olive-green background."
+base_price = 26
+speed = 1.5
+pull_strength = 3.2
+icon = ExtResource("1_qmfex")
+id = "fish_scatophagus_argus"
+display_name = "Scatophagus Argus"
