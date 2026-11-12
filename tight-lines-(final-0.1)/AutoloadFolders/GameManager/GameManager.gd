@@ -137,51 +137,51 @@ const SCENES: Dictionary = {
 
 	#3D Fishing
 	"fishing_rice_field": {
-		"path": "res://3DFishingScene/Are1FishingScenes/3DFishingRiceField.tscn",
+		"path": "res://3DFishingScene/Area1FishingScenes/3DFishingRiceField.tscn",
 		"input": "fishing",
-		"music": "res://audio/music/fishing.ogg",
+		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
 	},
 	"fishing_river_park": {
 		"path": "res://3DFishingScene/Area1FishingScenes/3DFishingRiverPark.tscn",
 		"input": "fishing",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
 	},
 	"fishing_fish_market": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingSeasidePark.tscn",
 		"input": "fishing",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
 	},
 	"fishing_fishing_pens": {
 		"path": "res://OverWorldSceneAndScript/Area01Scene/MainArea1/MainArea01.tscn",
 		"input": "fishing",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
 	},
 	"fishing_salt_farm": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingSaltFarm.tscn",
 		"input": "fishing",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
 	},
 	"fishing_mangrove": {
 		"path": "res://3DFishingScene/Area3FishingScenes/3DFishingMangrove.tscn",
 		"input": "fishing",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
 	},
 	"fishing_island": {
 		"path": "res://3DFishingScene/Area3FishingScenes/3DFishingIsland.tscn",
 		"input": "fishing",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
 	},
 	"multiplayer": {
 		"path": "res://3DFishingScene/MultiplayerFishingScene/3d_fishing_multiplayer.tscn",
 		"input": "fishing",
-		"music": "res://audio/music/overworld.ogg",
+		"music": "res://Assets/Audio/Sunday.mp3",
 		"pausable": true,
 	},
 }

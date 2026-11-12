@@ -4,9 +4,11 @@
 [ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="2_532by"]
 [ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="3_rtbn7"]
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="4_tchfx"]
-[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="5_c6seq"]
+[ext_resource type="Script" uid="uid://b2wg36t11o40t" path="res://UIScenesAndScript/3d_ui/3DsceneUI.gd" id="5_532by"]
 [ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="6_a5w1c"]
+[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="6_rtbn7"]
 [ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="7_o14e8"]
+[ext_resource type="Script" uid="uid://digi6kkhul6md" path="res://3DFishingScene/MultiplayerFishingScene/scene_script_overworld_button.gd" id="7_rtbn7"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="8_rl387"]
 [ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="9_7ac3p"]
 
@@ -52,6 +54,16 @@ ambient_light_color = Color(0.94509804, 0.94509804, 0.94509804, 1)
 ambient_light_sky_contribution = 0.0
 ambient_light_energy = 0.81
 reflected_light_source = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qbet6"]
+bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
 load_path = "res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"
@@ -118,8 +130,141 @@ environment = SubResource("Environment_i1y24")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
 
-[node name="3DSceneUI" parent="CanvasLayer" unique_id=1628659695 instance=ExtResource("5_c6seq")]
+[node name="3DSceneUI" type="Control" parent="CanvasLayer" unique_id=1628659695]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_532by")
 metadata/_edit_use_anchors_ = true
+
+[node name="OverworldButton" type="Button" parent="CanvasLayer/3DSceneUI" unique_id=1771150655]
+layout_mode = 0
+offset_left = 921.0
+offset_top = 17.0
+offset_right = 1143.0
+offset_bottom = 114.0
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("6_rtbn7")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
+text = "Menu
+"
+script = ExtResource("7_rtbn7")
+
+[node name="StartButton" type="Button" parent="CanvasLayer/3DSceneUI" unique_id=1174984491]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 17.0
+offset_right = 127.0
+offset_bottom = 109.0
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("6_rtbn7")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
+text = "II"
+
+[node name="Options" type="Panel" parent="CanvasLayer/3DSceneUI" unique_id=349961072]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -290.0
+offset_top = -179.5
+offset_right = 290.0
+offset_bottom = 269.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OptionsLabel" type="Label" parent="CanvasLayer/3DSceneUI/Options" unique_id=1462521405]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("6_rtbn7")
+theme_override_font_sizes/font_size = 50
+text = "Paused"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BackButton" type="Button" parent="CanvasLayer/3DSceneUI/Options" unique_id=1780111791]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -52.0
+offset_top = -51.0
+offset_right = 53.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("6_rtbn7")
+theme_override_font_sizes/font_size = 30
+text = "Back"
+
+[node name="SoundSlider" type="HSlider" parent="CanvasLayer/3DSceneUI/Options" unique_id=277129724]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -268.0
+offset_top = -127.75
+offset_right = 273.0
+offset_bottom = -69.25
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Sound" type="Label" parent="CanvasLayer/3DSceneUI/Options" unique_id=1763794568]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 55.5
+offset_bottom = 106.5
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("6_rtbn7")
+theme_override_font_sizes/font_size = 40
+text = "Sound"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Music" type="Label" parent="CanvasLayer/3DSceneUI/Options" unique_id=814905018]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 1.0
+offset_top = 150.5
+offset_right = 1.0
+offset_bottom = 201.5
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("6_rtbn7")
+theme_override_font_sizes/font_size = 40
+text = "Music"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MusicSlider" type="HSlider" parent="CanvasLayer/3DSceneUI/Options" unique_id=621665118]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -265.0
+offset_top = -35.75
+offset_right = 276.0
+offset_bottom = 22.75
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="FishLayout" type="TextureRect" parent="CanvasLayer" unique_id=729170580]
 visible = false
@@ -212,3 +357,7 @@ debug_spot_id = "location_rice_fields"
 debug_rod_id = "rod_basic"
 debug_bait_id = "bait_1"
 debug_multiplayer = true
+
+[connection signal="pressed" from="CanvasLayer/3DSceneUI/OverworldButton" to="CanvasLayer/3DSceneUI/OverworldButton" method="_on_pressed"]
+[connection signal="pressed" from="CanvasLayer/3DSceneUI/StartButton" to="CanvasLayer/3DSceneUI" method="_on_Pause_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/3DSceneUI/Options/BackButton" to="CanvasLayer/3DSceneUI" method="_on_back_button_pressed"]
