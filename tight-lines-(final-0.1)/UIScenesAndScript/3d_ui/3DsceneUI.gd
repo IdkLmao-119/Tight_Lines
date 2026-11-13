@@ -2,7 +2,6 @@ extends Node
 
 @export var fishing_manager: Node
 @onready var Options: Control = $Options
-@onready var Almanac: Control = $AlmanacUi
 # Called when the node enters the sne tree for the first time.
 func _ready() -> void:
 	pass
@@ -19,9 +18,6 @@ func _on_overworld_button_pressed() -> void:
 		fishing_manager.finish_session()
 	else:
 		GameManager.end_fishing({"results": {}})
-
-func _on_almanac_button_pressed() -> void:
-	Almanac.visible = true
 
 func _on_fish_box_button_pressed() -> void:
 	$InventoryUi.visible = not $InventoryUi.visible

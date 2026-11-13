@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/UI_scene_script_options.gd" id="2_b1tcx"]
 [ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="3_0ycej"]
 [ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="4_j6iej"]
+[ext_resource type="Texture2D" uid="uid://b2cdd1hh8eh8t" path="res://Assets/2D/Almanac_icon.png" id="5_hpsbn"]
 [ext_resource type="PackedScene" uid="uid://c67j2bnervxgj" path="res://UIScenesAndScript/inventory_ui.tscn" id="6_j6iej"]
 [ext_resource type="Texture2D" uid="uid://cry2te8geq2pe" path="res://Assets/Fish Box.png" id="7_yrluk"]
 
@@ -17,6 +18,9 @@ corner_radius_bottom_left = 10
 shadow_color = Color(0, 0, 0, 0.45882353)
 shadow_size = 5
 shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wwmsr"]
+texture = ExtResource("5_hpsbn")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hpsbn"]
 texture = ExtResource("7_yrluk")
@@ -37,6 +41,7 @@ grow_vertical = 2
 script = ExtResource("1_5frun")
 
 [node name="Options" type="Control" parent="." unique_id=100843613]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -50,7 +55,6 @@ grow_vertical = 2
 script = ExtResource("2_b1tcx")
 
 [node name="Options" type="Panel" parent="Options" unique_id=48226238]
-visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -195,19 +199,16 @@ text = "II"
 
 [node name="AlmanacButton" type="Button" parent="." unique_id=745865452]
 layout_mode = 0
-offset_left = 981.0
-offset_top = 88.0
-offset_right = 1144.0
-offset_bottom = 137.0
+offset_left = 1002.0
+offset_top = 93.0
+offset_right = 1182.0
+offset_bottom = 270.0
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_51xn0")
 theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
+theme_override_styles/normal = SubResource("StyleBoxTexture_wwmsr")
 text = "Almanac"
-
-[node name="AlmanacUi" parent="." unique_id=479802253 instance=ExtResource("3_0ycej")]
-visible = false
-layout_mode = 1
+alignment = 0
 
 [node name="InventoryUi" parent="." unique_id=306256089 instance=ExtResource("6_j6iej")]
 visible = false
@@ -226,6 +227,10 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_hpsbn")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_dowyv")
 theme_override_styles/hover = SubResource("StyleBoxTexture_yrluk")
 text = "Fish Box"
+
+[node name="AlmanacUi" parent="." unique_id=479802253 instance=ExtResource("3_0ycej")]
+visible = false
+layout_mode = 1
 
 [connection signal="pressed" from="Options/Options/BackButton" to="Options" method="_on_back_button_pressed"]
 [connection signal="pressed" from="Options/Options/MenuButton" to="Options" method="_on_menu_button_pressed"]

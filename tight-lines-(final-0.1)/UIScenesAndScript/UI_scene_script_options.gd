@@ -1,5 +1,6 @@
 extends Control
 
+@onready var main_menu: Panel = $"../MainMenu"
 @onready var options: Panel = $Options
 @onready var music_slider: HSlider = $Options/MusicSlider
 func _ready() -> void:
@@ -23,8 +24,8 @@ func _on_music_slider_changed(value: float) -> void:
 
 func _on_back_button_pressed() -> void:
 	visible = false
-
-
+	main_menu.visible = true
+	
 func _on_save_button_pressed() -> void:
 	pass # Replace with function body.
 	

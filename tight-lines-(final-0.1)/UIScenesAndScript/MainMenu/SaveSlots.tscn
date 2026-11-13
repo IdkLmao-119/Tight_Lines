@@ -4,7 +4,7 @@
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_ymcjr"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cbcq8"]
-bg_color = Color(0, 0, 0, 0.78039217)
+bg_color = Color(0.21960784, 0.74509805, 1, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1jwh8"]
 bg_color = Color(0.8392157, 0.49803922, 0.36078432, 1)

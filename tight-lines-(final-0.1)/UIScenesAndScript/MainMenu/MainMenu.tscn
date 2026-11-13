@@ -1,13 +1,17 @@
 [gd_scene format=3 uid="uid://q7rs4mg0lqfs"]
 
 [ext_resource type="Script" uid="uid://dlmcx3h4vh8ol" path="res://UIScenesAndScript/MainMenu/scene_script_main_menu.gd" id="1_w82c0"]
-[ext_resource type="Texture2D" uid="uid://c66vsem28p4ou" path="res://Assets/2D/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg" id="2_yyhqq"]
+[ext_resource type="Script" uid="uid://db1up6ssl3kie" path="res://UIScenesAndScript/MainMenu/background_layer.gd" id="2_0pent"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="3_0pent"]
-[ext_resource type="PackedScene" uid="uid://c0u77axaegcsm" path="res://UIScenesAndScript/Options.tscn" id="5_dng2c"]
+[ext_resource type="Texture2D" uid="uid://btduj7rj47w40" path="res://Assets/2D/Bubble.png" id="4_doce8"]
+[ext_resource type="Texture2D" uid="uid://5wmuqdpsaqo5" path="res://Assets/2D/Title Panel.png" id="4_yyhqq"]
+[ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/UI_scene_script_options.gd" id="5_lgxut"]
+[ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="6_doce8"]
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3spmi"]
-texture = ExtResource("2_yyhqq")
-modulate_color = Color(0.7371933, 0.7371929, 0.7371927, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lgxut"]
+bg_color = Color(0.21960784, 0.74509805, 1, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lgxut"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7c3kk"]
 bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
@@ -19,24 +23,53 @@ shadow_color = Color(0, 0, 0, 0.45882353)
 shadow_size = 5
 shadow_offset = Vector2(0, 3)
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dng2c"]
+texture = ExtResource("4_yyhqq")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_doce8"]
+bg_color = Color(0.42352942, 0.2784314, 0.13725491, 0.8745098)
+
 [node name="MainMenu" type="Control" unique_id=1662043218]
 layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_w82c0")
 
+[node name="Panel" type="Panel" parent="." unique_id=957359471]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_lgxut")
+
+[node name="BackgroundLayer" type="Control" parent="." unique_id=1016745381]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_0pent")
+vertical_texture = ExtResource("4_doce8")
+horizontal_min_speed = 30.0
+horizontal_max_speed = 50.0
+vertical_min_speed = 200.0
+vertical_max_speed = 300.0
+
 [node name="MainMenu" type="Panel" parent="." unique_id=2050093436]
-layout_mode = 0
-offset_left = -578.0
-offset_top = -324.0
-offset_right = 574.0
-offset_bottom = 323.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_3spmi")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_lgxut")
 
 [node name="MainMenuButtons" type="VBoxContainer" parent="MainMenu" unique_id=1070791132]
 layout_mode = 1
@@ -81,30 +114,140 @@ theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
 text = "Exit"
 
-[node name="Label" type="Label" parent="MainMenu" unique_id=494958756]
+[node name="Label" type="Label" parent="." unique_id=494958756]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -217.0
-offset_top = -276.5
-offset_right = 221.0
-offset_bottom = -176.5
+offset_left = -265.0
+offset_top = -174.0
+offset_right = 262.0
+offset_bottom = -63.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0.69179237, 0.5244724, 0.39804918, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("3_0pent")
 theme_override_font_sizes/font_size = 100
+theme_override_styles/normal = SubResource("StyleBoxTexture_dng2c")
 text = "Tight Lines"
 horizontal_alignment = 1
 
-[node name="Options" parent="." unique_id=100843613 instance=ExtResource("5_dng2c")]
-visible = false
+[node name="Options" type="Control" parent="." unique_id=100843613]
 layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_lgxut")
+
+[node name="Options" type="Panel" parent="Options" unique_id=48226238]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -290.0
+offset_top = -179.5
+offset_right = 290.0
+offset_bottom = 269.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_doce8")
+
+[node name="OptionsLabel" type="Label" parent="Options/Options" unique_id=796201848]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_0pent")
+theme_override_font_sizes/font_size = 50
+text = "Options"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BackButton" type="Button" parent="Options/Options" unique_id=1410271780]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -53.0
+offset_top = -55.0
+offset_right = 52.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("3_0pent")
+theme_override_font_sizes/font_size = 30
+text = "Back"
+
+[node name="SoundSlider" type="HSlider" parent="Options/Options" unique_id=2070049158]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -268.0
+offset_top = -127.75
+offset_right = 273.0
+offset_bottom = -69.25
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Sound" type="Label" parent="Options/Options" unique_id=1816271119]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 55.5
+offset_bottom = 106.5
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_0pent")
+theme_override_font_sizes/font_size = 40
+text = "Sound"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Music" type="Label" parent="Options/Options" unique_id=1323081348]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 1.0
+offset_top = 150.5
+offset_right = 1.0
+offset_bottom = 201.5
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_0pent")
+theme_override_font_sizes/font_size = 40
+text = "Music"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MusicSlider" type="HSlider" parent="Options/Options" unique_id=473635232]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -265.0
+offset_top = -35.75
+offset_right = 276.0
+offset_bottom = 22.75
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+step = 0.001
+script = ExtResource("6_doce8")
 
 [connection signal="pressed" from="MainMenu/MainMenuButtons/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="MainMenu/MainMenuButtons/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="MainMenu/MainMenuButtons/MultiButton" to="." method="_on_multi_button_pressed"]
 [connection signal="pressed" from="MainMenu/MainMenuButtons/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="Options/Options/BackButton" to="Options" method="_on_back_button_pressed"]
