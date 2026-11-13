@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Labeo rohita"
-description = "An important column feeder in freshwater rivers, prized for its arched head and strength."
+description = "An important column feeder in freshwater rivers, prized for its arched head and strength.
+Local Name: Karpa"
 size_class = "medium"
 base_price = 36
 speed = 1.3

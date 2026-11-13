@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Sarotherodon melanotheron"
-description = "A resilient cichlid easily identified by the distinct dark pigmentation under its chin."
+description = "A resilient cichlid easily identified by the distinct dark pigmentation under its chin.
+Local Name: Tilapiang Arroyo"
 base_price = 20
 speed = 1.5
 pull_strength = 2.5

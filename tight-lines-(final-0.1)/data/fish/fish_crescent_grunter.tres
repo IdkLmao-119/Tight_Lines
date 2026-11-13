@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_5jgmi")
 scientific_name = "Terapon jarbua"
-description = "A coastal, estuarine fish characterized by its silvery body marked with three to four distinct curved, dark brown stripes running from the head toward the tail. It can tolerate varying salinities and enters freshwater rivers."
+description = "A coastal, estuarine fish characterized by its silvery body marked with three to four distinct curved, dark brown stripes running from the head toward the tail. It can tolerate varying salinities and enters freshwater rivers.
+Local Name: Bugaong"
 size_class = "medium"
 min_size = 20.0
 avg_size = 27.0

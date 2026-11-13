@@ -2,7 +2,6 @@ extends Control
 
 @onready var main_menu_buttons: VBoxContainer = $MainMenuButtons
 @onready var options: Control = $Options
-@onready var almanac: Control = $AlmanacUi
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
@@ -22,6 +21,3 @@ func _on_exit_button_pressed() -> void:
 
 func _on_multi_button_pressed() -> void:
 	GameManager.change_scene("multiplayer")
-
-func _on_almanac_button_pressed() -> void:
-	almanac.visible = true

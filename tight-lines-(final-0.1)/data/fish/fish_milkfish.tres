@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Chanos chanos"
-description = "A sleek, powerful swimmer with a forked tail that travels in schools across coastal regions."
+description = "A sleek, powerful swimmer with a forked tail that travels in schools across coastal regions.
+Local Name: Bangus"
 size_class = "medium"
 base_price = 42
 speed = 2.0

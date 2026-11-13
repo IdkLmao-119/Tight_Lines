@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_ep0o3")
 scientific_name = "Caranx ignobilis"
-description = "Young jacks that frequent shallow coastal waters, estuaries, and lower river mouths. Unlike adults that patrol open reefs, juveniles often display faint vertical dark bars on their flanks for camouflage in turbid or sandy shallows"
+description = "Young jacks that frequent shallow coastal waters, estuaries, and lower river mouths. Unlike adults that patrol open reefs, juveniles often display faint vertical dark bars on their flanks for camouflage in turbid or sandy shallows
+Local Name: Talakitok"
 min_size = 30.0
 avg_size = 45.0
 max_size = 60.0

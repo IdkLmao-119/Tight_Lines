@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_oca3a")
 scientific_name = "Seriola dumerili"
-description = "A powerful, reef-associated pelagic predator found in tropical and warm-temperate seas, feeding primarily on smaller schooling fish like bigeye scad and invertebrates."
+description = "A powerful, reef-associated pelagic predator found in tropical and warm-temperate seas, feeding primarily on smaller schooling fish like bigeye scad and invertebrates.
+Local Name: Talakitok"
 size_class = "large"
 base_price = 100
 min_size = 120.0

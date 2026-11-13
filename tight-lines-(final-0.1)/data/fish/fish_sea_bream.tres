@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_x7h24")
 scientific_name = "Acanthopagrus berda"
-description = "A deep-bodied, coastal marine and estuarine fish found over muddy or sandy bottoms near mangrove creeks, rocky reefs, and river mouths. Equipped with strong molar-like teeth, it feeds on hard-shelled prey such as crabs, barnacles, clams, and sea urchins."
+description = "A deep-bodied, coastal marine and estuarine fish found over muddy or sandy bottoms near mangrove creeks, rocky reefs, and river mouths. Equipped with strong molar-like teeth, it feeds on hard-shelled prey such as crabs, barnacles, clams, and sea urchins.
+Local Name: Bakoko"
 size_class = "medium"
 min_size = 25.0
 avg_size = 47.5

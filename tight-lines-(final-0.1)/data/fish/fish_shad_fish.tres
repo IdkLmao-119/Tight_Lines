@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Tenualosa ilisha"
-description = "An anadromous schooling fish valued for its silvery scales and spirited runs."
+description = "An anadromous schooling fish valued for its silvery scales and spirited runs.
+Local Name: Kabasi"
 size_class = "medium"
 base_price = 40
 speed = 1.9

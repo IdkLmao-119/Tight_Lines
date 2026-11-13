@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Mayaheros urophthalmus"
-description = "A beautifully marked and fiercely defensive cichlid found in shallow, structured waters."
+description = "A beautifully marked and fiercely defensive cichlid found in shallow, structured waters.
+Local Name: Tilapiang Pla-pla"
 base_price = 24
 speed = 1.6
 pull_strength = 2.8

@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_lyudy")
 scientific_name = "Thunnus albacares"
-description = "A large, fast-swimming epipelagic marine predator found in open tropical and subtropical oceans worldwide, including major Philippine fishing grounds like the Sulu Sea and Moro Gulf. It is recognized by its bright yellow dorsal and anal finlets and torpedo-shaped body."
+description = "A large, fast-swimming epipelagic marine predator found in open tropical and subtropical oceans worldwide, including major Philippine fishing grounds like the Sulu Sea and Moro Gulf. It is recognized by its bright yellow dorsal and anal finlets and torpedo-shaped body.
+Local Name: Tambakol"
 size_class = "large"
 min_size = 100.0
 avg_size = 167.5

@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_mxigx")
 scientific_name = "Makaira nigricans"
-description = "A massive, apex pelagic billfish found in open tropical and subtropical oceans, including Philippine deep-sea waters. It is distinguished by an elongated body, a spear-like upper jaw (rostrum), and a rigid, crescent-shaped tail built for high-speed oceanic travel."
+description = "A massive, apex pelagic billfish found in open tropical and subtropical oceans, including Philippine deep-sea waters. It is distinguished by an elongated body, a spear-like upper jaw (rostrum), and a rigid, crescent-shaped tail built for high-speed oceanic travel.
+Local Name: Malasugi"
 size_class = "large"
 min_size = 170.0
 avg_size = 335.0

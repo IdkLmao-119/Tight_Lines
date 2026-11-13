@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_8rwxp")
 scientific_name = "Gymnothorax javanicus"
-description = "A long, snake-like reef fish with thick, scaleless, mucus-coated skin and no pectoral or pelvic fins. They hide in coral crevices and rocky burrows during the day and emerge at night to ambush fish, crabs, and octopuses"
+description = "A long, snake-like reef fish with thick, scaleless, mucus-coated skin and no pectoral or pelvic fins. They hide in coral crevices and rocky burrows during the day and emerge at night to ambush fish, crabs, and octopuses
+Local Name: Igat"
 size_class = "medium"
 min_size = 100.0
 avg_size = 200.0

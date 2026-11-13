@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("2_5m8da")
 scientific_name = "Lutjanus argentimaculatus"
-description = "A versatile, aggressive predator whose juveniles inhabit mangrove estuaries and lower freshwater river reaches before migrating out to deeper coral reefs as adults. It features a reddish-brown to bronze body and prominent canine teeth."
+description = "A versatile, aggressive predator whose juveniles inhabit mangrove estuaries and lower freshwater river reaches before migrating out to deeper coral reefs as adults. It features a reddish-brown to bronze body and prominent canine teeth.
+Local Name: Maya-maya"
 size_class = "medium"
 min_size = 40.0
 avg_size = 60.0

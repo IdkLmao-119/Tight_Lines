@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Silurus asotus"
-description = "A secretive nocturnal predator that lurks in muddy riverbeds waiting for unsuspecting prey."
+description = "A secretive nocturnal predator that lurks in muddy riverbeds waiting for unsuspecting prey.
+Local Name: Kanduli"
 size_class = "medium"
 base_price = 38
 speed = 1.3

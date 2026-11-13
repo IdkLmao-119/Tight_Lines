@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_kopok")
 scientific_name = "Scomberoides commersonnianus"
-description = "Young stages of fast-swimming coastal jacks that inhabit shallow sandy beaches, estuaries, and brackish creeks. They have sleek, silvery, laterally compressed bodies and feed on small schooling fishes and planktonic crustaceans."
+description = "Young stages of fast-swimming coastal jacks that inhabit shallow sandy beaches, estuaries, and brackish creeks. They have sleek, silvery, laterally compressed bodies and feed on small schooling fishes and planktonic crustaceans.
+Local Name: Talang-talang"
 size_class = "medium"
 min_size = 25.0
 avg_size = 45.0

@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Anabas testudineus"
-description = "A small, tough fish famous for its ability to travel across land and tolerate low oxygen levels."
+description = "A small, tough fish famous for its ability to travel across land and tolerate low oxygen levels.
+Local Name: Martiniko"
 base_price = 22
 speed = 1.4
 pull_strength = 2.0

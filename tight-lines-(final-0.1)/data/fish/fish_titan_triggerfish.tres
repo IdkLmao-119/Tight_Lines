@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_c555w")
 scientific_name = "Balistoides viridescens"
-description = "The largest species of triggerfish in the Indo-Pacific, inhabiting coral reefs, lagoons, and rocky reef slopes. Armed with powerful jaws and chisel-like teeth, it crushes hard-shelled prey such as sea urchins, crabs, mollusks, and coral branches."
+description = "The largest species of triggerfish in the Indo-Pacific, inhabiting coral reefs, lagoons, and rocky reef slopes. Armed with powerful jaws and chisel-like teeth, it crushes hard-shelled prey such as sea urchins, crabs, mollusks, and coral branches.
+Local Name: Pakol"
 size_class = "medium"
 min_size = 40.0
 avg_size = 57.5

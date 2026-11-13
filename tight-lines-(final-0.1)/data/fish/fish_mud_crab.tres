@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Scylla serrata"
-description = "A heavy-clawed crustacean inhabiting muddy mangrove estuaries and coastal flats."
+description = "A heavy-clawed crustacean inhabiting muddy mangrove estuaries and coastal flats.
+Local Name: Alimango"
 size_class = "medium"
 base_price = 55
 speed = 0.9

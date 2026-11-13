@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Elops machnata"
-description = "A slender, hyper-active coastal fish prized for its incredible burst speed and acrobatic leaps."
+description = "A slender, hyper-active coastal fish prized for its incredible burst speed and acrobatic leaps.
+Local Name: Bidbid"
 size_class = "medium"
 base_price = 50
 speed = 2.4

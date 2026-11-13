@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Megalops atlanticus"
-description = "A legendary game fish covered in giant silver scales, known for explosive, high-flying fights."
+description = "A legendary game fish covered in giant silver scales, known for explosive, high-flying fights.
+Local Name: Buwan-buwan"
 size_class = "large"
 base_price = 120
 speed = 2.5

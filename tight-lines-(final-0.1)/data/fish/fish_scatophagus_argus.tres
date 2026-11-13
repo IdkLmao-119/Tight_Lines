@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Scatophagus argus"
-description = "A deep-bodied brackish fish adorned with dark spots over an olive-green background."
+description = "A deep-bodied brackish fish adorned with dark spots over an olive-green background.
+Local Name: Kitang"
 base_price = 26
 speed = 1.5
 pull_strength = 3.2

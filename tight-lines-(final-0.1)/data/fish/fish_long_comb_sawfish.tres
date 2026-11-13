@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Pristis zijsron"
-description = "A magnificent and rare marine dweller distinguished by its long, tooth-studded rostral saw."
+description = "A magnificent and rare marine dweller distinguished by its long, tooth-studded rostral saw.
+Local Name: Lagaring Pating"
 size_class = "large"
 base_price = 150
 speed = 1.5

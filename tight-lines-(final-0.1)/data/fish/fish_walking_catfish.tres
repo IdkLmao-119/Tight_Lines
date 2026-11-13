@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_vppr0")
 scientific_name = "Clarias batrachus"
-description = "A nocturnal, air-breathing freshwater catfish native to Southeast Asia that inhabits muddy ponds, swamps, canals, and flooded rice fields across the Philippines. It has an elongated, scaleless body, four pairs of sensory barbels, and feeds omnivorously on worms, insects, crustaceans, and small fish."
+description = "A nocturnal, air-breathing freshwater catfish native to Southeast Asia that inhabits muddy ponds, swamps, canals, and flooded rice fields across the Philippines. It has an elongated, scaleless body, four pairs of sensory barbels, and feeds omnivorously on worms, insects, crustaceans, and small fish.
+Local Name: Hito"
 min_size = 26.0
 avg_size = 36.0
 max_size = 47.0
