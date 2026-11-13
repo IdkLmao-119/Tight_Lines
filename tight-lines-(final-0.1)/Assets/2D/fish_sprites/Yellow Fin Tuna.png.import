@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://qefc6hydaym3"
-path="res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"
+uid="uid://day3soc04ul3c"
+path="res://.godot/imported/Yellow Fin Tuna.png-86f00b7ff7847c084c33381930bb3b73.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/2D/fish_sprites/African_Catfish.png"
-dest_files=["res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"]
+source_file="res://Assets/2D/fish_sprites/Yellow Fin Tuna.png"
+dest_files=["res://.godot/imported/Yellow Fin Tuna.png-86f00b7ff7847c084c33381930bb3b73.ctex"]
 
 [params]
 
