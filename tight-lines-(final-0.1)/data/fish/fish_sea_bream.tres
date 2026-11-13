@@ -1,7 +1,18 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://og7etsw6o5e6"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://0ge21e7b8yf5"]
 
+[ext_resource type="Texture2D" uid="uid://uswxw2c8dsyb" path="res://Assets/2D/fish_sprites/Sea_Bream.png" id="1_bbstj"]
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_x7h24"]
 
 [resource]
 script = ExtResource("1_x7h24")
+scientific_name = "Acanthopagrus berda"
+description = "A deep-bodied, coastal marine and estuarine fish found over muddy or sandy bottoms near mangrove creeks, rocky reefs, and river mouths. Equipped with strong molar-like teeth, it feeds on hard-shelled prey such as crabs, barnacles, clams, and sea urchins."
+size_class = "medium"
+min_size = 25.0
+avg_size = 47.5
+max_size = 70.0
+avg_weight = 3.5
+icon = ExtResource("1_bbstj")
+id = "fish_sea_bream"
+display_name = "Sea Bream"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

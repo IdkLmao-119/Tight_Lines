@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://dhr5np5avrdmn"]
+
+[ext_resource type="Texture2D" uid="uid://bn8ijp8hkyl6f" path="res://Assets/2D/fish_sprites/Mangrove red snapper-d727.png" id="1_3w4xv"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="2_5m8da"]
+
+[resource]
+script = ExtResource("2_5m8da")
+scientific_name = "Lutjanus argentimaculatus"
+description = "A versatile, aggressive predator whose juveniles inhabit mangrove estuaries and lower freshwater river reaches before migrating out to deeper coral reefs as adults. It features a reddish-brown to bronze body and prominent canine teeth."
+size_class = "medium"
+min_size = 40.0
+avg_size = 60.0
+max_size = 80.0
+avg_weight = 2.0
+icon = ExtResource("1_3w4xv")
+id = "fish_mangrove_red_snapper"
+display_name = "Mangrove Red Snapper"
+metadata/_custom_type_script = "uid://bdqslwnxrtks4"

@@ -1,7 +1,18 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://d0pq3p37sjamf"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://c6fr5eawb8h8m"]
 
+[ext_resource type="Texture2D" uid="uid://b5f2i4fprddri" path="res://Assets/2D/fish_sprites/Needle Fish.png" id="1_hbyxy"]
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_x8m3s"]
 
 [resource]
 script = ExtResource("1_x8m3s")
+scientific_name = "Tylosurus crocodilus"
+description = "A slender, elongated, surface-dwelling marine and brackish predator equipped with long, narrow jaws lined with numerous sharp, needle-like teeth. They patrol shallow coastal waters, reefs, and estuaries, hunting small schooling fish.
+"
+min_size = 30.0
+avg_size = 60.0
+max_size = 90.0
+avg_weight = 3.0
+icon = ExtResource("1_hbyxy")
+id = "fish_needle_fish"
+display_name = "Needle Fish"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

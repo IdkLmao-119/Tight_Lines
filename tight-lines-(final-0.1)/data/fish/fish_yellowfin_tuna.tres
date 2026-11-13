@@ -1,7 +1,17 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://n8bf5gqtm63n"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://dwkjdo1ytjou6"]
 
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_lyudy"]
+[ext_resource type="Texture2D" uid="uid://day3soc04ul3c" path="res://Assets/2D/fish_sprites/Yellow Fin Tuna.png" id="1_o2nwu"]
 
 [resource]
 script = ExtResource("1_lyudy")
+scientific_name = "Thunnus albacares"
+description = "A large, fast-swimming epipelagic marine predator found in open tropical and subtropical oceans worldwide, including major Philippine fishing grounds like the Sulu Sea and Moro Gulf. It is recognized by its bright yellow dorsal and anal finlets and torpedo-shaped body."
+size_class = "large"
+min_size = 100.0
+avg_size = 167.5
+max_size = 235.0
+icon = ExtResource("1_o2nwu")
+id = "fish_yellowfin_tuna"
+display_name = "Yellowfin Tuna"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

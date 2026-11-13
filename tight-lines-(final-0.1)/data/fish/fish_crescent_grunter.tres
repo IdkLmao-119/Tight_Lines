@@ -1,7 +1,17 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://steedd6ejcsl"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://b30aitipy8aow"]
 
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_5jgmi"]
+[ext_resource type="Texture2D" uid="uid://dfwv4ni8tu5go" path="res://Assets/2D/fish_sprites/Crescent Grunter.png" id="1_xpqwf"]
 
 [resource]
 script = ExtResource("1_5jgmi")
+scientific_name = "Terapon jarbua"
+description = "A coastal, estuarine fish characterized by its silvery body marked with three to four distinct curved, dark brown stripes running from the head toward the tail. It can tolerate varying salinities and enters freshwater rivers."
+size_class = "medium"
+min_size = 20.0
+avg_size = 27.0
+max_size = 35.0
+icon = ExtResource("1_xpqwf")
+id = "fish_crescent_grunter"
+display_name = "Crescent Grunter"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

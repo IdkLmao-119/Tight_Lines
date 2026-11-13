@@ -1,7 +1,18 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://1qwyegxo8tls"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://kl5o4umhdp0f"]
 
+[ext_resource type="Texture2D" uid="uid://dgiki5aytydfe" path="res://Assets/2D/fish_sprites/Marlin.png" id="1_miitf"]
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_mxigx"]
 
 [resource]
 script = ExtResource("1_mxigx")
+scientific_name = "Makaira nigricans"
+description = "A massive, apex pelagic billfish found in open tropical and subtropical oceans, including Philippine deep-sea waters. It is distinguished by an elongated body, a spear-like upper jaw (rostrum), and a rigid, crescent-shaped tail built for high-speed oceanic travel."
+size_class = "large"
+min_size = 170.0
+avg_size = 335.0
+max_size = 500.0
+avg_weight = 400.0
+icon = ExtResource("1_miitf")
+id = "fish_marlin"
+display_name = "Marlin"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

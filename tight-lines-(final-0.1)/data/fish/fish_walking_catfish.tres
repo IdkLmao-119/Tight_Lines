@@ -1,7 +1,17 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://b7mrepeohaxye"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://c70yt4a30oanl"]
 
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_vppr0"]
+[ext_resource type="Texture2D" uid="uid://qefc6hydaym3" path="res://Assets/2D/fish_sprites/Walking Catfish.png" id="1_yb156"]
 
 [resource]
 script = ExtResource("1_vppr0")
+scientific_name = "Clarias batrachus"
+description = "A nocturnal, air-breathing freshwater catfish native to Southeast Asia that inhabits muddy ponds, swamps, canals, and flooded rice fields across the Philippines. It has an elongated, scaleless body, four pairs of sensory barbels, and feeds omnivorously on worms, insects, crustaceans, and small fish."
+min_size = 26.0
+avg_size = 32.1
+max_size = 47.0
+avg_weight = 0.8
+icon = ExtResource("1_yb156")
+id = "fish_walking_catfish"
+display_name = "Walking Catfish"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

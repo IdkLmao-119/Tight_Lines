@@ -1,7 +1,19 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://rfwfrmnrh5ep"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://lxtme6ovnaec"]
 
+[ext_resource type="Texture2D" uid="uid://bumkojcp68x8b" path="res://Assets/2D/fish_sprites/Amberjack.png" id="1_nmhco"]
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_oca3a"]
 
 [resource]
 script = ExtResource("1_oca3a")
+scientific_name = "Seriola dumerili"
+description = "A powerful, reef-associated pelagic predator found in tropical and warm-temperate seas, feeding primarily on smaller schooling fish like bigeye scad and invertebrates."
+size_class = "large"
+base_price = 100
+min_size = 120.0
+avg_size = 155.0
+max_size = 190.0
+avg_weight = 80.0
+icon = ExtResource("1_nmhco")
+id = "fish_amberjack"
+display_name = "Amberjack"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

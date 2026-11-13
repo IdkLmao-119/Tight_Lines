@@ -1,7 +1,17 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://bytjptul0v8c0"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://c3snu27uwln0q"]
 
+[ext_resource type="Texture2D" uid="uid://c4bqxoxj5remj" path="res://Assets/2D/fish_sprites/Titan Triggerfish.png" id="1_5e1ld"]
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_c555w"]
 
 [resource]
 script = ExtResource("1_c555w")
+scientific_name = "Balistoides viridescens"
+description = "The largest species of triggerfish in the Indo-Pacific, inhabiting coral reefs, lagoons, and rocky reef slopes. Armed with powerful jaws and chisel-like teeth, it crushes hard-shelled prey such as sea urchins, crabs, mollusks, and coral branches."
+size_class = "medium"
+min_size = 40.0
+avg_size = 57.5
+max_size = 75.0
+icon = ExtResource("1_5e1ld")
+id = "fish_titan_triggerfish"
+display_name = "Titan Triggerfish"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

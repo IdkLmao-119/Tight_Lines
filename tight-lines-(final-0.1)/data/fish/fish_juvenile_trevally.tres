@@ -1,7 +1,17 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://djo702yijl43m"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://d1f1j07f2csqx"]
 
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_ep0o3"]
+[ext_resource type="Texture2D" uid="uid://mpjd2lt0fa67" path="res://Assets/2D/fish_sprites/Juvenile Trevally-db6d.png" id="1_je5ob"]
 
 [resource]
 script = ExtResource("1_ep0o3")
+scientific_name = "Caranx ignobilis"
+description = "Young jacks that frequent shallow coastal waters, estuaries, and lower river mouths. Unlike adults that patrol open reefs, juveniles often display faint vertical dark bars on their flanks for camouflage in turbid or sandy shallows"
+min_size = 30.0
+avg_size = 45.0
+max_size = 60.0
+avg_weight = 1.5
+icon = ExtResource("1_je5ob")
+id = "fish_juvenile_trevally"
+display_name = "Juvenile Trevally"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

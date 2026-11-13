@@ -1,7 +1,18 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://d1epd4fp2au8i"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://bxl2qb0mavthd"]
 
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_kopok"]
+[ext_resource type="Texture2D" uid="uid://u8u2genj1vy3" path="res://Assets/2D/fish_sprites/Juvenile Queenfish-5fe8.png" id="1_lqahd"]
 
 [resource]
 script = ExtResource("1_kopok")
+scientific_name = "Scomberoides commersonnianus"
+description = "Young stages of fast-swimming coastal jacks that inhabit shallow sandy beaches, estuaries, and brackish creeks. They have sleek, silvery, laterally compressed bodies and feed on small schooling fishes and planktonic crustaceans."
+size_class = "medium"
+min_size = 25.0
+avg_size = 45.0
+max_size = 65.0
+avg_weight = 2.0
+icon = ExtResource("1_lqahd")
+id = "fish_juvenile_queenfish"
+display_name = "Juvenile Queenfish"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"
