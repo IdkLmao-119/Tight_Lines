@@ -3,22 +3,9 @@
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_vppr0"]
 [ext_resource type="Texture2D" uid="uid://qefc6hydaym3" path="res://Assets/2D/fish_sprites/Walking Catfish.png" id="1_yb156"]
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_vppr0"]
-load_path = "res://.godot/imported/Walking Catfish.png-0aeb4c793c87aee744a07340cfc2c615.ctex"
-
 [resource]
 script = ExtResource("1_vppr0")
 scientific_name = "Clarias batrachus"
-<<<<<<< HEAD
-description = "A nocturnal, air-breathing freshwater catfish native to Southeast Asia that inhabits muddy ponds, swamps, canals, and flooded rice fields across the Philippines. It has an elongated, scaleless body, four pairs of sensory barbels, and feeds omnivorously on worms, insects, crustaceans, and small fish."
-pull_strength = 3.0
-stamina = 15.0
-min_size = 25.0
-avg_size = 34.0
-max_size = 48.0
-avg_weight = 2.0
-icon = SubResource("CompressedTexture2D_vppr0")
-=======
 description = "A nocturnal, air-breathing freshwater catfish native to Southeast Asia that inhabits muddy ponds, swamps, canals, and flooded rice fields across the Philippines. It has an elongated, scaleless body, four pairs of sensory barbels, and feeds omnivorously on worms, insects, crustaceans, and small fish.
 Local Name: Hito"
 min_size = 26.0
@@ -26,7 +13,6 @@ avg_size = 36.0
 max_size = 47.0
 avg_weight = 0.8
 icon = ExtResource("1_yb156")
->>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 id = "fish_walking_catfish"
 display_name = "Walking Catfish"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

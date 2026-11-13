@@ -1,27 +1,17 @@
 [gd_resource type="Resource" script_class="FishData" format=3 uid="uid://bd41tun5pdiet"]
 
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
-<<<<<<< HEAD
 [ext_resource type="Texture2D" uid="uid://mvujhaip8rbw" path="res://Assets/2D/fish_sprites/African Catfish.png" id="1_f4cut"]
-[ext_resource type="Texture2D" uid="uid://qefc6hydaym3" path="res://Assets/2D/fish_sprites/Walking Catfish.png" id="2_ijhxw"]
-=======
 [ext_resource type="Texture2D" uid="uid://qefc6hydaym3" path="res://Assets/2D/fish_sprites/Walking Catfish.png" id="1_mbknm"]
->>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Clarias gariepinus"
-<<<<<<< HEAD
-description = "A hardy bottom-dweller known for its resilience and ability to survive brief periods out of water."
-icon_3d = ExtResource("2_ijhxw")
-size_class = "medium"
-=======
 description = "A hardy bottom-dweller known for its resilience and ability to survive brief periods out of water.
 Local Name: Hito
 Locations"
 icon_3d = ExtResource("1_mbknm")
 size_class = "large"
->>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 base_price = 45
 speed = 1.2
 pull_strength = 7.5

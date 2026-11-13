@@ -3,18 +3,9 @@
 [ext_resource type="Texture2D" uid="uid://bumkojcp68x8b" path="res://Assets/2D/fish_sprites/Amberjack.png" id="1_nmhco"]
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_oca3a"]
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_oca3a"]
-load_path = "res://.godot/imported/Amberjack.png-c4103eb076119b2c43b52c6e5770dccf.ctex"
-
 [resource]
 script = ExtResource("1_oca3a")
 scientific_name = "Seriola dumerili"
-<<<<<<< HEAD
-description = "A powerful, reef-associated pelagic predator found in tropical and warm-temperate seas, feeding primarily on smaller schooling fish like bigeye scad and invertebrates."
-size_class = "large"
-avg_weight = 60.0
-icon = SubResource("CompressedTexture2D_oca3a")
-=======
 description = "A powerful, reef-associated pelagic predator found in tropical and warm-temperate seas, feeding primarily on smaller schooling fish like bigeye scad and invertebrates.
 Local Name: Talakitok"
 size_class = "large"
@@ -24,7 +15,6 @@ avg_size = 155.0
 max_size = 190.0
 avg_weight = 80.0
 icon = ExtResource("1_nmhco")
->>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 id = "fish_amberjack"
 display_name = "Amberjack"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"
