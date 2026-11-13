@@ -3,8 +3,20 @@
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_2l73i"]
 [ext_resource type="Texture2D" uid="uid://y1npmgxf7kc2" path="res://Assets/2D/fish_sprites/Juvenile Grouper.png" id="1_csv3m"]
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_2l73i"]
+load_path = "res://.godot/imported/Juvenile Grouper.png-2932256da434dea8086ba7ee7bec041a.ctex"
+
 [resource]
 script = ExtResource("1_2l73i")
+<<<<<<< HEAD
+scientific_name = "Juvenile Grouper  "
+description = "Young stages of reef and estuarine groupers that commonly inhabit shallow coastal mangroves, seagrass beds, and estuaries as nursery grounds before migrating out to deeper coral reefs as adults. They ambush small crustaceans and tiny fish."
+size_class = "medium"
+speed = 7.0
+pull_strength = 10.0
+stamina = 12.0
+icon = SubResource("CompressedTexture2D_2l73i")
+=======
 scientific_name = "Epinephelus coioides"
 description = "Young stages of reef and estuarine groupers that commonly inhabit shallow coastal mangroves, seagrass beds, and estuaries as nursery grounds before migrating out to deeper coral reefs as adults. They ambush small crustaceans and tiny fish.
 Local Name: Lapu-lapu"
@@ -14,6 +26,7 @@ avg_size = 90.0
 max_size = 120.0
 avg_weight = 7.5
 icon = ExtResource("1_csv3m")
+>>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 id = "fish_juvenile_grouper"
 display_name = "Juvenile Grouper"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

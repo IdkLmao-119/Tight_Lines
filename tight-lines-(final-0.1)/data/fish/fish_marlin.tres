@@ -3,8 +3,24 @@
 [ext_resource type="Texture2D" uid="uid://dgiki5aytydfe" path="res://Assets/2D/fish_sprites/Marlin.png" id="1_miitf"]
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_mxigx"]
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_mxigx"]
+load_path = "res://.godot/imported/Marlin.png-a615f6550b4bee4740ebd9b4f8592e04.ctex"
+
 [resource]
 script = ExtResource("1_mxigx")
+<<<<<<< HEAD
+scientific_name = "Makaira nigricans / Istiompax indica"
+description = "A massive, apex pelagic billfish found in open tropical and subtropical oceans, including Philippine deep-sea waters. It is distinguished by an elongated body, a spear-like upper jaw (rostrum), and a rigid, crescent-shaped tail built for high-speed oceanic travel."
+size_class = "large"
+speed = 30.0
+pull_strength = 50.0
+stamina = 60.0
+min_size = 200.0
+avg_size = 300.0
+max_size = 500.0
+avg_weight = 450.0
+icon = SubResource("CompressedTexture2D_mxigx")
+=======
 scientific_name = "Makaira nigricans"
 description = "A massive, apex pelagic billfish found in open tropical and subtropical oceans, including Philippine deep-sea waters. It is distinguished by an elongated body, a spear-like upper jaw (rostrum), and a rigid, crescent-shaped tail built for high-speed oceanic travel.
 Local Name: Malasugi"
@@ -14,6 +30,7 @@ avg_size = 335.0
 max_size = 500.0
 avg_weight = 400.0
 icon = ExtResource("1_miitf")
+>>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 id = "fish_marlin"
 display_name = "Marlin"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

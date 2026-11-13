@@ -3,9 +3,24 @@
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_ep0o3"]
 [ext_resource type="Texture2D" uid="uid://mpjd2lt0fa67" path="res://Assets/2D/fish_sprites/Juvenile Trevally-db6d.png" id="1_je5ob"]
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_ep0o3"]
+load_path = "res://.godot/imported/Juvenile Trevally-db6d.png-eff2a7e04e341eac61e7b5862c1b1e46.ctex"
+
 [resource]
 script = ExtResource("1_ep0o3")
 scientific_name = "Caranx ignobilis"
+<<<<<<< HEAD
+description = "Young jacks that frequent shallow coastal waters, estuaries, and lower river mouths. Unlike adults that patrol open reefs, juveniles often display faint vertical dark bars on their flanks for camouflage in turbid or sandy shallows."
+size_class = "medium"
+speed = 7.0
+pull_strength = 13.0
+stamina = 10.0
+min_size = 20.0
+avg_size = 25.0
+max_size = 35.0
+avg_weight = 30.0
+icon = SubResource("CompressedTexture2D_ep0o3")
+=======
 description = "Young jacks that frequent shallow coastal waters, estuaries, and lower river mouths. Unlike adults that patrol open reefs, juveniles often display faint vertical dark bars on their flanks for camouflage in turbid or sandy shallows
 Local Name: Talakitok"
 min_size = 30.0
@@ -15,4 +30,5 @@ avg_weight = 1.5
 icon = ExtResource("1_je5ob")
 id = "fish_juvenile_trevally"
 display_name = "Juvenile Trevally"
+>>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

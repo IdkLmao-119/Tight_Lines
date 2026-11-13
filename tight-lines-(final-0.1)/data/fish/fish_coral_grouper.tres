@@ -3,9 +3,26 @@
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_0b0uw"]
 [ext_resource type="Texture2D" uid="uid://c376m551w778y" path="res://Assets/2D/fish_sprites/Coral-Grouper.png" id="1_xy8we"]
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0b0uw"]
+load_path = "res://.godot/imported/Coral-Grouper.png-9172866a6dff0652a9c0c81da6dec0d7.ctex"
+
 [resource]
 script = ExtResource("1_0b0uw")
 scientific_name = "Cephalopholis miniata"
+<<<<<<< HEAD
+description = "A striking, brightly colored predatory reef fish belonging to the family Epinephelidae, found across the Indo-Pacific in coral-rich areas and deep lagoons. It feeds primarily on small reef fishes and crustaceans."
+size_class = "large"
+speed = 10.0
+pull_strength = 40.0
+stamina = 40.0
+min_size = 25.0
+avg_size = 35.0
+max_size = 50.0
+avg_weight = 85.0
+icon = SubResource("CompressedTexture2D_0b0uw")
+id = "fish_coral_grouper"
+display_name = "Coral Grouper"
+=======
 description = "A striking, brightly colored predatory reef fish belonging to the family Epinephelidae, found across the Indo-Pacific in coral-rich areas and deep lagoons. It feeds primarily on small reef fishes and crustaceans.
 Local Name: Pugapo"
 size_class = "large"
@@ -16,4 +33,5 @@ avg_weight = 100.0
 icon = ExtResource("1_xy8we")
 id = "fish_coral_grouper"
 display_name = "Coral  Grouper"
+>>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

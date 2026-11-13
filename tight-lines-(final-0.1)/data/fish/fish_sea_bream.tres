@@ -1,5 +1,24 @@
 [gd_resource type="Resource" script_class="FishData" format=3 uid="uid://0ge21e7b8yf5"]
 
+<<<<<<< HEAD
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_uev2m"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_uev2m"]
+load_path = "res://.godot/imported/Sea_Bream.png-e48ca02e2366082b5dd3d38dad7af95a.ctex"
+
+[resource]
+script = ExtResource("1_uev2m")
+scientific_name = "Acanthopagrus berda / Acanthopagrus pacificus"
+description = "A deep-bodied, coastal marine and estuarine fish found over muddy or sandy bottoms near mangrove creeks, rocky reefs, and river mouths. Equipped with strong molar-like teeth, it feeds on hard-shelled prey such as crabs, barnacles, clams, and sea urchins."
+size_class = "medium"
+speed = 6.0
+pull_strength = 8.0
+stamina = 14.0
+min_size = 30.0
+avg_size = 50.0
+max_size = 80.0
+icon = SubResource("CompressedTexture2D_uev2m")
+=======
 [ext_resource type="Texture2D" uid="uid://uswxw2c8dsyb" path="res://Assets/2D/fish_sprites/Sea_Bream.png" id="1_bbstj"]
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_x7h24"]
 
@@ -14,6 +33,7 @@ avg_size = 47.5
 max_size = 70.0
 avg_weight = 3.5
 icon = ExtResource("1_bbstj")
+>>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 id = "fish_sea_bream"
 display_name = "Sea Bream"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

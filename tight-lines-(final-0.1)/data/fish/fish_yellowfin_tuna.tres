@@ -3,9 +3,26 @@
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_lyudy"]
 [ext_resource type="Texture2D" uid="uid://day3soc04ul3c" path="res://Assets/2D/fish_sprites/Yellow Fin Tuna.png" id="1_o2nwu"]
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_lyudy"]
+load_path = "res://.godot/imported/Yellow Fin Tuna.png-fb9e7ba30e0b826f47aa531fe2108d20.ctex"
+
 [resource]
 script = ExtResource("1_lyudy")
 scientific_name = "Thunnus albacares"
+<<<<<<< HEAD
+description = "A large, fast-swimming epipelagic marine predator found in open tropical and subtropical oceans worldwide, including major Philippine fishing grounds like the Sulu Sea and Moro Gulf. It is recognized by its bright yellow dorsal and anal finlets and torpedo-shaped body."
+size_class = "large"
+speed = 25.0
+pull_strength = 30.0
+stamina = 60.0
+min_size = 110.0
+avg_size = 150.0
+max_size = 210.0
+avg_weight = 150.0
+icon = SubResource("CompressedTexture2D_lyudy")
+id = "fish_yellow_fin_tuna"
+display_name = "Yellow Fin Tuna"
+=======
 description = "A large, fast-swimming epipelagic marine predator found in open tropical and subtropical oceans worldwide, including major Philippine fishing grounds like the Sulu Sea and Moro Gulf. It is recognized by its bright yellow dorsal and anal finlets and torpedo-shaped body.
 Local Name: Tambakol"
 size_class = "large"
@@ -15,4 +32,5 @@ max_size = 235.0
 icon = ExtResource("1_o2nwu")
 id = "fish_yellowfin_tuna"
 display_name = "Yellowfin Tuna"
+>>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

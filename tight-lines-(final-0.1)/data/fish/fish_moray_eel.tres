@@ -3,8 +3,23 @@
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_8rwxp"]
 [ext_resource type="Texture2D" uid="uid://ciaxvi3xeomkl" path="res://Assets/2D/fish_sprites/Moray Eel.png" id="1_j2h50"]
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_8rwxp"]
+load_path = "res://.godot/imported/Moray Eel.png-0ea301f66ac6b7c11ca5c09a7dc8d445.ctex"
+
 [resource]
 script = ExtResource("1_8rwxp")
+<<<<<<< HEAD
+scientific_name = "Gymnothorax javanicus / Gymnothorax undulatus"
+description = "A long, snake-like reef fish with thick, scaleless, mucus-coated skin and no pectoral or pelvic fins. They hide in coral crevices and rocky burrows during the day and emerge at night to ambush fish, crabs, and octopuses."
+size_class = "medium"
+speed = 6.0
+pull_strength = 10.0
+min_size = 20.0
+avg_size = 35.0
+max_size = 50.0
+avg_weight = 20.0
+icon = SubResource("CompressedTexture2D_8rwxp")
+=======
 scientific_name = "Gymnothorax javanicus"
 description = "A long, snake-like reef fish with thick, scaleless, mucus-coated skin and no pectoral or pelvic fins. They hide in coral crevices and rocky burrows during the day and emerge at night to ambush fish, crabs, and octopuses
 Local Name: Igat"
@@ -14,6 +29,7 @@ avg_size = 200.0
 max_size = 300.0
 avg_weight = 30.0
 icon = ExtResource("1_j2h50")
+>>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 id = "fish_moray_eel"
 display_name = "Moray Eel"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"
