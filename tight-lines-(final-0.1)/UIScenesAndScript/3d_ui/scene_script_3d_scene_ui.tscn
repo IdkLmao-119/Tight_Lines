@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="3_0ycej"]
 [ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="4_j6iej"]
 [ext_resource type="Texture2D" uid="uid://b2cdd1hh8eh8t" path="res://Assets/2D/Almanac_icon.png" id="5_hpsbn"]
+[ext_resource type="Texture2D" uid="uid://bgch78mw1pv2s" path="res://Assets/2D/rod_sprites/Ultralight Rod.png" id="6_dowyv"]
 [ext_resource type="PackedScene" uid="uid://c67j2bnervxgj" path="res://UIScenesAndScript/inventory_ui.tscn" id="6_j6iej"]
 [ext_resource type="Texture2D" uid="uid://cry2te8geq2pe" path="res://Assets/Fish Box.png" id="7_yrluk"]
 
@@ -22,6 +23,9 @@ shadow_offset = Vector2(0, 3)
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wwmsr"]
 texture = ExtResource("5_hpsbn")
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2slrl"]
+texture = ExtResource("6_dowyv")
+
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hpsbn"]
 texture = ExtResource("7_yrluk")
 
@@ -29,6 +33,9 @@ texture = ExtResource("7_yrluk")
 texture = ExtResource("7_yrluk")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yrluk"]
+texture = ExtResource("7_yrluk")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3lptn"]
 texture = ExtResource("7_yrluk")
 
 [node name="3DSceneUI" type="Control" unique_id=1628659695]
@@ -199,16 +206,29 @@ text = "II"
 
 [node name="AlmanacButton" type="Button" parent="." unique_id=745865452]
 layout_mode = 0
-offset_left = 1002.0
-offset_top = 93.0
+offset_left = 980.0
+offset_top = 224.0
 offset_right = 1182.0
-offset_bottom = 270.0
+offset_bottom = 416.0
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_51xn0")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxTexture_wwmsr")
-text = "Almanac"
+text = " Almanac"
 alignment = 0
+
+[node name="RodButton" type="Button" parent="." unique_id=184444897]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 290.0
+offset_right = 176.0
+offset_bottom = 437.0
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxTexture_2slrl")
+text = "Rods
+"
 
 [node name="InventoryUi" parent="." unique_id=306256089 instance=ExtResource("6_j6iej")]
 visible = false
@@ -227,6 +247,20 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_hpsbn")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_dowyv")
 theme_override_styles/hover = SubResource("StyleBoxTexture_yrluk")
 text = "Fish Box"
+
+[node name="BaitBox" type="Button" parent="." unique_id=2020295419]
+layout_mode = 0
+offset_left = -11.0
+offset_top = 466.0
+offset_right = 234.0
+offset_bottom = 700.0
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxTexture_3lptn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_dowyv")
+theme_override_styles/hover = SubResource("StyleBoxTexture_yrluk")
+text = "Bait Box"
 
 [node name="AlmanacUi" parent="." unique_id=479802253 instance=ExtResource("3_0ycej")]
 visible = false

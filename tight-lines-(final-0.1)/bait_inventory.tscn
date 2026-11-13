@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://n56qpiytffvy"]
+
+[ext_resource type="Texture2D" uid="uid://c5ltlchnh26q1" path="res://Assets/2D/bait_sprites/Dough.png" id="1_5o33g"]
+[ext_resource type="Texture2D" uid="uid://bl35aasg7p2kg" path="res://Assets/2D/bait_sprites/Earthworm.png" id="2_op1km"]
+[ext_resource type="Texture2D" uid="uid://dreonnrtnn7ej" path="res://Assets/2D/bait_sprites/Hardbait lure-c4e0.png" id="3_r1qjc"]
+
+[node name="Bait_Inventory" type="Control" unique_id=719745674]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="." unique_id=1417669071]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureButton" type="TextureButton" parent="Panel" unique_id=1320448597]
+layout_mode = 0
+offset_left = 114.0
+offset_top = 57.0
+offset_right = 314.0
+offset_bottom = 257.0
+texture_normal = ExtResource("1_5o33g")
+
+[node name="TextureButton2" type="TextureButton" parent="Panel" unique_id=1474663982]
+layout_mode = 0
+offset_left = 367.0
+offset_top = 68.0
+offset_right = 567.0
+offset_bottom = 268.0
+texture_normal = ExtResource("2_op1km")
+
+[node name="TextureButton3" type="TextureButton" parent="Panel" unique_id=1801790003]
+layout_mode = 0
+offset_left = 637.0
+offset_top = 47.0
+offset_right = 837.0
+offset_bottom = 247.0
+texture_normal = ExtResource("3_r1qjc")
