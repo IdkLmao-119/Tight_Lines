@@ -23,3 +23,10 @@ func _on_music_slider_changed(value: float) -> void:
 
 func _on_back_button_pressed() -> void:
 	visible = false
+
+
+func _on_save_button_pressed() -> void:
+	pass # Replace with function body.
+	
+func _on_menu_button_pressed() -> void:
+	GameManager.change_scene("main_menu")

@@ -1,7 +1,8 @@
 extends Control
 
-@onready var main_menu_buttons: VBoxContainer = $MainMenuButtons
+@onready var main_menu_buttons: VBoxContainer = $MainMenu/MainMenuButtons
 @onready var options: Control = $Options
+@onready var MainMenu: Panel = $MainMenu
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
@@ -12,7 +13,7 @@ func _process(_delta: float) -> void:
 
 func _on_start_button_pressed() -> void:
 	GameManager.change_scene("save_slots")
-
+	
 func _on_options_button_pressed() -> void:
 	options.visible = true
 	

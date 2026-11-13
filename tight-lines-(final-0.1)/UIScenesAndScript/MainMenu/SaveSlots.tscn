@@ -1,12 +1,10 @@
 [gd_scene format=3 uid="uid://pybkck3eooas"]
 
-[ext_resource type="Texture2D" uid="uid://c66vsem28p4ou" path="res://Assets/2D/pixel-sea-landscape-8-bit-sun-beach-with-wave-cloud-and-sand-game-summer-ocean-panorama-cloudy-blue-sky-with-horizon-background-pixels-island-scene-illustration-vector.jpg" id="1_e1cvy"]
 [ext_resource type="Script" uid="uid://ctov7s2usrqns" path="res://UIScenesAndScript/MainMenu/scene_script_save_slots.gd" id="1_ymcjr"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_ymcjr"]
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_a1wcf"]
-texture = ExtResource("1_e1cvy")
-modulate_color = Color(0.7372549, 0.7372549, 0.7372549, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cbcq8"]
+bg_color = Color(0, 0, 0, 0.78039217)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1jwh8"]
 bg_color = Color(0.8392157, 0.49803922, 0.36078432, 1)
@@ -66,10 +64,10 @@ script = ExtResource("1_ymcjr")
 layout_mode = 0
 offset_right = 1151.0
 offset_bottom = 647.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_a1wcf")
+theme_override_styles/panel = SubResource("StyleBoxFlat_cbcq8")
 
 [node name="BackButton" type="Button" parent="." unique_id=169924172]
-layout_mode = 0
+layout_mode = 1
 offset_left = 24.0
 offset_top = 36.0
 offset_right = 247.0

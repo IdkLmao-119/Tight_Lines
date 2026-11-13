@@ -30,7 +30,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_w82c0")
 
-[node name="Panel" type="Panel" parent="." unique_id=2050093436]
+[node name="MainMenu" type="Panel" parent="." unique_id=2050093436]
 layout_mode = 0
 offset_left = -578.0
 offset_top = -324.0
@@ -38,17 +38,18 @@ offset_right = 574.0
 offset_bottom = 323.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_3spmi")
 
-[node name="MainMenuButtons" type="VBoxContainer" parent="." unique_id=1070791132]
+[node name="MainMenuButtons" type="VBoxContainer" parent="MainMenu" unique_id=1070791132]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -148.40984
-offset_right = 148.40984
-offset_bottom = 203.0
+offset_left = -146.40985
+offset_top = 324.0
+offset_right = 150.40985
+offset_bottom = 527.0
 grow_horizontal = 2
 
-[node name="StartButton" type="Button" parent="MainMenuButtons" unique_id=2029253338]
+[node name="StartButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=2029253338]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("3_0pent")
@@ -56,7 +57,7 @@ theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
 text = "Start"
 
-[node name="OptionsButton" type="Button" parent="MainMenuButtons" unique_id=1605044471]
+[node name="OptionsButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=1605044471]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("3_0pent")
@@ -64,7 +65,7 @@ theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
 text = "Options"
 
-[node name="MultiButton" type="Button" parent="MainMenuButtons" unique_id=218283224]
+[node name="MultiButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=218283224]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("3_0pent")
@@ -72,7 +73,7 @@ theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
 text = "Multiplayer"
 
-[node name="ExitButton" type="Button" parent="MainMenuButtons" unique_id=775846875]
+[node name="ExitButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=775846875]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("3_0pent")
@@ -80,17 +81,17 @@ theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
 text = "Exit"
 
-[node name="Label" type="Label" parent="." unique_id=494958756]
+[node name="Label" type="Label" parent="MainMenu" unique_id=494958756]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -219.0
-offset_top = -277.0
-offset_right = 219.0
-offset_bottom = -177.0
+offset_left = -217.0
+offset_top = -276.5
+offset_right = 221.0
+offset_bottom = -176.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0.69179237, 0.5244724, 0.39804918, 1)
@@ -103,7 +104,7 @@ horizontal_alignment = 1
 visible = false
 layout_mode = 1
 
-[connection signal="pressed" from="MainMenuButtons/StartButton" to="." method="_on_start_button_pressed"]
-[connection signal="pressed" from="MainMenuButtons/OptionsButton" to="." method="_on_options_button_pressed"]
-[connection signal="pressed" from="MainMenuButtons/MultiButton" to="." method="_on_multi_button_pressed"]
-[connection signal="pressed" from="MainMenuButtons/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="MainMenu/MainMenuButtons/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="MainMenu/MainMenuButtons/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="pressed" from="MainMenu/MainMenuButtons/MultiButton" to="." method="_on_multi_button_pressed"]
+[connection signal="pressed" from="MainMenu/MainMenuButtons/ExitButton" to="." method="_on_exit_button_pressed"]
