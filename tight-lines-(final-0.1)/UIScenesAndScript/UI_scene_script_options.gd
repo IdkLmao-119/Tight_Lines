@@ -23,11 +23,12 @@ func _on_music_slider_changed(value: float) -> void:
 	GameManager.set_bus_volume(GameManager.BUS_MUSIC, value)
 
 func _on_back_button_pressed() -> void:
+	if GameManager.current_scene_ida == "main_menu":
+		main_menu.visible = true
 	visible = false
-	main_menu.visible = true
 	
 func _on_save_button_pressed() -> void:
-	pass # Replace with function body.
+	$SaveSlotMenu.visible = true
 	
 func _on_menu_button_pressed() -> void:
 	GameManager.change_scene("main_menu")
