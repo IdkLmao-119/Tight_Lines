@@ -21,3 +21,6 @@ func _on_overworld_button_pressed() -> void:
 
 func _on_fish_box_button_pressed() -> void:
 	$InventoryUi.visible = not $InventoryUi.visible
+
+func _on_almanac_button_pressed() -> void:
+	$AlmanacUi.visible = true
