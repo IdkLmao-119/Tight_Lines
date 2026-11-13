@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Channa striata"
-description = "A resilient predator sporting camouflage stripes, often found in shallow, weed-choked waters."
+description = "A resilient predator sporting camouflage stripes, often found in shallow, weed-choked waters.
+Local Name: Dalag"
 size_class = "medium"
 base_price = 52
 speed = 1.7

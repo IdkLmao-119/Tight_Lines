@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Toxotes jaculatrix"
-description = "Famous for its unique hunting technique of spitting jets of water to knock down terrestrial insects."
+description = "Famous for its unique hunting technique of spitting jets of water to knock down terrestrial insects.
+Local Name: Kataba"
 base_price = 25
 speed = 2.0
 pull_strength = 3.0

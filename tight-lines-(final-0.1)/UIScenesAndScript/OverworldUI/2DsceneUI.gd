@@ -8,7 +8,6 @@ extends Node
 # Called when the node enters the sne tree for the first time.
 
 const MAP_TEXTURES := {
-	"overworld_spawn": preload("res://assets/Water.jpg"),
 	"overworld_rice_field": preload("res://Assets/2D/Maps/RiceFieldMap.png"),
 	"overworld_river_park": preload("res://Assets/2D/Maps/RiverParkMap.png"),
 	"overworld_fish_market": preload("res://Assets/2D/Maps/SeasideParkMap.png"),
@@ -23,8 +22,6 @@ func _ready() -> void:
 	
 func _update_map_picture() -> void:
 	match GameManager.current_scene_id:
-		"overworld_spawn":
-			map_picture.texture = MAP_TEXTURES["overworld_spawn"]
 		"overworld_river_park":
 			map_picture.texture = MAP_TEXTURES["overworld_river_park"]
 		"overworld_rice_field":
@@ -48,9 +45,6 @@ func _process(delta: float) -> void:
 
 func _on_Pause_button_pressed() -> void:
 	Options.visible = true
-
-func _on_back_button_pressed() -> void:
-	Options.visible = false
 
 func _on_overworld_button_pressed() -> void:
 	_update_map_picture()

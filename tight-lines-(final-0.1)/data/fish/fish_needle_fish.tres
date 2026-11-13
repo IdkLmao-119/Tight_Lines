@@ -1,5 +1,6 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://d0pq3p37sjamf"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://c6fr5eawb8h8m"]
 
+[ext_resource type="Texture2D" uid="uid://b5f2i4fprddri" path="res://Assets/2D/fish_sprites/Needle Fish.png" id="1_hbyxy"]
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_x8m3s"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_x8m3s"]
@@ -8,6 +9,7 @@ load_path = "res://.godot/imported/Needle Fish.png-ad26faa3ffb198fb2d699d34563d6
 [resource]
 script = ExtResource("1_x8m3s")
 scientific_name = "Tylosurus crocodilus"
+<<<<<<< HEAD
 description = "A slender, elongated, surface-dwelling marine and brackish predator equipped with long, narrow jaws lined with numerous sharp, needle-like teeth. They patrol shallow coastal waters, reefs, and estuaries, hunting small schooling fish."
 speed = 5.0
 pull_strength = 7.0
@@ -19,4 +21,15 @@ avg_weight = 4.0
 icon = SubResource("CompressedTexture2D_x8m3s")
 id = "fish_needle_fish"
 display_name = "Needle_Fish"
+=======
+description = "A slender, elongated, surface-dwelling marine and brackish predator equipped with long, narrow jaws lined with numerous sharp, needle-like teeth. They patrol shallow coastal waters, reefs, and estuaries, hunting small schooling fish.
+Local Name: Balo"
+min_size = 30.0
+avg_size = 60.0
+max_size = 90.0
+avg_weight = 3.0
+icon = ExtResource("1_hbyxy")
+id = "fish_needle_fish"
+display_name = "Needle Fish"
+>>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

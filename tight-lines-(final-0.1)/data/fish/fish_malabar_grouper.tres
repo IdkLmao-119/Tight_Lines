@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://fehc28k18uww"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://dx274uaslvgy5"]
 
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_j6rgv"]
+[ext_resource type="Texture2D" uid="uid://b4r5i8v6apld4" path="res://Assets/2D/fish_sprites/Malabar-Grouper.png" id="1_pjo8g"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_j6rgv"]
 load_path = "res://.godot/imported/Malabar-Grouper.png-38a4ee04971be44e355c6cedd1d05329.ctex"
@@ -8,6 +9,7 @@ load_path = "res://.godot/imported/Malabar-Grouper.png-38a4ee04971be44e355c6cedd
 [resource]
 script = ExtResource("1_j6rgv")
 scientific_name = "Epinephelus malabaricus"
+<<<<<<< HEAD
 description = "A large, heavy-bodied reef and estuarine predator native to the Indo-West Pacific, inhabiting coral and rocky reefs, tide pools, estuaries, and mangrove swamps. It has a brownish body covered in small dark spots and pale blotches, feeding on fishes, crustaceans, and cephalopods."
 size_class = "large"
 speed = 15.0
@@ -18,6 +20,16 @@ avg_size = 180.0
 max_size = 230.0
 avg_weight = 125.0
 icon = SubResource("CompressedTexture2D_j6rgv")
+=======
+description = "A large, heavy-bodied reef and estuarine predator native to the Indo-West Pacific, inhabiting coral and rocky reefs, tide pools, estuaries, and mangrove swamps. It has a brownish body covered in small dark spots and pale blotches, feeding on fishes, crustaceans, and cephalopods.
+Local Name: Kugtong"
+size_class = "large"
+min_size = 75.0
+avg_size = 100.0
+max_size = 235.0
+avg_weight = 75.0
+icon = ExtResource("1_pjo8g")
+>>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 id = "fish_malabar_grouper"
 display_name = "Malabar Grouper"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

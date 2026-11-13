@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Channa micropeltes"
-description = "A ferocious apex predator with a torpedo-shaped body and extreme territorial aggression."
+description = "A ferocious apex predator with a torpedo-shaped body and extreme territorial aggression.
+Local Name: Toman"
 size_class = "large"
 base_price = 85
 speed = 2.1

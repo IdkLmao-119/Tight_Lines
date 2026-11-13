@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Pangasianodon hypophthalmus"
-description = "A large, smooth-skinned schooling catfish known for swift, energetic movements."
+description = "A large, smooth-skinned schooling catfish known for swift, energetic movements.
+Local Name: Cream Dory"
 size_class = "large"
 base_price = 50
 speed = 1.6

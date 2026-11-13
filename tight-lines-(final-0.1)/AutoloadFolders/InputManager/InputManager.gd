@@ -70,6 +70,7 @@ signal device_changed(player_id, device)
 # power is 0.0–1.0. Phone: from swing magnitude. Keyboard: from hold time.
 signal cast_triggered(player_id, power)
 signal reel(player_id, strength)
+signal reel_crank(player_id, delta_degrees)   # signed: + clockwise (reel in), - counter-clockwise
 
 # --- General ----------------------------------------------------------------
 signal interact_pressed(player_id)
@@ -95,8 +96,8 @@ const CONNECTION_MANAGER_PATH := "/root/ConnectionManager"
 # --- Tuning -----------------------------------------------------------------
 # Phone swing magnitudes (rad/s) mapped onto 0..1 cast power. The phone app
 # only reports swings above 4.0, so that is the floor.
-const SWING_MIN_MAGNITUDE := 4.0
-const SWING_MAX_MAGNITUDE := 12.0
+const SWING_MIN_MAGNITUDE := 8.0
+const SWING_MAX_MAGNITUDE := 18.0
 const MIN_CAST_POWER := 0.15
 
 # Holding the cast key this long (seconds) gives full power.
@@ -106,6 +107,10 @@ const KEYBOARD_CAST_CHARGE_TIME := 1.0
 # "pulses" that expire on their own.
 const PHONE_MOVE_PULSE_SEC := 0.35
 const PHONE_REEL_PULSE_SEC := 0.30
+# Phone "crank" (circular reel gesture)
+const CRANK_MIN_STEP := 50.0      # degrees per message below this = noise, ignored for reel pulse
+const CRANK_MAX_STEP := 180.0     # degrees per message above this = glitch, rejected
+const CRANK_ACTIVE_SEC := 0.3    # how long reeling stays "on" after the last clockwise step
 
 # Tilt: values inside the deadzone count as 0 so a phone held roughly level
 # doesn't drift the view. The phone sends -1..+1 where +/-1 = 40 degrees, so
@@ -214,7 +219,9 @@ func _connect_connection_manager() -> void:
 	_connection_manager.connect("swipe_input", _on_phone_swipe)
 	_connection_manager.connect("tap_input", _on_phone_tap)
 	_connection_manager.connect("swing_input", _on_phone_swing)
-
+	
+	if _connection_manager.has_signal("reel_input"):
+		_connection_manager.connect("reel_input", _on_phone_reel)
 	if _connection_manager.has_signal("tilt_input"):
 		_connection_manager.connect("tilt_input", _on_phone_tilt)
 	else:
@@ -309,6 +316,8 @@ func get_reel_strength(player_id: int = KEYBOARD_PLAYER_ID) -> float:
 	if player_id == DEBUG_PLAYER2_ID and _debug_p2_active() and Input.is_action_pressed(&"tl_p2_reel"):
 		return 1.0
 	if _now() < _get_state(player_id)["reel_until"]:
+		return 1.0
+	if _now() < _get_state(player_id)["crank_until"]:
 		return 1.0
 	return 0.0
 
@@ -513,10 +522,20 @@ func _get_state(pid: int) -> Dictionary:
 	if not _state.has(pid):
 		_state[pid] = {
 			"move": Vector2.ZERO, "move_until": 0.0,
-			"reel_until": 0.0,
+			"reel_until": 0.0, "crank_until":0.0,
 			"look": 0.0, "look_time": -100.0,
 		}
 	return _state[pid]
+
+func _on_phone_reel(phone_id: int, crank_delta: float) -> void:
+	if context != InputContext.FISHING:
+		return
+	var pid := _accept_phone_input(phone_id)
+	if pid < 0 or absf(crank_delta) > CRANK_MAX_STEP:
+		return
+	reel_crank.emit(pid, crank_delta)
+	if crank_delta >= CRANK_MIN_STEP:
+		_get_state(pid)["crank_until"] = _now() + CRANK_ACTIVE_SEC
 
 func _now() -> float:
 	return Time.get_ticks_msec() / 1000.0

@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Oreochromis niloticus"
-description = "A prominent freshwater species with vertical stripes along its tail fin and a steady pull."
+description = "A prominent freshwater species with vertical stripes along its tail fin and a steady pull.
+Local Name: Tilapia"
 size_class = "medium"
 base_price = 30
 speed = 1.4

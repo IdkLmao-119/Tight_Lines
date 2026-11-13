@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://8dagwkx0yana"]
 
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="1_14wdk"]
+[ext_resource type="Script" uid="uid://c3fapflkemd6x" path="res://OverWorldSceneAndScript/2_FishMarket/SeasidePark/2d_scene_script_seaside_park.gd" id="1_jbkky"]
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="2_ho383"]
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="3_7h4qw"]
 [ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="4_psfcu"]
@@ -350,6 +351,7 @@ size = Vector2(97.25, 42)
 size = Vector2(56, 51)
 
 [node name="SeasidePark" type="Node2D" unique_id=156358762]
+script = ExtResource("1_jbkky")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=2046493268]
 tile_set = SubResource("TileSet_tppcw")

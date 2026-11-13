@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Gambusia affinis"
-description = "A tiny, swift surface-feeder renowned for consuming vast quantities of mosquito larvae."
+description = "A tiny, swift surface-feeder renowned for consuming vast quantities of mosquito larvae.
+Local Name:  Kataba"
 base_price = 10
 speed = 2.2
 pull_strength = 1.0

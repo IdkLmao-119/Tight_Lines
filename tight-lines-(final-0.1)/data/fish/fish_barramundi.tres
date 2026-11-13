@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Lates calcarifer"
-description = "A powerful, aggressive sport fish that frequently performs spectacular aerial leaps when hooked."
+description = "A powerful, aggressive sport fish that frequently performs spectacular aerial leaps when hooked.
+Local Name: Apahap"
 size_class = "large"
 base_price = 60
 speed = 1.8

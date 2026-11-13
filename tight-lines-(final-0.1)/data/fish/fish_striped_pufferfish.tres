@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Arothron hispidus"
-description = "A round, slow-moving fish capable of inflating itself with water when threatened."
+description = "A round, slow-moving fish capable of inflating itself with water when threatened.
+Local Name: Butete"
 base_price = 30
 pull_strength = 3.5
 min_size = 12.0

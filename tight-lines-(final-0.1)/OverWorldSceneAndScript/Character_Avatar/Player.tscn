@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://duilsfqbu6fdu" path="res://OverWorldSceneAndScript/Character_Avatar/scene_script_player.gd" id="1_schp4"]
 [ext_resource type="Texture2D" uid="uid://b5nlrj4ra2imf" path="res://Assets/2D/Human-Worker-Red.png" id="2_pusnx"]
-[ext_resource type="PackedScene" uid="uid://cbxf3bfas3m8g" path="res://UIScenesAndScript/Overworld UI/scene_script_2d_scene_ui.tscn" id="3_cxfe0"]
+[ext_resource type="PackedScene" uid="uid://cbxf3bfas3m8g" path="res://UIScenesAndScript/OverworldUI/scene_script_2d_scene_ui.tscn" id="3_cxfe0"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_schp4"]
 size = Vector2(7.999999, 14)

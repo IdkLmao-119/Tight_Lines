@@ -155,7 +155,7 @@ const SCENES: Dictionary = {
 		"pausable": true,
 	},
 	"fishing_fishing_pens": {
-		"path": "res://OverWorldSceneAndScript/Area01Scene/MainArea1/MainArea01.tscn",
+		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingFishPens.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,

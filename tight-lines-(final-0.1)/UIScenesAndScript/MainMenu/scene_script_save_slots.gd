@@ -30,6 +30,10 @@ func _on_back_button_pressed() -> void:
 
 func _on_save_slot_1_pressed() -> void:
 	_select_slot(0)
+	if SaveManager.slot_exists(1):
+		pass
+	else:
+		SaveManager.new_game()
 
 func _on_save_slot_2_pressed() -> void:
 	_select_slot(1)

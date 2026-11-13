@@ -167,7 +167,7 @@ const TEMP_ROD_REEL_SPEED := 2.0         # <<< TWEAK
 # tension is in the same units as a rod's line_strength.
 # ============================================================================
 # >>> TWEAK REELING SPEED <<<   (2 of 3: how fast reeling pulls the fish in)
-const REEL_PROGRESS_RATE := 0.15    # <<< TWEAK  progress/sec while reeling (x reel_speed)
+const REEL_PROGRESS_RATE := 0.50    # <<< TWEAK  progress/sec while reeling (x reel_speed)
 # >>> TWEAK REELING SPEED <<<   (3 of 3: how much stress reeling puts on the line)
 const REEL_TENSION_FORCE := 3.0     # <<< TWEAK  tension added while reeling (x reel_speed)
 # Rule of thumb: speed up reeling by raising REEL_PROGRESS_RATE; if the line

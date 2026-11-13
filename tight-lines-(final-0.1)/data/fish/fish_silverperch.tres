@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Bidyanus bidyanus"
-description = "A sturdy native freshwater fish with a silvery sheen and reliable endurance."
+description = "A sturdy native freshwater fish with a silvery sheen and reliable endurance.
+Local Name: Ayungin"
 size_class = "medium"
 base_price = 34
 speed = 1.4

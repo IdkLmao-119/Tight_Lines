@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Pterygoplichthys pardalis"
-description = "A heavily armored freshwater fish covered in bony plates for protection against predators."
+description = "A heavily armored freshwater fish covered in bony plates for protection against predators.
+Local Name: Janitor Fish"
 size_class = "medium"
 base_price = 30
 speed = 1.1

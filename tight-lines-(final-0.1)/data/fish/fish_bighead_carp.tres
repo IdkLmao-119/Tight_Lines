@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Hypophthalmichthys nobilis"
-description = "A large freshwater fish characterized by its very large head and plankton-filtering habits."
+description = "A large freshwater fish characterized by its very large head and plankton-filtering habits.
+Local Name: Mamali"
 size_class = "large"
 base_price = 40
 speed = 1.3

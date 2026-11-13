@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://d1epd4fp2au8i"]
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://bxl2qb0mavthd"]
 
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_kopok"]
+[ext_resource type="Texture2D" uid="uid://u8u2genj1vy3" path="res://Assets/2D/fish_sprites/Juvenile Queenfish-5fe8.png" id="1_lqahd"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_kopok"]
 load_path = "res://.godot/imported/Juvenile Queenfish-5fe8.png-7a92260ee6d9f53200edd5a957687a53.ctex"
@@ -8,6 +9,7 @@ load_path = "res://.godot/imported/Juvenile Queenfish-5fe8.png-7a92260ee6d9f5320
 [resource]
 script = ExtResource("1_kopok")
 scientific_name = "Scomberoides commersonnianus"
+<<<<<<< HEAD
 description = "Young stages of fast-swimming coastal jacks that inhabit shallow sandy beaches, estuaries, and brackish creeks. They have sleek, silvery, laterally compressed bodies and feed on small schooling fishes and planktonic crustaceans."
 size_class = "medium"
 speed = 8.0
@@ -18,6 +20,16 @@ avg_size = 25.0
 max_size = 25.0
 avg_weight = 30.0
 icon = SubResource("CompressedTexture2D_kopok")
+=======
+description = "Young stages of fast-swimming coastal jacks that inhabit shallow sandy beaches, estuaries, and brackish creeks. They have sleek, silvery, laterally compressed bodies and feed on small schooling fishes and planktonic crustaceans.
+Local Name: Talang-talang"
+size_class = "medium"
+min_size = 25.0
+avg_size = 45.0
+max_size = 65.0
+avg_weight = 2.0
+icon = ExtResource("1_lqahd")
+>>>>>>> 6749544e3320880fae9382b422f398e8aa38355d
 id = "fish_juvenile_queenfish"
 display_name = "Juvenile Queenfish"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

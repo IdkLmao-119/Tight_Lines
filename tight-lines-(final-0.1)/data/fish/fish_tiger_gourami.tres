@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Trichopodus pectoralis"
-description = "A larger relative of the gourami family displaying prominent vertical tiger-like banding."
+description = "A larger relative of the gourami family displaying prominent vertical tiger-like banding.
+Local Name: Gourami"
 base_price = 25
 speed = 1.3
 pull_strength = 2.4

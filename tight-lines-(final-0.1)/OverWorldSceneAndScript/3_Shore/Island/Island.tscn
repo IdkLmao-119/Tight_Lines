@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://c2kx5pcxvtdif"]
 
+[ext_resource type="Script" uid="uid://t7tupsqb0ck8" path="res://OverWorldSceneAndScript/3_Shore/Island/2d_scene_script_island.gd" id="1_5hinp"]
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="1_xjbdj"]
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="2_uhmaw"]
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="3_hpxxh"]
@@ -347,6 +348,7 @@ size = Vector2(98, 69)
 size = Vector2(93, 44.5)
 
 [node name="Island" type="Node2D" unique_id=263984631]
+script = ExtResource("1_5hinp")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=450276505]
 tile_set = SubResource("TileSet_edtgc")
@@ -381,5 +383,5 @@ position = Vector2(480, 760.25)
 shape = SubResource("RectangleShape2D_qdolu")
 
 [connection signal="body_entered" from="IslandToMangrove/IslandToMangrove" to="Player" method="_on_island_to_mangrove_body_entered"]
-[connection signal="body_entered" from="Node2D/Island3DScene" to="Player" method="_on_island_3d_scene_body_entered"]
 [connection signal="body_entered" from="Node2D/Island3DScene" to="Player" method="_on_area_2d_body_entered"]
+[connection signal="body_entered" from="Node2D/Island3DScene" to="Player" method="_on_island_3d_scene_body_entered"]

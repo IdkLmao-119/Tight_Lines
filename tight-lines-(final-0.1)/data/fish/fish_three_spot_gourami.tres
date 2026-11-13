@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Trichopodus trichopterus"
-description = "A peaceful labyrinth fish characterized by distinct spots on its body and thread-like feelers."
+description = "A peaceful labyrinth fish characterized by distinct spots on its body and thread-like feelers.
+Local Name: Gourami"
 base_price = 18
 speed = 1.2
 pull_strength = 1.8

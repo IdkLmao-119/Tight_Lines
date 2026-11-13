@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Hemiramphus archipelagicus"
-description = "A sleek surface dweller recognized by its elongated lower jaw and skimming movement."
+description = "A sleek surface dweller recognized by its elongated lower jaw and skimming movement.
+Local Name: Siliw"
 base_price = 20
 speed = 2.3
 pull_strength = 2.0

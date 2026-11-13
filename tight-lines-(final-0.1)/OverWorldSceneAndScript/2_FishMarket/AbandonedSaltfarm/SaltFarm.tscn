@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://sgugkon0uryw"]
 
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="1_usnfm"]
+[ext_resource type="Script" uid="uid://dmyd05canks2o" path="res://OverWorldSceneAndScript/2_FishMarket/AbandonedSaltfarm/2d_scene_script_salt_farm.gd" id="1_ut55x"]
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="2_hu1lq"]
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="3_6jju4"]
 [ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="4_i7p7j"]
@@ -350,6 +351,7 @@ size = Vector2(78, 60)
 size = Vector2(130.5, 59)
 
 [node name="SaltFarm" type="Node2D" unique_id=1600097924]
+script = ExtResource("1_ut55x")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=240861762]
 tile_set = SubResource("TileSet_wjqsb")

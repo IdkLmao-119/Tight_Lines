@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Chitala ornata"
-description = "An elongated nocturnal predator featuring striking spot patterns and a smooth swimming motion."
+description = "An elongated nocturnal predator featuring striking spot patterns and a smooth swimming motion.
+Local Name: Knife Fish"
 size_class = "large"
 base_price = 70
 speed = 1.7

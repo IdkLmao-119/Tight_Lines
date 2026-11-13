@@ -6,7 +6,8 @@
 [resource]
 script = ExtResource("1_bs6c8")
 scientific_name = "Mugil cephalus"
-description = "A schooling coastal fish famous for its habit of leaping out of the water when startled."
+description = "A schooling coastal fish famous for its habit of leaping out of the water when startled.
+Local Name: Banak"
 size_class = "medium"
 base_price = 32
 speed = 1.8
