@@ -2,8 +2,11 @@
 
 [ext_resource type="Script" uid="uid://b2wg36t11o40t" path="res://UIScenesAndScript/3d_ui/3DsceneUI.gd" id="1_5frun"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_51xn0"]
-[ext_resource type="PackedScene" uid="uid://c0u77axaegcsm" path="res://UIScenesAndScript/Options.tscn" id="2_lg5ri"]
+[ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/UI_scene_script_options.gd" id="2_b1tcx"]
 [ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="3_0ycej"]
+[ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="4_j6iej"]
+[ext_resource type="PackedScene" uid="uid://c67j2bnervxgj" path="res://UIScenesAndScript/inventory_ui.tscn" id="6_j6iej"]
+[ext_resource type="Texture2D" uid="uid://cry2te8geq2pe" path="res://Assets/Fish Box.png" id="7_yrluk"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qbet6"]
 bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
@@ -15,6 +18,15 @@ shadow_color = Color(0, 0, 0, 0.45882353)
 shadow_size = 5
 shadow_offset = Vector2(0, 3)
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hpsbn"]
+texture = ExtResource("7_yrluk")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dowyv"]
+texture = ExtResource("7_yrluk")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yrluk"]
+texture = ExtResource("7_yrluk")
+
 [node name="3DSceneUI" type="Control" unique_id=1628659695]
 layout_mode = 3
 anchors_preset = 15
@@ -24,16 +36,145 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_5frun")
 
-[node name="Options" parent="." unique_id=100843613 instance=ExtResource("2_lg5ri")]
+[node name="Options" type="Control" parent="." unique_id=100843613]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.0
+offset_top = 10.0
+offset_right = -1.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_b1tcx")
+
+[node name="Options" type="Panel" parent="Options" unique_id=48226238]
 visible = false
 layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -290.0
+offset_top = -179.5
+offset_right = 290.0
+offset_bottom = 269.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OptionsLabel" type="Label" parent="Options/Options" unique_id=796201848]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_font_sizes/font_size = 50
+text = "Options"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BackButton" type="Button" parent="Options/Options" unique_id=1410271780]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -212.0
+offset_top = -52.0
+offset_right = -107.0
+offset_bottom = -13.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_font_sizes/font_size = 30
+text = "Back"
+
+[node name="SoundSlider" type="HSlider" parent="Options/Options" unique_id=2070049158]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -268.0
+offset_top = -127.75
+offset_right = 273.0
+offset_bottom = -69.25
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Sound" type="Label" parent="Options/Options" unique_id=1816271119]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 55.5
+offset_bottom = 106.5
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_font_sizes/font_size = 40
+text = "Sound"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Music" type="Label" parent="Options/Options" unique_id=1323081348]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 1.0
+offset_top = 150.5
+offset_right = 1.0
+offset_bottom = 201.5
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_font_sizes/font_size = 40
+text = "Music"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MusicSlider" type="HSlider" parent="Options/Options" unique_id=473635232]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -265.0
+offset_top = -35.75
+offset_right = 276.0
+offset_bottom = 22.75
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+step = 0.001
+script = ExtResource("4_j6iej")
+
+[node name="MenuButton" type="Button" parent="Options/Options" unique_id=1533192303]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 97.0
+offset_top = -52.0
+offset_right = 202.0
+offset_bottom = -13.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_font_sizes/font_size = 30
+text = "Menu"
 
 [node name="OverworldButton" type="Button" parent="." unique_id=1771150655]
 layout_mode = 0
-offset_left = 921.0
+offset_left = 944.0
 offset_top = 17.0
 offset_right = 1143.0
-offset_bottom = 114.0
+offset_bottom = 80.0
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_51xn0")
 theme_override_font_sizes/font_size = 40
@@ -54,10 +195,10 @@ text = "II"
 
 [node name="AlmanacButton" type="Button" parent="." unique_id=745865452]
 layout_mode = 0
-offset_left = 921.0
-offset_top = 130.0
-offset_right = 1143.0
-offset_bottom = 227.0
+offset_left = 981.0
+offset_top = 88.0
+offset_right = 1144.0
+offset_bottom = 137.0
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_51xn0")
 theme_override_font_sizes/font_size = 40
@@ -68,6 +209,27 @@ text = "Almanac"
 visible = false
 layout_mode = 1
 
+[node name="InventoryUi" parent="." unique_id=306256089 instance=ExtResource("6_j6iej")]
+visible = false
+layout_mode = 1
+
+[node name="FishBoxButton" type="Button" parent="." unique_id=1768447990]
+layout_mode = 0
+offset_left = 927.0
+offset_top = 461.0
+offset_right = 1172.0
+offset_bottom = 695.0
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxTexture_hpsbn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_dowyv")
+theme_override_styles/hover = SubResource("StyleBoxTexture_yrluk")
+text = "Fish Box"
+
+[connection signal="pressed" from="Options/Options/BackButton" to="Options" method="_on_back_button_pressed"]
+[connection signal="pressed" from="Options/Options/MenuButton" to="Options" method="_on_menu_button_pressed"]
 [connection signal="pressed" from="OverworldButton" to="." method="_on_overworld_button_pressed"]
 [connection signal="pressed" from="StartButton" to="." method="_on_Pause_button_pressed"]
 [connection signal="pressed" from="AlmanacButton" to="." method="_on_almanac_button_pressed"]
+[connection signal="pressed" from="FishBoxButton" to="." method="_on_fish_box_button_pressed"]

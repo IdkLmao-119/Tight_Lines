@@ -16,7 +16,7 @@ func _ready() -> void:
 
 func refresh_slot_labels() -> void:
 	for i in range(slot_buttons.size()):
-		var info := SaveManager.get_slot_info(i)
+		var info: Dictionary = SaveManager.get_slot_info(i)
 		if info["exists"]:
 			slot_buttons[i].text = "Slot %d\n%s" % [i + 1, info["timestamp"]]
 		else:
@@ -65,11 +65,11 @@ func _on_load_save_button_pressed() -> void:
 	if not SaveManager.slot_exists(selected_slot):
 		SaveManager.new_game()
 		SaveManager.save_slot(selected_slot)
-		GameManager.change_scene("overworld_spawn")
+		GameManager.change_scene(SaveManager.get_saved_scene())
 		return
 
 	if SaveManager.load_slot(selected_slot):
-		GameManager.change_scene("overworld")
+		GameManager.change_scene(SaveManager.get_saved_scene())
 
 
 func _on_delete_save_button_pressed() -> void:

@@ -1,0 +1,243 @@
+[gd_scene format=3 uid="uid://c67j2bnervxgj"]
+
+[ext_resource type="Script" uid="uid://ddb7po8ibpai0" path="res://UI_scene_script_inventory_ui.gd" id="1_gf3dx"]
+[ext_resource type="Texture2D" uid="uid://d232l72u3sb3b" path="res://Assets/2D/Inside Cooler.png" id="2_dsksw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dsksw"]
+bg_color = Color(0, 0, 0, 0.58431375)
+
+[node name="InventoryUi" type="Control" unique_id=306256089]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gf3dx")
+
+[node name="Panel" type="Panel" parent="." unique_id=1099088060]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -572.0
+offset_top = -325.0
+offset_right = 574.0
+offset_bottom = 318.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dsksw")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=428384805]
+layout_mode = 0
+offset_left = -10.0
+offset_top = -159.0
+offset_right = 1150.0
+offset_bottom = 781.0
+texture = ExtResource("2_dsksw")
+expand_mode = 3
+
+[node name="TextureButtonGroup" type="Control" parent="." unique_id=1590785454]
+anchors_preset = 0
+offset_left = 126.0
+offset_top = 74.0
+offset_right = 166.0
+offset_bottom = 114.0
+
+[node name="TextureButton" type="TextureButton" parent="TextureButtonGroup" unique_id=1806602573]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 32.0
+offset_right = 160.0
+offset_bottom = 128.0
+
+[node name="TextureButton2" type="TextureButton" parent="TextureButtonGroup" unique_id=2000185117]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 144.0
+offset_right = 160.0
+offset_bottom = 240.0
+
+[node name="TextureButton3" type="TextureButton" parent="TextureButtonGroup" unique_id=16389714]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 256.0
+offset_right = 160.0
+offset_bottom = 352.0
+
+[node name="TextureButton4" type="TextureButton" parent="TextureButtonGroup" unique_id=1298625287]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 368.0
+offset_right = 160.0
+offset_bottom = 464.0
+
+[node name="TextureButton5" type="TextureButton" parent="TextureButtonGroup" unique_id=835344906]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 32.0
+offset_right = 272.0
+offset_bottom = 128.0
+
+[node name="TextureButton6" type="TextureButton" parent="TextureButtonGroup" unique_id=473288934]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 144.0
+offset_right = 272.0
+offset_bottom = 240.0
+
+[node name="TextureButton7" type="TextureButton" parent="TextureButtonGroup" unique_id=1580843811]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 256.0
+offset_right = 272.0
+offset_bottom = 352.0
+
+[node name="TextureButton8" type="TextureButton" parent="TextureButtonGroup" unique_id=2063228551]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 368.0
+offset_right = 272.0
+offset_bottom = 464.0
+
+[node name="TextureButton9" type="TextureButton" parent="TextureButtonGroup" unique_id=278849473]
+layout_mode = 0
+offset_left = 288.0
+offset_top = 32.0
+offset_right = 384.0
+offset_bottom = 128.0
+
+[node name="TextureButton10" type="TextureButton" parent="TextureButtonGroup" unique_id=1405380565]
+layout_mode = 0
+offset_left = 288.0
+offset_top = 144.0
+offset_right = 384.0
+offset_bottom = 240.0
+
+[node name="TextureButton11" type="TextureButton" parent="TextureButtonGroup" unique_id=842957505]
+layout_mode = 0
+offset_left = 288.0
+offset_top = 256.0
+offset_right = 384.0
+offset_bottom = 352.0
+
+[node name="TextureButton12" type="TextureButton" parent="TextureButtonGroup" unique_id=1098791843]
+layout_mode = 0
+offset_left = 288.0
+offset_top = 368.0
+offset_right = 384.0
+offset_bottom = 464.0
+
+[node name="TextureButton13" type="TextureButton" parent="TextureButtonGroup" unique_id=1034234007]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 32.0
+offset_right = 496.0
+offset_bottom = 128.0
+
+[node name="TextureButton14" type="TextureButton" parent="TextureButtonGroup" unique_id=1909441611]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 144.0
+offset_right = 496.0
+offset_bottom = 240.0
+
+[node name="TextureButton15" type="TextureButton" parent="TextureButtonGroup" unique_id=483642231]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 256.0
+offset_right = 496.0
+offset_bottom = 352.0
+
+[node name="TextureButton16" type="TextureButton" parent="TextureButtonGroup" unique_id=742392477]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 368.0
+offset_right = 496.0
+offset_bottom = 464.0
+
+[node name="TextureButton17" type="TextureButton" parent="TextureButtonGroup" unique_id=634802144]
+layout_mode = 0
+offset_left = 512.0
+offset_top = 32.0
+offset_right = 608.0
+offset_bottom = 128.0
+
+[node name="TextureButton18" type="TextureButton" parent="TextureButtonGroup" unique_id=523053966]
+layout_mode = 0
+offset_left = 512.0
+offset_top = 144.0
+offset_right = 608.0
+offset_bottom = 240.0
+
+[node name="TextureButton19" type="TextureButton" parent="TextureButtonGroup" unique_id=2129422236]
+layout_mode = 0
+offset_left = 512.0
+offset_top = 256.0
+offset_right = 608.0
+offset_bottom = 352.0
+
+[node name="TextureButton20" type="TextureButton" parent="TextureButtonGroup" unique_id=1984493940]
+layout_mode = 0
+offset_left = 512.0
+offset_top = 368.0
+offset_right = 608.0
+offset_bottom = 464.0
+
+[node name="TextureButton21" type="TextureButton" parent="TextureButtonGroup" unique_id=1393338243]
+layout_mode = 0
+offset_left = 624.0
+offset_top = 32.0
+offset_right = 720.0
+offset_bottom = 128.0
+
+[node name="TextureButton22" type="TextureButton" parent="TextureButtonGroup" unique_id=1426471798]
+layout_mode = 0
+offset_left = 624.0
+offset_top = 144.0
+offset_right = 720.0
+offset_bottom = 240.0
+
+[node name="TextureButton23" type="TextureButton" parent="TextureButtonGroup" unique_id=1511446641]
+layout_mode = 0
+offset_left = 624.0
+offset_top = 256.0
+offset_right = 720.0
+offset_bottom = 352.0
+
+[node name="TextureButton24" type="TextureButton" parent="TextureButtonGroup" unique_id=1852217301]
+layout_mode = 0
+offset_left = 624.0
+offset_top = 368.0
+offset_right = 720.0
+offset_bottom = 464.0
+
+[node name="TextureButton25" type="TextureButton" parent="TextureButtonGroup" unique_id=409728212]
+layout_mode = 0
+offset_left = 736.0
+offset_top = 32.0
+offset_right = 832.0
+offset_bottom = 128.0
+
+[node name="TextureButton26" type="TextureButton" parent="TextureButtonGroup" unique_id=1265325239]
+layout_mode = 0
+offset_left = 736.0
+offset_top = 144.0
+offset_right = 832.0
+offset_bottom = 240.0
+
+[node name="TextureButton27" type="TextureButton" parent="TextureButtonGroup" unique_id=441523791]
+layout_mode = 0
+offset_left = 736.0
+offset_top = 256.0
+offset_right = 832.0
+offset_bottom = 352.0
+
+[node name="TextureButton28" type="TextureButton" parent="TextureButtonGroup" unique_id=2057818401]
+layout_mode = 0
+offset_left = 736.0
+offset_top = 368.0
+offset_right = 832.0
+offset_bottom = 464.0

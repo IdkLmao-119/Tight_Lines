@@ -15,34 +15,11 @@ extends Node
 #   2. GAME STATE     build_save_data() / apply_save_data() collect and hand
 #                     back the state of the other modules. save_slot(slot) and
 #                     load_slot(slot) combine both. Owns the player state that
-#                     has no other home: unlock flags, owned rods, equipped rod,
-#                     equipped bait.
+#                     has no other home: saved scene, unlock flags, owned rods,
+#                     equipped rod, equipped bait.
 #   3. SETTINGS       Volume lives in its OWN global file, user://settings.json
 #                     (C3), NOT in slot files. save_settings() / load_settings();
 #                     volume is applied at startup with call_deferred.
-#
-# RULES FROM DECISIONS.md
-#   C2   Slot files are user://saves/slot_N.json.
-#   C3   Volume in user://settings.json.
-#   D2   Saves store NO scene. Loading a slot always opens "overworld": the
-#        caller (Save Slots screen / GameManager) does
-#        GameManager.change_scene("overworld") after load_slot() succeeds.
-#   D8   Old saves are ignored: a "version" field is written, but a file is
-#        NEVER refused for being old. A missing section resets that module.
-#   D10  A new game must give the player a way to get bait: see the
-#        NEW_GAME_* constants below (fill in once GameDB has starter ids).
-#   D11  Unlock flags are granted by QuestManager through add_unlock_flag().
-#   Sec. 4  add_unlock_flag / has_unlock_flag / get_unlock_flags, plus
-#        owned_rods, equipped_rod, equipped_bait are saved in every slot.
-#
-# SLOT FILE (JSON):
-#   { "version": 1, "timestamp": "...",
-#     "inventory": { ... InventoryManager.to_save_data() ... },
-#     "unlock_flags": ["unlock_dock"], "owned_rods": ["rod_basic"],
-#     "equipped_rod": "rod_basic", "equipped_bait": "bait_worm" }
-# Loaded data is VALIDATED: unknown or malformed ids and flags are dropped with
-# a warning. Currency, fish log and quest progress get added to
-# build_save_data() / apply_save_data() when those modules exist.
 # ============================================================================
 
 signal slot_saved(slot: int)
@@ -69,12 +46,14 @@ const NEW_GAME_OWNED_ROD_IDS: Array = []
 const NEW_GAME_EQUIPPED_ROD := ""
 const NEW_GAME_EQUIPPED_BAIT := ""
 const NEW_GAME_STARTER_ITEMS: Dictionary = {}
+const DEFAULT_START_SCENE := "overworld_spawn"
 
 # --- Player state owned here ------------------------------------------------
 var _unlock_flags: Array = []      # Array of String
 var _owned_rods: Array = []        # Array of String (rod ids)
 var _equipped_rod := ""
 var _equipped_bait := ""
+var _saved_scene := DEFAULT_START_SCENE
 
 var _slug_regex := RegEx.new()     # same rule as GameDB: lowercase snake_case
 
@@ -135,7 +114,15 @@ func get_slot_info(slot: int) -> Dictionary:
 
 # Collects the state of every module that is registered.
 func build_save_data() -> Dictionary:
+	var game_manager := _autoload("GameManager")
+	var scene_to_save := _saved_scene
+	if game_manager != null and game_manager.get("current_scene_id") is String:
+		var current: String = game_manager.get("current_scene_id")
+		if current != "" and current != "main_menu":
+			scene_to_save = current
+
 	var data := {
+		"scene": scene_to_save,
 		"unlock_flags": _unlock_flags.duplicate(),
 		"owned_rods": _owned_rods.duplicate(),
 		"equipped_rod": _equipped_rod,
@@ -151,6 +138,10 @@ func build_save_data() -> Dictionary:
 # section resets that module to its new-game state (D8). Safe to call with {}.
 func apply_save_data(data: Dictionary) -> void:
 	_reset_player_state()
+
+	# Scene.
+	if data.get("scene") is String and data["scene"] != "" and data["scene"] != "main_menu":
+		_saved_scene = data["scene"]
 
 	# Inventory (InventoryManager validates item ids and positions itself).
 	var inventory := _autoload("InventoryManager")
@@ -194,9 +185,7 @@ func save_slot(slot: int) -> bool:
 
 
 # Loads a slot into the game. Returns false if the slot is empty or unreadable.
-# Old versions are NEVER refused (D8). The scene is not touched (D2): on
-# success the caller opens the overworld with
-# GameManager.change_scene("overworld").
+# Old versions are NEVER refused (D8).
 func load_slot(slot: int) -> bool:
 	var data := load_game(slot)
 	if data.is_empty():
@@ -206,6 +195,11 @@ func load_slot(slot: int) -> bool:
 	apply_save_data(data)
 	slot_loaded.emit(slot)
 	return true
+
+
+# Returns the scene id stored in the active save state (defaults to DEFAULT_START_SCENE).
+func get_saved_scene() -> String:
+	return _saved_scene
 
 
 # Resets every module to a fresh game and gives the starting items (D10).
@@ -353,6 +347,7 @@ func _reset_player_state() -> void:
 	_owned_rods = NEW_GAME_OWNED_ROD_IDS.duplicate()
 	_equipped_rod = NEW_GAME_EQUIPPED_ROD
 	_equipped_bait = NEW_GAME_EQUIPPED_BAIT
+	_saved_scene = DEFAULT_START_SCENE
 
 
 # Does GameDB know this id? `method` is "has_rod" or "has_bait". If GameDB is
