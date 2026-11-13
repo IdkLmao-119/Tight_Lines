@@ -1,8 +1,9 @@
 [gd_scene format=3 uid="uid://cbxf3bfas3m8g"]
 
-[ext_resource type="Script" uid="uid://bmoettm0ijjix" path="res://UIScenesAndScript/Overworld UI/2DsceneUI.gd" id="1_avfof"]
+[ext_resource type="Script" uid="uid://bmoettm0ijjix" path="res://UIScenesAndScript/OverworldUI/2DsceneUI.gd" id="1_avfof"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_kpllj"]
 [ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="3_0yhp3"]
+[ext_resource type="PackedScene" uid="uid://c0u77axaegcsm" path="res://UIScenesAndScript/Options.tscn" id="4_v5032"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qbet6"]
 bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
@@ -46,106 +47,6 @@ theme_override_fonts/font = ExtResource("2_kpllj")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
 text = "II"
-
-[node name="Options" type="Panel" parent="." unique_id=349961072]
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -290.0
-offset_top = -179.5
-offset_right = 290.0
-offset_bottom = 269.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="OptionsLabel" type="Label" parent="Options" unique_id=1462521405]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 23.0
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("2_kpllj")
-theme_override_font_sizes/font_size = 50
-text = "Paused"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="BackButton" type="Button" parent="Options" unique_id=1780111791]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -52.0
-offset_top = -51.0
-offset_right = 53.0
-offset_bottom = -12.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_fonts/font = ExtResource("2_kpllj")
-theme_override_font_sizes/font_size = 30
-text = "Back"
-
-[node name="SoundSlider" type="HSlider" parent="Options" unique_id=277129724]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -268.0
-offset_top = -127.75
-offset_right = 273.0
-offset_bottom = -69.25
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Sound" type="Label" parent="Options" unique_id=1763794568]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 55.5
-offset_bottom = 106.5
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("2_kpllj")
-theme_override_font_sizes/font_size = 40
-text = "Sound"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Music" type="Label" parent="Options" unique_id=814905018]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 1.0
-offset_top = 150.5
-offset_right = 1.0
-offset_bottom = 201.5
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("2_kpllj")
-theme_override_font_sizes/font_size = 40
-text = "Music"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="MusicSlider" type="HSlider" parent="Options" unique_id=621665118]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -265.0
-offset_top = -35.75
-offset_right = 276.0
-offset_bottom = 22.75
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="Map" type="Panel" parent="." unique_id=1849792448]
 visible = false
@@ -204,8 +105,11 @@ text = "Almanac
 visible = false
 layout_mode = 1
 
+[node name="Options" parent="." unique_id=100843613 instance=ExtResource("4_v5032")]
+visible = false
+layout_mode = 1
+
 [connection signal="pressed" from="OverworldButton" to="." method="_on_overworld_button_pressed"]
 [connection signal="pressed" from="PauseButton" to="." method="_on_Pause_button_pressed"]
-[connection signal="pressed" from="Options/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="Map/MapBackButton" to="." method="_on_map_back_button_pressed"]
 [connection signal="pressed" from="AlmanacButton" to="." method="_on_almanac_button_pressed"]

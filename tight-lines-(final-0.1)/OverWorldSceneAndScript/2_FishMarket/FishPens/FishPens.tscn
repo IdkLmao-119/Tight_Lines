@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://b0dnj32c0vpvg"]
 
+[ext_resource type="Script" uid="uid://bicenvnbip8gd" path="res://OverWorldSceneAndScript/2_FishMarket/FishPens/2d_scene_script_fish_pens.gd" id="1_fcx71"]
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="1_uw2st"]
 [ext_resource type="Texture2D" uid="uid://pymrg3a8ow6p" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/TightLinesTiles.png" id="2_v54tj"]
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="3_25j1j"]
@@ -350,6 +351,7 @@ size = Vector2(47, 51)
 size = Vector2(54, 48)
 
 [node name="FishPens" type="Node2D" unique_id=814212247]
+script = ExtResource("1_fcx71")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=1256167875]
 tile_set = SubResource("TileSet_5pivs")

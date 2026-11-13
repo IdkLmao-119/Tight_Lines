@@ -13,7 +13,6 @@ func _ready() -> void:
 		if cam != null:
 			cam.reset_smoothing()
 
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass

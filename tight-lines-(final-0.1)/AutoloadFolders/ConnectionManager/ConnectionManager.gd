@@ -27,6 +27,10 @@ signal swipe_input(player_id, direction, dx, dy)
 signal tap_input(player_id, x, y)
 signal swing_input(player_id, magnitude)
 
+# reel — circular "crank" gesture on the phone, streamed as degrees turned
+# since the last message (+ = clockwise = reel in, - = counter-clockwise)
+signal reel_input(player_id, delta)
+
 # tilt — how far the phone is tilted left/right, streamed continuously
 signal tilt_input(player_id, value)
 
@@ -426,7 +430,8 @@ func _handle_message(player_id: int, message: String):
 			# stronger cast."
 			_warn_if_unconnected("swing_input")
 			emit_signal("swing_input", player_id, data.get("magnitude", 0.0))
-
+		"reel":
+			emit_signal("reel_input", player_id, float(data.get("delta", 0.0)))
 		"tilt":
 			# value is already normalized by the phone to -1.0 .. +1.0
 			# (negative = tilted left, positive = tilted right).

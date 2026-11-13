@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Button connectButton;
     private Button discoverButton;
     private GestureDetector gestureDetector;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -567,7 +566,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 screenRight = gravity[0];
                 break;
         }
-
+        if (currentState == AppState.REELING) return;
         float ratio = Math.max(-1f, Math.min(1f, -screenRight / SensorManager.GRAVITY_EARTH));
         double angleDeg = Math.toDegrees(Math.asin(ratio));
         double value = Math.max(-1.0, Math.min(1.0, angleDeg / TILT_FULL_ANGLE_DEG));

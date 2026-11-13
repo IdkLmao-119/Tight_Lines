@@ -3,7 +3,7 @@ extends Control
 @onready var FishName: Label = $MainPanel/AlmanacPanel/FishName
 @onready var Description: RichTextLabel = $MainPanel/AlmanacPanel/FishDescription
 @onready var FishPicture: TextureRect = $MainPanel/AlmanacPanel/FishPicture
-
+@onready var FishScientificName: Label = $MainPanel/AlmanacPanel/FishName/FishScientificName
 var fish_array: Array[FishData] = []
 var fish_array_pointer: int = 0
 
@@ -20,6 +20,7 @@ func _show_fish() -> void:
 	var fish: FishData = fish_array[fish_array_pointer]
 	FishName.text = fish.display_name
 	Description.text = fish.description
+	FishScientificName.text = fish.scientific_name
 	# icon_3d is empty in your .tres files, so fall back to the 2D icon.
 	FishPicture.texture = fish.icon_3d if fish.icon_3d != null else fish.icon
 

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://d258m3x6n222j"]
 
 [ext_resource type="Texture2D" uid="uid://b2tynnidvoqvc" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/tileset.png" id="1_0fo1x"]
+[ext_resource type="Script" uid="uid://cfwegra6w6jov" path="res://OverWorldSceneAndScript/3_Shore/MangroveScene/2d_scene_script_mangrove_area.gd" id="1_dh3sa"]
 [ext_resource type="Texture2D" uid="uid://dg5tq4m3m6i6o" path="res://OverWorldSceneAndScript/1_MainArea/Spawn/Sprite_Essentials.png" id="2_b7g6x"]
 [ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="3_wgxyk"]
 
@@ -283,6 +284,7 @@ size = Vector2(48, 87)
 size = Vector2(157, 47.5)
 
 [node name="MangroveArea" type="Node2D" unique_id=749702937]
+script = ExtResource("1_dh3sa")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=921739032]
 tile_set = SubResource("TileSet_p5lfn")
