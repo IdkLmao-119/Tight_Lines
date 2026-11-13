@@ -2,6 +2,18 @@
 
 [ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_5srbd"]
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_5srbd"]
+load_path = "res://.godot/imported/Cobia.png-639c4fa54454ab6ac877aeae1d8d3fb5.ctex"
+
 [resource]
 script = ExtResource("1_5srbd")
+scientific_name = "Rachycentron canadum "
+description = "A large, fast-swimming pelagic marine fish found in warm tropical and subtropical waters worldwide. It has an elongated, fusiform body with a broad, flattened head and dark lateral stripes, and feeds on crabs, squid, and smaller fishes."
+size_class = "large"
+pull_strength = 40.0
+stamina = 35.5
+avg_weight = 16.0
+icon = SubResource("CompressedTexture2D_5srbd")
+id = "fish_cobia"
+display_name = "Cobia"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"

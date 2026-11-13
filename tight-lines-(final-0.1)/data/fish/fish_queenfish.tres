@@ -1,7 +1,23 @@
 [gd_resource type="Resource" script_class="FishData" format=3 uid="uid://dy00jipff6nq8"]
 
-[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_uev2m"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_x7h24"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_x7h24"]
+load_path = "res://.godot/imported/Queenfish.png-db145cbe7757c1f08ba7c09c93118ef0.ctex"
 
 [resource]
-script = ExtResource("1_uev2m")
+script = ExtResource("1_x7h24")
+scientific_name = "Scomberoides commersonnianus / Scomberoides lysan"
+description = "A fast-swimming, coastal pelagic jack found around reefs, rocky headlands, and estuaries across the Indo-Pacific. It features a deeply compressed, bright silvery body marked with a row of dark oval blotches along its flanks, preying on small fish and cephalopods."
+size_class = "large"
+speed = 15.0
+pull_strength = 20.0
+stamina = 30.0
+min_size = 40.0
+avg_size = 70.0
+max_size = 90.0
+avg_weight = 17.0
+icon = SubResource("CompressedTexture2D_x7h24")
+id = "fish_queenfish"
+display_name = "Queen Fish"
 metadata/_custom_type_script = "uid://bdqslwnxrtks4"
