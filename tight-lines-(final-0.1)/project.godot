@@ -24,6 +24,11 @@ InputManager="*uid://cljjxtxv01gi6"
 ConnectionManager="*uid://cr67ysc4wtkx0"
 InventoryManager="*uid://b4fcr4orgsjip"
 
+[display]
+
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
 [input]
 
 PanLeft={

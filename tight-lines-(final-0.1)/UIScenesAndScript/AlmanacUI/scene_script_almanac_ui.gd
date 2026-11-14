@@ -15,7 +15,6 @@ func _ready() -> void:
 		return
 	_show_fish()
 
-
 func _show_fish() -> void:
 	var fish: FishData = fish_array[fish_array_pointer]
 	FishName.text = fish.display_name
@@ -23,20 +22,6 @@ func _show_fish() -> void:
 	FishScientificName.text = fish.scientific_name
 	# icon_3d is empty in your .tres files, so fall back to the 2D icon.
 	FishPicture.texture = fish.icon_3d if fish.icon_3d != null else fish.icon
-
-
-func _on_previous_button_pressed() -> void:
-	if fish_array.is_empty():
-		return
-	fish_array_pointer = (fish_array_pointer - 1 + fish_array.size()) % fish_array.size()
-	_show_fish()
-
-
-func _on_next_button_pressed() -> void:
-	if fish_array.is_empty():
-		return
-	fish_array_pointer = (fish_array_pointer + 1) % fish_array.size()
-	_show_fish()
 
 func _on_back_button_pressed() -> void:
 	visible = false
