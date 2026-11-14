@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b3mamplrn4kpe"]
 
-[ext_resource type="Script" uid="uid://u7wc2egx74h1" path="res://UI_scene_script_rod_inventory.gd" id="1_jnaoe"]
+[ext_resource type="Script" uid="uid://u7wc2egx74h1" path="res://UIScenesAndScript/EquipmentInventory/UI_scene_script_rod_inventory.gd" id="1_jnaoe"]
 [ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="2_ny8wm"]
 [ext_resource type="Texture2D" uid="uid://c8n0xbt7hjp4h" path="res://Assets/2D/bait_sprites/BaitButton.png" id="4_0qqbt"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="7_hlxw8"]
@@ -44,10 +44,10 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_n488b")
 
 [node name="BackButton" type="Button" parent="Panel" unique_id=549736018]
 layout_mode = 0
-offset_left = 1017.0
-offset_top = 17.0
-offset_right = 1143.0
-offset_bottom = 80.0
+offset_left = 950.0
+offset_top = 57.0
+offset_right = 1076.0
+offset_bottom = 120.0
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("7_hlxw8")
 theme_override_font_sizes/font_size = 40

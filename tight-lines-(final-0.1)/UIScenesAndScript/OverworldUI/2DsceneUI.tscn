@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://cbxf3bfas3m8g"]
 
-[ext_resource type="Script" uid="uid://bmoettm0ijjix" path="res://UIScenesAndScript/OverworldUI/2DsceneUI.gd" id="1_avfof"]
-[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_kpllj"]
-[ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="3_0yhp3"]
-[ext_resource type="Texture2D" uid="uid://b2cdd1hh8eh8t" path="res://Assets/2D/Almanac_icon.png" id="3_e3kso"]
-[ext_resource type="PackedScene" uid="uid://c0u77axaegcsm" path="res://UIScenesAndScript/Options.tscn" id="4_v5032"]
+[ext_resource type="Script" uid="uid://bmoettm0ijjix" path="res://UIScenesAndScript/OverworldUI/scene_script_2d_scene_ui.gd" id="1_aao6p"]
+[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_a5117"]
+[ext_resource type="Texture2D" uid="uid://b2cdd1hh8eh8t" path="res://Assets/2D/Almanac_icon.png" id="3_lpm2r"]
+[ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="4_k62ky"]
+[ext_resource type="PackedScene" uid="uid://c0u77axaegcsm" path="res://UIScenesAndScript/Options/Options.tscn" id="5_fb3re"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qbet6"]
 corner_radius_top_left = 10
@@ -16,7 +16,7 @@ shadow_size = 5
 shadow_offset = Vector2(0, 3)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3fhcw"]
-texture = ExtResource("3_e3kso")
+texture = ExtResource("3_lpm2r")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_xkb4t"]
 
@@ -27,27 +27,27 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_avfof")
+script = ExtResource("1_aao6p")
 
 [node name="OverworldButton" type="Button" parent="." unique_id=1771150655]
 layout_mode = 0
-offset_left = 1010.0
-offset_top = 15.0
-offset_right = 1137.0
-offset_bottom = 112.0
+offset_left = 979.0
+offset_top = 52.0
+offset_right = 1106.0
+offset_bottom = 149.0
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("2_kpllj")
+theme_override_fonts/font = ExtResource("2_a5117")
 theme_override_font_sizes/font_size = 40
 text = "Map"
 
 [node name="PauseButton" type="Button" parent="." unique_id=1174984491]
 layout_mode = 0
-offset_left = 18.0
-offset_top = 17.0
-offset_right = 127.0
-offset_bottom = 109.0
+offset_left = 57.0
+offset_top = 47.0
+offset_right = 166.0
+offset_bottom = 139.0
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("2_kpllj")
+theme_override_fonts/font = ExtResource("2_a5117")
 theme_override_font_sizes/font_size = 40
 text = "II"
 
@@ -86,19 +86,19 @@ offset_right = 53.0
 offset_bottom = 111.0
 grow_horizontal = 2
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("2_kpllj")
+theme_override_fonts/font = ExtResource("2_a5117")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
 text = "Back"
 
 [node name="AlmanacButton" type="Button" parent="." unique_id=935523045]
 layout_mode = 0
-offset_left = 997.0
-offset_top = 125.0
-offset_right = 1192.0
-offset_bottom = 299.0
+offset_left = 970.0
+offset_top = 165.0
+offset_right = 1165.0
+offset_bottom = 339.0
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("2_kpllj")
+theme_override_fonts/font = ExtResource("2_a5117")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxTexture_3fhcw")
 text = "Almanac"
@@ -107,11 +107,11 @@ alignment = 0
 text_overrun_behavior = 2
 autowrap_mode = 1
 
-[node name="AlmanacUi" parent="." unique_id=479802253 instance=ExtResource("3_0yhp3")]
+[node name="AlmanacUi" parent="." unique_id=479802253 instance=ExtResource("4_k62ky")]
 visible = false
 layout_mode = 1
 
-[node name="Options" parent="." unique_id=100843613 instance=ExtResource("4_v5032")]
+[node name="Options" parent="." unique_id=100843613 instance=ExtResource("5_fb3re")]
 visible = false
 layout_mode = 1
 

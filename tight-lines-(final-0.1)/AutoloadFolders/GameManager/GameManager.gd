@@ -50,7 +50,7 @@ const SCENES: Dictionary = {
 		"pausable": false,
 	},
 	"save_slots": {
-		"path": "res://UIScenesAndScript/MainMenu/SaveSlots.tscn",
+		"path": "res://UIScenesAndScript/SaveSlots/SaveSlots.tscn",
 		"input": "menu",
 		"music": "res://Assets/Audio/Reluctance.mp3",   # same track = no restart
 		"pausable": false,

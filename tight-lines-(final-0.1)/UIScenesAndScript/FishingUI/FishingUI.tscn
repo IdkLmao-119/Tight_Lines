@@ -1,15 +1,15 @@
 [gd_scene format=3 uid="uid://brvjgf6qtkkau"]
 
-[ext_resource type="Script" uid="uid://b2wg36t11o40t" path="res://UIScenesAndScript/3d_ui/3DsceneUI.gd" id="1_5frun"]
-[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_51xn0"]
-[ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/UI_scene_script_options.gd" id="2_b1tcx"]
-[ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="3_0ycej"]
-[ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="4_j6iej"]
-[ext_resource type="Texture2D" uid="uid://b2cdd1hh8eh8t" path="res://Assets/2D/Almanac_icon.png" id="5_hpsbn"]
-[ext_resource type="Texture2D" uid="uid://bgch78mw1pv2s" path="res://Assets/2D/rod_sprites/Ultralight Rod.png" id="6_dowyv"]
-[ext_resource type="PackedScene" uid="uid://c67j2bnervxgj" path="res://UIScenesAndScript/inventory_ui.tscn" id="6_j6iej"]
-[ext_resource type="Texture2D" uid="uid://cry2te8geq2pe" path="res://Assets/Fish Box.png" id="7_yrluk"]
-[ext_resource type="PackedScene" uid="uid://b3mamplrn4kpe" path="res://rod_inventory.tscn" id="10_wwmsr"]
+[ext_resource type="Script" uid="uid://b2wg36t11o40t" path="res://UIScenesAndScript/FishingUI/scene_script_3d_scene_ui.gd" id="1_wo8pp"]
+[ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/Options/UI_scene_script_options.gd" id="2_ip3y8"]
+[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="3_r28js"]
+[ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="4_0nkch"]
+[ext_resource type="Texture2D" uid="uid://cry2te8geq2pe" path="res://Assets/Fish Box.png" id="5_87awa"]
+[ext_resource type="Texture2D" uid="uid://b2cdd1hh8eh8t" path="res://Assets/2D/Almanac_icon.png" id="6_euv3p"]
+[ext_resource type="Texture2D" uid="uid://bgch78mw1pv2s" path="res://Assets/2D/rod_sprites/Ultralight Rod.png" id="7_27t44"]
+[ext_resource type="PackedScene" uid="uid://c67j2bnervxgj" path="res://UIScenesAndScript/FishBox/inventory_ui.tscn" id="8_x64rs"]
+[ext_resource type="PackedScene" uid="uid://b3mamplrn4kpe" path="res://UIScenesAndScript/EquipmentInventory/rod_inventory.tscn" id="9_v8kx0"]
+[ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="10_3y5u0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qbet6"]
 bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
@@ -21,23 +21,20 @@ shadow_color = Color(0, 0, 0, 0.45882353)
 shadow_size = 5
 shadow_offset = Vector2(0, 3)
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3lptn"]
-texture = ExtResource("7_yrluk")
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hpsbn"]
+texture = ExtResource("5_87awa")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dowyv"]
-texture = ExtResource("7_yrluk")
+texture = ExtResource("5_87awa")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yrluk"]
-texture = ExtResource("7_yrluk")
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hpsbn"]
-texture = ExtResource("7_yrluk")
+texture = ExtResource("5_87awa")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wwmsr"]
-texture = ExtResource("5_hpsbn")
+texture = ExtResource("6_euv3p")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2slrl"]
-texture = ExtResource("6_dowyv")
+texture = ExtResource("7_27t44")
 
 [node name="3DSceneUI" type="Control" unique_id=1628659695]
 layout_mode = 3
@@ -46,7 +43,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_5frun")
+script = ExtResource("1_wo8pp")
 
 [node name="Options" type="Control" parent="." unique_id=100843613]
 visible = false
@@ -60,7 +57,7 @@ offset_right = -1.0
 offset_bottom = 10.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("2_b1tcx")
+script = ExtResource("2_ip3y8")
 
 [node name="Options" type="Panel" parent="Options" unique_id=48226238]
 layout_mode = 1
@@ -82,7 +79,7 @@ anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 23.0
 grow_horizontal = 2
-theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_fonts/font = ExtResource("3_r28js")
 theme_override_font_sizes/font_size = 50
 text = "Options"
 horizontal_alignment = 1
@@ -101,7 +98,7 @@ offset_right = -107.0
 offset_bottom = -13.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_fonts/font = ExtResource("3_r28js")
 theme_override_font_sizes/font_size = 30
 text = "Back"
 
@@ -126,7 +123,7 @@ anchor_right = 1.0
 offset_top = 55.5
 offset_bottom = 106.5
 grow_horizontal = 2
-theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_fonts/font = ExtResource("3_r28js")
 theme_override_font_sizes/font_size = 40
 text = "Sound"
 horizontal_alignment = 1
@@ -141,7 +138,7 @@ offset_top = 150.5
 offset_right = 1.0
 offset_bottom = 201.5
 grow_horizontal = 2
-theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_fonts/font = ExtResource("3_r28js")
 theme_override_font_sizes/font_size = 40
 text = "Music"
 horizontal_alignment = 1
@@ -162,7 +159,7 @@ grow_horizontal = 2
 grow_vertical = 2
 max_value = 1.0
 step = 0.001
-script = ExtResource("4_j6iej")
+script = ExtResource("4_0nkch")
 
 [node name="MenuButton" type="Button" parent="Options/Options" unique_id=1533192303]
 layout_mode = 1
@@ -177,7 +174,7 @@ offset_right = 202.0
 offset_bottom = -13.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_fonts/font = ExtResource("3_r28js")
 theme_override_font_sizes/font_size = 30
 text = "Menu"
 
@@ -188,7 +185,7 @@ offset_top = 17.0
 offset_right = 1143.0
 offset_bottom = 80.0
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_fonts/font = ExtResource("3_r28js")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
 text = "Overworld"
@@ -200,33 +197,19 @@ offset_top = 17.0
 offset_right = 127.0
 offset_bottom = 109.0
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_fonts/font = ExtResource("3_r28js")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
 text = "II"
 
-[node name="BaitBox" type="Button" parent="." unique_id=2020295419]
-layout_mode = 0
-offset_left = -11.0
-offset_top = 466.0
-offset_right = 234.0
-offset_bottom = 700.0
-size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("2_51xn0")
-theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxTexture_3lptn")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_dowyv")
-theme_override_styles/hover = SubResource("StyleBoxTexture_yrluk")
-text = "Bait Box"
-
 [node name="FishBoxButton" type="Button" parent="." unique_id=1768447990]
 layout_mode = 0
-offset_left = 927.0
-offset_top = 461.0
-offset_right = 1172.0
-offset_bottom = 695.0
+offset_left = 913.0
+offset_top = 433.0
+offset_right = 1158.0
+offset_bottom = 667.0
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_fonts/font = ExtResource("3_r28js")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxTexture_hpsbn")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_dowyv")
@@ -235,12 +218,12 @@ text = "Fish Box"
 
 [node name="AlmanacButton" type="Button" parent="." unique_id=745865452]
 layout_mode = 0
-offset_left = 980.0
-offset_top = 224.0
-offset_right = 1182.0
-offset_bottom = 416.0
+offset_left = 966.0
+offset_top = 192.0
+offset_right = 1168.0
+offset_bottom = 384.0
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_fonts/font = ExtResource("3_r28js")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxTexture_wwmsr")
 text = " Almanac"
@@ -248,26 +231,25 @@ alignment = 0
 
 [node name="RodButton" type="Button" parent="." unique_id=184444897]
 layout_mode = 0
-offset_left = 29.0
-offset_top = 290.0
-offset_right = 176.0
-offset_bottom = 437.0
+offset_left = 35.0
+offset_top = 481.0
+offset_right = 200.0
+offset_bottom = 628.0
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("2_51xn0")
+theme_override_fonts/font = ExtResource("3_r28js")
 theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxTexture_2slrl")
-text = "Rods
-"
+text = "Equipment"
 
-[node name="InventoryUi" parent="." unique_id=306256089 instance=ExtResource("6_j6iej")]
+[node name="InventoryUi" parent="." unique_id=306256089 instance=ExtResource("8_x64rs")]
 visible = false
 layout_mode = 1
 
-[node name="Rod_Inventory" parent="." unique_id=1263013518 instance=ExtResource("10_wwmsr")]
+[node name="Rod_Inventory" parent="." unique_id=1263013518 instance=ExtResource("9_v8kx0")]
 visible = false
 layout_mode = 1
 
-[node name="AlmanacUi" parent="." unique_id=479802253 instance=ExtResource("3_0ycej")]
+[node name="AlmanacUi" parent="." unique_id=479802253 instance=ExtResource("10_3y5u0")]
 visible = false
 layout_mode = 1
 

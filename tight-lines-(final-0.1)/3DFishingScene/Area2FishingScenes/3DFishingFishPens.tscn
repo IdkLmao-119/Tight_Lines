@@ -4,11 +4,11 @@
 [ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="2_8pwvj"]
 [ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="3_oaw6j"]
 [ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="4_qqm0a"]
-[ext_resource type="Texture2D" uid="uid://df64qb6j4353e" path="res://3DFishingScene/Area1FishingScenes/Texture_FishMarket.jpg" id="5_jxn4v"]
+[ext_resource type="Texture2D" uid="uid://df64qb6j4353e" path="res://Assets/3D/Texture_FishMarket.jpg" id="5_jxn4v"]
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="6_gl7ty"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="7_tgr45"]
 [ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_scd20"]
-[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="9_ffhi4"]
+[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/FishingUI/FishingUI.tscn" id="9_ffhi4"]
 [ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="10_3w45k"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
@@ -58,7 +58,6 @@ background_energy_multiplier = 1.45
 ambient_light_sky_contribution = 0.98
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
-load_path = "res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"
 
 [node name="3dFishing" type="Node3D" unique_id=836610391]
 script = ExtResource("1_5s4s2")
@@ -86,7 +85,7 @@ ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_goktk")
 
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 7.132644)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 7.979653)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="PlayerFishing" unique_id=731221113]
 

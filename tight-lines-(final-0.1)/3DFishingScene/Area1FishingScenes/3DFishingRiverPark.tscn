@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="6_srfu8"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="7_ihk7l"]
 [ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_55la4"]
-[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="9_ndm7x"]
+[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/FishingUI/FishingUI.tscn" id="9_ndm7x"]
 [ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="10_16lbn"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
@@ -82,7 +82,7 @@ ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_goktk")
 
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 1.5558467)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 3.1334605)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="PlayerFishing" unique_id=731221113]
 

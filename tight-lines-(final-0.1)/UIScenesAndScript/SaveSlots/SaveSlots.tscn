@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://pybkck3eooas"]
 
-[ext_resource type="Script" uid="uid://ctov7s2usrqns" path="res://UIScenesAndScript/MainMenu/scene_script_save_slots.gd" id="1_ymcjr"]
+[ext_resource type="Script" uid="uid://ctov7s2usrqns" path="res://UIScenesAndScript/SaveSlots/scene_script_save_slots.gd" id="1_ymcjr"]
 [ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="2_lo0ty"]
 [ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="3_2xeyn"]
 [ext_resource type="Texture2D" uid="uid://5b3gsqgca5tc" path="res://Assets/2D/SignBoard.png" id="4_2xeyn"]

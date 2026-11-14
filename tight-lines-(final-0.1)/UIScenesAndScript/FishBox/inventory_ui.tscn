@@ -1,10 +1,21 @@
 [gd_scene format=3 uid="uid://c67j2bnervxgj"]
 
-[ext_resource type="Script" uid="uid://ddb7po8ibpai0" path="res://UI_scene_script_inventory_ui.gd" id="1_gf3dx"]
+[ext_resource type="Script" uid="uid://ddb7po8ibpai0" path="res://UIScenesAndScript/FishBox/UI_scene_script_inventory_ui.gd" id="1_gf3dx"]
 [ext_resource type="Texture2D" uid="uid://d232l72u3sb3b" path="res://Assets/2D/Inside Cooler.png" id="2_dsksw"]
+[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="3_cwpgd"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dsksw"]
 bg_color = Color(0, 0, 0, 0.58431375)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iclar"]
+bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
 
 [node name="InventoryUi" type="Control" unique_id=306256089]
 layout_mode = 3
@@ -241,3 +252,17 @@ offset_left = 736.0
 offset_top = 368.0
 offset_right = 832.0
 offset_bottom = 464.0
+
+[node name="BackButton" type="Button" parent="." unique_id=149723377]
+layout_mode = 0
+offset_left = 971.0
+offset_top = 42.0
+offset_right = 1097.0
+offset_bottom = 105.0
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("3_cwpgd")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_iclar")
+text = "Back"
+
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]

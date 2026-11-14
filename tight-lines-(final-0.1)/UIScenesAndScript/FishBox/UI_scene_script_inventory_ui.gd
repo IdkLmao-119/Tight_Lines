@@ -117,3 +117,7 @@ func _on_fish_button_pressed(slot_index: int) -> void:
 		uid,
 		float(fish["meta"].get("size_cm", 0.0))
 	])
+
+
+func _on_back_button_pressed() -> void:
+	visible = false

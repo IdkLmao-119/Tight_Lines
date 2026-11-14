@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://df64qb6j4353e" path="res://Assets/3D/Texture_FishMarket.jpg" id="5_q11hr"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="6_wy0o4"]
 [ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="7_jly4b"]
-[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="8_royd4"]
+[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/FishingUI/FishingUI.tscn" id="8_royd4"]
 [ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="9_f4kib"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
@@ -58,7 +58,6 @@ background_energy_multiplier = 1.45
 ambient_light_sky_contribution = 0.98
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
-load_path = "res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"
 
 [node name="3dFishing" type="Node3D" unique_id=836610391]
 script = ExtResource("1_ctmbc")
@@ -86,7 +85,7 @@ ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_goktk")
 
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 1.5558467)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 2.8811226)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="PlayerFishing" unique_id=731221113]
 
