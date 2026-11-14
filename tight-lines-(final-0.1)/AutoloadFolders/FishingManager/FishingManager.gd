@@ -46,6 +46,7 @@ extends Node3D
 #   {"game_state": "overworld"} fishing was exited: back to the overworld screen
 #   Vibration (handled in MainActivity.onMessage):
 #   {"type": "vibrate", "reason": "bite",   "player_id": n}   a fish bit
+#   {"type": "vibrate", "reason": "surge",  "player_id": n}   fish is surging
 #   {"type": "vibrate", "reason": "escape", "player_id": n}   the fish escaped
 #   A phone that (re)connects during a session is sent the current screen again.
 #   Single player: sent to every connected phone (any phone is Player 1).
@@ -116,12 +117,15 @@ enum State { IDLE, CASTING, WAITING, REELING, CAUGHT, ESCAPED }
 @export_group("Bites")
 @export var bite_delay_min := 3.0             # seconds
 @export var bite_delay_max := 9.0
+@export var bobber_bite_sink := 0.12          # meters the bobber sinks below water_level on a bite
+@export var bobber_sink_duration := 1.0       # seconds it takes for the bobber to sink down
 
 @export_group("Messages")
 @export var show_messages := true             # on-screen "There's a bite" / "Reel now" / "Fish escaped"
 @export var bite_message_seconds := 0.8       # how long "There's a bite" shows before "Reel now" replaces it
 @export var message_font_size := 48
 @export var send_phone_messages := true       # game_state + vibrate packets to the Android app
+@export var surge_vibrate_interval := 0.35    # seconds between vibrate pulses while the fish is surging
 
 @export_group("Round rules")
 @export var result_display_time := 2.5        # seconds shown in CAUGHT / ESCAPED
@@ -229,6 +233,7 @@ class FishingSession extends RefCounted:
 	var max_stamina := 1.0
 	var surging := false
 	var surge_timer := 0.0
+	var surge_vibrate_timer := 0.0
 	var snap_timer := 0.0
 
 	var msg_token := 0                   # lets an old message timer know it is outdated
@@ -541,6 +546,7 @@ func _try_bite(s: FishingSession) -> void:
 	s.stamina = s.max_stamina
 	s.surging = false
 	s.surge_timer = randf_range(1.0, 2.0)
+	s.surge_vibrate_timer = 0.0
 	s.snap_timer = 0.0
 
 	_set_state(s, State.REELING)
@@ -818,6 +824,17 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 	if s.surge_timer <= 0.0:
 		s.surging = not s.surging
 		s.surge_timer = randf_range(0.8, 1.6) if s.surging else randf_range(1.5, 3.0)
+		if s.surging:
+			# Immediate vibration pulse as soon as a surge starts
+			s.surge_vibrate_timer = surge_vibrate_interval
+			_notify_phone(s.player_id, {"type": "vibrate", "reason": "surge"})
+
+	# Keep pulsing vibration on the phone while the fish is surging
+	if s.surging:
+		s.surge_vibrate_timer -= delta
+		if s.surge_vibrate_timer <= 0.0:
+			s.surge_vibrate_timer = surge_vibrate_interval
+			_notify_phone(s.player_id, {"type": "vibrate", "reason": "surge"})
 
 	# A tired fish pulls less.
 	var stamina_ratio := s.stamina / s.max_stamina
@@ -846,13 +863,17 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 	else:
 		s.snap_timer = maxf(s.snap_timer - delta * 2.0, 0.0)
 
-	# Bobber starts exactly where it landed (no jump) and glides toward the player as
-	# progress rises. Progress below START_PROGRESS drags the fish out past the cast spot.
+	# Bobber sinks smoothly over bobber_sink_duration (1.0s) and glides toward the player.
 	if s.bobber != null:
 		var origin := _anchor_water_pos(s)
 		var to_target := s.cast_target - origin
 		var away := clampf((1.0 - s.progress) / maxf(1.0 - START_PROGRESS, 0.01), 0.0, 2.0)
 		var wanted := origin + to_target.normalized() * maxf(to_target.length() * away, CATCH_STOP_DISTANCE)
+		
+		var sink_t := clampf(s.state_time / maxf(bobber_sink_duration, 0.01), 0.0, 1.0)
+		var sink_depth := bobber_bite_sink * sink_t * (1.2 if s.surging else 1.0)
+		wanted.y = water_level - sink_depth
+		
 		s.bobber.global_position = s.bobber.global_position.lerp(wanted, 1.0 - exp(-10.0 * delta))
 
 	if s.snap_timer >= SNAP_GRACE_SEC * maxf(control, 0.1):

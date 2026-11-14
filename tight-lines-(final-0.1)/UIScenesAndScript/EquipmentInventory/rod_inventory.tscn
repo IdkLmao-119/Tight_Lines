@@ -3,7 +3,18 @@
 [ext_resource type="Script" uid="uid://u7wc2egx74h1" path="res://UIScenesAndScript/EquipmentInventory/UI_scene_script_rod_inventory.gd" id="1_jnaoe"]
 [ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="2_ny8wm"]
 [ext_resource type="Texture2D" uid="uid://c8n0xbt7hjp4h" path="res://Assets/2D/bait_sprites/BaitButton.png" id="4_0qqbt"]
+[ext_resource type="Texture2D" uid="uid://dy2xk4ubjv640" path="res://Assets/2D/Rod_Sprites_Standing/Ultralight_Rod.png" id="4_o53mb"]
+[ext_resource type="Texture2D" uid="uid://blson0d38ulbr" path="res://Assets/2D/Rod_Sprites_Standing/Medium_Light_Rod.png" id="5_fach7"]
+[ext_resource type="Texture2D" uid="uid://b7dxlfulce1yb" path="res://Assets/2D/Rod_Sprites_Standing/Medium_Rod.png" id="6_24drq"]
+[ext_resource type="Texture2D" uid="uid://bl0hnm65tanjx" path="res://Assets/2D/Rod_Sprites_Standing/Medium_Heavy_Rod.png" id="7_58vlc"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="7_hlxw8"]
+[ext_resource type="Texture2D" uid="uid://caala042b8xs0" path="res://Assets/2D/Rod_Sprites_Standing/Heavy_Rod.png" id="8_rvvq1"]
+[ext_resource type="Texture2D" uid="uid://c5ltlchnh26q1" path="res://Assets/2D/bait_sprites/Dough.png" id="10_8q0gp"]
+[ext_resource type="Texture2D" uid="uid://bl35aasg7p2kg" path="res://Assets/2D/bait_sprites/Earthworm.png" id="11_arwrg"]
+[ext_resource type="Texture2D" uid="uid://dreonnrtnn7ej" path="res://Assets/2D/bait_sprites/Hardbait lure-c4e0.png" id="12_mvmj1"]
+[ext_resource type="Texture2D" uid="uid://cppl86nrus71k" path="res://Assets/2D/bait_sprites/Shrimp.png" id="13_5701q"]
+[ext_resource type="Texture2D" uid="uid://cm2b7aetehvjq" path="res://Assets/2D/bait_sprites/Softbait-lure.png" id="14_diiat"]
+[ext_resource type="Texture2D" uid="uid://cnjd2m0sx1qeb" path="res://Assets/2D/bait_sprites/Top water lure-c64d.png" id="15_2xogq"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_n488b"]
 texture = ExtResource("2_ny8wm")
@@ -18,9 +29,6 @@ corner_radius_bottom_left = 10
 shadow_color = Color(0, 0, 0, 0.45882353)
 shadow_size = 5
 shadow_offset = Vector2(0, 3)
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_cqwf1"]
-load_path = "res://.godot/imported/Ultralight_Rod.png-ce0ac156d401e99d922aed487fc874eb.ctex"
 
 [sub_resource type="BitMap" id="BitMap_jnaoe"]
 
@@ -57,112 +65,171 @@ text = "Back"
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel" unique_id=982845463]
 clip_children = 2
 layout_mode = 0
-offset_left = 95.0
-offset_top = 71.0
-offset_right = 303.5
-offset_bottom = 327.0
+offset_left = 80.0
+offset_top = 100.0
+offset_right = 357.5
+offset_bottom = 356.0
 scale = Vector2(2, 2)
 alignment = 1
 
-[node name="UltraLightRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=195873863]
+[node name="LightRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=821436482]
 layout_mode = 2
-texture_normal = SubResource("CompressedTexture2D_cqwf1")
-stretch_mode = 0
+texture_normal = ExtResource("4_o53mb")
 
-[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/UltraLightRod" unique_id=1465032154]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="MediumLightRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=1484245685]
+[node name="MediumLightRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=1004386212]
 layout_mode = 2
-texture_normal = SubResource("CompressedTexture2D_cqwf1")
-stretch_mode = 0
+texture_normal = ExtResource("5_fach7")
 
-[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/MediumLightRod" unique_id=855095280]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="MediumRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=435945578]
+[node name="MediumRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=271147464]
 layout_mode = 2
-texture_normal = SubResource("CompressedTexture2D_cqwf1")
-stretch_mode = 0
+texture_normal = ExtResource("6_24drq")
 
-[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/MediumRod" unique_id=310527205]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="MediumHeavyRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=1649321437]
+[node name="MediumHeavyRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=1765328692]
 layout_mode = 2
-texture_normal = SubResource("CompressedTexture2D_cqwf1")
-stretch_mode = 0
+texture_normal = ExtResource("7_58vlc")
 
-[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/MediumHeavyRod" unique_id=408584398]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="HeavyRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=2012702535]
+[node name="HeavyRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=917548107]
 layout_mode = 2
-texture_normal = SubResource("CompressedTexture2D_cqwf1")
-texture_click_mask = SubResource("BitMap_jnaoe")
-stretch_mode = 0
-
-[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/HeavyRod" unique_id=984455281]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+texture_normal = ExtResource("8_rvvq1")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Panel" unique_id=288976433]
 layout_mode = 0
-offset_left = 547.0
-offset_top = 78.0
-offset_right = 611.0
-offset_bottom = 561.0
+offset_left = 688.0
+offset_top = 173.0
+offset_right = 752.0
+offset_bottom = 601.0
 alignment = 1
 
-[node name="UltraLightRod" type="TextureButton" parent="Panel/VBoxContainer" unique_id=1832914251]
-modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+[node name="Dough" type="TextureButton" parent="Panel/VBoxContainer" unique_id=1832914251]
 layout_mode = 2
 texture_normal = ExtResource("4_0qqbt")
 stretch_mode = 3
 
-[node name="MediumLightRod" type="TextureButton" parent="Panel/VBoxContainer" unique_id=249713733]
-modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+[node name="TextureRect" type="TextureRect" parent="Panel/VBoxContainer/Dough" unique_id=25099207]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("10_8q0gp")
+
+[node name="Worm" type="TextureButton" parent="Panel/VBoxContainer" unique_id=249713733]
 layout_mode = 2
 texture_normal = ExtResource("4_0qqbt")
 stretch_mode = 3
 
-[node name="MediumRod" type="TextureButton" parent="Panel/VBoxContainer" unique_id=312733814]
-modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+[node name="TextureRect" type="TextureRect" parent="Panel/VBoxContainer/Worm" unique_id=487604722]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("11_arwrg")
+
+[node name="Hardbait" type="TextureButton" parent="Panel/VBoxContainer" unique_id=312733814]
 layout_mode = 2
 texture_normal = ExtResource("4_0qqbt")
 stretch_mode = 0
 
-[node name="MediumHeavyRod" type="TextureButton" parent="Panel/VBoxContainer" unique_id=1446770290]
-modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+[node name="TextureRect" type="TextureRect" parent="Panel/VBoxContainer/Hardbait" unique_id=840476403]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("12_mvmj1")
+
+[node name="Shrimp" type="TextureButton" parent="Panel/VBoxContainer" unique_id=1446770290]
 layout_mode = 2
 texture_normal = ExtResource("4_0qqbt")
 stretch_mode = 3
 
-[node name="HeavyRod" type="TextureButton" parent="Panel/VBoxContainer" unique_id=25920737]
-modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+[node name="TextureRect" type="TextureRect" parent="Panel/VBoxContainer/Shrimp" unique_id=831115558]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("13_5701q")
+
+[node name="Softbait" type="TextureButton" parent="Panel/VBoxContainer" unique_id=25920737]
 layout_mode = 2
 texture_normal = ExtResource("4_0qqbt")
 texture_click_mask = SubResource("BitMap_jnaoe")
 stretch_mode = 0
 
-[node name="UltraLightRod2" type="TextureButton" parent="Panel/VBoxContainer" unique_id=937600864]
-modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+[node name="TextureRect" type="TextureRect" parent="Panel/VBoxContainer/Softbait" unique_id=578371176]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("14_diiat")
+
+[node name="TopwaterLure" type="TextureButton" parent="Panel/VBoxContainer" unique_id=937600864]
 layout_mode = 2
 texture_normal = ExtResource("4_0qqbt")
 stretch_mode = 0
 
+[node name="TextureRect" type="TextureRect" parent="Panel/VBoxContainer/TopwaterLure" unique_id=1147783344]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("15_2xogq")
+
 [connection signal="pressed" from="Panel/BackButton" to="." method="_on_back_button_pressed"]
-[connection signal="pressed" from="Panel/HBoxContainer/UltraLightRod" to="." method="_on_ultra_light_rod_pressed"]
+[connection signal="pressed" from="Panel/HBoxContainer/LightRod" to="." method="_on_light_rod_pressed"]
 [connection signal="pressed" from="Panel/HBoxContainer/MediumLightRod" to="." method="_on_medium_light_rod_pressed"]
 [connection signal="pressed" from="Panel/HBoxContainer/MediumRod" to="." method="_on_medium_rod_pressed"]
 [connection signal="pressed" from="Panel/HBoxContainer/MediumHeavyRod" to="." method="_on_medium_heavy_rod_pressed"]
 [connection signal="pressed" from="Panel/HBoxContainer/HeavyRod" to="." method="_on_heavy_rod_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Dough" to="." method="_on_dough_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Worm" to="." method="_on_worm_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Hardbait" to="." method="_on_hardbait_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Shrimp" to="." method="_on_shrimp_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Softbait" to="." method="_on_softbait_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/TopwaterLure" to="." method="_on_topwater_lure_pressed"]
