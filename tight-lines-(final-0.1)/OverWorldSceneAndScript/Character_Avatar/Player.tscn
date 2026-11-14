@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://cbxf3bfas3m8g" path="res://UIScenesAndScript/OverworldUI/scene_script_2d_scene_ui.tscn" id="3_cxfe0"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_schp4"]
-size = Vector2(7.999999, 14)
+size = Vector2(7.9999995, 12.666664)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4tak5"]
 atlas = ExtResource("2_pusnx")
@@ -224,18 +224,18 @@ motion_mode = 1
 script = ExtResource("1_schp4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=261758353]
-position = Vector2(0, 1.5)
+position = Vector2(0, 2.5)
 scale = Vector2(1.5, 1.5)
 shape = SubResource("RectangleShape2D_schp4")
 one_way_collision = true
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=729536495]
-zoom = Vector2(2, 2)
+zoom = Vector2(3, 3)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1961882914]
 texture_filter = 1
-position = Vector2(-3.8146973e-06, 0)
-scale = Vector2(1.625, 1.8125)
+position = Vector2(0, 1.9999998)
+scale = Vector2(1.1562502, 1.4375)
 sprite_frames = SubResource("SpriteFrames_qolio")
 animation = &"walking_right"
 frame_progress = 0.092242755
@@ -243,3 +243,7 @@ frame_progress = 0.092242755
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1927995293]
 
 [node name="2DSceneUI" parent="CanvasLayer" unique_id=1628659695 instance=ExtResource("3_cxfe0")]
+offset_left = 12.0
+offset_top = -21.0
+offset_right = 12.0
+offset_bottom = -21.0

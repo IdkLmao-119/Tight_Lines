@@ -382,7 +382,7 @@ position = Vector2(208.375, 158)
 shape = SubResource("RectangleShape2D_63e7s")
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_psfcu")]
-position = Vector2(890, 426)
+position = Vector2(894, 434)
 
 [node name="Node2D" type="Node2D" parent="." unique_id=402342294]
 
