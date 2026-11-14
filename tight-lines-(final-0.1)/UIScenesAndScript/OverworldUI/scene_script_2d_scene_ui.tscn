@@ -38,7 +38,6 @@ offset_bottom = 112.0
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_kpllj")
 theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
 text = "Map"
 
 [node name="PauseButton" type="Button" parent="." unique_id=1174984491]
@@ -50,7 +49,6 @@ offset_bottom = 109.0
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_kpllj")
 theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_qbet6")
 text = "II"
 
 [node name="Map" type="Panel" parent="." unique_id=1849792448]

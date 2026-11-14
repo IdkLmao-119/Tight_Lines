@@ -1,9 +1,9 @@
 extends Control
 
-@onready var FishName: Label = $AlmanacPanel/Entry/FishName
-@onready var Description: RichTextLabel = $AlmanacPanel/Entry/FishDescription
-@onready var FishPicture: TextureRect = $AlmanacPanel/Entry/FishPicture
-@onready var FishScientificName: Label = $AlmanacPanel/Entry/FishName/FishScientificName
+@onready var FishName: Label = $FishEntry/FishName
+@onready var Description: RichTextLabel = $FishEntry/FishDescription
+@onready var FishPicture: TextureRect = $FishEntry/FishPicture
+@onready var FishScientificName: Label = $FishEntry/FishName/FishScientificName
 var fish_array: Array[FishData] = []
 var fish_array_pointer: int = 0
 

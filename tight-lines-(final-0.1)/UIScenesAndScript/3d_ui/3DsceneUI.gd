@@ -24,3 +24,6 @@ func _on_fish_box_button_pressed() -> void:
 
 func _on_almanac_button_pressed() -> void:
 	$AlmanacUi.visible = true
+
+func _on_rod_button_pressed() -> void:
+	$Rod_Inventory.visible = true

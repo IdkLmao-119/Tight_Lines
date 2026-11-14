@@ -1,5 +1,29 @@
 [gd_scene format=3 uid="uid://b3mamplrn4kpe"]
 
+[ext_resource type="Script" uid="uid://u7wc2egx74h1" path="res://UI_scene_script_rod_inventory.gd" id="1_jnaoe"]
+[ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="2_ny8wm"]
+[ext_resource type="Texture2D" uid="uid://c8n0xbt7hjp4h" path="res://Assets/2D/bait_sprites/BaitButton.png" id="4_0qqbt"]
+[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="7_hlxw8"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_n488b"]
+texture = ExtResource("2_ny8wm")
+modulate_color = Color(0.5701874, 0.5701874, 0.5701874, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k13s0"]
+bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_cqwf1"]
+load_path = "res://.godot/imported/Ultralight_Rod.png-ce0ac156d401e99d922aed487fc874eb.ctex"
+
+[sub_resource type="BitMap" id="BitMap_jnaoe"]
+
 [node name="Rod_Inventory" type="Control" unique_id=1263013518]
 layout_mode = 3
 anchors_preset = 15
@@ -7,6 +31,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_jnaoe")
 
 [node name="Panel" type="Panel" parent="." unique_id=732595924]
 layout_mode = 1
@@ -15,3 +40,129 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_n488b")
+
+[node name="BackButton" type="Button" parent="Panel" unique_id=549736018]
+layout_mode = 0
+offset_left = 1017.0
+offset_top = 17.0
+offset_right = 1143.0
+offset_bottom = 80.0
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("7_hlxw8")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_k13s0")
+text = "Back"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel" unique_id=982845463]
+clip_children = 2
+layout_mode = 0
+offset_left = 95.0
+offset_top = 71.0
+offset_right = 303.5
+offset_bottom = 327.0
+scale = Vector2(2, 2)
+alignment = 1
+
+[node name="UltraLightRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=195873863]
+layout_mode = 2
+texture_normal = SubResource("CompressedTexture2D_cqwf1")
+stretch_mode = 0
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/UltraLightRod" unique_id=1465032154]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MediumLightRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=1484245685]
+layout_mode = 2
+texture_normal = SubResource("CompressedTexture2D_cqwf1")
+stretch_mode = 0
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/MediumLightRod" unique_id=855095280]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MediumRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=435945578]
+layout_mode = 2
+texture_normal = SubResource("CompressedTexture2D_cqwf1")
+stretch_mode = 0
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/MediumRod" unique_id=310527205]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MediumHeavyRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=1649321437]
+layout_mode = 2
+texture_normal = SubResource("CompressedTexture2D_cqwf1")
+stretch_mode = 0
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/MediumHeavyRod" unique_id=408584398]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HeavyRod" type="TextureButton" parent="Panel/HBoxContainer" unique_id=2012702535]
+layout_mode = 2
+texture_normal = SubResource("CompressedTexture2D_cqwf1")
+texture_click_mask = SubResource("BitMap_jnaoe")
+stretch_mode = 0
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/HeavyRod" unique_id=984455281]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel" unique_id=288976433]
+layout_mode = 0
+offset_left = 547.0
+offset_top = 78.0
+offset_right = 611.0
+offset_bottom = 561.0
+alignment = 1
+
+[node name="UltraLightRod" type="TextureButton" parent="Panel/VBoxContainer" unique_id=1832914251]
+modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+layout_mode = 2
+texture_normal = ExtResource("4_0qqbt")
+stretch_mode = 3
+
+[node name="MediumLightRod" type="TextureButton" parent="Panel/VBoxContainer" unique_id=249713733]
+modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+layout_mode = 2
+texture_normal = ExtResource("4_0qqbt")
+stretch_mode = 3
+
+[node name="MediumRod" type="TextureButton" parent="Panel/VBoxContainer" unique_id=312733814]
+modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+layout_mode = 2
+texture_normal = ExtResource("4_0qqbt")
+stretch_mode = 0
+
+[node name="MediumHeavyRod" type="TextureButton" parent="Panel/VBoxContainer" unique_id=1446770290]
+modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+layout_mode = 2
+texture_normal = ExtResource("4_0qqbt")
+stretch_mode = 3
+
+[node name="HeavyRod" type="TextureButton" parent="Panel/VBoxContainer" unique_id=25920737]
+modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+layout_mode = 2
+texture_normal = ExtResource("4_0qqbt")
+texture_click_mask = SubResource("BitMap_jnaoe")
+stretch_mode = 0
+
+[node name="UltraLightRod2" type="TextureButton" parent="Panel/VBoxContainer" unique_id=937600864]
+modulate = Color(0.53528357, 0.53528357, 0.5352835, 1)
+layout_mode = 2
+texture_normal = ExtResource("4_0qqbt")
+stretch_mode = 0
+
+[connection signal="pressed" from="Panel/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="Panel/HBoxContainer/UltraLightRod" to="." method="_on_ultra_light_rod_pressed"]
+[connection signal="pressed" from="Panel/HBoxContainer/MediumLightRod" to="." method="_on_medium_light_rod_pressed"]
+[connection signal="pressed" from="Panel/HBoxContainer/MediumRod" to="." method="_on_medium_rod_pressed"]
+[connection signal="pressed" from="Panel/HBoxContainer/MediumHeavyRod" to="." method="_on_medium_heavy_rod_pressed"]
+[connection signal="pressed" from="Panel/HBoxContainer/HeavyRod" to="." method="_on_heavy_rod_pressed"]

@@ -23,7 +23,7 @@ func _on_music_slider_changed(value: float) -> void:
 	GameManager.set_bus_volume(GameManager.BUS_MUSIC, value)
 
 func _on_back_button_pressed() -> void:
-	if GameManager.current_scene_ida == "main_menu":
+	if GameManager.current_scene_id == "main_menu":
 		main_menu.visible = true
 	visible = false
 	

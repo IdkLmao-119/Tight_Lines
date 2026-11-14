@@ -1,55 +1,33 @@
 [gd_scene format=3 uid="uid://pybkck3eooas"]
 
 [ext_resource type="Script" uid="uid://ctov7s2usrqns" path="res://UIScenesAndScript/MainMenu/scene_script_save_slots.gd" id="1_ymcjr"]
+[ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="2_lo0ty"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_ymcjr"]
+[ext_resource type="Texture2D" uid="uid://5b3gsqgca5tc" path="res://Assets/2D/SignBoard.png" id="4_2xeyn"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cbcq8"]
-bg_color = Color(0.21960784, 0.74509805, 1, 1)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2xeyn"]
+texture = ExtResource("2_lo0ty")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1jwh8"]
-bg_color = Color(0.8392157, 0.49803922, 0.36078432, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-shadow_size = 5
-shadow_offset = Vector2(0, 3)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_q01jk"]
+texture = ExtResource("4_2xeyn")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_epukh"]
-bg_color = Color(0.8392157, 0.49803922, 0.36078432, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-shadow_size = 5
-shadow_offset = Vector2(0, 3)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_nqggt"]
+texture = ExtResource("4_2xeyn")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jcrlb"]
-bg_color = Color(0.8392157, 0.49803922, 0.36078432, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-shadow_size = 5
-shadow_offset = Vector2(0, 3)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btd5a"]
+texture = ExtResource("4_2xeyn")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2ktnv"]
-bg_color = Color(0.8392157, 0.49803922, 0.36078432, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-shadow_size = 5
-shadow_offset = Vector2(0, 3)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ekg7t"]
+texture = ExtResource("4_2xeyn")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nn73d"]
-bg_color = Color(0.8392157, 0.49803922, 0.36078432, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-shadow_size = 5
-shadow_offset = Vector2(0, 3)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tkv8b"]
+texture = ExtResource("4_2xeyn")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qqxh7"]
+texture = ExtResource("4_2xeyn")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_omwfy"]
+texture = ExtResource("4_2xeyn")
 
 [node name="SaveSlotMenu" type="Control" unique_id=1702898332]
 layout_mode = 3
@@ -64,17 +42,17 @@ script = ExtResource("1_ymcjr")
 layout_mode = 0
 offset_right = 1151.0
 offset_bottom = 647.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_cbcq8")
+theme_override_styles/panel = SubResource("StyleBoxTexture_2xeyn")
 
 [node name="BackButton" type="Button" parent="." unique_id=169924172]
 layout_mode = 1
 offset_left = 24.0
 offset_top = 36.0
 offset_right = 247.0
-offset_bottom = 113.0
+offset_bottom = 82.0
 theme_override_fonts/font = ExtResource("2_ymcjr")
 theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_1jwh8")
+theme_override_styles/normal = SubResource("StyleBoxTexture_q01jk")
 text = "Back
 "
 
@@ -85,9 +63,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -470.5
+offset_left = -335.0
 offset_top = -141.5
-offset_right = 470.5
+offset_right = 333.0
 offset_bottom = 141.5
 grow_horizontal = 2
 grow_vertical = 2
@@ -97,7 +75,7 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_ymcjr")
 theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_epukh")
+theme_override_styles/normal = SubResource("StyleBoxTexture_nqggt")
 text = "New Save Slot"
 
 [node name="SaveSlot2" type="Button" parent="VBoxContainer" unique_id=520558238]
@@ -105,7 +83,7 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_ymcjr")
 theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_jcrlb")
+theme_override_styles/normal = SubResource("StyleBoxTexture_btd5a")
 text = "New Save Slot"
 
 [node name="SaveSlot3" type="Button" parent="VBoxContainer" unique_id=136135349]
@@ -113,7 +91,7 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("2_ymcjr")
 theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_2ktnv")
+theme_override_styles/normal = SubResource("StyleBoxTexture_ekg7t")
 text = "New Save Slot"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=2058910101]
@@ -123,10 +101,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -333.0
+offset_left = -417.0
 offset_top = 184.0
-offset_right = 333.0
-offset_bottom = 261.0
+offset_right = 441.0
+offset_bottom = 239.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -135,7 +113,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("2_ymcjr")
 theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_nn73d")
+theme_override_styles/normal = SubResource("StyleBoxTexture_tkv8b")
 text = "Make Save"
 
 [node name="LoadSaveButton" type="Button" parent="HBoxContainer" unique_id=1796686349]
@@ -143,7 +121,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("2_ymcjr")
 theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_nn73d")
+theme_override_styles/normal = SubResource("StyleBoxTexture_qqxh7")
 text = "Load Save"
 
 [node name="DeleteSaveButton" type="Button" parent="HBoxContainer" unique_id=39648435]
@@ -151,7 +129,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("2_ymcjr")
 theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_nn73d")
+theme_override_styles/normal = SubResource("StyleBoxTexture_omwfy")
 text = "Delete Save"
 
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]

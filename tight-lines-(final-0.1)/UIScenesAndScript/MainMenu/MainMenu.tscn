@@ -3,28 +3,32 @@
 [ext_resource type="Script" uid="uid://dlmcx3h4vh8ol" path="res://UIScenesAndScript/MainMenu/scene_script_main_menu.gd" id="1_w82c0"]
 [ext_resource type="Script" uid="uid://db1up6ssl3kie" path="res://UIScenesAndScript/MainMenu/background_layer.gd" id="2_0pent"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="3_0pent"]
+[ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="4_16aw6"]
 [ext_resource type="Texture2D" uid="uid://btduj7rj47w40" path="res://Assets/2D/Bubble.png" id="4_doce8"]
-[ext_resource type="Texture2D" uid="uid://5wmuqdpsaqo5" path="res://Assets/2D/Title Panel.png" id="4_yyhqq"]
+[ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="5_16aw6"]
 [ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/UI_scene_script_options.gd" id="5_lgxut"]
+[ext_resource type="Texture2D" uid="uid://5b3gsqgca5tc" path="res://Assets/2D/SignBoard.png" id="6_16aw6"]
 [ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="6_doce8"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lgxut"]
-bg_color = Color(0.21960784, 0.74509805, 1, 1)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vps3o"]
+texture = ExtResource("4_16aw6")
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lgxut"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lskcr"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7c3kk"]
-bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-shadow_color = Color(0, 0, 0, 0.45882353)
-shadow_size = 5
-shadow_offset = Vector2(0, 3)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lgxut"]
+texture = ExtResource("6_16aw6")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_doce8"]
+texture = ExtResource("6_16aw6")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_16aw6"]
+texture = ExtResource("6_16aw6")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qc8aa"]
+texture = ExtResource("6_16aw6")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dng2c"]
-texture = ExtResource("4_yyhqq")
+texture = ExtResource("6_16aw6")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_doce8"]
 bg_color = Color(0.42352942, 0.2784314, 0.13725491, 0.8745098)
@@ -45,7 +49,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_lgxut")
+theme_override_styles/panel = SubResource("StyleBoxTexture_vps3o")
 
 [node name="BackgroundLayer" type="Control" parent="." unique_id=1016745381]
 layout_mode = 1
@@ -57,10 +61,13 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_0pent")
 vertical_texture = ExtResource("4_doce8")
-horizontal_min_speed = 30.0
-horizontal_max_speed = 50.0
-vertical_min_speed = 200.0
-vertical_max_speed = 300.0
+horizontal_spawn_interval = 10.0
+vertical_spawn_interval = 2.0
+vertical_scale = 2.0
+horizontal_min_speed = 50.0
+horizontal_max_speed = 80.0
+vertical_min_speed = 150.0
+vertical_max_speed = 250.0
 
 [node name="MainMenu" type="Panel" parent="." unique_id=2050093436]
 layout_mode = 1
@@ -69,7 +76,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_lgxut")
+theme_override_styles/panel = SubResource("StyleBoxTexture_lskcr")
 
 [node name="MainMenuButtons" type="VBoxContainer" parent="MainMenu" unique_id=1070791132]
 layout_mode = 1
@@ -85,33 +92,33 @@ grow_horizontal = 2
 [node name="StartButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=2029253338]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("3_0pent")
-theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
+theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_font_sizes/font_size = 31
+theme_override_styles/normal = SubResource("StyleBoxTexture_lgxut")
 text = "Start"
 
 [node name="OptionsButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=1605044471]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("3_0pent")
-theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
+theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_font_sizes/font_size = 31
+theme_override_styles/normal = SubResource("StyleBoxTexture_doce8")
 text = "Options"
 
 [node name="MultiButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=218283224]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("3_0pent")
-theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
+theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_font_sizes/font_size = 31
+theme_override_styles/normal = SubResource("StyleBoxTexture_16aw6")
 text = "Multiplayer"
 
 [node name="ExitButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=775846875]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("3_0pent")
-theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_7c3kk")
+theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_font_sizes/font_size = 31
+theme_override_styles/normal = SubResource("StyleBoxTexture_qc8aa")
 text = "Exit"
 
 [node name="Label" type="Label" parent="." unique_id=494958756]
@@ -128,13 +135,15 @@ offset_bottom = -63.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_fonts/font = ExtResource("3_0pent")
-theme_override_font_sizes/font_size = 100
+theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_font_sizes/font_size = 70
 theme_override_styles/normal = SubResource("StyleBoxTexture_dng2c")
 text = "Tight Lines"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Options" type="Control" parent="." unique_id=100843613]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

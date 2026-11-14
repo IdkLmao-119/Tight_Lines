@@ -35,13 +35,12 @@ signal volume_changed(bus_name: String, linear: float)
 # ============================================================================
 # SCENE REGISTRY  -  edit this block to add scenes / change music
 # ============================================================================
-# "path"     : the .tscn file
-# "music"    : track to play in this scene. "" = keep whatever is playing.
-#              Missing files are skipped with a warning.
-# "pausable" : false for menus/cutscenes (pause requests are ignored there)
-# "input"    : InputManager context: "menu", "overworld" or "fishing".
-#
-# Paths are PLACEHOLDERS - change them to match your project tree.
+# "path"         : the .tscn file
+# "music"        : track to play in this scene. "" = keep whatever is playing.
+#                  Missing files are skipped with a warning.
+# "pausable"     : false for menus/cutscenes (pause requests are ignored there)
+# "input"        : InputManager context: "menu", "overworld" or "fishing".
+# "display_name" : Optional title flashed for 5s on enter (omit or "" to skip).
 const SCENES: Dictionary = {
 	#Main Menu
 	"main_menu": {
@@ -72,18 +71,21 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
+		"display_name": "Spawn",
 	},
 	"overworld_river_park": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/RiverPark/RiverPark.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
+		"display_name": "River Park",
 	},
 	"overworld_rice_field": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/RiceFields/RiceField.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
+		"display_name": "Rice Fields",
 	},
 
 	#House Sub-Area
@@ -92,12 +94,14 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
+		"display_name": "House 1",
 	},
 	"overworld_house_2": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/House_Folder/House2.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
+		"display_name": "House 2",
 	},
 
 	#Area 2
@@ -106,18 +110,21 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
+		"display_name": "Seaside Park",
 	},
 	"overworld_fishing_pens": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/FishPens/FishPens.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
+		"display_name": "Fishing Pens",
 	},
 	"overworld_salt_farm": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/AbandonedSaltfarm/SaltFarm.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
+		"display_name": "Abandoned Salt Farm",
 	},
 
 	#Area 3
@@ -126,14 +133,15 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
+		"display_name": "Mangrove Area",
 	},
 	"overworld_island": {
 		"path": "res://OverWorldSceneAndScript/3_Shore/Island/Island.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
+		"display_name": "Island",
 	},
-	
 
 	#3D Fishing
 	"fishing_rice_field": {
@@ -141,48 +149,56 @@ const SCENES: Dictionary = {
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"display_name": "Rice Fields - Fishing",
 	},
 	"fishing_river_park": {
 		"path": "res://3DFishingScene/Area1FishingScenes/3DFishingRiverPark.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"display_name": "River Park - Fishing",
 	},
 	"fishing_fish_market": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingSeasidePark.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"display_name": "Seaside Park - Fishing",
 	},
 	"fishing_fishing_pens": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingFishPens.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"display_name": "Fishing Pens - Fishing",
 	},
 	"fishing_salt_farm": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingSaltFarm.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"display_name": "Abandoned Salt Farm - Fishing",
 	},
 	"fishing_mangrove": {
 		"path": "res://3DFishingScene/Area3FishingScenes/3DFishingMangrove.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"display_name": "Mangrove Area - Fishing",
 	},
 	"fishing_island": {
 		"path": "res://3DFishingScene/Area3FishingScenes/3DFishingIsland.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"display_name": "Island - Fishing",
 	},
 	"multiplayer": {
 		"path": "res://3DFishingScene/MultiplayerFishingScene/3d_fishing_multiplayer.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Sunday.mp3",
 		"pausable": true,
+		"display_name": "Multiplayer Fishing",
 	},
 }
 
@@ -248,6 +264,8 @@ var _fade_rect: ColorRect
 var _loading_bar: ProgressBar
 var _loading_label: Label
 var _fade_tween: Tween
+var _scene_title_label: Label
+var _title_tween: Tween
 var _overlay_layer: CanvasLayer
 var _overlay_node: Node = null
 var _overlay_prev_input: String = ""
@@ -341,7 +359,9 @@ func change_scene(target: String, context: Dictionary = {}) -> void:
 	_current_context = context.duplicate(true)
 
 	_play_scene_music(entry)
-	_enter_scene_input(entry, wants_multiplayer)   # at line 343
+	_enter_scene_input(entry, wants_multiplayer)
+
+	flash_scene_title(entry.get("display_name", ""))
 
 	await _fade_to(0.0, FADE_TIME)
 	_fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -378,6 +398,47 @@ func consume_context() -> Dictionary:
 	pending_context = {}
 	return ctx
 
+
+# Flashes a scene's display name for 5 seconds total:
+#   - 2.5s Fade In + Enlarge (0.85 -> 1.0)
+#   - 2.5s Fade Out + Enlarge (1.0 -> 1.15)
+func flash_scene_title(title_text: String) -> void:
+	if title_text == "":
+		return
+
+	if _title_tween and _title_tween.is_valid():
+		_title_tween.kill()
+
+	_scene_title_label.text = title_text
+	# Removed the instant self_modulate = 0.0 snap here!
+	_scene_title_label.scale = Vector2(0.85, 0.85)
+	_scene_title_label.show()
+
+	# Wait 1 frame so title_root's FULL_RECT size matches the current screen resolution
+	await get_tree().process_frame
+	_scene_title_label.pivot_offset = _scene_title_label.size / 2.0
+
+	_title_tween = create_tween()
+	_title_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+
+	# Phase 1 (2.5s): Fade In from current alpha to 1.0 + Enlarge
+	_title_tween.set_parallel(true)
+	_title_tween.tween_property(_scene_title_label, "self_modulate:a", 1.0, 2.5)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_OUT)
+		
+	_title_tween.tween_property(_scene_title_label, "scale", Vector2(1.0, 1.0), 2.5)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_OUT)
+
+	# Phase 2 (2.5s): Fade Out + Enlarge
+	_title_tween.chain().set_parallel(true)
+	_title_tween.tween_property(_scene_title_label, "self_modulate:a", 0.0, 2.5)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_IN)
+	_title_tween.tween_property(_scene_title_label, "scale", Vector2(1.15, 1.15), 2.5)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_IN)
 
 # --- Scene memory ----------------------------------------------------------
 # Before leaving a scene, GameManager calls get_scene_state() on it (if it has
@@ -484,6 +545,7 @@ func _sync_initial_scene() -> void:
 			e["id"] = id
 			_play_scene_music(e)
 			_enter_scene_input(e, id == "multiplayer")
+			flash_scene_title(e.get("display_name", ""))
 			return
 
 
@@ -744,11 +806,31 @@ func _ensure_buses() -> void:
 # TRANSITION OVERLAY  (built in code, so there is no scene file to maintain)
 # ============================================================================
 func _build_overlay() -> void:
+	# 128 is the maximum CanvasLayer in Godot - guaranteed to draw on top of everything.
+	var title_layer := CanvasLayer.new()
+	title_layer.layer = 128
+	add_child(title_layer)
+
+	# A root Control with FULL_RECT is required inside a CanvasLayer for anchors/sizing to work.
+	var title_root := Control.new()
+	title_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	title_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_layer.add_child(title_root)
+
+	_scene_title_label = Label.new()
+	_scene_title_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_scene_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_scene_title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_scene_title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_scene_title_label.add_theme_font_size_override("font_size", 64)
+	_scene_title_label.add_theme_color_override("font_color", Color.WHITE)
+	_scene_title_label.add_theme_constant_override("outline_size", 12)
+	_scene_title_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	_scene_title_label.modulate.a = 0.0
+	title_root.add_child(_scene_title_label)
+
 	# Inventory overlay layer sits UNDER the fade layer.
 	_overlay_layer = CanvasLayer.new()
-	_overlay_layer.layer = 50
-	add_child(_overlay_layer)
-
 	var layer := CanvasLayer.new()
 	layer.layer = 100
 	add_child(layer)
@@ -860,6 +942,8 @@ func _enter_scene_input(entry: Dictionary, wants_multiplayer: bool) -> void:
 		im.call("set_multiplayer_mode", wants_multiplayer)   # before the context
 	_set_input_context(_current_input_name)
 	_send_phone_screen()
+
+
 # ============================================================================
 # PHONE SCREEN + SCENE KIND HELPERS
 # ============================================================================
