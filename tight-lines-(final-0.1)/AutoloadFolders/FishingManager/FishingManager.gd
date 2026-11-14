@@ -870,6 +870,7 @@ func _fish_won(s: FishingSession) -> void:
 	var kept := true
 	if store_catches_in_inventory and not _multiplayer:
 		kept = _store_fish(fish)
+		_record_caught_fish(String(fish["id"]))
 
 	if kept:
 		s.catches.append(fish)
@@ -882,6 +883,16 @@ func _fish_won(s: FishingSession) -> void:
 	else:
 		fish_released.emit(s.player_id, fish, "fish_box_full")
 	_show_catch_popup(s.player_id, fish, kept)
+
+
+# Unlocks the species in SaveManager for the Almanac.
+func _record_caught_fish(fish_id: String) -> void:
+	if _save == null or not _save.has_method("record_caught_fish"):
+		_warn_once("record_caught_fish", "SaveManager.record_caught_fish() not found - Almanac will not unlock.")
+		return
+	var is_new := bool(_save.record_caught_fish(fish_id))
+	if is_new and debug_log:
+		print("[FishingManager] New Almanac entry unlocked: '%s'" % fish_id)
 
 
 # C8: InventoryManager.add_fish(fish_id, size_cm) returns false when full.

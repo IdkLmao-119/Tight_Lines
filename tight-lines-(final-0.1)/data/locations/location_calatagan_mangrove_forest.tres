@@ -1,0 +1,96 @@
+[gd_resource type="Resource" script_class="LocationData" format=3 uid="uid://dsf3vlggv7qhf"]
+
+[ext_resource type="Script" uid="uid://dx1akc0mc2hlt" path="res://data/item_class_templates/pool_entry.gd" id="1_gilvd"]
+[ext_resource type="Resource" uid="uid://deme8b0f3v6sm" path="res://data/fish/fish_tarpon.tres" id="2_2djk5"]
+[ext_resource type="Script" uid="uid://ct4mpw3eqe0jb" path="res://data/item_class_templates/odds_modifier.gd" id="3_k4aoj"]
+[ext_resource type="Resource" uid="uid://df8yk6ead683c" path="res://data/fish/fish_ladyfish.tres" id="4_ro6u4"]
+[ext_resource type="Resource" uid="uid://bgyoggwi4xlcu" path="res://data/fish/fish_milkfish.tres" id="5_xhrw8"]
+[ext_resource type="Resource" uid="uid://c4sjmrakl18ea" path="res://data/fish/fish_barramundi.tres" id="6_kfxfo"]
+[ext_resource type="Resource" uid="uid://dhr5np5avrdmn" path="res://data/fish/fish_mangrove_red_snapper.tres" id="7_emh7e"]
+[ext_resource type="Resource" uid="uid://d1f1j07f2csqx" path="res://data/fish/fish_juvenile_trevally.tres" id="8_skxx0"]
+[ext_resource type="Resource" uid="uid://c3u882aui0x3x" path="res://data/fish/fish_archerfish.tres" id="9_uvo6r"]
+[ext_resource type="Resource" uid="uid://chy8g0s0n88wh" path="res://data/fish/fish_green_spotted_goby.tres" id="10_08431"]
+[ext_resource type="Resource" uid="uid://cx7lymh403hp" path="res://data/fish/fish_tank_goby.tres" id="11_vgta2"]
+[ext_resource type="Resource" uid="uid://b30aitipy8aow" path="res://data/fish/fish_crescent_grunter.tres" id="12_4muqu"]
+[ext_resource type="Resource" uid="uid://ijthjsfai2kv" path="res://data/fish/fish_striped_pufferfish.tres" id="13_3atkm"]
+[ext_resource type="Resource" uid="uid://bxl2qb0mavthd" path="res://data/fish/fish_juvenile_queenfish.tres" id="14_pl0vw"]
+[ext_resource type="Resource" uid="uid://b086ovljwx3kh" path="res://data/fish/fish_mud_crab.tres" id="15_w5yrx"]
+[ext_resource type="Resource" uid="uid://dybklgmye57vh" path="res://data/fish/fish_mullet.tres" id="16_lyuoo"]
+[ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://data/item_class_templates/location_data.gd" id="17_ae0it"]
+
+[sub_resource type="Resource" id="Resource_evpwh"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("2_2djk5")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_vm21d"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("4_ro6u4")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_ny4ye"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("5_xhrw8")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_7pi5j"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("6_kfxfo")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_8huf2"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("7_emh7e")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_knyp3"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("8_skxx0")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_qvn37"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("9_uvo6r")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_udi5w"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("10_08431")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_r2vth"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("11_vgta2")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_8qn1d"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("12_4muqu")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_p4qy3"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("13_3atkm")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_ly3il"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("14_pl0vw")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_kj4go"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("15_w5yrx")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_8eo0o"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("16_lyuoo")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[resource]
+script = ExtResource("17_ae0it")
+fish_pool = Array[ExtResource("1_gilvd")]([SubResource("Resource_evpwh"), SubResource("Resource_vm21d"), SubResource("Resource_ny4ye"), SubResource("Resource_7pi5j"), SubResource("Resource_8huf2"), SubResource("Resource_knyp3"), SubResource("Resource_qvn37"), SubResource("Resource_udi5w"), SubResource("Resource_r2vth"), SubResource("Resource_8qn1d"), SubResource("Resource_p4qy3"), SubResource("Resource_ly3il"), SubResource("Resource_kj4go"), SubResource("Resource_8eo0o")])
+id = "location_calatagan"
+display_name = "Calatagan Mangrove Forest"
+metadata/_custom_type_script = "uid://bbts02hgiiwr"

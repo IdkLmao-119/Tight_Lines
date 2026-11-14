@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="LocationData" format=3 uid="uid://ciciy0ialruos"]
+
+[ext_resource type="Script" uid="uid://dx1akc0mc2hlt" path="res://data/item_class_templates/pool_entry.gd" id="1_pktfr"]
+[ext_resource type="Resource" uid="uid://deme8b0f3v6sm" path="res://data/fish/fish_tarpon.tres" id="2_85ebh"]
+[ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://data/item_class_templates/location_data.gd" id="2_kn83k"]
+[ext_resource type="Script" uid="uid://ct4mpw3eqe0jb" path="res://data/item_class_templates/odds_modifier.gd" id="3_roa5g"]
+[ext_resource type="Resource" uid="uid://gvnk0vh6nbp" path="res://data/fish/fish_black_chin_tilapia.tres" id="4_l85g1"]
+[ext_resource type="Resource" uid="uid://dylhldsnt88cc" path="res://data/fish/fish_manila_catfish.tres" id="5_2fbd4"]
+[ext_resource type="Resource" uid="uid://dybklgmye57vh" path="res://data/fish/fish_mullet.tres" id="6_5apcr"]
+[ext_resource type="Resource" uid="uid://cmxagj8lvihtk" path="res://data/fish/fish_snubnose_halfbeak.tres" id="7_ytvrc"]
+[ext_resource type="Resource" uid="uid://sojjs2r500xc" path="res://data/fish/fish_mosquito_fish.tres" id="8_pqxfs"]
+
+[sub_resource type="Resource" id="Resource_0663g"]
+script = ExtResource("1_pktfr")
+fish = ExtResource("2_85ebh")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_bn50j"]
+script = ExtResource("1_pktfr")
+fish = ExtResource("4_l85g1")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_05ciy"]
+script = ExtResource("1_pktfr")
+fish = ExtResource("5_2fbd4")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_e48fv"]
+script = ExtResource("1_pktfr")
+fish = ExtResource("6_5apcr")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_8rqh2"]
+script = ExtResource("1_pktfr")
+fish = ExtResource("7_ytvrc")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_w2h18"]
+script = ExtResource("1_pktfr")
+fish = ExtResource("8_pqxfs")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[resource]
+script = ExtResource("2_kn83k")
+fish_pool = Array[ExtResource("1_pktfr")]([SubResource("Resource_0663g"), SubResource("Resource_bn50j"), SubResource("Resource_05ciy"), SubResource("Resource_e48fv"), SubResource("Resource_8rqh2"), SubResource("Resource_w2h18")])
+id = "location_kawit"
+display_name = "Kawit Seaside Park"
+metadata/_custom_type_script = "uid://bbts02hgiiwr"

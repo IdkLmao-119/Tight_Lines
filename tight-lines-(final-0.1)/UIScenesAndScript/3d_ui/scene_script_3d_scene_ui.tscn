@@ -219,10 +219,6 @@ theme_override_styles/pressed = SubResource("StyleBoxTexture_dowyv")
 theme_override_styles/hover = SubResource("StyleBoxTexture_yrluk")
 text = "Bait Box"
 
-[node name="InventoryUi" parent="." unique_id=306256089 instance=ExtResource("6_j6iej")]
-visible = false
-layout_mode = 1
-
 [node name="FishBoxButton" type="Button" parent="." unique_id=1768447990]
 layout_mode = 0
 offset_left = 927.0
@@ -237,10 +233,6 @@ theme_override_styles/pressed = SubResource("StyleBoxTexture_dowyv")
 theme_override_styles/hover = SubResource("StyleBoxTexture_yrluk")
 text = "Fish Box"
 
-[node name="AlmanacUi" parent="." unique_id=479802253 instance=ExtResource("3_0ycej")]
-visible = false
-layout_mode = 1
-
 [node name="AlmanacButton" type="Button" parent="." unique_id=745865452]
 layout_mode = 0
 offset_left = 980.0
@@ -254,10 +246,6 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_wwmsr")
 text = " Almanac"
 alignment = 0
 
-[node name="Rod_Inventory" parent="." unique_id=1263013518 instance=ExtResource("10_wwmsr")]
-visible = false
-layout_mode = 1
-
 [node name="RodButton" type="Button" parent="." unique_id=184444897]
 layout_mode = 0
 offset_left = 29.0
@@ -270,6 +258,18 @@ theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxTexture_2slrl")
 text = "Rods
 "
+
+[node name="InventoryUi" parent="." unique_id=306256089 instance=ExtResource("6_j6iej")]
+visible = false
+layout_mode = 1
+
+[node name="Rod_Inventory" parent="." unique_id=1263013518 instance=ExtResource("10_wwmsr")]
+visible = false
+layout_mode = 1
+
+[node name="AlmanacUi" parent="." unique_id=479802253 instance=ExtResource("3_0ycej")]
+visible = false
+layout_mode = 1
 
 [connection signal="pressed" from="Options/Options/BackButton" to="Options" method="_on_back_button_pressed"]
 [connection signal="pressed" from="Options/Options/MenuButton" to="Options" method="_on_menu_button_pressed"]

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cxb2dk18i1fmg" path="res://UIScenesAndScript/AlmanacUI/scene_script_almanac_ui.gd" id="1_dyt5v"]
 [ext_resource type="Texture2D" uid="uid://1w3ooxvm15dy" path="res://Assets/Example.png" id="2_kkthf"]
+[ext_resource type="Texture2D" uid="uid://mvujhaip8rbw" path="res://Assets/2D/fish_sprites/African Catfish.png" id="3_1f0mn"]
 [ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="3_27vxh"]
 [ext_resource type="FontFile" uid="uid://dva52i5qma1vy" path="res://Assets/2D/AmaticSC-Regular.ttf" id="4_1f0mn"]
 
@@ -50,7 +51,7 @@ texture = ExtResource("2_kkthf")
 sources/2 = SubResource("TileSetAtlasSource_27vxh")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kkthf"]
-bg_color = Color(1, 0.34117648, 0.28235295, 1)
+bg_color = Color(1, 0.79607844, 0.6, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1f0mn"]
 bg_color = Color(1, 0.79607844, 0.6, 1)
@@ -98,43 +99,44 @@ offset_bottom = 64.0
 
 [node name="FishPicture" type="TextureRect" parent="FishEntry" unique_id=1622833742]
 layout_mode = 0
-offset_left = 267.0
-offset_top = 125.0
-offset_right = 552.0
-offset_bottom = 402.0
+offset_left = 740.0
+offset_top = 37.0
+offset_right = 888.0
+offset_bottom = 179.0
+texture = ExtResource("3_1f0mn")
 
 [node name="FishDescription" type="RichTextLabel" parent="FishEntry" unique_id=2112996837]
 layout_mode = 0
-offset_left = 711.0
-offset_top = 93.0
-offset_right = 942.0
-offset_bottom = 385.0
+offset_left = 658.0
+offset_top = 273.0
+offset_right = 958.0
+offset_bottom = 536.0
 theme_override_colors/default_color = Color(0, 0, 0, 1)
 theme_override_fonts/normal_font = ExtResource("4_1f0mn")
-theme_override_font_sizes/normal_font_size = 18
-text = "Lorem Ipsum"
+theme_override_font_sizes/normal_font_size = 25
+text = "Lorem Ipsum Skibidi  Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi"
 
 [node name="FishName" type="Label" parent="FishEntry" unique_id=928797803]
 layout_mode = 0
-offset_left = 687.0
-offset_top = 20.0
-offset_right = 974.0
-offset_bottom = 66.0
+offset_left = 677.0
+offset_top = 168.0
+offset_right = 964.0
+offset_bottom = 226.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_1f0mn")
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 45
 text = "Sample Text"
 horizontal_alignment = 1
 
 [node name="FishScientificName" type="Label" parent="FishEntry/FishName" unique_id=764669347]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 36.0
-offset_right = 276.0
-offset_bottom = 59.0
+offset_left = 5.0
+offset_top = 47.0
+offset_right = 272.0
+offset_bottom = 98.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_1f0mn")
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 40
 text = "Scientific Name"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -148,13 +150,13 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 18.0
-offset_top = 171.0
-offset_right = 168.0
-offset_bottom = 246.0
+offset_left = -174.0
+offset_top = 191.0
+offset_right = -24.0
+offset_bottom = 266.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0.875, 0.875, 0.875, 1)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_27vxh")
 theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("StyleBoxFlat_kkthf")
@@ -231,5 +233,153 @@ theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("StyleBoxFlat_ynw0e")
 text = "Fortune
 Island"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=820592388]
+layout_mode = 0
+offset_left = 269.0
+offset_top = 72.0
+offset_right = 704.0
+offset_bottom = 500.0
+follow_focus = true
+scroll_hint_mode = 1
+tile_scroll_hint = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=1377922578]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer" unique_id=739469282]
+layout_mode = 2
+
+[node name="TextureButton" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer" unique_id=1486678343]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton2" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer" unique_id=292126298]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton3" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer" unique_id=1120164408]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton4" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer" unique_id=144521403]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer/VBoxContainer" unique_id=1489775745]
+layout_mode = 2
+
+[node name="TextureButton" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer2" unique_id=1024983994]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton2" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer2" unique_id=950407347]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton3" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer2" unique_id=1153634432]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton4" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer2" unique_id=1949396965]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer/VBoxContainer" unique_id=503602072]
+layout_mode = 2
+
+[node name="TextureButton" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer3" unique_id=2116040920]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton2" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer3" unique_id=1661361412]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton3" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer3" unique_id=136589423]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton4" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer3" unique_id=861012066]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="ScrollContainer/VBoxContainer" unique_id=281446140]
+layout_mode = 2
+
+[node name="TextureButton" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer4" unique_id=1073612167]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton2" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer4" unique_id=1038789572]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton3" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer4" unique_id=1142074367]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton4" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer4" unique_id=1955969542]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="ScrollContainer/VBoxContainer" unique_id=1551633674]
+layout_mode = 2
+
+[node name="TextureButton" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer5" unique_id=1634161886]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton2" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer5" unique_id=699656817]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton3" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer5" unique_id=332590319]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton4" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer5" unique_id=1761887199]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
 
 [connection signal="pressed" from="FishEntry/BackButton" to="." method="_on_back_button_pressed"]

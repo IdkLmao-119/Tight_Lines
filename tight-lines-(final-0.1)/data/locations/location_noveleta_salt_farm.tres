@@ -1,0 +1,96 @@
+[gd_resource type="Resource" script_class="LocationData" format=3 uid="uid://rtwerss7a0lu"]
+
+[ext_resource type="Script" uid="uid://dx1akc0mc2hlt" path="res://data/item_class_templates/pool_entry.gd" id="1_feb4a"]
+[ext_resource type="Resource" uid="uid://df8yk6ead683c" path="res://data/fish/fish_ladyfish.tres" id="2_hjqv1"]
+[ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://data/item_class_templates/location_data.gd" id="2_mc6ek"]
+[ext_resource type="Script" uid="uid://ct4mpw3eqe0jb" path="res://data/item_class_templates/odds_modifier.gd" id="3_0rsjs"]
+[ext_resource type="Resource" uid="uid://deme8b0f3v6sm" path="res://data/fish/fish_tarpon.tres" id="4_yhh1s"]
+[ext_resource type="Resource" uid="uid://gvnk0vh6nbp" path="res://data/fish/fish_black_chin_tilapia.tres" id="5_fd8pl"]
+[ext_resource type="Resource" uid="uid://4xlwygyaq14r" path="res://data/fish/fish_mozambique_tilapia.tres" id="6_qvmkh"]
+[ext_resource type="Resource" uid="uid://b5eo5qr5hu2qq" path="res://data/fish/fish_mayan_cichlid.tres" id="7_ekjdx"]
+[ext_resource type="Resource" uid="uid://dylhldsnt88cc" path="res://data/fish/fish_manila_catfish.tres" id="8_n6gqa"]
+[ext_resource type="Resource" uid="uid://cx7lymh403hp" path="res://data/fish/fish_tank_goby.tres" id="9_2b1tq"]
+[ext_resource type="Resource" uid="uid://chy8g0s0n88wh" path="res://data/fish/fish_green_spotted_goby.tres" id="10_oo46l"]
+[ext_resource type="Resource" uid="uid://c4sjmrakl18ea" path="res://data/fish/fish_barramundi.tres" id="11_602oj"]
+[ext_resource type="Resource" uid="uid://dybklgmye57vh" path="res://data/fish/fish_mullet.tres" id="12_o6epq"]
+[ext_resource type="Resource" uid="uid://b086ovljwx3kh" path="res://data/fish/fish_mud_crab.tres" id="13_ctf53"]
+[ext_resource type="Resource" uid="uid://sojjs2r500xc" path="res://data/fish/fish_mosquito_fish.tres" id="14_2m3vs"]
+[ext_resource type="Resource" uid="uid://dsfum6wqo4u6i" path="res://data/fish/fish_shad_fish.tres" id="15_3f88x"]
+[ext_resource type="Resource" uid="uid://c23jtlvkpo8v2" path="res://data/fish/fish_silverperch.tres" id="16_r73o8"]
+
+[sub_resource type="Resource" id="Resource_15ppc"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("2_hjqv1")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_1vgu8"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("4_yhh1s")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_gwx68"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("5_fd8pl")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_rceeu"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("6_qvmkh")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_fnwne"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("7_ekjdx")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_ufd0n"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("8_n6gqa")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_phbyu"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("9_2b1tq")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_g7qt2"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("10_oo46l")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_njhvd"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("11_602oj")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_sugrk"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("12_o6epq")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_vc2bt"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("13_ctf53")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_b0lvt"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("14_2m3vs")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_whml2"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("15_3f88x")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_l8prq"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("16_r73o8")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[resource]
+script = ExtResource("2_mc6ek")
+fish_pool = Array[ExtResource("1_feb4a")]([SubResource("Resource_15ppc"), SubResource("Resource_1vgu8"), SubResource("Resource_gwx68"), SubResource("Resource_rceeu"), SubResource("Resource_fnwne"), SubResource("Resource_ufd0n"), SubResource("Resource_phbyu"), SubResource("Resource_g7qt2"), SubResource("Resource_njhvd"), SubResource("Resource_sugrk"), SubResource("Resource_vc2bt"), SubResource("Resource_b0lvt"), SubResource("Resource_whml2"), SubResource("Resource_l8prq")])
+id = "location_salt_farm"
+display_name = "Noveleta Salt Farm"
+metadata/_custom_type_script = "uid://bbts02hgiiwr"

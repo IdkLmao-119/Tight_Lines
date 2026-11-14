@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="LocationData" format=3 uid="uid://kf8bb8y0vj4x"]
+
+[ext_resource type="Script" uid="uid://dx1akc0mc2hlt" path="res://data/item_class_templates/pool_entry.gd" id="1_d27q1"]
+[ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://data/item_class_templates/location_data.gd" id="2_dfktm"]
+[ext_resource type="Resource" uid="uid://c4sjmrakl18ea" path="res://data/fish/fish_barramundi.tres" id="2_loowd"]
+[ext_resource type="Script" uid="uid://ct4mpw3eqe0jb" path="res://data/item_class_templates/odds_modifier.gd" id="2_u8qgr"]
+[ext_resource type="Resource" uid="uid://c4ju7vgccb2wm" path="res://data/fish/fish_nile_tilapia.tres" id="4_be6xs"]
+[ext_resource type="Resource" uid="uid://gvnk0vh6nbp" path="res://data/fish/fish_black_chin_tilapia.tres" id="5_hpo5c"]
+[ext_resource type="Resource" uid="uid://deme8b0f3v6sm" path="res://data/fish/fish_tarpon.tres" id="6_v87p3"]
+[ext_resource type="Resource" uid="uid://bgyoggwi4xlcu" path="res://data/fish/fish_milkfish.tres" id="7_6bahj"]
+[ext_resource type="Resource" uid="uid://df8yk6ead683c" path="res://data/fish/fish_ladyfish.tres" id="8_tfyxc"]
+
+[sub_resource type="Resource" id="Resource_668tc"]
+script = ExtResource("1_d27q1")
+fish = ExtResource("2_loowd")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_3rf3m"]
+script = ExtResource("1_d27q1")
+fish = ExtResource("4_be6xs")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_rvagp"]
+script = ExtResource("1_d27q1")
+fish = ExtResource("5_hpo5c")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_8mye5"]
+script = ExtResource("1_d27q1")
+fish = ExtResource("6_v87p3")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_loowd"]
+script = ExtResource("1_d27q1")
+fish = ExtResource("7_6bahj")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_be6xs"]
+script = ExtResource("1_d27q1")
+fish = ExtResource("8_tfyxc")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[resource]
+script = ExtResource("2_dfktm")
+fish_pool = Array[ExtResource("1_d27q1")]([SubResource("Resource_668tc"), SubResource("Resource_3rf3m"), SubResource("Resource_rvagp"), SubResource("Resource_8mye5"), SubResource("Resource_loowd"), SubResource("Resource_be6xs")])
+id = "location_fish_pens"
+display_name = "Noveleta Fish Pens"
+metadata/_custom_type_script = "uid://bbts02hgiiwr"

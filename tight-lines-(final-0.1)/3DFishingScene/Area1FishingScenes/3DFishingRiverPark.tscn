@@ -55,7 +55,6 @@ background_energy_multiplier = 1.45
 ambient_light_sky_contribution = 0.98
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
-load_path = "res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"
 
 [node name="3dFishing" type="Node3D" unique_id=836610391]
 script = ExtResource("1_wl0bg")
@@ -163,9 +162,9 @@ script = ExtResource("7_ihk7l")
 player_anchors = [NodePath("../PlayerFishing")]
 rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
 bobber_scene = ExtResource("8_55la4")
-debug_spot_id = "location_rice_fields"
-debug_rod_id = "rod_basic"
-debug_bait_id = "bait_1"
+debug_spot_id = "location_debug"
+debug_rod_id = "rod_debug"
+debug_bait_id = "bait_0_debug"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
 

@@ -61,7 +61,7 @@ func _on_make_save_button_pressed() -> void:
 func _on_load_save_button_pressed() -> void:
 	if selected_slot == -1:
 		return
-	
+
 	if not SaveManager.slot_exists(selected_slot):
 		SaveManager.new_game()
 		SaveManager.save_slot(selected_slot)
@@ -70,7 +70,6 @@ func _on_load_save_button_pressed() -> void:
 
 	if SaveManager.load_slot(selected_slot):
 		GameManager.change_scene(SaveManager.get_saved_scene())
-
 
 func _on_delete_save_button_pressed() -> void:
 	if selected_slot == -1:
