@@ -3,7 +3,7 @@ extends Control
 @onready var FishName: Label = $FishEntry/FishName
 @onready var Description: RichTextLabel = $FishEntry/FishDescription
 @onready var FishPicture: TextureRect = $FishEntry/FishPicture
-@onready var FishScientificName: Label = $FishEntry/FishName/FishScientificName
+@onready var FishScientificName: Label = $FishEntry/FishScientificName
 @onready var grid_vbox: VBoxContainer = $ScrollContainer/VBoxContainer
 
 # Replace these string values with your actual LocationData IDs from GameDB
