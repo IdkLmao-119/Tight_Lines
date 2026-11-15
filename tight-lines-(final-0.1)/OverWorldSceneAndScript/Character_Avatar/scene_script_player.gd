@@ -115,3 +115,13 @@ func _on_island_to_mangrove_body_entered(body: Node2D) -> void:
 
 func _on_island_3d_scene_body_entered(body: Node2D) -> void:
 	GameManager.change_scene("fishing_island")
+
+#Shop Signals
+func _on_rod_shop_exit_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
+
+func _on_shop_ui_signal_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
+
+func _on_spawn_to_rod_shop_body_entered(body: Node2D) -> void:
+	pass # Replace with function body.
