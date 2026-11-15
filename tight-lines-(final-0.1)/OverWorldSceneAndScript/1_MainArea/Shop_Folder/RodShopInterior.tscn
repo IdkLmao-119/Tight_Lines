@@ -4784,6 +4784,7 @@ position = Vector2(390, 210)
 shape = SubResource("RectangleShape2D_7isgd")
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_cb108")]
+position = Vector2(482, 225)
 
 [connection signal="body_entered" from="Node2D/RodShopExit" to="Player" method="_on_rod_shop_exit_body_entered"]
 [connection signal="body_entered" from="Node2D2/ShopUISignal" to="Player" method="_on_shop_ui_signal_body_entered"]
