@@ -99,18 +99,18 @@ offset_bottom = 64.0
 
 [node name="FishPicture" type="TextureRect" parent="FishEntry" unique_id=1622833742]
 layout_mode = 0
-offset_left = 740.0
-offset_top = 37.0
-offset_right = 888.0
-offset_bottom = 179.0
+offset_left = 709.0
+offset_top = 34.0
+offset_right = 857.0
+offset_bottom = 176.0
 texture = ExtResource("3_1f0mn")
 
 [node name="FishDescription" type="RichTextLabel" parent="FishEntry" unique_id=2112996837]
 layout_mode = 0
-offset_left = 658.0
-offset_top = 273.0
-offset_right = 958.0
-offset_bottom = 536.0
+offset_left = 609.0
+offset_top = 272.0
+offset_right = 972.0
+offset_bottom = 535.0
 theme_override_colors/default_color = Color(0, 0, 0, 1)
 theme_override_fonts/normal_font = ExtResource("4_1f0mn")
 theme_override_font_sizes/normal_font_size = 25
@@ -118,22 +118,22 @@ text = "Lorem Ipsum Skibidi  Skibidi Skibidi Skibidi Skibidi Skibidi Skibidi Ski
 
 [node name="FishName" type="Label" parent="FishEntry" unique_id=928797803]
 layout_mode = 0
-offset_left = 677.0
-offset_top = 168.0
-offset_right = 964.0
-offset_bottom = 226.0
+offset_left = 586.0
+offset_top = 169.0
+offset_right = 981.0
+offset_bottom = 227.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_1f0mn")
 theme_override_font_sizes/font_size = 45
 text = "Sample Text"
 horizontal_alignment = 1
 
-[node name="FishScientificName" type="Label" parent="FishEntry/FishName" unique_id=764669347]
+[node name="FishScientificName" type="Label" parent="FishEntry" unique_id=764669347]
 layout_mode = 0
-offset_left = 5.0
-offset_top = 47.0
-offset_right = 272.0
-offset_bottom = 98.0
+offset_left = 606.0
+offset_top = 215.0
+offset_right = 968.0
+offset_bottom = 266.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("4_1f0mn")
 theme_override_font_sizes/font_size = 40
