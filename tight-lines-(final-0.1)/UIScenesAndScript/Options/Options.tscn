@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://c0u77axaegcsm"]
 
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="1_0omtf"]
-[ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/UI_scene_script_options.gd" id="1_cs2hp"]
+[ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/Options/UI_scene_script_options.gd" id="1_cs2hp"]
 [ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="2_cs2hp"]
-[ext_resource type="PackedScene" uid="uid://pybkck3eooas" path="res://UIScenesAndScript/MainMenu/SaveSlots.tscn" id="4_x1gqh"]
+[ext_resource type="PackedScene" uid="uid://pybkck3eooas" path="res://UIScenesAndScript/SaveSlots/SaveSlots.tscn" id="4_x1gqh"]
 
 [node name="Options" type="Control" unique_id=100843613]
 layout_mode = 3

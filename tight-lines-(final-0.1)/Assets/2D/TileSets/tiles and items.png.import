@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dmob6etnpgioi"
-path="res://.godot/imported/Cooler.png-2accbf014b2fde9c5dfce3f5fc5ce60d.ctex"
+uid="uid://cxikrivp7x567"
+path="res://.godot/imported/tiles and items.png-7c7e381c029c02f5c038d6de0f20e4db.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://UIScenesAndScript/MainMenu/Cooler.png"
-dest_files=["res://.godot/imported/Cooler.png-2accbf014b2fde9c5dfce3f5fc5ce60d.ctex"]
+source_file="res://Assets/2D/TileSets/tiles and items.png"
+dest_files=["res://.godot/imported/tiles and items.png-7c7e381c029c02f5c038d6de0f20e4db.ctex"]
 
 [params]
 

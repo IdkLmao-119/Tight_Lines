@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="4_16aw6"]
 [ext_resource type="Texture2D" uid="uid://btduj7rj47w40" path="res://Assets/2D/Bubble.png" id="4_doce8"]
 [ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="5_16aw6"]
-[ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/UI_scene_script_options.gd" id="5_lgxut"]
+[ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/Options/UI_scene_script_options.gd" id="5_lgxut"]
 [ext_resource type="Texture2D" uid="uid://5b3gsqgca5tc" path="res://Assets/2D/SignBoard.png" id="6_16aw6"]
 [ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="6_doce8"]
 

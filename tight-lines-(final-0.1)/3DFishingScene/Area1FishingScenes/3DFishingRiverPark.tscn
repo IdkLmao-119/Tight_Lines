@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="6_srfu8"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="7_ihk7l"]
 [ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_55la4"]
-[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/3d_ui/scene_script_3d_scene_ui.tscn" id="9_ndm7x"]
+[ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/FishingUI/FishingUI.tscn" id="9_ndm7x"]
 [ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="10_16lbn"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
@@ -55,7 +55,6 @@ background_energy_multiplier = 1.45
 ambient_light_sky_contribution = 0.98
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
-load_path = "res://.godot/imported/African_Catfish.png-6fa649ff7fce67283eaf1a8ecb37f6c7.ctex"
 
 [node name="3dFishing" type="Node3D" unique_id=836610391]
 script = ExtResource("1_wl0bg")
@@ -83,7 +82,7 @@ ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_goktk")
 
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 1.5558467)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 3.1334605)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="PlayerFishing" unique_id=731221113]
 
@@ -163,9 +162,9 @@ script = ExtResource("7_ihk7l")
 player_anchors = [NodePath("../PlayerFishing")]
 rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
 bobber_scene = ExtResource("8_55la4")
-debug_spot_id = "location_rice_fields"
-debug_rod_id = "rod_basic"
-debug_bait_id = "bait_1"
+debug_spot_id = "location_debug"
+debug_rod_id = "rod_debug"
+debug_bait_id = "bait_0_debug"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
 

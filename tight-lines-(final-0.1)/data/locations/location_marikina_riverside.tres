@@ -1,0 +1,84 @@
+[gd_resource type="Resource" script_class="LocationData" format=3 uid="uid://cu1wn42qcuv68"]
+
+[ext_resource type="Script" uid="uid://dx1akc0mc2hlt" path="res://data/item_class_templates/pool_entry.gd" id="1_t0es1"]
+[ext_resource type="Resource" uid="uid://c2fr874564kls" path="res://data/fish/fish_clown_knife_fish.tres" id="2_4dx2s"]
+[ext_resource type="Script" uid="uid://ct4mpw3eqe0jb" path="res://data/item_class_templates/odds_modifier.gd" id="3_fxpfd"]
+[ext_resource type="Resource" uid="uid://bkeshnfpk5cpe" path="res://data/fish/fish_armored_catfish.tres" id="4_ko2dx"]
+[ext_resource type="Resource" uid="uid://bd41tun5pdiet" path="res://data/fish/fish_african_catfish.tres" id="5_108h7"]
+[ext_resource type="Resource" uid="uid://c70yt4a30oanl" path="res://data/fish/fish_walking_catfish.tres" id="6_lw163"]
+[ext_resource type="Resource" uid="uid://dylhldsnt88cc" path="res://data/fish/fish_manila_catfish.tres" id="7_4pv1o"]
+[ext_resource type="Resource" uid="uid://b15cagrhd2rpn" path="res://data/fish/fish_pangasius_catfish.tres" id="8_aakkt"]
+[ext_resource type="Resource" uid="uid://c4ju7vgccb2wm" path="res://data/fish/fish_nile_tilapia.tres" id="9_lt1wj"]
+[ext_resource type="Resource" uid="uid://gvnk0vh6nbp" path="res://data/fish/fish_black_chin_tilapia.tres" id="10_yfl38"]
+[ext_resource type="Resource" uid="uid://cgk0luhh02rts" path="res://data/fish/fish_common_carp.tres" id="11_egsp8"]
+[ext_resource type="Resource" uid="uid://upeycpxnjjv6" path="res://data/fish/fish_bighead_carp.tres" id="12_5us6x"]
+[ext_resource type="Resource" uid="uid://cuxx282o8qa7" path="res://data/fish/fish_rohu_carp.tres" id="13_uua0m"]
+[ext_resource type="Resource" uid="uid://sojjs2r500xc" path="res://data/fish/fish_mosquito_fish.tres" id="14_vjtjd"]
+[ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://data/item_class_templates/location_data.gd" id="15_i3quy"]
+
+[sub_resource type="Resource" id="Resource_mq45n"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("2_4dx2s")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_abasy"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("4_ko2dx")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_rq60a"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("5_108h7")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_i7bcc"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("6_lw163")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_mjk4o"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("7_4pv1o")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_kjui5"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("8_aakkt")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_5bxha"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("9_lt1wj")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_xbju1"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("10_yfl38")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_fwptp"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("11_egsp8")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_s1uka"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("12_5us6x")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_bn5f7"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("13_uua0m")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[sub_resource type="Resource" id="Resource_fw0i5"]
+script = ExtResource("1_t0es1")
+fish = ExtResource("14_vjtjd")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
+[resource]
+script = ExtResource("15_i3quy")
+unlock_flag = "unlock_dock"
+fish_pool = Array[ExtResource("1_t0es1")]([SubResource("Resource_mq45n"), SubResource("Resource_abasy"), SubResource("Resource_rq60a"), SubResource("Resource_i7bcc"), SubResource("Resource_mjk4o"), SubResource("Resource_kjui5"), SubResource("Resource_5bxha"), SubResource("Resource_xbju1"), SubResource("Resource_fwptp"), SubResource("Resource_s1uka"), SubResource("Resource_bn5f7"), SubResource("Resource_fw0i5")])
+id = "location_marikina"
+display_name = "Marikina Riverside"

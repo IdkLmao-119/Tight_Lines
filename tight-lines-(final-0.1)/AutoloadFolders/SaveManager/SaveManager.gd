@@ -16,7 +16,7 @@ extends Node
 #                     back the state of the other modules. save_slot(slot) and
 #                     load_slot(slot) combine both. Owns the player state that
 #                     has no other home: saved scene, unlock flags, owned rods,
-#                     equipped rod, equipped bait.
+#                     equipped rod, equipped bait, caught fish.
 #   3. SETTINGS       Volume lives in its OWN global file, user://settings.json
 #                     (C3), NOT in slot files. save_settings() / load_settings();
 #                     volume is applied at startup with call_deferred.
@@ -26,6 +26,7 @@ signal slot_saved(slot: int)
 signal slot_loaded(slot: int)
 signal unlock_flag_added(flag: String)
 signal equipment_changed   # owned rods, equipped rod or equipped bait changed
+signal fish_caught(fish_id: String)
 
 const SAVE_DIR := "user://saves/"
 const SETTINGS_PATH := "user://settings.json"
@@ -46,11 +47,14 @@ const NEW_GAME_OWNED_ROD_IDS: Array = []
 const NEW_GAME_EQUIPPED_ROD := ""
 const NEW_GAME_EQUIPPED_BAIT := ""
 const NEW_GAME_STARTER_ITEMS: Dictionary = {}
+
 const DEFAULT_START_SCENE := "overworld_spawn"
+const NON_SAVABLE_SCENES := ["main_menu", "save_slots"]
 
 # --- Player state owned here ------------------------------------------------
 var _unlock_flags: Array = []      # Array of String
 var _owned_rods: Array = []        # Array of String (rod ids)
+var _caught_fish: Array = []       # Array of String (fish ids)
 var _equipped_rod := ""
 var _equipped_bait := ""
 var _saved_scene := DEFAULT_START_SCENE
@@ -118,13 +122,14 @@ func build_save_data() -> Dictionary:
 	var scene_to_save := _saved_scene
 	if game_manager != null and game_manager.get("current_scene_id") is String:
 		var current: String = game_manager.get("current_scene_id")
-		if current != "" and current != "main_menu":
+		if current != "" and not NON_SAVABLE_SCENES.has(current):
 			scene_to_save = current
 
 	var data := {
 		"scene": scene_to_save,
 		"unlock_flags": _unlock_flags.duplicate(),
 		"owned_rods": _owned_rods.duplicate(),
+		"caught_fish": _caught_fish.duplicate(),
 		"equipped_rod": _equipped_rod,
 		"equipped_bait": _equipped_bait,
 	}
@@ -140,7 +145,7 @@ func apply_save_data(data: Dictionary) -> void:
 	_reset_player_state()
 
 	# Scene.
-	if data.get("scene") is String and data["scene"] != "" and data["scene"] != "main_menu":
+	if data.get("scene") is String and data["scene"] != "" and not NON_SAVABLE_SCENES.has(data["scene"]):
 		_saved_scene = data["scene"]
 
 	# Inventory (InventoryManager validates item ids and positions itself).
@@ -154,6 +159,10 @@ func apply_save_data(data: Dictionary) -> void:
 	# Unlock flags.
 	if data.has("unlock_flags"):
 		_unlock_flags = _clean_flags(data["unlock_flags"])
+
+	# Caught fish (Almanac).
+	if data.has("caught_fish"):
+		_caught_fish = _clean_ids(data["caught_fish"], "has_fish", "fish")
 
 	# Rods.
 	if data.has("owned_rods"):
@@ -239,6 +248,30 @@ func has_unlock_flag(flag: String) -> bool:
 # context: context["unlocked"] = SaveManager.get_unlock_flags()
 func get_unlock_flags() -> Array:
 	return _unlock_flags.duplicate()
+
+
+# ============================================================================
+# CAUGHT FISH  (Almanac completion tracking)
+# ============================================================================
+
+# Records a fish species as caught. Returns true if it is a new discovery.
+func record_caught_fish(fish_id: String) -> bool:
+	if not _db_knows("has_fish", fish_id):
+		push_warning("SaveManager: unknown fish id '%s'." % fish_id)
+		return false
+	if _caught_fish.has(fish_id):
+		return false
+	_caught_fish.append(fish_id)
+	fish_caught.emit(fish_id)
+	return true
+
+
+func has_caught_fish(fish_id: String) -> bool:
+	return _caught_fish.has(fish_id)
+
+
+func get_caught_fish() -> Array:
+	return _caught_fish.duplicate()
 
 
 # ============================================================================
@@ -345,12 +378,13 @@ func _autoload(autoload_name: String) -> Node:
 func _reset_player_state() -> void:
 	_unlock_flags = []
 	_owned_rods = NEW_GAME_OWNED_ROD_IDS.duplicate()
+	_caught_fish = []
 	_equipped_rod = NEW_GAME_EQUIPPED_ROD
 	_equipped_bait = NEW_GAME_EQUIPPED_BAIT
 	_saved_scene = DEFAULT_START_SCENE
 
 
-# Does GameDB know this id? `method` is "has_rod" or "has_bait". If GameDB is
+# Does GameDB know this id? `method` is "has_rod", "has_bait", or "has_fish". If GameDB is
 # not available yet the id cannot be checked, so it is accepted.
 func _db_knows(method: String, id: String) -> bool:
 	var db := _autoload("GameDB")
