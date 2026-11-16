@@ -114,17 +114,18 @@ const TENSION_RISE_RATE := 1          # How fast tension builds (line-strength u
 const TENSION_FALL_RATE := 3.0           # How fast RELEASING the reel lowers tension (same units, at full release). | Raise if releasing is too slow to save the line, lower to make it riskier.
 const FISH_SHARE_MAX := 0.6              # Fish's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to make the fish matter more than your reeling.
 const REEL_SHARE_MAX := 1.0              # Reeling's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to punish heavy reeling more.
-const RELEASE_LINE_LOSS_RATE := 0.10     # Progress the fish takes back per second at full release. | Raise so releasing costs more distance, lower to make it cheap.
-const FISH_DRAG_RATE := 0.010            # Line the fish takes back per second (scaled by its pull). | Raise if fish never fight back enough, lower if they win too much.
+const RELEASE_LINE_LOSS_RATE := 0.05     # Progress the fish takes back per second at full release. | Raise so releasing costs more distance, lower to make it cheap.
+const FISH_DRAG_RATE := 0.008            # Line the fish takes back per second (scaled by its pull). | Raise if fish never fight back enough, lower if they win too much.
 const START_PROGRESS := 0.35             # Fight starts this far toward landed (0..1). | Raise for an easier start, lower for a harder one.
 const SNAP_GRACE_SEC := 0.5              # Seconds the bar may stay in the danger zone before the line snaps (x rod control, x2.5 in Casual). | Raise to forgive, lower to be strict.
 const PULL_FOR_FULL_SHARE := 6.0         # Fish pull that fills the fish's whole half. Higher = fish fills less of its half. | Raise if fish fill their half too easily.
 const SNAP_RATIO := 0.90                 # Bar level (0..1) where the snap timer starts. | Raise toward 1.0 to make snaps rarer.
-const SURGE_REEL_PROGRESS_MULT := 0.35   # Share of line won when reeling DURING a surge. | Lower to discourage reeling into a surge, raise to soften it.
+const SURGE_REEL_PROGRESS_MULT := 0.0    # Share of line won when reeling DURING a surge. | Lower to discourage reeling into a surge, raise to soften it.
+const CALM_REEL_PROGRESS_MULT := 1.1     # Multiplier for reeling while fish is calm | Lower to discourage reeling while calm, raise to encourage reeling while calm
 const SURGE_PULL_MULT := 1.5             # Fish pull multiplier while surging. | Lower to make surges gentler.
-const CALM_PULL_MULT := 0.6              # Fish pull multiplier while calm. | Raise so calm moments are less restful.
+const CALM_PULL_MULT := 0.8              # Fish pull multiplier while calm. | Raise so calm moments are less restful.
 const SURGE_DRAIN := 1.0                 # Stamina lost per second while surging. | Raise so fish tire faster.
-const CALM_DRAIN := 0.4                  # Stamina lost per second while calm. | Raise so fish tire faster.
+const CALM_DRAIN := 0.5                  # Stamina lost per second while calm. | Raise so fish tire faster.
 const CAST_ARC_BASE := 2.0               # Height of the cast arc at zero power (metres). | Visual only.
 const CAST_ARC_POWER := 3.0              # Extra arc height at full power (metres). | Visual only.
 const CATCH_STOP_DISTANCE := 1.5         # How close the bobber gets to the player when the fish is nearly landed. | Visual only.
@@ -883,6 +884,8 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 	var reel_gain := reeling * reel_speed * REEL_PROGRESS_RATE
 	if s.surging:
 		reel_gain *= SURGE_REEL_PROGRESS_MULT
+	else:
+		reel_gain *= CALM_REEL_PROGRESS_MULT
 	s.progress += reel_gain * delta
 	s.progress -= fish_pull * FISH_DRAG_RATE * delta
 	# Letting line out costs distance: the fish takes it back.

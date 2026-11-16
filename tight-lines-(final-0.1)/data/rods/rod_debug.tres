@@ -4,9 +4,8 @@
 
 [resource]
 script = ExtResource("1_7sqx8")
-chance_small = 0.34
-chance_medium = 0.33
-chance_large = 0.33
+chance_small = 0.0
+chance_large = 1.0
 id = "rod_debug"
 display_name = "Debug Rod"
 metadata/_custom_type_script = "uid://dgqkh62vpaosc"
