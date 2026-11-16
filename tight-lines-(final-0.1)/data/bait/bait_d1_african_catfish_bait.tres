@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BaitData" format=3 uid="uid://bhxkt861hsqki"]
+
+[ext_resource type="Script" uid="uid://h6ubxbaaibcr" path="res://data/item_class_templates/bait_boost.gd" id="1_0sch6"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="2_lnjut"]
+[ext_resource type="Resource" uid="uid://cmd2nkpncpguj" path="res://data/bait boosts/bait_boost_debug.tres" id="2_se0w3"]
+[ext_resource type="Script" uid="uid://bx3sigi1jlqjn" path="res://data/item_class_templates/bait_data.gd" id="3_se0w3"]
+[ext_resource type="Resource" uid="uid://bd41tun5pdiet" path="res://data/fish/fish_african_catfish.tres" id="4_se0w3"]
+
+[resource]
+script = ExtResource("3_se0w3")
+enables_fish = Array[ExtResource("2_lnjut")]([ExtResource("4_se0w3")])
+boosts = Array[ExtResource("1_0sch6")]([ExtResource("2_se0w3")])
+unlimited = true
+id = "bait_d1_african_catfish_bait"
+display_name = "Debug 1"
+metadata/_custom_type_script = "uid://bx3sigi1jlqjn"

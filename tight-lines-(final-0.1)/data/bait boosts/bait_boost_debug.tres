@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="BaitBoost" format=3 uid="uid://cmd2nkpncpguj"]
+
+[ext_resource type="Script" uid="uid://h6ubxbaaibcr" path="res://data/item_class_templates/bait_boost.gd" id="1_5lkw4"]
+[ext_resource type="Resource" uid="uid://bd41tun5pdiet" path="res://data/fish/fish_african_catfish.tres" id="1_wwm1u"]
+
+[resource]
+script = ExtResource("1_5lkw4")
+fish = ExtResource("1_wwm1u")
+multiplier = 200.0
+metadata/_custom_type_script = "uid://h6ubxbaaibcr"

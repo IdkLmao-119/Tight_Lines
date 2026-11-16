@@ -1,6 +1,6 @@
 extends Node
 # ============================================================================
-# SAVE MANAGER (GODOT)  — TightLines                                  (Ver. 3)
+# SAVE MANAGER (GODOT)  — TightLines                                  (Ver. 3.1)
 # ============================================================================
 # Autoload singleton named "SaveManager". Autoload order (DECISIONS.md C11):
 #   GameDB, SaveManager, ConnectionManager, InputManager, GameManager,
@@ -15,8 +15,8 @@ extends Node
 #   2. GAME STATE     build_save_data() / apply_save_data() collect and hand
 #                     back the state of the other modules. save_slot(slot) and
 #                     load_slot(slot) combine both. Owns the player state that
-#                     has no other home: saved scene, unlock flags, owned rods,
-#                     equipped rod, equipped bait, caught fish.
+#                     has no other home: saved scene, difficulty, unlock flags,
+#                     owned rods, equipped rod, equipped bait, caught fish.
 #   3. SETTINGS       Volume lives in its OWN global file, user://settings.json
 #                     (C3), NOT in slot files. save_settings() / load_settings();
 #                     volume is applied at startup with call_deferred.
@@ -26,37 +26,33 @@ signal slot_saved(slot: int)
 signal slot_loaded(slot: int)
 signal unlock_flag_added(flag: String)
 signal equipment_changed   # owned rods, equipped rod or equipped bait changed
+signal difficulty_changed(difficulty: String)
 signal fish_caught(fish_id: String)
 
 const SAVE_DIR := "user://saves/"
 const SETTINGS_PATH := "user://settings.json"
 const SAVE_EXTENSION := "json"
-# Written into every file for the future. Files are never refused over it (D8).
 const SAVE_FORMAT_VERSION := 1
 const SETTINGS_FORMAT_VERSION := 1
 const VOLUME_KEYS := ["master", "music", "sfx"]
 
-# --- What a brand-new game starts with (D10) --------------------------------
-# Left empty on purpose: the real ids come from GameDB's starter bait / starting
-# rod (DECISIONS.md section 6, GameDatabase to-do 5). Example once they exist:
-#   NEW_GAME_OWNED_ROD_IDS = ["rod_basic"]
-#   NEW_GAME_EQUIPPED_ROD  = "rod_basic"
-#   NEW_GAME_EQUIPPED_BAIT = "bait_worm"
-#   NEW_GAME_STARTER_ITEMS = {"bait_worm": 10}   # added to the Tackle Box
+# --- What a brand-new game starts with (D10) ---
 const NEW_GAME_OWNED_ROD_IDS: Array = []
 const NEW_GAME_EQUIPPED_ROD := ""
 const NEW_GAME_EQUIPPED_BAIT := ""
+const NEW_GAME_DIFFICULTY := "casual"
 const NEW_GAME_STARTER_ITEMS: Dictionary = {}
 
 const DEFAULT_START_SCENE := "overworld_spawn"
 const NON_SAVABLE_SCENES := ["main_menu", "save_slots"]
 
-# --- Player state owned here ------------------------------------------------
+# --- Player state owned here ---
 var _unlock_flags: Array = []      # Array of String
 var _owned_rods: Array = []        # Array of String (rod ids)
 var _caught_fish: Array = []       # Array of String (fish ids)
 var _equipped_rod := ""
 var _equipped_bait := ""
+var _difficulty := NEW_GAME_DIFFICULTY
 var _saved_scene := DEFAULT_START_SCENE
 
 var _slug_regex := RegEx.new()     # same rule as GameDB: lowercase snake_case
@@ -66,7 +62,6 @@ func _ready() -> void:
 	_slug_regex.compile("^[a-z][a-z0-9_]*$")
 	DirAccess.make_dir_recursive_absolute(SAVE_DIR)
 	_reset_player_state()
-	# Deferred (C3): GameManager must exist before volume can be applied.
 	load_settings.call_deferred()
 
 
@@ -74,8 +69,6 @@ func _ready() -> void:
 # SLOT STORAGE
 # ============================================================================
 
-# Writes `data` to a slot. Returns true on success. Does NOT change `data`
-# (a copy gets the "version" and "timestamp" fields).
 func save_game(slot: int, data: Dictionary) -> bool:
 	var to_write := data.duplicate(true)
 	to_write["version"] = SAVE_FORMAT_VERSION
@@ -83,8 +76,6 @@ func save_game(slot: int, data: Dictionary) -> bool:
 	return _write_json(_slot_path(slot), to_write)
 
 
-# Returns the slot's data, or an empty Dictionary if the slot is empty or the
-# file is unreadable.
 func load_game(slot: int) -> Dictionary:
 	return _read_json(_slot_path(slot))
 
@@ -99,8 +90,6 @@ func slot_exists(slot: int) -> bool:
 	return FileAccess.file_exists(_slot_path(slot))
 
 
-# For the Save Slots screen: {"exists": bool, "timestamp": String, "version": int}.
-# (No "outdated" flag: old saves are never refused, D8.)
 func get_slot_info(slot: int) -> Dictionary:
 	var data := load_game(slot)
 	if data.is_empty():
@@ -116,7 +105,6 @@ func get_slot_info(slot: int) -> Dictionary:
 # GAME STATE
 # ============================================================================
 
-# Collects the state of every module that is registered.
 func build_save_data() -> Dictionary:
 	var game_manager := _autoload("GameManager")
 	var scene_to_save := _saved_scene
@@ -127,6 +115,7 @@ func build_save_data() -> Dictionary:
 
 	var data := {
 		"scene": scene_to_save,
+		"difficulty": _difficulty,
 		"unlock_flags": _unlock_flags.duplicate(),
 		"owned_rods": _owned_rods.duplicate(),
 		"caught_fish": _caught_fish.duplicate(),
@@ -139,8 +128,6 @@ func build_save_data() -> Dictionary:
 	return data
 
 
-# Hands loaded data back to the modules, validating as it goes. A missing
-# section resets that module to its new-game state (D8). Safe to call with {}.
 func apply_save_data(data: Dictionary) -> void:
 	_reset_player_state()
 
@@ -148,7 +135,13 @@ func apply_save_data(data: Dictionary) -> void:
 	if data.get("scene") is String and data["scene"] != "" and not NON_SAVABLE_SCENES.has(data["scene"]):
 		_saved_scene = data["scene"]
 
-	# Inventory (InventoryManager validates item ids and positions itself).
+	# Difficulty.
+	if data.get("difficulty") is String:
+		var diff := String(data["difficulty"]).to_lower()
+		if diff == "casual" or diff == "angler":
+			_difficulty = diff
+
+	# Inventory.
 	var inventory := _autoload("InventoryManager")
 	if inventory != null:
 		if data.get("inventory") is Dictionary:
@@ -183,9 +176,9 @@ func apply_save_data(data: Dictionary) -> void:
 	_equipped_bait = bait
 
 	equipment_changed.emit()
+	difficulty_changed.emit(_difficulty)
 
 
-# Saves the current game into a slot. Returns true on success.
 func save_slot(slot: int) -> bool:
 	var ok := save_game(slot, build_save_data())
 	if ok:
@@ -193,8 +186,6 @@ func save_slot(slot: int) -> bool:
 	return ok
 
 
-# Loads a slot into the game. Returns false if the slot is empty or unreadable.
-# Old versions are NEVER refused (D8).
 func load_slot(slot: int) -> bool:
 	var data := load_game(slot)
 	if data.is_empty():
@@ -206,12 +197,10 @@ func load_slot(slot: int) -> bool:
 	return true
 
 
-# Returns the scene id stored in the active save state (defaults to DEFAULT_START_SCENE).
 func get_saved_scene() -> String:
 	return _saved_scene
 
 
-# Resets every module to a fresh game and gives the starting items (D10).
 func new_game() -> void:
 	apply_save_data({})
 	var inventory := _autoload("InventoryManager")
@@ -224,11 +213,27 @@ func new_game() -> void:
 
 
 # ============================================================================
-# UNLOCK FLAGS  (granted by QuestManager, read by FishingManager)  — D11
+# DIFFICULTY MANAGEMENT
 # ============================================================================
 
-# Returns true if the flag is NEW. False if it was already set, or if it is
-# not valid lowercase snake_case (same rule as GameDB's unlock_flag).
+func get_difficulty() -> String:
+	return _difficulty
+
+
+func set_difficulty(diff: String) -> void:
+	var clean := diff.to_lower()
+	if clean == "casual" or clean == "angler":
+		if _difficulty != clean:
+			_difficulty = clean
+			difficulty_changed.emit(_difficulty)
+	else:
+		push_warning("SaveManager: invalid difficulty '%s'. Expected 'casual' or 'angler'." % diff)
+
+
+# ============================================================================
+# UNLOCK FLAGS
+# ============================================================================
+
 func add_unlock_flag(flag: String) -> bool:
 	if _slug_regex.search(flag) == null:
 		push_warning("SaveManager: '%s' is not a valid unlock flag (lowercase snake_case)." % flag)
@@ -244,17 +249,14 @@ func has_unlock_flag(flag: String) -> bool:
 	return _unlock_flags.has(flag)
 
 
-# A COPY of every flag. Pass it straight in as the "unlocked" key of the odds
-# context: context["unlocked"] = SaveManager.get_unlock_flags()
 func get_unlock_flags() -> Array:
 	return _unlock_flags.duplicate()
 
 
 # ============================================================================
-# CAUGHT FISH  (Almanac completion tracking)
+# CAUGHT FISH
 # ============================================================================
 
-# Records a fish species as caught. Returns true if it is a new discovery.
 func record_caught_fish(fish_id: String) -> bool:
 	if not _db_knows("has_fish", fish_id):
 		push_warning("SaveManager: unknown fish id '%s'." % fish_id)
@@ -275,10 +277,8 @@ func get_caught_fish() -> Array:
 
 
 # ============================================================================
-# RODS AND BAIT  (rods are not grid items, so they live here)  — section 4
+# RODS AND BAIT
 # ============================================================================
-# FishingManager announces a change with a signal; whoever listens calls these
-# setters, then save_slot() persists them with the rest of the game.
 
 func get_owned_rods() -> Array:
 	return _owned_rods.duplicate()
@@ -288,7 +288,6 @@ func has_rod(rod_id: String) -> bool:
 	return _owned_rods.has(rod_id)
 
 
-# Adds a rod the player now owns (e.g. bought in the Shop). Returns true if new.
 func add_owned_rod(rod_id: String) -> bool:
 	if not _db_knows("has_rod", rod_id):
 		push_warning("SaveManager: unknown rod id '%s'." % rod_id)
@@ -304,7 +303,6 @@ func get_equipped_rod() -> String:
 	return _equipped_rod
 
 
-# The rod must be owned. Returns true on success.
 func set_equipped_rod(rod_id: String) -> bool:
 	if not _owned_rods.has(rod_id):
 		push_warning("SaveManager: cannot equip rod '%s' (not owned)." % rod_id)
@@ -319,8 +317,6 @@ func get_equipped_bait() -> String:
 	return _equipped_bait
 
 
-# The bait must exist in GameDB. It does NOT have to be in the Tackle Box right
-# now (it can run out); FishingManager checks the stock when casting.
 func set_equipped_bait(bait_id: String) -> bool:
 	if not _db_knows("has_bait", bait_id):
 		push_warning("SaveManager: unknown bait id '%s'." % bait_id)
@@ -332,11 +328,9 @@ func set_equipped_bait(bait_id: String) -> bool:
 
 
 # ============================================================================
-# SETTINGS  (global, not per slot)  — C3
+# SETTINGS
 # ============================================================================
 
-# Writes the current volumes to user://settings.json. Call it when the player
-# leaves the Options screen (or after a volume change).
 func save_settings() -> bool:
 	var game_manager := _autoload("GameManager")
 	if game_manager == null:
@@ -347,8 +341,6 @@ func save_settings() -> bool:
 	})
 
 
-# Reads user://settings.json and applies the volumes. Runs automatically at
-# startup (deferred). Returns false if there is no usable settings file.
 func load_settings() -> bool:
 	var data := _read_json(SETTINGS_PATH)
 	if data.is_empty():
@@ -381,11 +373,10 @@ func _reset_player_state() -> void:
 	_caught_fish = []
 	_equipped_rod = NEW_GAME_EQUIPPED_ROD
 	_equipped_bait = NEW_GAME_EQUIPPED_BAIT
+	_difficulty = NEW_GAME_DIFFICULTY
 	_saved_scene = DEFAULT_START_SCENE
 
 
-# Does GameDB know this id? `method` is "has_rod", "has_bait", or "has_fish". If GameDB is
-# not available yet the id cannot be checked, so it is accepted.
 func _db_knows(method: String, id: String) -> bool:
 	var db := _autoload("GameDB")
 	if db == null or not bool(db.get("is_loaded")):
@@ -393,7 +384,6 @@ func _db_knows(method: String, id: String) -> bool:
 	return bool(db.call(method, id))
 
 
-# Keeps only valid, unique lowercase snake_case strings.
 func _clean_flags(raw: Variant) -> Array:
 	var result: Array = []
 	if not (raw is Array):
@@ -408,7 +398,6 @@ func _clean_flags(raw: Variant) -> Array:
 	return result
 
 
-# Keeps only unique strings that GameDB knows (`method` = "has_rod" etc.).
 func _clean_ids(raw: Variant, method: String, label: String) -> Array:
 	var result: Array = []
 	if not (raw is Array):
@@ -424,7 +413,6 @@ func _clean_ids(raw: Variant, method: String, label: String) -> Array:
 	return result
 
 
-# Keeps only numeric volumes and limits them to 0.0 - 1.0.
 func _clean_volume(raw: Variant) -> Dictionary:
 	var result := {}
 	if not (raw is Dictionary):
@@ -436,13 +424,11 @@ func _clean_volume(raw: Variant) -> Dictionary:
 	return result
 
 
-# Writes JSON to a temp file, then replaces the real file only when the write
-# is complete, so a crash mid-save cannot corrupt the old file.
 func _write_json(path: String, data: Dictionary) -> bool:
 	var tmp_path := path + ".tmp"
 	var file := FileAccess.open(tmp_path, FileAccess.WRITE)
 	if file == null:
-		push_error("SaveManager: cannot write '%s' (error %d)." % [tmp_path, FileAccess.get_open_error()])
+		push_error("SaveManager: cannot write '%s'." % tmp_path)
 		return false
 	file.store_string(JSON.stringify(data))
 	file.close()
@@ -451,18 +437,17 @@ func _write_json(path: String, data: Dictionary) -> bool:
 		DirAccess.remove_absolute(path)
 	var err := DirAccess.rename_absolute(tmp_path, path)
 	if err != OK:
-		push_error("SaveManager: could not finish writing '%s' (error %d)." % [path, err])
+		push_error("SaveManager: could not finish writing '%s'." % path)
 		return false
 	return true
 
 
-# Returns the parsed file, or {} if it is missing, unreadable or corrupt.
 func _read_json(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
 		return {}
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
-		push_error("SaveManager: cannot read '%s' (error %d)." % [path, FileAccess.get_open_error()])
+		push_error("SaveManager: cannot read '%s'." % path)
 		return {}
 	var data: Variant = JSON.parse_string(file.get_as_text())
 	file.close()
