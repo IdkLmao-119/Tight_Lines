@@ -382,4 +382,31 @@ layout_mode = 2
 texture_normal = ExtResource("3_1f0mn")
 stretch_mode = 0
 
+[node name="HBoxContainer6" type="HBoxContainer" parent="ScrollContainer/VBoxContainer" unique_id=945703874]
+layout_mode = 2
+
+[node name="TextureButton" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer6" unique_id=793953736]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton2" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer6" unique_id=89688471]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton3" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer6" unique_id=377895757]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
+[node name="TextureButton4" type="TextureButton" parent="ScrollContainer/VBoxContainer/HBoxContainer6" unique_id=1570905604]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("3_1f0mn")
+stretch_mode = 0
+
 [connection signal="pressed" from="FishEntry/BackButton" to="." method="_on_back_button_pressed"]

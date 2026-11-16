@@ -90,6 +90,19 @@ material_overlay = SubResource("StandardMaterial3D_goktk")
 ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_goktk")
 
+[node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
+script = ExtResource("7_op18d")
+player_anchors = [NodePath("../PlayerFishing")]
+rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
+bobber_scene = ExtResource("8_1dwb6")
+difficulty = 1
+bobber_bite_sink = 0.15
+shake_base_intensity = 0.05
+shake_frequency = 90.0
+debug_spot_id = "location_debug"
+debug_rod_id = "rod_debug"
+debug_bait_id = "bait_d1_african_catfish_bait"
+
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 3.0786262)
 
@@ -245,16 +258,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
 transform = Transform3D(-2.686556, 5.364925, -2.345083e-07, 0, -2.6226832e-07, -6, -5.364925, -2.686556, 1.174331e-07, -16.37222, 1.3017673, 9.355566)
 mesh = SubResource("PlaneMesh_h20tu")
 surface_material_override/0 = SubResource("StandardMaterial3D_qjdax")
-
-[node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
-script = ExtResource("7_op18d")
-player_anchors = [NodePath("../PlayerFishing")]
-rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
-bobber_scene = ExtResource("8_1dwb6")
-difficulty = 1
-debug_spot_id = "location_debug"
-debug_rod_id = "rod_debug"
-debug_bait_id = "bait_0_debug"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
 

@@ -1,7 +1,7 @@
 extends Node3D
 
 # ============================================================================
-# FISHING MANAGER (SCENE NODE) - TightLines          Version 0.4.4 (2026-11-15)
+# FISHING MANAGER (SCENE NODE) - TightLines          Version 0.4.8 (2026-11-16)
 # ============================================================================
 # Put this script on a Node3D inside FishingMinigame.tscn (or the 2-player
 # versus scene). It is NOT an autoload. It runs one fishing session per
@@ -14,86 +14,27 @@ extends Node3D
 #   No hook step: a bite starts the reel fight. interact_pressed (tap / E)
 #   recalls the line while WAITING (DECISIONS C7).
 #
-# NEW IN 0.4.4
-#   - Significantly slowed down baseline reel speed and progress rate.
-#   - Strongly differentiated Casual vs. Angler difficulty mechanics:
-#     * Casual: Weaker fish pulls, greatly reduced line tension accumulation,
-#       and a generous line-snap grace period.
-#     * Angler: Full simulation stats, strict tension limits, and demanding fights.
+# FEATURES:
+#   - Full GameDB integration (rod/fish records, catch odds, weight).
+#   - 50/50 split tension: fish pull (max 50%) + player reeling (max 50%).
+#   - Casual vs Angler difficulty.
+#   - Camera shake, tension bar HUD, on-screen messages, catch popup.
 #
-# WHO OWNS WHAT (DECISIONS.md)
-#   GameManager  : input context, multiplayer flag, pause (C4, C6), overlay
-#   FishingManager (this): the catch roll, bait spending, rod model, catches
-#   FishingManager NEVER calls set_context(), set_multiplayer_mode() or
-#   toggle_pause(), and never reads input in _ready().
-#
-# INPUT (through InputManager only):
-#   cast_triggered(player_id, power)  cast (phone swing / keyboard hold+release)
-#   get_reel_strength(player_id)      polled every frame while REELING
-#   get_look(player_id)               polled, rotates the player's anchor (IDLE only)
-#   interact_pressed(player_id)       recall the line while WAITING
-#   cancel_pressed(player_id)         leave the scene (single player, IDLE only)
-#
-# MESSAGES TO THE PHONE (ConnectionManager.send_to_player / send_to_all):
-#   Screen changes (the phone swaps its view; see MainActivity.switchToState):
-#   {"game_state": "casting"}   fishing screen: ready to cast / cast / waiting for a bite
-#                               (sent when the session starts and whenever the
-#                               player is back to IDLE after a catch or escape)
-#   {"game_state": "reeling"}   a fish bit: show the reeling screen
-#   {"game_state": "overworld"} fishing was exited: back to the overworld screen
-#   Vibration (handled in MainActivity.onMessage):
-#   {"type": "vibrate", "reason": "bite",   "player_id": n}   a fish bit
-#   {"type": "vibrate", "reason": "surge",  "player_id": n}   fish is surging
-#   {"type": "vibrate", "reason": "escape", "player_id": n}   the fish escaped
-#   A phone that (re)connects during a session is sent the current screen again.
-#   Single player: sent to every connected phone (any phone is Player 1).
-#   Multiplayer: sent only to that player's phone.
-#
-# CONTEXT IN (read once in _ready() with GameManager.consume_context()):
-#   { spot_id, rod_id, bait_id, multiplayer, return_to, bite_multiplier?, difficulty? }
-#   This is the STARTING rod and bait. Change them later with set_rod() and
-#   set_bait() (IDLE state only).
-# RESULT OUT (GameManager.end_fishing):
-#   { results = { player_id: { catches = [fish], total_weight = kg } } }
-#
-# THE CATCH ROLL (GameDB never rolls dice; this script does):
-#   1. odds = GameDB.get_catch_odds(spot, bait, rod, context)
-#   2. weighted random pick of one fish id ("odds weight", not kg).
-#      Empty odds = nothing can bite: the bite timer restarts.
-#   3. size_cm rolled between min_size and max_size, leaning toward avg_size
-#   4. weight (kg) = GameDB.get_weight_for_size_kg(fish_id, size_cm)
-#
-# TEMPORARY DEFAULTS: GameDB has no rod or fish fight stats yet. Every value
-# named TEMP_* below is used until RodData / FishData get the real fields
-# (line_strength, reel_speed, max_cast_distance, control; pull_strength,
-# stamina). The script reads those fields by name when they appear.
-#
-# SCENE SETUP
-#   player_anchors : one Node3D per player, in seat order. Put each player's
-#                    camera under its anchor; tilt / A,D rotate the anchor and
-#                    the cast goes along the anchor's forward (-Z).
-#                    The anchor's rotation when the session starts is "straight
-#                    ahead"; the player can turn 75 degrees either way from it.
-#   rod_holders    : optional Node3D per player that the rod model is added
-#                    under. If empty, the player's anchor is used, so the rod
-#                    turns with the camera.
-#   The rod model scene needs a Marker3D named "LineTip" (GameDB.find_line_tip).
-#   F6 testing without GameManager: set the InputManager context to FISHING
-#   from a test script, and fill the debug_* exports below.
+# 0.4.8 FIXES: see PROGRESS_FishingManager.md changelog.
 # ============================================================================
 
 # --- Signals (for UI, camera rigs, audio, SaveManager) ---
 signal state_changed(player_id: int, new_state: int, old_state: int)
 signal cast_started(player_id: int, power: float, target: Vector3)
 signal bobber_landed(player_id: int, position: Vector3)
-signal fish_bit(player_id: int)                        # a bite just started the fight
-signal fish_caught(player_id: int, fish: Dictionary)   # won AND kept
-signal fish_released(player_id: int, fish: Dictionary, reason: String)  # won, not kept: "fish_box_full"
-signal fish_escaped(player_id: int, fish: Dictionary, reason: String)   # "line_snapped" | "got_away"
-signal cast_rejected(player_id: int, reason: String)   # "no_bait" | "time_up"
-signal rod_changed(player_id: int, rod_id: String)     # SaveManager listens: equipped_rod
-signal bait_changed(player_id: int, bait_id: String)   # SaveManager listens: equipped_bait
-signal difficulty_changed(difficulty: int)             # Difficulty setting changed
+signal fish_bit(player_id: int)
+signal fish_caught(player_id: int, fish: Dictionary)
+signal fish_released(player_id: int, fish: Dictionary, reason: String)
+signal fish_escaped(player_id: int, fish: Dictionary, reason: String)
+signal cast_rejected(player_id: int, reason: String)
+signal rod_changed(player_id: int, rod_id: String)
+signal bait_changed(player_id: int, bait_id: String)
+signal difficulty_changed(difficulty: int)
 signal session_finished(results: Dictionary)
 
 enum State { IDLE, CASTING, WAITING, REELING, CAUGHT, ESCAPED }
@@ -105,88 +46,86 @@ enum Difficulty { CASUAL, ANGLER }
 @export var rod_holders: Array[Node3D] = []
 @export var bobber_scene: PackedScene
 @export var water_level := 0.0
-@export var max_players := 2                  # versus scene = 2
-@export var weather_system: Node              # optional: WeatherSystem.gd node; found by itself if empty
-@export var difficulty: Difficulty = Difficulty.CASUAL   # Changeable on the inspector for debugging
+@export var max_players := 2
+@export var weather_system: Node
+@export var difficulty: Difficulty = Difficulty.CASUAL
 
 @export_group("Casting")
 @export var min_cast_distance := 4.0
-@export var look_turn_speed := 1.5            # radians/sec at full tilt / key
-@export var max_look_angle_deg := 75.0        # view can turn this far left AND right of straight ahead
+@export var look_turn_speed := 1.5
+@export var max_look_angle_deg := 75.0
 
 @export_group("Bites")
-@export var bite_delay_min := 3.0             # seconds
+@export var bite_delay_min := 3.0
 @export var bite_delay_max := 9.0
-@export var bobber_bite_sink := 0.12          # meters the bobber sinks below water_level on a bite
-@export var bobber_sink_duration := 1.0       # seconds it takes for the bobber to sink down
+@export var bobber_bite_sink := 0.12
+@export var bobber_sink_duration := 1.0
+
+@export_group("Camera Shake")
+@export var enable_camera_shake := true
+@export var shake_base_intensity := 0.06
+@export var shake_frequency := 30.0
+
+@export_group("HUD / UI")
+@export var show_tension_bar := true
 
 @export_group("Messages")
-@export var show_messages := true             # on-screen "There's a bite" / "Reel now" / "Fish escaped"
-@export var bite_message_seconds := 0.8       # how long "There's a bite" shows before "Reel now" replaces it
+@export var show_messages := true
+@export var bite_message_seconds := 0.8
 @export var message_font_size := 48
-@export var send_phone_messages := true       # game_state + vibrate packets to the Android app
-@export var surge_vibrate_interval := 0.35    # seconds between vibrate pulses while the fish is surging
+@export var send_phone_messages := true
+@export var surge_vibrate_interval := 0.35
 
 @export_group("Round rules")
-@export var result_display_time := 2.5        # seconds shown in CAUGHT / ESCAPED
+@export var result_display_time := 2.5
 @export var time_limit_sec := 0.0             # 0 = no limit
 @export var require_bait := false              # D10: bait is always required
 @export var store_catches_in_inventory := true  # single player only (D7)
 
 @export_group("Debug / standalone testing")
-# Used only when the context from GameManager lacks that key (F6 testing).
 @export var debug_spot_id := ""
 @export var debug_rod_id := ""
 @export var debug_bait_id := ""
-@export var debug_multiplayer := false        # F6 test of the 2-player scene without GameManager context
+@export var debug_multiplayer := false
 @export var debug_log := true
 
-# --- Day / weather words (FishingTerms) used when NO WeatherSystem node is in the scene ---
-# With a WeatherSystem node its time_of_day and weather win over these two.
-# Empty = "not provided": modifiers that look at the key simply do not apply.
-var time_of_day := ""     # e.g. "dawn"
-var weather := ""         # e.g. "rain"
-var season := ""          # e.g. "wet"
+# --- Day / weather words used when NO WeatherSystem node is in the scene ---
+var time_of_day := ""
+var weather := ""
+var season := ""
 
-# --- TEMPORARY defaults until GameDB has the real fields ---
-const TEMP_ROD_LINE_STRENGTH := 10.0     # real range 5-20
-const TEMP_ROD_MAX_CAST_DISTANCE := 50.0 # real range 10-40 m
-const TEMP_ROD_CONTROL := 1.0            # real range 0.5-2.0
-const TEMP_FISH_PULL_STRENGTH := 4.0     # real range 2-8
-const TEMP_FISH_STAMINA := 20.0          # real range 10-30 s
+# --- Fallback defaults used if GameDB records lack a field ---
+const TEMP_ROD_LINE_STRENGTH := 10.0
+const TEMP_ROD_MAX_CAST_DISTANCE := 20.0
+const TEMP_ROD_CONTROL := 1.0
+const TEMP_FISH_PULL_STRENGTH := 4.0
+const TEMP_FISH_STAMINA := 20.0
+const TEMP_ROD_REEL_SPEED := 1.0
 
-# ============================================================================
-# >>> TWEAK REELING SPEED <<<   (1 of 3: the rod's reel speed)
-# ============================================================================
-# Slower baseline speed for more deliberate, controlled reeling fights.
-const TEMP_ROD_REEL_SPEED := 1.1         # <<< TWEAK (reduced from 2.0)
-
-# ============================================================================
-# Reel fight tuning (guesses, tune after playtest)
-# tension is in the same units as a rod's line_strength.
-# ============================================================================
-# >>> TWEAK REELING SPEED <<<   (2 of 3: how fast reeling pulls the fish in)
-const REEL_PROGRESS_RATE := 0.28    # <<< TWEAK (reduced from 0.50 for slower progress)
-# >>> TWEAK REELING SPEED <<<   (3 of 3: how much stress reeling puts on the line)
-const REEL_TENSION_FORCE := 2.2     # <<< TWEAK (reduced tension stress slightly)
-
-const TENSION_RISE_RATE := 12.0     # units/sec toward a higher target
-const TENSION_FALL_RATE := 6.0      # units/sec toward a lower target
-const FISH_DRAG_RATE := 0.009       # progress lost/sec per unit of fish pull
-const START_PROGRESS := 0.35        # 0 = fish gets away, 1 = landed
-const SNAP_GRACE_SEC := 1.2         # seconds over the limit before snapping (x control)
+# --- Reel fight tuning ---
+const REEL_PROGRESS_RATE := 0.15
+const TENSION_RISE_RATE := 0.90
+const TENSION_FALL_RATE := 3.0
+const FISH_DRAG_RATE := 0.009
+const START_PROGRESS := 0.35
+const SNAP_GRACE_SEC := 1.2
+const PULL_FOR_FULL_SHARE := 6.0    # fish_pull that fills the fish's whole 50% of the bar
+const SNAP_RATIO := 0.95            # bar level (0..1) at which the snap timer runs
+const SURGE_REEL_PROGRESS_MULT := 0.35  # reeling during a surge wins this much line
 const SURGE_PULL_MULT := 1.5
 const CALM_PULL_MULT := 0.6
-const SURGE_DRAIN := 1.0            # stamina/sec while surging
+const SURGE_DRAIN := 1.0
 const CALM_DRAIN := 0.4
 const CAST_ARC_BASE := 2.0
 const CAST_ARC_POWER := 3.0
-const CATCH_STOP_DISTANCE := 1.5    # bobber never gets closer than this to the player while reeling
+const CATCH_STOP_DISTANCE := 1.5
 
-# Text shown on screen (change the wording here).
 const MSG_BITE := "There's a bite"
 const MSG_REEL := "Reel now"
 const MSG_ESCAPE := "Fish escaped"
+
+const CATCH_POPUP_SECONDS := 5.0
+const FISH_IMAGE_PROPERTIES := ["jpg", "image", "icon", "texture"]
 
 # ----------------------------------------------------------------------------
 # Per-player session data
@@ -194,16 +133,16 @@ const MSG_ESCAPE := "Fish escaped"
 class FishingSession extends RefCounted:
 	var player_id := 0
 	var anchor: Node3D = null
-	var holder: Node3D = null            # parent of the rod model
-	var state := 0                       # FishingManager.State (stored as int)
+	var holder: Node3D = null
+	var state := 0
 	var state_time := 0.0
 
-	var base_yaw := 0.0                  # anchor's rotation.y at session start = "straight ahead"
-	var look_offset := 0.0               # radians turned away from base_yaw (clamped)
+	var base_yaw := 0.0
+	var look_offset := 0.0
 
 	var rod_id := ""
 	var bait_id := ""
-	var rod: Dictionary = {}             # line_strength, reel_speed, max_cast_distance, control
+	var rod: Dictionary = {}
 	var rod_model: Node3D = null
 	var line_tip: Node3D = null
 
@@ -227,30 +166,34 @@ class FishingSession extends RefCounted:
 	var surge_vibrate_timer := 0.0
 	var snap_timer := 0.0
 
-	var msg_token := 0                   # lets an old message timer know it is outdated
+	var msg_token := 0
+	var shake_time := 0.0
 
 	var catches: Array = []
 	var total_weight := 0.0
 
 # --- Internals ---
-var _sessions: Dictionary = {}          # { player_id: FishingSession }
-var _order: Array[int] = []             # player_ids in seat order
+var _sessions: Dictionary = {}
+var _order: Array[int] = []
 var _input: Node = null
 var _game_manager: Node = null
-var _db: Node = null                    # GameDB
-var _save: Node = null                  # SaveManager
-var _inventory: Node = null             # InventoryManager
-var _connection: Node = null            # ConnectionManager (messages to the phone)
+var _db: Node = null
+var _save: Node = null
+var _inventory: Node = null
+var _connection: Node = null
 var _context: Dictionary = {}
 var _multiplayer := false
 var _elapsed := 0.0
 var _time_up := false
 var _finished := false
 var _warned: Dictionary = {}
-var _fish_layout: Node = null           # the scene's "FishLayout" node, found on first catch
-var _fish_layout_token := 0             # counts catches, so an old timer cannot hide a newer popup
-var _msg_layer: CanvasLayer = null      # on-screen messages
-var _msg_labels: Dictionary = {}        # { player_id: Label }
+var _fish_layout: Node = null
+var _fish_layout_token := 0
+var _popup: CanvasLayer = null
+var _msg_layer: CanvasLayer = null
+var _msg_labels: Dictionary = {}
+var _tension_layer: CanvasLayer = null
+var _tension_bars: Dictionary = {}
 
 
 func _ready() -> void:
@@ -266,29 +209,27 @@ func _ready() -> void:
 	if _db == null:
 		push_error("FishingManager: GameDB autoload not found - no fish can bite.")
 
-	# Context is read ONCE here (C6). Nothing else is read from input in _ready().
 	if _game_manager != null and _game_manager.has_method("consume_context"):
 		_context = _game_manager.consume_context().duplicate(true)
-	
+
 	_fill_debug_defaults()
 
-	# Load difficulty from context or SaveManager if available, fallback to exported value
 	if _context.has("difficulty"):
-		var ctx_diff = _context.get("difficulty")
+		var ctx_diff: Variant = _context.get("difficulty")
 		if ctx_diff is int:
-			difficulty = ctx_diff as Difficulty
+			set_difficulty(ctx_diff)
 		elif ctx_diff is String:
 			set_difficulty_string(ctx_diff)
 	elif _save != null and _save.has_method("get_difficulty"):
-		var save_diff = _save.get_difficulty()
+		var save_diff: Variant = _save.get_difficulty()
 		if save_diff is String:
 			set_difficulty_string(save_diff)
 		elif save_diff is int:
-			difficulty = save_diff as Difficulty
+			set_difficulty(save_diff)
 
 	_multiplayer = bool(_context.get("multiplayer", false)) or debug_multiplayer
 	if _multiplayer and time_limit_sec <= 0.0:
-		push_warning("FishingManager: multiplayer round has no time_limit_sec - Cancel is disabled in multiplayer, so nothing ends the round. Set time_limit_sec (e.g. 180).")
+		push_warning("FishingManager: multiplayer round has no time_limit_sec - Cancel is disabled in multiplayer.")
 
 	if _input != null:
 		_connect_input()
@@ -313,16 +254,16 @@ func _exit_tree() -> void:
 
 
 # ----------------------------------------------------------------------------
-# Public API & UI Selection Functions
+# Public API
 # ----------------------------------------------------------------------------
 
-# Set difficulty by enum or int value (0 = Casual, 1 = Angler)
 func set_difficulty(new_difficulty: int) -> void:
 	if new_difficulty >= Difficulty.CASUAL and new_difficulty <= Difficulty.ANGLER:
-		difficulty = new_difficulty as Difficulty
-		difficulty_changed.emit(difficulty)
+		if difficulty != new_difficulty:
+			difficulty = new_difficulty as Difficulty
+			difficulty_changed.emit(difficulty)
 
-# Set difficulty using string name ("casual" or "angler") for UI ease
+
 func set_difficulty_string(diff_str: String) -> void:
 	match diff_str.to_lower():
 		"casual", "0":
@@ -330,21 +271,15 @@ func set_difficulty_string(diff_str: String) -> void:
 		"angler", "1":
 			set_difficulty(Difficulty.ANGLER)
 
-# Get current difficulty as int/enum
+
 func get_difficulty() -> int:
 	return difficulty
 
-# Get current difficulty as string ("casual" or "angler")
+
 func get_difficulty_string() -> String:
-	match difficulty:
-		Difficulty.CASUAL:
-			return "casual"
-		Difficulty.ANGLER:
-			return "angler"
-	return "casual"
+	return "angler" if difficulty == Difficulty.ANGLER else "casual"
 
 
-# (Re)creates one session per id. Called automatically from _ready().
 func start_session(player_ids: Array[int]) -> void:
 	for s in _sessions.values():
 		_remove_bobber(s)
@@ -352,37 +287,38 @@ func start_session(player_ids: Array[int]) -> void:
 	_sessions.clear()
 	_order.clear()
 	_clear_messages()
+	_clear_tension_bars()
 	_elapsed = 0.0
 	_time_up = false
 	_finished = false
 
 	var rod_id := String(_context.get("rod_id", ""))
 	var bait_id := String(_context.get("bait_id", ""))
+	var spot_id := String(_context.get("spot_id", ""))
+
+	if _db != null and _db.is_loaded and spot_id != "":
+		if not _db.is_location_available(spot_id, _build_odds_context()):
+			push_warning("FishingManager: Location '%s' is not available or locked in current context." % spot_id)
+
 	for i in player_ids.size():
 		var pid := player_ids[i]
 		var s := FishingSession.new()
 		s.player_id = pid
 		s.anchor = _anchor_for_index(i)
 		s.holder = _holder_for_index(i)
-		# "Straight ahead" = wherever the anchor points right now.
 		s.base_yaw = s.anchor.rotation.y if s.anchor != null else 0.0
-		s.look_offset = 0.0
 		s.rod_id = rod_id
 		s.bait_id = bait_id
 		_load_rod(s)
 		_sessions[pid] = s
 		_order.append(pid)
-		# Phone shows the fishing screen as soon as the round starts.
 		_send_game_state(pid, "casting")
 
 	if debug_log:
-		print("[FishingManager] sessions %s | difficulty=%s | multiplayer=%s | spot='%s' rod='%s' bait='%s' | require_bait=%s" % [
-				str(_order), get_difficulty_string(), str(_multiplayer), String(_context.get("spot_id", "")), rod_id, bait_id,
-				str(require_bait)])
+		print("[FishingManager] sessions %s | difficulty=%s | multiplayer=%s | spot='%s' rod='%s' bait='%s' require_bait=%s" % [
+				str(_order), get_difficulty_string(), str(_multiplayer), spot_id, rod_id, bait_id, str(require_bait)])
 
 
-# Swap a player's rod. Allowed in IDLE only, so a stronger rod cannot be
-# swapped in while a fish is on. Returns true if the swap happened.
 func set_rod(player_id: int, rod_id: String) -> bool:
 	var s := _sessions.get(player_id) as FishingSession
 	if s == null or s.state != State.IDLE:
@@ -396,8 +332,6 @@ func set_rod(player_id: int, rod_id: String) -> bool:
 	return true
 
 
-# Swap a player's bait. IDLE only. Bait itself lives in the Tackle Box; the
-# inventory overlay decides which bait the player may pick.
 func set_bait(player_id: int, bait_id: String) -> bool:
 	var s := _sessions.get(player_id) as FishingSession
 	if s == null or s.state != State.IDLE:
@@ -410,7 +344,6 @@ func set_bait(player_id: int, bait_id: String) -> bool:
 	return true
 
 
-# Lightweight snapshot for HUD code (tension bar, progress bar, power meter).
 func get_session_info(player_id: int) -> Dictionary:
 	var s := _sessions.get(player_id) as FishingSession
 	if s == null:
@@ -418,7 +351,7 @@ func get_session_info(player_id: int) -> Dictionary:
 	var line_strength := maxf(float(s.rod.get("line_strength", TEMP_ROD_LINE_STRENGTH)), 0.001)
 	return {
 		"state": s.state,
-		"tension_ratio": s.tension / line_strength,   # >= 1.0 means the line is in danger
+		"tension_ratio": s.tension / line_strength,
 		"progress": s.progress,
 		"stamina_ratio": s.stamina / maxf(s.max_stamina, 0.001),
 		"surging": s.surging,
@@ -427,7 +360,7 @@ func get_session_info(player_id: int) -> Dictionary:
 		"total_weight": s.total_weight,
 		"rod_id": s.rod_id,
 		"bait_id": s.bait_id,
-		"look_degrees": rad_to_deg(s.look_offset),     # -75 .. +75
+		"look_degrees": rad_to_deg(s.look_offset),
 		"difficulty": difficulty,
 	}
 
@@ -443,7 +376,6 @@ func get_time_left() -> float:
 	return maxf(time_limit_sec - _elapsed, 0.0)
 
 
-# Ends the round and returns to the scene named in the context (via GameManager).
 func finish_session() -> void:
 	if _finished:
 		return
@@ -454,11 +386,12 @@ func finish_session() -> void:
 		_remove_bobber(s)
 		results[pid] = {"catches": s.catches.duplicate(true), "total_weight": s.total_weight}
 		_send_game_state(pid, "overworld")
+	_clear_tension_bars()
 	session_finished.emit(results)
 
 	var payload := {"results": results}
 	if _multiplayer:
-		payload["winner"] = _winner_id(results)   # player_id with the heaviest total, -1 = tie
+		payload["winner"] = _winner_id(results)
 	if _game_manager == null:
 		return
 	if _game_manager.has_method("end_fishing"):
@@ -529,7 +462,7 @@ func _update_session(s: FishingSession, delta: float) -> void:
 				_set_state(s, State.IDLE)
 
 
-# --- CASTING ---------------------------------------------------------------
+# --- CASTING ---
 func _update_casting(s: FishingSession, delta: float) -> void:
 	s.cast_time += delta
 	var t := clampf(s.cast_time / s.cast_duration, 0.0, 1.0)
@@ -543,7 +476,7 @@ func _update_casting(s: FishingSession, delta: float) -> void:
 		bobber_landed.emit(s.player_id, s.cast_target)
 
 
-# --- WAITING ---------------------------------------------------------------
+# --- WAITING ---
 func _update_waiting(s: FishingSession, delta: float) -> void:
 	if s.bobber != null:
 		var pos := s.cast_target
@@ -614,9 +547,6 @@ func on_fight_won(s: FishingSession) -> void:
 # --- Phone messages ---
 func _notify_phone(player_id: int, data: Dictionary) -> void:
 	if not send_phone_messages:
-		return
-	if _connection == null:
-		_warn_once("no_connection", "ConnectionManager autoload not found - phone messages are not sent.")
 		return
 	var msg := data.duplicate()
 	msg["player_id"] = player_id
@@ -705,7 +635,71 @@ func _clear_messages() -> void:
 	_msg_labels.clear()
 
 
-# --- THE CATCH ROLL ---
+# --- On-screen Tension Bar HUD ---
+func _update_tension_ui(s: FishingSession) -> void:
+	if not show_tension_bar:
+		return
+	var bar := _get_tension_bar(s.player_id)
+	if bar == null:
+		return
+
+	if s.state == State.REELING:
+		bar.visible = true
+		var line_strength := maxf(float(s.rod.get("line_strength", TEMP_ROD_LINE_STRENGTH)), 0.001)
+		var ratio := s.tension / line_strength
+		bar.value = clampf(ratio, 0.0, 1.2)
+
+		if ratio >= 1.0:
+			bar.modulate = Color(1.0, 0.2, 0.2)
+		elif ratio > 0.75:
+			bar.modulate = Color(1.0, 0.8, 0.2)
+		else:
+			bar.modulate = Color(0.2, 0.8, 1.0)
+	else:
+		bar.visible = false
+
+
+func _get_tension_bar(player_id: int) -> ProgressBar:
+	if _tension_bars.has(player_id) and is_instance_valid(_tension_bars[player_id]):
+		return _tension_bars[player_id]
+	if _tension_layer == null or not is_instance_valid(_tension_layer):
+		_tension_layer = CanvasLayer.new()
+		_tension_layer.layer = 16
+		add_child(_tension_layer)
+
+	var index := maxi(_order.find(player_id), 0)
+	var count := maxi(_order.size(), 1)
+
+	var bar := ProgressBar.new()
+	bar.min_value = 0.0
+	bar.max_value = 1.0
+	bar.value = 0.0
+	bar.show_percentage = false
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	bar.anchor_left = (float(index) / count) + 0.1
+	bar.anchor_right = (float(index + 1) / count) - 0.1
+	bar.anchor_top = 0.82
+	bar.anchor_bottom = 0.86
+	bar.offset_left = 0.0
+	bar.offset_right = 0.0
+	bar.offset_top = 0.0
+	bar.offset_bottom = 0.0
+	bar.visible = false
+
+	_tension_layer.add_child(bar)
+	_tension_bars[player_id] = bar
+	return bar
+
+
+func _clear_tension_bars() -> void:
+	for bar in _tension_bars.values():
+		if is_instance_valid(bar):
+			bar.queue_free()
+	_tension_bars.clear()
+
+
+# --- THE CATCH ROLL VIA GameDB ---
 func _roll_fish(s: FishingSession) -> Dictionary:
 	if _db == null or not _db.is_loaded:
 		_warn_once("db_not_loaded", "GameDB missing or not loaded - nothing can bite.")
@@ -714,28 +708,42 @@ func _roll_fish(s: FishingSession) -> Dictionary:
 	var spot_id := String(_context.get("spot_id", ""))
 	var odds: Dictionary = _db.get_catch_odds(spot_id, s.bait_id, s.rod_id, _build_odds_context())
 	if odds.is_empty():
-		_warn_once("empty_odds", "get_catch_odds() returned nothing for spot '%s', bait '%s', rod '%s'. Waiting and retrying." % [spot_id, s.bait_id, s.rod_id])
+		_warn_once("empty_odds", "get_catch_odds() returned nothing for spot '%s', bait '%s', rod '%s'." % [spot_id, s.bait_id, s.rod_id])
 		return {}
 
 	var fish_id := _pick_weighted(odds)
 	if fish_id == "" or not _db.has_fish(fish_id):
 		return {}
-	var record: Object = _db.get_fish(fish_id)
 
-	var lo := _stat(record, "min_size", 10.0)
-	var hi := maxf(_stat(record, "max_size", 50.0), lo)
-	var avg := clampf(_stat(record, "avg_size", (lo + hi) * 0.5), lo, hi)
+	var record: FishData = _db.get_fish(fish_id)
+	if record == null:
+		return {}
+
+	var lo := record.min_size
+	var hi := maxf(record.max_size, lo)
+	var avg := clampf(record.avg_size, lo, hi)
 	var size_cm := snappedf(_triangular(lo, avg, hi), 0.1)
 	var weight_kg: float = _db.get_weight_for_size_kg(fish_id, size_cm)
 
 	return {
 		"id": fish_id,
-		"display_name": String(record.get("display_name")),
+		"display_name": record.display_name,
 		"size_cm": size_cm,
 		"weight": snappedf(weight_kg, 0.01),
-		"pull_strength": _stat(record, "pull_strength", TEMP_FISH_PULL_STRENGTH),
-		"stamina": _stat(record, "stamina", TEMP_FISH_STAMINA),
+		"pull_strength": _record_float(record, "pull_strength", TEMP_FISH_PULL_STRENGTH),
+		"stamina": _record_float(record, "stamina", TEMP_FISH_STAMINA),
 	}
+
+
+# Reads a float property from a record, using a fallback when it is missing or <= 0.
+func _record_float(record: Object, prop: String, fallback: float) -> float:
+	if record == null:
+		return fallback
+	var value: Variant = record.get(prop)
+	if value == null:
+		return fallback
+	var f := float(value)
+	return f if f > 0.0 else fallback
 
 
 func _pick_weighted(odds: Dictionary) -> String:
@@ -769,7 +777,7 @@ func _triangular(lo: float, mode: float, hi: float) -> float:
 
 
 func _build_odds_context() -> Dictionary:
-	var ctx := {"unlocked": _get_unlock_flags(), "difficulty": get_difficulty_string()}
+	var ctx := {"unlocked": _get_unlock_flags()}
 	var tod := time_of_day
 	var wx := weather
 	var ws := _get_weather_system()
@@ -805,7 +813,7 @@ func _get_unlock_flags() -> Array:
 	return []
 
 
-# --- REELING ---
+# --- REELING (50/50 split tension system) ---
 func _update_reeling(s: FishingSession, delta: float) -> void:
 	var reel_speed := float(s.rod.get("reel_speed", TEMP_ROD_REEL_SPEED))
 	var line_strength := float(s.rod.get("line_strength", TEMP_ROD_LINE_STRENGTH))
@@ -828,43 +836,65 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 
 	var stamina_ratio := s.stamina / s.max_stamina
 	var pull_mult := SURGE_PULL_MULT if s.surging else CALM_PULL_MULT
-	var fish_pull := float(s.fish["pull_strength"]) * pull_mult * (0.4 + 0.6 * stamina_ratio)
+	var fish_pull := float(s.fish.get("pull_strength", TEMP_FISH_PULL_STRENGTH)) * pull_mult * (0.4 + 0.6 * stamina_ratio)
 
-	# Distinct difficulty balance:
-	# Casual: Fish pull 50% weaker, tension buildup halved, snap grace period doubled.
-	# Angler: Full uncompromising simulation parameters.
-	var diff_fish_pull_mult := 0.50 if difficulty == Difficulty.CASUAL else 1.0
-	var diff_tension_mult := 0.50 if difficulty == Difficulty.CASUAL else 1.0
-	var diff_grace_mult := 2.5 if difficulty == Difficulty.CASUAL else 1.0
+	# TENSION BAR = fish share (0..0.5) + reel share (0..0.5), as a ratio of the bar.
+	# Fish share: a fresh fish surging at PULL_FOR_FULL_SHARE fills its whole half;
+	# a calm or tired fish fills much less.
+	var fish_share := clampf(fish_pull / PULL_FOR_FULL_SHARE, 0.0, 1.0) * 0.5
+	# Reel share: reeling at full strength fills the other half (reel_speed does
+	# not change the bar, only how fast progress is gained).
+	var reel_share := clampf(reeling, 0.0, 1.0) * 0.5
+	var target_ratio := fish_share + reel_share
+	var target := target_ratio * line_strength
 
-	var effective_fish_pull := fish_pull * diff_fish_pull_mult
-	var target := (effective_fish_pull + reeling * reel_speed * REEL_TENSION_FORCE) * diff_tension_mult
 	var rate := TENSION_RISE_RATE if target > s.tension else TENSION_FALL_RATE
 	s.tension = move_toward(s.tension, target, rate * delta)
 
-	s.progress += reeling * reel_speed * REEL_PROGRESS_RATE * delta
-	s.progress -= effective_fish_pull * FISH_DRAG_RATE * delta
+	# Reeling against a surge wins far less line AND fills the bar: discourages it.
+	var reel_gain := reeling * reel_speed * REEL_PROGRESS_RATE
+	if s.surging:
+		reel_gain *= SURGE_REEL_PROGRESS_MULT
+	s.progress += reel_gain * delta
+	s.progress -= fish_pull * FISH_DRAG_RATE * delta
 	s.progress = clampf(s.progress, 0.0, 1.0)
 
 	s.stamina = maxf(s.stamina - (SURGE_DRAIN if s.surging else CALM_DRAIN) * delta, 0.0)
 
-	if s.tension > line_strength:
+	if s.tension >= line_strength * SNAP_RATIO:
 		s.snap_timer += delta
 	else:
 		s.snap_timer = maxf(s.snap_timer - delta * 2.0, 0.0)
+
+	# Camera shake
+	if s.anchor != null:
+		var base_yaw := s.base_yaw + s.look_offset
+		if enable_camera_shake and s.surging and s.tension > 0.0:
+			s.shake_time += delta * shake_frequency
+			var tension_ratio := clampf(s.tension / maxf(line_strength, 0.001), 0.2, 2.0)
+			var intensity := shake_base_intensity * tension_ratio
+			s.anchor.rotation.x = sin(s.shake_time * 1.4) * intensity * 0.7
+			s.anchor.rotation.y = base_yaw + (cos(s.shake_time * 1.7) * intensity)
+		else:
+			s.shake_time = 0.0
+			s.anchor.rotation.x = move_toward(s.anchor.rotation.x, 0.0, delta * 5.0)
+			s.anchor.rotation.y = move_toward(s.anchor.rotation.y, base_yaw, delta * 5.0)
+
+	_update_tension_ui(s)
 
 	if s.bobber != null:
 		var origin := _anchor_water_pos(s)
 		var to_target := s.cast_target - origin
 		var away := clampf((1.0 - s.progress) / maxf(1.0 - START_PROGRESS, 0.01), 0.0, 2.0)
 		var wanted := origin + to_target.normalized() * maxf(to_target.length() * away, CATCH_STOP_DISTANCE)
-		
+
 		var sink_t := clampf(s.state_time / maxf(bobber_sink_duration, 0.01), 0.0, 1.0)
 		var sink_depth := bobber_bite_sink * sink_t * (1.2 if s.surging else 1.0)
 		wanted.y = water_level - sink_depth
-		
+
 		s.bobber.global_position = s.bobber.global_position.lerp(wanted, 1.0 - exp(-10.0 * delta))
 
+	var diff_grace_mult := 2.5 if difficulty == Difficulty.CASUAL else 1.0
 	if s.snap_timer >= SNAP_GRACE_SEC * maxf(control, 0.1) * diff_grace_mult:
 		_fish_escapes(s, "line_snapped")
 	elif s.progress <= 0.0:
@@ -895,11 +925,11 @@ func _fish_won(s: FishingSession) -> void:
 
 func _record_caught_fish(fish_id: String) -> void:
 	if _save == null or not _save.has_method("record_caught_fish"):
-		_warn_once("record_caught_fish", "SaveManager.record_caught_fish() not found - Almanac will not unlock.")
+		_warn_once("record_caught_fish", "SaveManager.record_caught_fish() not found - Bestiary will not unlock.")
 		return
 	var is_new := bool(_save.record_caught_fish(fish_id))
 	if is_new and debug_log:
-		print("[FishingManager] New Almanac entry unlocked: '%s'" % fish_id)
+		print("[FishingManager] New Bestiary entry unlocked: '%s'" % fish_id)
 
 
 func _store_fish(fish: Dictionary) -> bool:
@@ -909,18 +939,42 @@ func _store_fish(fish: Dictionary) -> bool:
 	return bool(_inventory.add_fish(String(fish["id"]), float(fish["size_cm"])))
 
 
-const CATCH_POPUP_SECONDS := 5.0
-const FISH_IMAGE_PROPERTIES := ["jpg", "image", "icon", "texture"]
-var _popup: CanvasLayer = null
-
+# Shows the catch: text popup always, plus the fish picture on 'FishLayout' when the scene has one.
 func _show_catch_popup(player_id: int, fish: Dictionary, kept: bool) -> void:
+	_show_catch_picture(fish)
+
+	if is_instance_valid(_popup):
+		_popup.queue_free()
+	var text := ""
+	if _multiplayer:
+		text += "Player %d caught\n" % player_id
+	text += "%s\n%.1f cm   %.2f kg" % [String(fish["display_name"]), float(fish["size_cm"]), float(fish["weight"])]
+	if not kept:
+		text += "\nFish Box full: released"
+	var layer := CanvasLayer.new()
+	layer.layer = 20
+	add_child(layer)
+	var label := Label.new()
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_size_override("font_size", 32)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 8)
+	layer.add_child(label)
+	label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE, Control.PRESET_MODE_MINSIZE, 40)
+	_popup = layer
+	get_tree().create_timer(CATCH_POPUP_SECONDS).timeout.connect(layer.queue_free)
+
+
+func _show_catch_picture(fish: Dictionary) -> void:
 	if not is_instance_valid(_fish_layout):
 		_fish_layout = get_tree().root.find_child("FishLayout", true, false)
 	if _fish_layout == null:
-		_warn_once("fish_layout", "no node named 'FishLayout' in the scene - nothing to show the catch on.")
+		_warn_once("fish_layout", "no node named 'FishLayout' in the scene - catch picture not shown.")
 		return
 
-	var record: Object = _db.get_fish(String(fish["id"])) if _db != null else null
+	var record: FishData = _db.get_fish(String(fish["id"])) if _db != null else null
 	var path := ""
 	var texture: Texture2D = null
 	if record != null:
@@ -953,36 +1007,12 @@ func _show_catch_popup(player_id: int, fish: Dictionary, kept: bool) -> void:
 		_warn_once("fish_layout_prop", "FishLayout has no 'jpg' property and is not a TextureRect.")
 		return
 
-	if is_instance_valid(_popup):
-		_popup.queue_free()
-	var text := ""
-	if _multiplayer:
-		text += "Player %d caught\n" % player_id
-	text += "%s\n%.1f cm   %.2f kg" % [String(fish["display_name"]), float(fish["size_cm"]), float(fish["weight"])]
-	if not kept:
-		text += "\nFish Box full: released"
-	var layer := CanvasLayer.new()
-	layer.layer = 20
-	add_child(layer)
-	var label := Label.new()
-	label.text = text
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.add_theme_font_size_override("font_size", 32)
-	label.add_theme_color_override("font_outline_color", Color.BLACK)
-	label.add_theme_constant_override("outline_size", 8)
-	layer.add_child(label)
-	label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE, Control.PRESET_MODE_MINSIZE, 40)
-	_popup = layer
-	get_tree().create_timer(CATCH_POPUP_SECONDS).timeout.connect(layer.queue_free)
-
 	_fish_layout.set("visible", true)
 	_fish_layout_token += 1
 	var token := _fish_layout_token
-	var hide_layout := func() -> void:
+	get_tree().create_timer(CATCH_POPUP_SECONDS).timeout.connect(func() -> void:
 		if token == _fish_layout_token and is_instance_valid(_fish_layout):
-			_fish_layout.set("visible", false)
-	get_tree().create_timer(CATCH_POPUP_SECONDS).timeout.connect(hide_layout)
+			_fish_layout.set("visible", false))
 
 
 func _fish_escapes(s: FishingSession, reason: String) -> void:
@@ -1098,6 +1128,14 @@ func _set_state(s: FishingSession, new_state: int) -> void:
 	var old := s.state
 	s.state = new_state
 	s.state_time = 0.0
+
+	if old == State.REELING:
+		if s.anchor != null:
+			s.anchor.rotation.x = 0.0
+			s.anchor.rotation.y = s.base_yaw + s.look_offset
+		# Fix: the tension bar used to stay on screen after a catch or escape.
+		_update_tension_ui(s)
+
 	if debug_log:
 		print("[FishingManager] player %d: %s -> %s" % [s.player_id, State.keys()[old], State.keys()[new_state]])
 	var screen := _phone_screen_for(new_state)
@@ -1134,18 +1172,19 @@ func _spend_bait(s: FishingSession) -> bool:
 
 
 func _load_rod(s: FishingSession) -> void:
-	var record: Object = null
+	var record: RodData = null
 	if _db != null and s.rod_id != "" and _db.has_rod(s.rod_id):
 		record = _db.get_rod(s.rod_id)
+
 	s.rod = {
-		"line_strength": _stat(record, "line_strength", TEMP_ROD_LINE_STRENGTH),
-		"reel_speed": _stat(record, "reel_speed", TEMP_ROD_REEL_SPEED),
-		"max_cast_distance": _stat(record, "max_cast_distance", TEMP_ROD_MAX_CAST_DISTANCE),
-		"control": _stat(record, "control", TEMP_ROD_CONTROL),
+		"line_strength": _record_float(record, "line_strength", TEMP_ROD_LINE_STRENGTH),
+		"reel_speed": _record_float(record, "reel_speed", TEMP_ROD_REEL_SPEED),
+		"max_cast_distance": _record_float(record, "max_cast_distance", TEMP_ROD_MAX_CAST_DISTANCE),
+		"control": _record_float(record, "control", TEMP_ROD_CONTROL),
 	}
 
 	_remove_rod_model(s)
-	if record == null or s.holder == null:
+	if record == null or s.holder == null or _db == null:
 		return
 	var model: Node3D = _db.instantiate_rod_model(s.rod_id)
 	if model == null:
@@ -1167,6 +1206,8 @@ func _spawn_bobber(s: FishingSession) -> void:
 	if bobber_scene != null:
 		s.bobber = bobber_scene.instantiate() as Node3D
 	if s.bobber == null:
+		# Fix: the fallback bobber never assigned its mesh (and set a property
+		# MeshInstance3D does not have), so it was invisible / a script error.
 		var mesh := MeshInstance3D.new()
 		var sphere := SphereMesh.new()
 		sphere.radius = 0.1
@@ -1174,7 +1215,7 @@ func _spawn_bobber(s: FishingSession) -> void:
 		var mat := StandardMaterial3D.new()
 		mat.albedo_color = Color(0.9, 0.15, 0.1)
 		sphere.material = mat
-		mesh.material = mat
+		mesh.mesh = sphere
 		s.bobber = mesh
 	add_child(s.bobber)
 	s.bobber.global_position = s.cast_start
@@ -1184,15 +1225,6 @@ func _remove_bobber(s: FishingSession) -> void:
 	if s.bobber != null and is_instance_valid(s.bobber):
 		s.bobber.queue_free()
 	s.bobber = null
-
-
-func _stat(record: Object, prop: String, default_value: float) -> float:
-	if record == null:
-		return default_value
-	var v: Variant = record.get(prop)
-	if v == null:
-		return default_value
-	return float(v)
 
 
 func _warn_once(key: String, message: String) -> void:

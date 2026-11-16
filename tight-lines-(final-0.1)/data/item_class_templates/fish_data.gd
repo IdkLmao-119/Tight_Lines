@@ -37,7 +37,7 @@ extends ItemData
 
 ## How hard the fish is to catch: 1.0 = baseline, higher = harder. Scales the reel-bar drift and the
 ## tension rise in the minigame. It does NOT change the bite window.
-@export_range(0.0, 10.0, 0.05, "or_greater") var speed: float = 1.0
+@export_range(1.0, 100.0, 0.05, "or_greater") var speed: float = 1.0
 
 ## How hard the fish pulls on the line (compared with the rod's line_strength). Suggested range
 ## 2 to 8; must be above 0. TEMPORARY range, to be tuned with FishingManager.

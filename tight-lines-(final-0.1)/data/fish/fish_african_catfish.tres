@@ -13,8 +13,9 @@ Locations"
 icon_3d = ExtResource("1_mbknm")
 size_class = "large"
 base_price = 45
-speed = 1.2
-pull_strength = 7.5
+speed = 5.0
+pull_strength = 10.0
+stamina = 60.0
 min_size = 40.0
 avg_size = 70.0
 max_size = 140.0
