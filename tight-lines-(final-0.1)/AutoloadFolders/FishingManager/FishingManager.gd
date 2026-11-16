@@ -844,7 +844,7 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 	var fish_share := clampf(fish_pull / PULL_FOR_FULL_SHARE, 0.0, 1.0) * 0.5
 	# Reel share: reeling at full strength fills the other half (reel_speed does
 	# not change the bar, only how fast progress is gained).
-	var reel_share := clampf(reeling, 0.0, 1.0) * 0.5
+	var reel_share := clampf(reeling, 0.0, 1.0) * 0.75
 	var target_ratio := fish_share + reel_share
 	var target := target_ratio * line_strength
 
