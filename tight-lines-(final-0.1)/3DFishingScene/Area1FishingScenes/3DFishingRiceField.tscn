@@ -99,9 +99,9 @@ difficulty = 1
 bobber_bite_sink = 0.15
 shake_base_intensity = 0.05
 shake_frequency = 90.0
-debug_spot_id = "location_debug"
+debug_spot_id = "location_imus"
 debug_rod_id = "rod_debug"
-debug_bait_id = "bait_d1_african_catfish_bait"
+debug_bait_id = "bait_0_debug"
 
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 3.0786262)

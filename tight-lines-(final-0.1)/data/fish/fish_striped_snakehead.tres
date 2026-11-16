@@ -10,8 +10,9 @@ description = "A resilient predator sporting camouflage stripes, often found in 
 Local Name: Dalag"
 size_class = "medium"
 base_price = 52
-speed = 1.7
-pull_strength = 6.5
+speed = 5.0
+pull_strength = 12.0
+stamina = 60.0
 min_size = 20.0
 avg_size = 40.0
 max_size = 75.0

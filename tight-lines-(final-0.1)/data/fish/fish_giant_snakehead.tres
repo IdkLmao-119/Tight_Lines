@@ -10,8 +10,9 @@ description = "A ferocious apex predator with a torpedo-shaped body and extreme 
 Local Name: Toman"
 size_class = "large"
 base_price = 85
-speed = 2.1
-pull_strength = 9.2
+speed = 6.0
+pull_strength = 15.0
+stamina = 75.0
 min_size = 35.0
 avg_size = 65.0
 max_size = 130.0
