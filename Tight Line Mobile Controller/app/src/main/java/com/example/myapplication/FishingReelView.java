@@ -36,15 +36,15 @@ public class FishingReelView extends View {
     }
 
     private void init() {
-        ringPaint.setColor(Color.parseColor("#64FFDA"));
+        ringPaint.setColor(Color.parseColor("#C19A6B"));
         ringPaint.setStyle(Paint.Style.STROKE);
         ringPaint.setStrokeWidth(16f);
 
-        spokePaint.setColor(Color.parseColor("#3A4F7A"));
+        spokePaint.setColor(Color.parseColor("#C19A6B"));
         spokePaint.setStyle(Paint.Style.STROKE);
         spokePaint.setStrokeWidth(8f);
 
-        handlePaint.setColor(Color.parseColor("#E94560"));
+        handlePaint.setColor(Color.parseColor("#C19A6B"));
         handlePaint.setStyle(Paint.Style.FILL);
     }
 
@@ -112,8 +112,18 @@ public class FishingReelView extends View {
                 currentAngleDeg = (currentAngleDeg + delta) % 360f;
                 invalidate();
 
-                accumulatedDelta += delta;
                 long now = System.currentTimeMillis();
+
+                // Flush previous direction's movement if user reverses direction mid-drag
+                if ((accumulatedDelta > 0f && delta < 0f) || (accumulatedDelta < 0f && delta > 0f)) {
+                    if (listener != null && Math.abs(accumulatedDelta) > 1f) {
+                        listener.onReel(accumulatedDelta);
+                        lastSendTimeMs = now;
+                    }
+                    accumulatedDelta = 0f;
+                }
+
+                accumulatedDelta += delta;
                 if (listener != null && now - lastSendTimeMs >= SEND_INTERVAL_MS
                         && Math.abs(accumulatedDelta) > 1f) {
                     listener.onReel(accumulatedDelta);

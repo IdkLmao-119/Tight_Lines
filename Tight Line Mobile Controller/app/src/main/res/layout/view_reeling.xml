@@ -11,13 +11,24 @@
         android:layout_centerInParent="true" />
 
     <TextView
+        android:id="@+id/a"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/fishingReelView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
-        android:text="SPIN THE REEL COUNTERClOCKWISE"
-        android:textColor="#E94560"
+        android:text="SPIN CLOCKWISE TO REEL"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/a"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="SPIN COUNTERCLOCKWISE TO RELEASE"
+        android:textColor="#ffffff"
         android:textSize="18sp"
         android:textStyle="bold" />
 </RelativeLayout>

@@ -108,9 +108,9 @@ const KEYBOARD_CAST_CHARGE_TIME := 1.0
 const PHONE_MOVE_PULSE_SEC := 0.35
 const PHONE_REEL_PULSE_SEC := 0.30
 # Phone "crank" (circular reel gesture)
-const CRANK_MIN_STEP := 50.0      # degrees per message below this = noise, ignored for reel pulse
+const CRANK_MIN_STEP := 1.0       # degrees per message below this = noise, ignored for reel pulse
 const CRANK_MAX_STEP := 180.0     # degrees per message above this = glitch, rejected
-const CRANK_ACTIVE_SEC := 0.3    # how long reeling stays "on" after the last clockwise step
+const CRANK_ACTIVE_SEC := 0.3     # how long reeling stays "on" after the last clockwise step
 
 # Tilt: values inside the deadzone count as 0 so a phone held roughly level
 # doesn't drift the view. The phone sends -1..+1 where +/-1 = 40 degrees, so
@@ -321,6 +321,16 @@ func get_reel_strength(player_id: int = KEYBOARD_PLAYER_ID) -> float:
 		return 1.0
 	return 0.0
 
+# 1.0 while the player is releasing line (keyboard key held / phone counter-clockwise crank active), else 0.0.
+func get_release_strength(player_id: int = KEYBOARD_PLAYER_ID) -> float:
+	if context != InputContext.FISHING:
+		return 0.0
+	if player_id == KEYBOARD_PLAYER_ID and is_keyboard_enabled() and InputMap.has_action(&"tl_release") and Input.is_action_pressed(&"tl_release"):
+		return 1.0
+	if _now() < _get_state(player_id).get("release_until", 0.0):
+		return 1.0
+	return 0.0
+
 # 0..1 charge of the KEYBOARD cast (for a power meter UI). Phones cast
 # instantly from the swing, so this is 0 for them. Pass DEBUG_PLAYER2_ID
 # (or 2) for the debug second keyboard player's charge.
@@ -522,7 +532,7 @@ func _get_state(pid: int) -> Dictionary:
 	if not _state.has(pid):
 		_state[pid] = {
 			"move": Vector2.ZERO, "move_until": 0.0,
-			"reel_until": 0.0, "crank_until":0.0,
+			"reel_until": 0.0, "crank_until": 0.0, "release_until": 0.0,
 			"look": 0.0, "look_time": -100.0,
 		}
 	return _state[pid]
@@ -536,6 +546,10 @@ func _on_phone_reel(phone_id: int, crank_delta: float) -> void:
 	reel_crank.emit(pid, crank_delta)
 	if crank_delta >= CRANK_MIN_STEP:
 		_get_state(pid)["crank_until"] = _now() + CRANK_ACTIVE_SEC
+		_get_state(pid)["release_until"] = 0.0
+	elif crank_delta <= -CRANK_MIN_STEP:
+		_get_state(pid)["release_until"] = _now() + CRANK_ACTIVE_SEC
+		_get_state(pid)["crank_until"] = 0.0
 
 func _now() -> float:
 	return Time.get_ticks_msec() / 1000.0

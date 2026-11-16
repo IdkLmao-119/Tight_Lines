@@ -1,7 +1,7 @@
 extends Node3D
 
 # ============================================================================
-# FISHING MANAGER (SCENE NODE) - TightLines          Version 0.4.8 (2026-11-16)
+# FISHING MANAGER (SCENE NODE) - TightLines          Version 0.4.9 (2026-11-16)
 # ============================================================================
 # Put this script on a Node3D inside FishingMinigame.tscn (or the 2-player
 # versus scene). It is NOT an autoload. It runs one fishing session per
@@ -20,7 +20,8 @@ extends Node3D
 #   - Casual vs Angler difficulty.
 #   - Camera shake, tension bar HUD, on-screen messages, catch popup.
 #
-# 0.4.8 FIXES: see PROGRESS_FishingManager.md changelog.
+# 0.4.9: tension only falls when the player RELEASES the reel (get_release_strength).
+# Variable labels: every export/const has "what it does | when to tweak".
 # ============================================================================
 
 # --- Signals (for UI, camera rigs, audio, SaveManager) ---
@@ -41,53 +42,54 @@ enum State { IDLE, CASTING, WAITING, REELING, CAUGHT, ESCAPED }
 enum Difficulty { CASUAL, ANGLER }
 
 # --- Scene setup ---
+# Each variable: WHAT IT DOES  |  WHEN TO TWEAK
 @export_group("Scene setup")
-@export var player_anchors: Array[Node3D] = []
-@export var rod_holders: Array[Node3D] = []
-@export var bobber_scene: PackedScene
-@export var water_level := 0.0
-@export var max_players := 2
-@export var weather_system: Node
-@export var difficulty: Difficulty = Difficulty.CASUAL
+@export var player_anchors: Array[Node3D] = []   # Node3D per player that turns with the camera / casts from. | Assign in the Inspector, one per player.
+@export var rod_holders: Array[Node3D] = []      # Where each rod model is attached (falls back to the anchor). | Assign if the rod should sit somewhere other than the camera anchor.
+@export var bobber_scene: PackedScene            # Your own bobber scene. | Assign when you have a bobber model; empty = red sphere.
+@export var water_level := 0.0                   # World Y of the water surface; bobber lands/floats here. | Change if the water plane is not at Y = 0.
+@export var max_players := 2                     # Most players one round supports. | Raise only if you add more viewports/anchors.
+@export var weather_system: Node                 # WeatherSystem node (found by itself if empty). | Only if you have several WeatherSystem nodes.
+@export var difficulty: Difficulty = Difficulty.CASUAL   # CASUAL = longer snap grace; ANGLER = strict. | Debug here; normally set by the options/save.
 
 @export_group("Casting")
-@export var min_cast_distance := 4.0
-@export var look_turn_speed := 1.5
-@export var max_look_angle_deg := 75.0
+@export var min_cast_distance := 4.0             # Cast distance at zero power (metres). | Raise if weak casts land too close to the player.
+@export var look_turn_speed := 1.5               # How fast the view turns while idle (rad/sec at full tilt/key). | Lower if aiming feels twitchy, raise if sluggish.
+@export var max_look_angle_deg := 75.0           # How far the view can turn left AND right. | Lower to keep players facing the water.
 
 @export_group("Bites")
-@export var bite_delay_min := 3.0
-@export var bite_delay_max := 9.0
-@export var bobber_bite_sink := 0.12
-@export var bobber_sink_duration := 1.0
+@export var bite_delay_min := 3.0                # Shortest wait before a bite (seconds). | Lower for faster action.
+@export var bite_delay_max := 9.0                # Longest wait before a bite (seconds). | Raise for a calmer, slower game.
+@export var bobber_bite_sink := 0.12             # How far the bobber dips on a bite (metres). | Raise if the bite is hard to notice.
+@export var bobber_sink_duration := 1.0          # Seconds the bobber takes to sink. | Lower for a sudden, snappy dip.
 
 @export_group("Camera Shake")
-@export var enable_camera_shake := true
-@export var shake_base_intensity := 0.06
-@export var shake_frequency := 30.0
+@export var enable_camera_shake := true          # Shake the view while the fish surges. | Turn off for motion comfort.
+@export var shake_base_intensity := 0.06         # Shake size (radians), scales with tension. | Lower if it is nauseating, raise for drama.
+@export var shake_frequency := 30.0              # Shake speed. | Lower for a slow rumble, raise for a rattle.
 
 @export_group("HUD / UI")
-@export var show_tension_bar := true
+@export var show_tension_bar := true             # On-screen tension bar while reeling. | Turn off if your own HUD draws it.
 
 @export_group("Messages")
-@export var show_messages := true
-@export var bite_message_seconds := 0.8
-@export var message_font_size := 48
-@export var send_phone_messages := true
-@export var surge_vibrate_interval := 0.35
+@export var show_messages := true                # "There's a bite" / "Reel now" / "Fish escaped" text. | Turn off if your HUD shows messages.
+@export var bite_message_seconds := 0.8          # How long "There's a bite" shows before "Reel now". | Raise if players miss the bite cue.
+@export var message_font_size := 48              # Size of those messages. | Match your UI scale.
+@export var send_phone_messages := true          # Send game_state and vibrate packets to the Android app. | Turn off to test without a phone.
+@export var surge_vibrate_interval := 0.35       # Seconds between phone vibrations during a surge. | Raise if the phone buzz feels constant.
 
 @export_group("Round rules")
-@export var result_display_time := 2.5
-@export var time_limit_sec := 0.0             # 0 = no limit
-@export var require_bait := false              # D10: bait is always required
-@export var store_catches_in_inventory := true  # single player only (D7)
+@export var result_display_time := 2.5           # Seconds the CAUGHT / ESCAPED result stays before IDLE. | Lower to get back to casting faster.
+@export var time_limit_sec := 0.0                # Round length in seconds, 0 = no limit. | MUST be set for multiplayer, or nothing ends the round.
+@export var require_bait := false                # true = a cast needs bait and spends it (D10 says always true). | Your value kept (false) for testing; set true for the real game.
+@export var store_catches_in_inventory := true   # Put kept fish in the Fish Box (single player only, D7). | Turn off to test without InventoryManager.
 
 @export_group("Debug / standalone testing")
-@export var debug_spot_id := ""
-@export var debug_rod_id := ""
-@export var debug_bait_id := ""
-@export var debug_multiplayer := false
-@export var debug_log := true
+@export var debug_spot_id := ""                  # Spot used when no GameManager context is passed. | Fill in for F6 testing.
+@export var debug_rod_id := ""                   # Rod used when no context is passed. | Fill in for F6 testing.
+@export var debug_bait_id := ""                  # Bait used when no context is passed. | Fill in for F6 testing.
+@export var debug_multiplayer := false           # Test the 2-player scene without GameManager. | F6 testing only.
+@export var debug_log := true                    # Print state changes and rejections. | Turn off in a release build.
 
 # --- Day / weather words used when NO WeatherSystem node is in the scene ---
 var time_of_day := ""
@@ -95,37 +97,43 @@ var weather := ""
 var season := ""
 
 # --- Fallback defaults used if GameDB records lack a field ---
-const TEMP_ROD_LINE_STRENGTH := 10.0
-const TEMP_ROD_MAX_CAST_DISTANCE := 20.0
-const TEMP_ROD_CONTROL := 1.0
-const TEMP_FISH_PULL_STRENGTH := 4.0
-const TEMP_FISH_STAMINA := 20.0
-const TEMP_ROD_REEL_SPEED := 1.0
+# These only matter until the record has its own value. | Tweak only to change the "default" rod/fish.
+const TEMP_ROD_LINE_STRENGTH := 10.0     # Default line strength; the tension bar is measured against it. | Raise for a sturdier default rod.
+const TEMP_ROD_MAX_CAST_DISTANCE := 20.0 # Default max cast distance (metres). | Match your water size.
+const TEMP_ROD_CONTROL := 1.0            # Default control; multiplies the snap grace time. | Raise to forgive longer overloads.
+const TEMP_FISH_PULL_STRENGTH := 4.0     # Default fish pull. | Only for fish without a pull_strength.
+const TEMP_FISH_STAMINA := 20.0          # Default fish stamina (seconds of fight). | Only for fish without stamina.
+const TEMP_ROD_REEL_SPEED := 1.0         # Default reel speed; how fast reeling wins line. | Raise to make reeling feel stronger.
 
 # --- Reel fight tuning ---
-const REEL_PROGRESS_RATE := 0.15
-const TENSION_RISE_RATE := 0.90
-const TENSION_FALL_RATE := 3.0
-const FISH_DRAG_RATE := 0.009
-const START_PROGRESS := 0.35
-const SNAP_GRACE_SEC := 1.2
-const PULL_FOR_FULL_SHARE := 6.0    # fish_pull that fills the fish's whole 50% of the bar
-const SNAP_RATIO := 0.95            # bar level (0..1) at which the snap timer runs
-const SURGE_REEL_PROGRESS_MULT := 0.35  # reeling during a surge wins this much line
-const SURGE_PULL_MULT := 1.5
-const CALM_PULL_MULT := 0.6
-const SURGE_DRAIN := 1.0
-const CALM_DRAIN := 0.4
-const CAST_ARC_BASE := 2.0
-const CAST_ARC_POWER := 3.0
-const CATCH_STOP_DISTANCE := 1.5
+# TENSION BAR = fish half + reel half, each capped (FISH_SHARE_MAX / REEL_SHARE_MAX).
+# Tension only goes UP by itself and only goes DOWN when the player releases the reel.
+const REEL_PROGRESS_RATE := 0.20         # Line won per second at full reeling (progress 0..1). | Lower = longer fights, higher = quicker catches.
+const TENSION_RISE_RATE := 1          # How fast tension builds (line-strength units/sec; /line_strength = bar fraction/sec). Used for the fish surge AND for reeling. | Lower if the bar fills too fast, raise if the fight is too safe.
+const TENSION_FALL_RATE := 3.0           # How fast RELEASING the reel lowers tension (same units, at full release). | Raise if releasing is too slow to save the line, lower to make it riskier.
+const FISH_SHARE_MAX := 0.6              # Fish's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to make the fish matter more than your reeling.
+const REEL_SHARE_MAX := 1.0              # Reeling's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to punish heavy reeling more.
+const RELEASE_LINE_LOSS_RATE := 0.10     # Progress the fish takes back per second at full release. | Raise so releasing costs more distance, lower to make it cheap.
+const FISH_DRAG_RATE := 0.010            # Line the fish takes back per second (scaled by its pull). | Raise if fish never fight back enough, lower if they win too much.
+const START_PROGRESS := 0.35             # Fight starts this far toward landed (0..1). | Raise for an easier start, lower for a harder one.
+const SNAP_GRACE_SEC := 0.5              # Seconds the bar may stay in the danger zone before the line snaps (x rod control, x2.5 in Casual). | Raise to forgive, lower to be strict.
+const PULL_FOR_FULL_SHARE := 6.0         # Fish pull that fills the fish's whole half. Higher = fish fills less of its half. | Raise if fish fill their half too easily.
+const SNAP_RATIO := 0.90                 # Bar level (0..1) where the snap timer starts. | Raise toward 1.0 to make snaps rarer.
+const SURGE_REEL_PROGRESS_MULT := 0.35   # Share of line won when reeling DURING a surge. | Lower to discourage reeling into a surge, raise to soften it.
+const SURGE_PULL_MULT := 1.5             # Fish pull multiplier while surging. | Lower to make surges gentler.
+const CALM_PULL_MULT := 0.6              # Fish pull multiplier while calm. | Raise so calm moments are less restful.
+const SURGE_DRAIN := 1.0                 # Stamina lost per second while surging. | Raise so fish tire faster.
+const CALM_DRAIN := 0.4                  # Stamina lost per second while calm. | Raise so fish tire faster.
+const CAST_ARC_BASE := 2.0               # Height of the cast arc at zero power (metres). | Visual only.
+const CAST_ARC_POWER := 3.0              # Extra arc height at full power (metres). | Visual only.
+const CATCH_STOP_DISTANCE := 1.5         # How close the bobber gets to the player when the fish is nearly landed. | Visual only.
 
-const MSG_BITE := "There's a bite"
-const MSG_REEL := "Reel now"
-const MSG_ESCAPE := "Fish escaped"
+const MSG_BITE := "There's a bite"       # Text shown on a bite. | Change wording / language.
+const MSG_REEL := "Reel now"             # Text shown after the bite message. | Change wording / language.
+const MSG_ESCAPE := "Fish escaped"       # Text shown when the fish gets away. | Change wording / language.
 
-const CATCH_POPUP_SECONDS := 5.0
-const FISH_IMAGE_PROPERTIES := ["jpg", "image", "icon", "texture"]
+const CATCH_POPUP_SECONDS := 5.0         # How long the catch popup and picture stay up. | Lower to move on faster.
+const FISH_IMAGE_PROPERTIES := ["jpg", "image", "icon", "texture"]   # FishData property names tried for the fish picture. | Add the name your FishData uses.
 
 # ----------------------------------------------------------------------------
 # Per-player session data
@@ -158,6 +166,8 @@ class FishingSession extends RefCounted:
 	var bite_timer := 0.0
 
 	var tension := 0.0
+	var fish_tension := 0.0              # fish half of the bar, 0..FISH_SHARE_MAX
+	var reel_tension := 0.0              # reeling half of the bar, 0..REEL_SHARE_MAX
 	var progress := 0.0
 	var stamina := 0.0
 	var max_stamina := 1.0
@@ -501,6 +511,8 @@ func _try_bite(s: FishingSession) -> void:
 	s.fish = fish
 
 	s.tension = 0.0
+	s.fish_tension = 0.0
+	s.reel_tension = 0.0
 	s.progress = START_PROGRESS
 	s.max_stamina = maxf(float(fish["stamina"]), 1.0)
 	s.stamina = s.max_stamina
@@ -841,15 +853,25 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 	# TENSION BAR = fish share (0..0.5) + reel share (0..0.5), as a ratio of the bar.
 	# Fish share: a fresh fish surging at PULL_FOR_FULL_SHARE fills its whole half;
 	# a calm or tired fish fills much less.
-	var fish_share := clampf(fish_pull / PULL_FOR_FULL_SHARE, 0.0, 1.0) * 0.5
-	# Reel share: reeling at full strength fills the other half (reel_speed does
-	# not change the bar, only how fast progress is gained).
-	var reel_share := clampf(reeling, 0.0, 1.0) * 0.75
-	var target_ratio := fish_share + reel_share
-	var target := target_ratio * line_strength
+	# Tension is ACCUMULATED and never falls with time. Only releasing the reel lowers it.
+	var release := _get_release(s.player_id)
 
-	var rate := TENSION_RISE_RATE if target > s.tension else TENSION_FALL_RATE
-	s.tension = move_toward(s.tension, target, rate * delta)
+	# Fish half (cap 0.5): rises only while the fish surges, faster for stronger fish.
+	if s.surging:
+		var fish_strength := clampf(fish_pull / PULL_FOR_FULL_SHARE, 0.0, 1.0)
+		s.fish_tension += fish_strength * TENSION_RISE_RATE / maxf(line_strength, 0.001) * delta
+	# Reel half (cap 0.5): rises while reeling.
+	s.reel_tension += clampf(reeling, 0.0, 1.0) * TENSION_RISE_RATE / maxf(line_strength, 0.001) * delta
+
+	# Releasing (reel spun counterclockwise) lowers both halves.
+	if release > 0.0:
+		var drain := release * TENSION_FALL_RATE / maxf(line_strength, 0.001) * delta
+		s.fish_tension -= drain
+		s.reel_tension -= drain
+
+	s.fish_tension = clampf(s.fish_tension, 0.0, FISH_SHARE_MAX)
+	s.reel_tension = clampf(s.reel_tension, 0.0, REEL_SHARE_MAX)
+	s.tension = (s.fish_tension + s.reel_tension) * line_strength
 
 	# Reeling against a surge wins far less line AND fills the bar: discourages it.
 	var reel_gain := reeling * reel_speed * REEL_PROGRESS_RATE
@@ -857,6 +879,8 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 		reel_gain *= SURGE_REEL_PROGRESS_MULT
 	s.progress += reel_gain * delta
 	s.progress -= fish_pull * FISH_DRAG_RATE * delta
+	# Letting line out costs distance: the fish takes it back.
+	s.progress -= release * RELEASE_LINE_LOSS_RATE * delta
 	s.progress = clampf(s.progress, 0.0, 1.0)
 
 	s.stamina = maxf(s.stamina - (SURGE_DRAIN if s.surging else CALM_DRAIN) * delta, 0.0)
@@ -901,6 +925,17 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 		_fish_escapes(s, "got_away")
 	elif s.progress >= 1.0:
 		_fish_won(s)
+
+
+# Release strength 0..1 (reel spun counterclockwise). InputManager has no such function
+# yet (request FM-REQ-21); until it does, the input action "tl_release" is used if it exists.
+func _get_release(player_id: int) -> float:
+	if _input != null and _input.has_method("get_release_strength"):
+		return clampf(float(_input.get_release_strength(player_id)), 0.0, 1.0)
+	if InputMap.has_action("tl_release"):
+		return 1.0 if Input.is_action_pressed("tl_release") else 0.0
+	_warn_once("release_input", "no release input: add InputManager.get_release_strength(player_id) or a 'tl_release' action - tension can never go down.")
+	return 0.0
 
 
 func _fish_won(s: FishingSession) -> void:
