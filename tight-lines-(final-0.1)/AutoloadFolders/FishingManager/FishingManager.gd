@@ -70,6 +70,7 @@ enum Difficulty { CASUAL, ANGLER }
 
 @export_group("HUD / UI")
 @export var show_tension_bar := true             # On-screen tension bar while reeling. | Turn off if your own HUD draws it.
+@export var node_to_hide_on_bite: CanvasLayer    # CanvasLayer to set invisible on bite, and visible again after reeling. | Assign your UI layer here.
 
 @export_group("Messages")
 @export var show_messages := true                # "There's a bite" / "Reel now" / "Fish escaped" text. | Turn off if your HUD shows messages.
@@ -302,6 +303,9 @@ func start_session(player_ids: Array[int]) -> void:
 	_time_up = false
 	_finished = false
 
+	if node_to_hide_on_bite != null:
+		node_to_hide_on_bite.visible = true
+
 	var rod_id := String(_context.get("rod_id", ""))
 	var bait_id := String(_context.get("bait_id", ""))
 	var spot_id := String(_context.get("spot_id", ""))
@@ -390,6 +394,8 @@ func finish_session() -> void:
 	if _finished:
 		return
 	_finished = true
+	if node_to_hide_on_bite != null:
+		node_to_hide_on_bite.visible = true
 	var results := {}
 	for pid in _order:
 		var s: FishingSession = _sessions[pid]
@@ -1164,12 +1170,18 @@ func _set_state(s: FishingSession, new_state: int) -> void:
 	s.state = new_state
 	s.state_time = 0.0
 
+	if new_state == State.REELING:
+		if node_to_hide_on_bite != null:
+			node_to_hide_on_bite.visible = false
+
 	if old == State.REELING:
 		if s.anchor != null:
 			s.anchor.rotation.x = 0.0
 			s.anchor.rotation.y = s.base_yaw + s.look_offset
 		# Fix: the tension bar used to stay on screen after a catch or escape.
 		_update_tension_ui(s)
+		if node_to_hide_on_bite != null:
+			node_to_hide_on_bite.visible = true
 
 	if debug_log:
 		print("[FishingManager] player %d: %s -> %s" % [s.player_id, State.keys()[old], State.keys()[new_state]])
