@@ -267,6 +267,8 @@ var _music_tween: Tween
 var _current_music_path: String = ""
 var _music_suppressed := false           # true while a fish song overrides the scene music
 var _warned_missing: Dictionary = {}     # so each missing file warns once
+var _pause_panel: Control
+var _last_resume_frame := -1
 
 
 func _ready() -> void:
@@ -680,6 +682,16 @@ func toggle_pause() -> void:
 		_resume_from_pause()
 	else:
 		set_paused(true)
+
+func _input(event: InputEvent) -> void:
+	if not event.is_action_pressed("ui_cancel") or event.is_echo():
+		return
+	if _overlay_node != null:
+		close_inventory()
+		get_viewport().set_input_as_handled()
+	elif get_tree().paused and _pause_reasons.has(REASON_USER):
+		_resume_from_pause()
+		get_viewport().set_input_as_handled()
 
 
 # Clears the player's pause. In SINGLE-PLAYER it also clears a disconnect
