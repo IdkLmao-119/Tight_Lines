@@ -137,7 +137,7 @@ const TENSION_RISE_RATE := 1             # How fast tension builds (line-strengt
 const TENSION_FALL_RATE := 3.0           # How fast RELEASING the reel lowers tension (same units, at full release). | Raise if releasing is too slow to save the line, lower to make it riskier.
 const FISH_SHARE_MAX := 0.6              # Fish's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to make the fish matter more than your reeling.
 const REEL_SHARE_MAX := 1.0              # Reeling's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to punish heavy reeling more.
-const RELEASE_LINE_LOSS_RATE := 0.05     # Progress the fish takes back per second at full release. | Raise so releasing costs more distance, lower to make it cheap.
+const RELEASE_LINE_LOSS_RATE := 0.0      # Progress the fish takes back per second at full release. | Raise so releasing costs more distance, lower to make it cheap.
 const FISH_DRAG_RATE := 0.008            # Line the fish takes back per second (scaled by its pull). | Raise if fish never fight back enough, lower if they win too much.
 const START_PROGRESS := 0.35             # Fight starts this far toward landed (0..1). | Raise for an easier start, lower for a harder one.
 const SNAP_GRACE_SEC := 0.5              # Seconds the bar may stay in the danger zone before the line snaps (x rod control, x2.5 in Casual). | Raise to forgive, lower to be strict.

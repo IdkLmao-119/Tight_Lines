@@ -93,7 +93,6 @@ ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_goktk")
 
 [node name="FishingManager" type="Node3D" parent="." unique_id=462196808 node_paths=PackedStringArray("player_anchors", "rod_holders")]
-transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, 0, 0, 0)
 script = ExtResource("4_03g4m")
 player_anchors = [NodePath("../PlayerFishing")]
 rod_holders = [NodePath("../PlayerFishing/CharacterBody3D/FishingRod_Lvl3")]

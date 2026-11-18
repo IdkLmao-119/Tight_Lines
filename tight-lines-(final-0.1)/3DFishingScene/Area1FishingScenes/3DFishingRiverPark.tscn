@@ -81,6 +81,15 @@ material_overlay = SubResource("StandardMaterial3D_goktk")
 ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_goktk")
 
+[node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
+script = ExtResource("7_ihk7l")
+player_anchors = [NodePath("../PlayerFishing")]
+rod_holders = [NodePath("../PlayerFishing/CharacterBody3D/FishingRod_Lvl3")]
+bobber_scene = ExtResource("8_55la4")
+debug_spot_id = "location_marikina"
+debug_rod_id = "rod_light"
+debug_bait_id = "bait_1"
+
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 3.1334605)
 
@@ -156,15 +165,6 @@ mesh = SubResource("CylinderMesh_mhxq0")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2126582781]
 environment = SubResource("Environment_i1y24")
-
-[node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
-script = ExtResource("7_ihk7l")
-player_anchors = [NodePath("../PlayerFishing")]
-rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
-bobber_scene = ExtResource("8_55la4")
-debug_spot_id = "location_marikina"
-debug_rod_id = "rod_light"
-debug_bait_id = "bait_1"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
 
