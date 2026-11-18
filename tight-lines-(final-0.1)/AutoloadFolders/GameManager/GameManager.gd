@@ -410,35 +410,45 @@ func flash_scene_title(title_text: String) -> void:
 		_title_tween.kill()
 
 	_scene_title_label.text = title_text
-	# Removed the instant self_modulate = 0.0 snap here!
+	# No alpha snap: fades in from whatever alpha it currently has.
 	_scene_title_label.scale = Vector2(0.85, 0.85)
 	_scene_title_label.show()
 
 	# Wait 1 frame so title_root's FULL_RECT size matches the current screen resolution
 	await get_tree().process_frame
+
+	# Another flash may have started during the await - make sure only one runs.
+	if _title_tween and _title_tween.is_valid():
+		_title_tween.kill()
+	_scene_title_label.text = title_text
 	_scene_title_label.pivot_offset = _scene_title_label.size / 2.0
 
 	_title_tween = create_tween()
 	_title_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-
-	# Phase 1 (2.5s): Fade In from current alpha to 1.0 + Enlarge
 	_title_tween.set_parallel(true)
-	_title_tween.tween_property(_scene_title_label, "self_modulate:a", 1.0, 2.5)\
+
+	# Phase 1 (2.5s): Fade In + Enlarge (0.85 -> 1.0), both run together.
+	# NOTE: uses "modulate" (not self_modulate) - the label is hidden via
+	# modulate.a = 0.0 in setup, so we must animate that same property.
+	_title_tween.tween_property(_scene_title_label, "modulate:a", 1.0, 2.5)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_OUT)
-		
 	_title_tween.tween_property(_scene_title_label, "scale", Vector2(1.0, 1.0), 2.5)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_OUT)
 
-	# Phase 2 (2.5s): Fade Out + Enlarge
-	_title_tween.chain().set_parallel(true)
-	_title_tween.tween_property(_scene_title_label, "self_modulate:a", 0.0, 2.5)\
+	# Phase 2 (2.5s): Fade Out + Enlarge (1.0 -> 1.15), starts after Phase 1.
+	# chain() on the first tweener starts a new step; the second tweener joins
+	# it in parallel (set_parallel(true) is still the default).
+	_title_tween.chain().tween_property(_scene_title_label, "modulate:a", 0.0, 2.5)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_IN)
 	_title_tween.tween_property(_scene_title_label, "scale", Vector2(1.15, 1.15), 2.5)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_IN)
+
+	# Hide when done so the invisible label isn't left shown.
+	_title_tween.chain().tween_callback(_scene_title_label.hide)
 
 # --- Scene memory ----------------------------------------------------------
 # Before leaving a scene, GameManager calls get_scene_state() on it (if it has

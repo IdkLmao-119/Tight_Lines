@@ -80,15 +80,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private static final long TILT_SEND_INTERVAL_MS = 50L;
     private static final float TILT_FULL_ANGLE_DEG = 20f;
-    private static final float TILT_FILTER_ALPHA = 0.95f;
+    // Dynamic sensitivity: TILT_FILTER_ALPHA range 0.70f (high sens / fast) to 0.95f (low sens / heavy smooth)
+    private float tiltFilterAlpha = 0.8f;
     private static final long TILT_HOLD_AFTER_SWING_MS = 100L; // Reduced so tilt recovers quickly after a cast
 
     private final float[] gravity = new float[3];
     private boolean gravityInitialized = false;
     private long lastTiltSentMs = 0L;
 
-    // Increased threshold to 12.0f so normal tilts don't accidentally trigger swings
-    private static final float SWING_THRESHOLD = 16.0f;
+    // Dynamic sensitivity: SWING_THRESHOLD range 12.0f (high sens / easier) to 16.0f (low sens / harder)
+    private float swingThreshold = 12.0f;
     private static final long SWING_COOLDOWN_MS = 500L;
     private long lastSwingTimeMs = 0L;
 
@@ -323,6 +324,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         }
                     }
 
+                    if ("config".equals(json.optString("type")) || json.has("sensitivity") || json.has("swing_threshold") || json.has("tilt_filter_alpha")) {
+                        if (json.has("sensitivity")) {
+                            applySensitivity((float) json.getDouble("sensitivity"));
+                        }
+                        if (json.has("swing_threshold")) {
+                            swingThreshold = (float) json.getDouble("swing_threshold");
+                        }
+                        if (json.has("tilt_filter_alpha")) {
+                            tiltFilterAlpha = (float) json.getDouble("tilt_filter_alpha");
+                        }
+                    }
+
                     if (json.has("game_state")) {
                         String stateStr = json.getString("game_state");
                         switch (stateStr) {
@@ -516,6 +529,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    public void applySensitivity(float sens) {
+        float clamped = Math.max(0.0f, Math.min(1.0f, sens));
+        // High sensitivity (1.0) -> swingThreshold 12.0f, tiltFilterAlpha 0.70f (more responsive)
+        // Low sensitivity (0.0) -> swingThreshold 16.0f, tiltFilterAlpha 0.95f (heavy smoothing, harder swing)
+        swingThreshold = 16.0f - clamped * (16.0f - 12.0f);
+        tiltFilterAlpha = 0.95f - clamped * (0.95f - 0.70f);
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         int sensorType = event.sensor.getType();
@@ -542,7 +563,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             return;
         }
 
-        if (magnitude < SWING_THRESHOLD) return;
+        if (magnitude < swingThreshold) return;
         if (now - lastSwingTimeMs < SWING_COOLDOWN_MS) return;
 
         swingWindowOpen = true;
@@ -571,7 +592,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gravityInitialized = true;
         } else if (!swingBusy) {
             for (int i = 0; i < 3; i++) {
-                gravity[i] = TILT_FILTER_ALPHA * gravity[i] + (1f - TILT_FILTER_ALPHA) * event.values[i];
+                gravity[i] = tiltFilterAlpha * gravity[i] + (1f - tiltFilterAlpha) * event.values[i];
             }
         }
 

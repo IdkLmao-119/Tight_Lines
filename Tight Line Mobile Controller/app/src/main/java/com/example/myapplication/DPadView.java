@@ -118,16 +118,18 @@ public class DPadView extends View {
                 // Deadzone check
                 float mag = (float) Math.hypot(normX, normY);
                 if (mag < 0.15f) {
-                    normX = 0f;
-                    normY = 0f;
-                } else if (mag > 1.0f) {
-                    normX /= mag;
-                    normY /= mag;
+                    currentX = 0f;
+                    currentY = 0f;
+                } else {
+                    // Strict 4-way cardinal direction (no diagonal movement)
+                    if (Math.abs(dx) >= Math.abs(dy)) {
+                        currentX = dx > 0 ? 1.0f : -1.0f;
+                        currentY = 0.0f;
+                    } else {
+                        currentX = 0.0f;
+                        currentY = dy > 0 ? 1.0f : -1.0f;
+                    }
                 }
-
-                // Discretize to 8 directions or continuous vector
-                currentX = normX;
-                currentY = normY;
 
                 invalidate();
 

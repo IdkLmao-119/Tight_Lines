@@ -100,7 +100,30 @@ const SWING_MIN_MAGNITUDE := 4.0
 const SWING_MAX_MAGNITUDE := 16.0
 const MIN_CAST_POWER := 0.15
 
-@export var cast_sensitivity: float = 1.0
+@export var cast_sensitivity: float = 0.5:
+	set(val):
+		cast_sensitivity = val
+		sync_phone_config()
+
+func sync_phone_config(player_id: int = -1) -> void:
+	var t := clampf(cast_sensitivity, 0.0, 1.0)
+	# High sensitivity (1.0) -> swing threshold 12.0f, tilt filter alpha 0.70f (faster tilt, easier swing)
+	# Low sensitivity (0.0) -> swing threshold 16.0f, tilt filter alpha 0.95f (heavy smoothing, harder swing)
+	var swing_th := lerpf(16.0, 12.0, t)
+	var tilt_alpha := lerpf(0.95, 0.70, t)
+	var payload := {
+		"type": "config",
+		"swing_threshold": swing_th,
+		"tilt_filter_alpha": tilt_alpha,
+		"sensitivity": t
+	}
+	if _connection_manager != null:
+		if player_id >= 0:
+			if _connection_manager.has_method("send_to_player"):
+				_connection_manager.send_to_player(player_id, payload)
+		else:
+			if _connection_manager.has_method("send_to_all"):
+				_connection_manager.send_to_all(payload)
 
 # Holding the cast key this long (seconds) gives full power.
 const KEYBOARD_CAST_CHARGE_TIME := 1.0
@@ -418,6 +441,7 @@ func _on_phone_connected(phone_id: int) -> void:
 		_phones.append(phone_id)
 	print("[InputManager] controller connected: player %d" % phone_id)
 	controller_connected.emit(phone_id)
+	sync_phone_config(phone_id)
 
 func _on_phone_disconnected(phone_id: int) -> void:
 	_phones.erase(phone_id)
@@ -529,10 +553,7 @@ func _on_phone_cancel(phone_id: int) -> void:
 # Helpers
 # ----------------------------------------------------------------------------
 func _swing_to_power(magnitude: float) -> float:
-	var sens := maxf(cast_sensitivity, 0.1)
-	var min_mag := SWING_MIN_MAGNITUDE / sens
-	var max_mag := SWING_MAX_MAGNITUDE / sens
-	return clampf(inverse_lerp(min_mag, max_mag, magnitude), MIN_CAST_POWER, 1.0)
+	return clampf(inverse_lerp(SWING_MIN_MAGNITUDE, SWING_MAX_MAGNITUDE, magnitude), MIN_CAST_POWER, 1.0)
 
 # Zeroes out small values and rescales the rest so output still reaches +/-1.
 func _apply_deadzone(v: float, deadzone: float) -> float:

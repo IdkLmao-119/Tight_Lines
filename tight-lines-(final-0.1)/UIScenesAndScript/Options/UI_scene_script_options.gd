@@ -16,12 +16,12 @@ func _ready() -> void:
 
 func _setup_sensitivity_controls() -> void:
 	var im = get_node_or_null("/root/InputManager")
-	var initial_sens: float = im.cast_sensitivity if im != null else 1.0
+	var initial_sens: float = im.cast_sensitivity if im != null else 0.5
 
 	if sensitivity_slider != null:
-		sensitivity_slider.min_value = 0.2
-		sensitivity_slider.max_value = 2.0
-		sensitivity_slider.step = 0.05
+		sensitivity_slider.min_value = 0.0
+		sensitivity_slider.max_value = 1.0
+		sensitivity_slider.step = 0.01
 		sensitivity_slider.value = initial_sens
 		if not sensitivity_slider.value_changed.is_connected(_on_sensitivity_slider_changed):
 			sensitivity_slider.value_changed.connect(_on_sensitivity_slider_changed)
@@ -46,11 +46,10 @@ func _on_sensitivity_slider_changed(value: float) -> void:
 
 func _on_sensitivity_input_submitted(new_text: String) -> void:
 	var val := new_text.to_float()
-	if val > 0.0:
-		val = clampf(val, 0.2, 2.0)
-		if sensitivity_slider != null:
-			sensitivity_slider.value = val
-		_on_sensitivity_slider_changed(val)
+	val = clampf(val, 0.0, 1.0)
+	if sensitivity_slider != null:
+		sensitivity_slider.value = val
+	_on_sensitivity_slider_changed(val)
 
 func _on_back_button_pressed() -> void:
 	if main_menu != null and GameManager.current_scene_id == "main_menu":
