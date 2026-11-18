@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://c67j2bnervxgj" path="res://UIScenesAndScript/FishBox/inventory_ui.tscn" id="8_x64rs"]
 [ext_resource type="PackedScene" uid="uid://b3mamplrn4kpe" path="res://UIScenesAndScript/EquipmentInventory/rod_inventory.tscn" id="9_v8kx0"]
 [ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="10_3y5u0"]
+[ext_resource type="PackedScene" uid="uid://c8tqiturk1ud6" path="res://UIScenesAndScript/QuestLog/QuestLog.tscn" id="11_ip3y8"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qbet6"]
 bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
@@ -238,6 +239,19 @@ theme_override_styles/pressed = SubResource("StyleBoxTexture_dowyv")
 theme_override_styles/hover = SubResource("StyleBoxTexture_yrluk")
 text = "Fish Box"
 
+[node name="QuestButton" type="Button" parent="." unique_id=180143594]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 191.0
+offset_right = 231.0
+offset_bottom = 383.0
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("3_r28js")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxTexture_wwmsr")
+text = "  Quests"
+alignment = 0
+
 [node name="AlmanacButton" type="Button" parent="." unique_id=745865452]
 layout_mode = 0
 offset_left = 966.0
@@ -275,10 +289,15 @@ layout_mode = 1
 visible = false
 layout_mode = 1
 
+[node name="QuestLog" parent="." unique_id=968593407 instance=ExtResource("11_ip3y8")]
+visible = false
+layout_mode = 1
+
 [connection signal="pressed" from="Options/Options/BackButton" to="Options" method="_on_back_button_pressed"]
 [connection signal="pressed" from="Options/Options/MenuButton" to="Options" method="_on_menu_button_pressed"]
 [connection signal="pressed" from="OverworldButton" to="." method="_on_overworld_button_pressed"]
 [connection signal="pressed" from="StartButton" to="." method="_on_Pause_button_pressed"]
 [connection signal="pressed" from="FishBoxButton" to="." method="_on_fish_box_button_pressed"]
+[connection signal="pressed" from="QuestButton" to="." method="_on_quest_button_pressed"]
 [connection signal="pressed" from="AlmanacButton" to="." method="_on_almanac_button_pressed"]
 [connection signal="pressed" from="RodButton" to="." method="_on_rod_button_pressed"]

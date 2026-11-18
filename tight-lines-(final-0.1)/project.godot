@@ -23,6 +23,7 @@ SaveManager="*uid://c123t7gaw6an0"
 InputManager="*uid://cljjxtxv01gi6"
 ConnectionManager="*uid://cr67ysc4wtkx0"
 InventoryManager="*uid://b4fcr4orgsjip"
+QuestManager="*uid://bheom5yt7pp12"
 
 [display]
 

@@ -41,3 +41,7 @@ func _on_almanac_button_pressed() -> void:
 func _on_rod_button_pressed() -> void:
 	if has_node("Rod_Inventory"):
 		$Rod_Inventory.visible = not $Rod_Inventory.visible
+
+func _on_quest_button_pressed() -> void:
+	if has_node("QuestLog"):
+		$QuestLog.visible = not $QuestLog.visible

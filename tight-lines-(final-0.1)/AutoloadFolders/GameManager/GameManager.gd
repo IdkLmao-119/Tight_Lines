@@ -71,21 +71,21 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Spawn",
+		"display_name": "Marikina City",
 	},
 	"overworld_river_park": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/RiverPark/RiverPark.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "River Park",
+		"display_name": "Marikina River Park",
 	},
 	"overworld_rice_field": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/RiceFields/RiceField.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Rice Fields",
+		"display_name": "Imus Fields",
 	},
 
 	#House Sub-Area
@@ -94,14 +94,12 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "House 1",
 	},
 	"overworld_house_2": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/House_Folder/House2.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "House 2",
 	},
 
 	#Area 2
@@ -110,21 +108,21 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Seaside Park",
+		"display_name": "Kawit Seaside Park",
 	},
 	"overworld_fishing_pens": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/FishPens/FishPens.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Fishing Pens",
+		"display_name": "Noveleta Fishing Pens",
 	},
 	"overworld_salt_farm": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/AbandonedSaltfarm/SaltFarm.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Abandoned Salt Farm",
+		"display_name": "Noveleta Salt Farm",
 	},
 
 	#Area 3
@@ -133,14 +131,14 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Mangrove Area",
+		"display_name": "Calatagan Mangrove Forest",
 	},
 	"overworld_island": {
 		"path": "res://OverWorldSceneAndScript/3_Shore/Island/Island.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Island",
+		"display_name": "Fortune Island",
 	},
 
 	#3D Fishing
@@ -149,56 +147,48 @@ const SCENES: Dictionary = {
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Rice Fields - Fishing",
 	},
 	"fishing_river_park": {
 		"path": "res://3DFishingScene/Area1FishingScenes/3DFishingRiverPark.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "River Park - Fishing",
 	},
 	"fishing_fish_market": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingSeasidePark.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Seaside Park - Fishing",
 	},
 	"fishing_fishing_pens": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingFishPens.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Fishing Pens - Fishing",
 	},
 	"fishing_salt_farm": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingSaltFarm.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Abandoned Salt Farm - Fishing",
 	},
 	"fishing_mangrove": {
 		"path": "res://3DFishingScene/Area3FishingScenes/3DFishingMangrove.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Mangrove Area - Fishing",
 	},
 	"fishing_island": {
 		"path": "res://3DFishingScene/Area3FishingScenes/3DFishingIsland.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Island - Fishing",
 	},
 	"multiplayer": {
 		"path": "res://3DFishingScene/MultiplayerFishingScene/3d_fishing_multiplayer.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Sunday.mp3",
 		"pausable": true,
-		"display_name": "Multiplayer Fishing",
 	},
 }
 

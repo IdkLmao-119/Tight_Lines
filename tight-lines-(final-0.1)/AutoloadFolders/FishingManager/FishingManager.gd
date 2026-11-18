@@ -213,6 +213,7 @@ var _db: Node = null
 var _save: Node = null
 var _inventory: Node = null
 var _connection: Node = null
+var _quest: Node = null
 var _context: Dictionary = {}
 var _multiplayer := false
 var _elapsed := 0.0
@@ -235,6 +236,7 @@ func _ready() -> void:
 	_save = get_node_or_null("/root/SaveManager")
 	_inventory = get_node_or_null("/root/InventoryManager")
 	_connection = get_node_or_null("/root/ConnectionManager")
+	_quest = get_node_or_null("/root/QuestManager")
 
 	if _input == null:
 		push_error("FishingManager: InputManager autoload not found - no input will work.")
@@ -1017,6 +1019,7 @@ func _fish_won(s: FishingSession) -> void:
 	if store_catches_in_inventory and not _multiplayer:
 		kept = _store_fish(fish)
 		_record_caught_fish(String(fish["id"]))
+		_report_catch(String(fish["id"]), float(fish["size_cm"]), String(_context.get("spot_id", "")))
 
 	if kept:
 		s.catches.append(fish)
@@ -1035,9 +1038,17 @@ func _record_caught_fish(fish_id: String) -> void:
 	if _save == null or not _save.has_method("record_caught_fish"):
 		_warn_once("record_caught_fish", "SaveManager.record_caught_fish() not found - Bestiary will not unlock.")
 		return
-	var is_new := bool(_save.record_caught_fish(fish_id))
+	var is_new := bool(_save.record_caught_fish(fish_id))   # Almanac + "first time" quests
 	if is_new and debug_log:
 		print("[FishingManager] New Bestiary entry unlocked: '%s'" % fish_id)
+
+
+# Tells QuestManager about a catch ("catch X times" quests).
+func _report_catch(fish_id: String, size_cm: float, spot_id: String) -> void:
+	if _quest == null or not _quest.has_method("report_catch"):
+		_warn_once("report_catch", "QuestManager.report_catch() not found - catch quests will not progress.")
+		return
+	_quest.report_catch(fish_id, size_cm, spot_id)
 
 
 func _store_fish(fish: Dictionary) -> bool:
