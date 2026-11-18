@@ -10,6 +10,11 @@ var _shop_ui: Control = null
 
 
 func _physics_process(_delta):
+	var story := get_node_or_null("/root/StoryManager")
+	if story != null and story.is_playing():
+		velocity = Vector2.ZERO
+		return
+
 	var dir = Input.get_vector("Left", "Right", "Up", "Down")
 	if dir == Vector2.ZERO and get_node_or_null("/root/InputManager") != null:
 		dir = get_node_or_null("/root/InputManager").get_move_vector()

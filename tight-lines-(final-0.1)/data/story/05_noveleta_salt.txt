@@ -1,0 +1,46 @@
+# ============================================================
+# Area 5 - Noveleta Salt Farm
+# ============================================================
+
+=== salt_arrival | scene: overworld_salt_farm | requires: unlock_salt_farm
+@john
+(squinting) Whoa. It's so bright.
+And hot. I can feel it through my shoes.
+
+Even the air tastes salty.
+So the sea water comes in, sits here, dries in the sun, and becomes salt.
+
+Water doesn't just flow here. It gets used.
+!open_ui almanac
+Okay, time to start fishing.
+!tutorial Walk to a pond. Press [E] / A to cast.
+!objective Catch every small and medium fish in the Noveleta salt farm.
+
+
+=== salt_first_bite | side
+@john:curious
+A bite? In water this salty?
+
+
+=== salt_first_catch | side
+@john:happy
+It actually lives here. Let's see...
+Fish can handle more than I thought.
+
+
+=== salt_first_fail | side
+@john
+It slipped right off. Too slippery!
+
+
+=== salt_complete | requires: quest_bright_water
+!banner Salt Farm Complete
+!banner Cavite Complete
+@john:happy
+Four areas. All of Cavite.
+Lolo went around the world and never fished the places right next door.
+
+I'm glad I did.
+!open_ui map
+!objective Travel to Batangas.
+Okay. Batangas next.
