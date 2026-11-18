@@ -3,9 +3,13 @@
 [ext_resource type="Script" uid="uid://dhj4fll8hgec7" path="res://3DFishingScene/Area1FishingScenes/scene_script_3d_fishing_rice_field.gd" id="1_lwidx"]
 [ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="2_d6y1a"]
 [ext_resource type="Texture2D" uid="uid://ddcfr1yb30plo" path="res://Assets/3D/Water.png" id="3_03g4m"]
+[ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="4_03g4m"]
 [ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="4_5ivq8"]
+[ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="5_5ivq8"]
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="5_ed3u3"]
+[ext_resource type="Script" uid="uid://6pqlg1cq306c" path="res://data/item_class_templates/fish_music_entry.gd" id="6_ed3u3"]
 [ext_resource type="Texture2D" uid="uid://der6y27lfrk8w" path="res://Assets/3D/Grass.png" id="6_t1afk"]
+[ext_resource type="Resource" uid="uid://ik80ye4cintd" path="res://data/fish to music connection/Marlin.tres" id="7_t1afk"]
 [ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/FishingUI/FishingUI.tscn" id="9_s4xdn"]
 [ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="10_q70uh"]
 [ext_resource type="PackedScene" uid="uid://gs0b8245xrex" path="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/rock_02.glb" id="11_03g4m"]
@@ -87,6 +91,18 @@ sorting_use_aabb_center = false
 material_overlay = SubResource("StandardMaterial3D_goktk")
 ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_goktk")
+
+[node name="FishingManager" type="Node3D" parent="." unique_id=462196808 node_paths=PackedStringArray("player_anchors", "rod_holders")]
+transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, 0, 0, 0)
+script = ExtResource("4_03g4m")
+player_anchors = [NodePath("../PlayerFishing")]
+rod_holders = [NodePath("../PlayerFishing/CharacterBody3D/FishingRod_Lvl3")]
+bobber_scene = ExtResource("5_5ivq8")
+fish_music = Array[ExtResource("6_ed3u3")]([ExtResource("7_t1afk")])
+fish_music_volume_db = 10.0
+debug_spot_id = "location_debug_2"
+debug_rod_id = "rod_debug"
+debug_bait_id = "bait_0_debug"
 
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 3.0786262)

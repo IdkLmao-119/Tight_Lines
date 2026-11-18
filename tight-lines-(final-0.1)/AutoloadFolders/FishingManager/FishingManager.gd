@@ -82,6 +82,15 @@ enum Difficulty { CASUAL, ANGLER }
 @export var pan_camera_follow := 0.8             # How much of the bobber's sideways angle the camera follows (0 = fixed, 1 = fully centred on it). | Lower to keep the view steadier.
 @export var pan_camera_smooth := 3.0             # How smoothly the camera catches up (higher = tighter). | Lower for a lazier camera.
 
+@export_group("Fight length")
+@export_range(0.5, 5.0, 0.1) var fight_length_multiplier := 4.0   # How long the reel fight lasts compared to before (1.0 = old length, 2.0 = twice as long, 3.0 = three times). | Raise for longer fights, lower for quicker catches.
+
+@export_group("Fish Music")
+@export var fish_music: Array[FishMusicEntry] = []   # One row per special fish: drag the fish record and the song into it. | Add a row for each fish that should have its own music.
+@export var fish_music_fade_in := 0.4            # Seconds to fade the track in when the fish bites. | Raise for a gentler start.
+@export var fish_music_fade_out := 0.8           # Seconds to fade out when the fish is caught or escapes. | Raise for a softer ending.
+@export var fish_music_volume_db := 0.0          # Track volume. | Lower if it drowns out the scene music.
+
 @export_group("HUD / UI")
 @export var show_tension_bar := true            # On-screen tension bar while reeling. | Turn off if your own HUD draws it.
 @export var node_to_hide_on_bite: CanvasLayer    # CanvasLayer to set invisible on bite, and visible again after reeling. | Assign your UI layer here.
@@ -123,7 +132,7 @@ const TEMP_ROD_REEL_SPEED := 1.0         # Default reel speed; how fast reeling 
 # --- Reel fight tuning ---
 # TENSION BAR = fish half + reel half, each capped (FISH_SHARE_MAX / REEL_SHARE_MAX).
 # Tension only goes UP by itself and only goes DOWN when the player releases the reel.
-const REEL_PROGRESS_RATE := 0.20         # Line won per second at full reeling (progress 0..1). | Lower = longer fights, higher = quicker catches.
+const REEL_PROGRESS_RATE := 0.22         # Line won per second at full reeling (progress 0..1). | Lower = longer fights, higher = quicker catches.
 const TENSION_RISE_RATE := 1             # How fast tension builds (line-strength units/sec; /line_strength = bar fraction/sec). Used for the fish surge AND for reeling. | Lower if the bar fills too fast, raise if the fight is too safe.
 const TENSION_FALL_RATE := 3.0           # How fast RELEASING the reel lowers tension (same units, at full release). | Raise if releasing is too slow to save the line, lower to make it riskier.
 const FISH_SHARE_MAX := 0.6              # Fish's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to make the fish matter more than your reeling.
@@ -134,12 +143,12 @@ const START_PROGRESS := 0.35             # Fight starts this far toward landed (
 const SNAP_GRACE_SEC := 0.5              # Seconds the bar may stay in the danger zone before the line snaps (x rod control, x2.5 in Casual). | Raise to forgive, lower to be strict.
 const PULL_FOR_FULL_SHARE := 6.0         # Fish pull that fills the fish's whole half. Higher = fish fills less of its half. | Raise if fish fill their half too easily.
 const SNAP_RATIO := 0.90                 # Bar level (0..1) where the snap timer starts. | Raise toward 1.0 to make snaps rarer.
-const SURGE_REEL_PROGRESS_MULT := 0.4    # Share of line won when reeling DURING a surge. | Lower to discourage reeling into a surge, raise to soften it.
-const CALM_REEL_PROGRESS_MULT := 1.1     # Multiplier for reeling while fish is calm | Lower to discourage reeling while calm, raise to encourage reeling while calm
+const SURGE_REEL_PROGRESS_MULT := 0.5    # Share of line won when reeling DURING a surge. | Lower to discourage reeling into a surge, raise to soften it.
+const CALM_REEL_PROGRESS_MULT := 1.3     # Multiplier for reeling while fish is calm | Lower to discourage reeling while calm, raise to encourage reeling while calm
 const SURGE_PULL_MULT := 1.4             # Fish pull multiplier while surging. | Lower to make surges gentler.
 const CALM_PULL_MULT := 0.8              # Fish pull multiplier while calm. | Raise so calm moments are less restful.
-const SURGE_DRAIN := 1.5                 # Stamina lost per second while surging. | Raise so fish tire faster.
-const CALM_DRAIN := 1.0                  # Stamina lost per second while calm. | Raise so fish tire faster.
+const SURGE_DRAIN := 1.0                 # Stamina lost per second while surging. | Raise so fish tire faster.
+const CALM_DRAIN := 0.5                  # Stamina lost per second while calm. | Raise so fish tire faster.
 const CAST_ARC_BASE := 2.0               # Height of the cast arc at zero power (metres). | Visual only.
 const CAST_ARC_POWER := 3.0              # Extra arc height at full power (metres). | Visual only.
 const CATCH_STOP_DISTANCE := 2.0         # How close the bobber gets to the player when the fish is nearly landed. | Visual only.
@@ -214,6 +223,9 @@ var _save: Node = null
 var _inventory: Node = null
 var _connection: Node = null
 var _quest: Node = null
+var _fish_music_player: AudioStreamPlayer = null
+var _fish_music_tween: Tween = null
+var _scene_music_suppressed := false
 var _context: Dictionary = {}
 var _multiplayer := false
 var _elapsed := 0.0
@@ -274,6 +286,9 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	# Never leave the scene music muted when the scene closes mid-fight.
+	if _scene_music_suppressed and _game_manager != null and _game_manager.has_method("set_music_suppressed"):
+		_game_manager.set_music_suppressed(false, 0.0)
 	if _connection != null and _connection.has_signal("player_connected") \
 			and _connection.player_connected.is_connected(_on_phone_connected):
 		_connection.player_connected.disconnect(_on_phone_connected)
@@ -558,6 +573,7 @@ func _try_bite(s: FishingSession) -> void:
 	_set_state(s, State.REELING)
 	fish_bit.emit(s.player_id)
 	on_bite(s)
+	_play_fish_music(String(fish["id"]))
 
 
 # --- EVENT HOOKS ---
@@ -913,10 +929,13 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 		reel_gain *= SURGE_REEL_PROGRESS_MULT
 	else:
 		reel_gain *= CALM_REEL_PROGRESS_MULT
-	s.progress += reel_gain * delta
-	s.progress -= fish_pull * FISH_DRAG_RATE * delta
+	# fight_length_multiplier stretches the fight: line is won AND lost more slowly, so the
+	# odds of landing the fish stay the same but the fight lasts longer.
+	var pace := 1.0 / maxf(fight_length_multiplier, 0.1)
+	s.progress += reel_gain * pace * delta
+	s.progress -= fish_pull * FISH_DRAG_RATE * pace * delta
 	# Letting line out costs distance: the fish takes it back.
-	s.progress -= release * RELEASE_LINE_LOSS_RATE * delta
+	s.progress -= release * RELEASE_LINE_LOSS_RATE * pace * delta
 	s.progress = clampf(s.progress, 0.0, 1.0)
 
 	s.stamina = maxf(s.stamina - (SURGE_DRAIN if s.surging else CALM_DRAIN) * delta, 0.0)
@@ -1041,6 +1060,65 @@ func _record_caught_fish(fish_id: String) -> void:
 	var is_new := bool(_save.record_caught_fish(fish_id))   # Almanac + "first time" quests
 	if is_new and debug_log:
 		print("[FishingManager] New Bestiary entry unlocked: '%s'" % fish_id)
+
+
+# --- Fish music ---
+# Plays the track assigned to this fish in `fish_music` while it is on the line (bite -> caught/escaped).
+# Fish with no entry play nothing. Uses its own AudioStreamPlayer on the "Music" bus if that bus exists.
+func _play_fish_music(fish_id: String) -> void:
+	var entry: FishMusicEntry = null
+	for e in fish_music:
+		if e != null and e.fish != null and e.fish.id == fish_id and e.music != null:
+			entry = e
+			break
+	if entry == null:
+		if debug_log:
+			print("[FishingManager] no fish music for '%s' (%d rows in Fish Music; each row needs BOTH a Fish and a Music assigned)" % [fish_id, fish_music.size()])
+		return
+	if _fish_music_player == null or not is_instance_valid(_fish_music_player):
+		_fish_music_player = AudioStreamPlayer.new()
+		_fish_music_player.name = "FishMusicPlayer"
+		if AudioServer.get_bus_index("Music") != -1:
+			_fish_music_player.bus = "Music"
+		add_child(_fish_music_player)
+	if _fish_music_tween != null and _fish_music_tween.is_valid():
+		_fish_music_tween.kill()
+	_fish_music_player.stream = entry.music
+	_fish_music_player.volume_db = -60.0
+	_fish_music_player.play()
+	_fish_music_tween = create_tween()
+	_fish_music_tween.tween_property(_fish_music_player, "volume_db", fish_music_volume_db + entry.volume_db, maxf(fish_music_fade_in, 0.01))
+	_suppress_scene_music(true)
+	if debug_log:
+		var bus_idx := AudioServer.get_bus_index(_fish_music_player.bus)
+		print("[FishingManager] fish music started for '%s' | stream=%s | playing=%s | bus=%s (muted=%s, %.1f dB) | target=%.1f dB" % [
+				fish_id, entry.music.resource_path, str(_fish_music_player.playing), _fish_music_player.bus,
+				str(AudioServer.is_bus_mute(bus_idx)), AudioServer.get_bus_volume_db(bus_idx),
+				fish_music_volume_db + entry.volume_db])
+
+
+func _stop_fish_music() -> void:
+	if _fish_music_player == null or not is_instance_valid(_fish_music_player) or not _fish_music_player.playing:
+		return
+	if _fish_music_tween != null and _fish_music_tween.is_valid():
+		_fish_music_tween.kill()
+	var player := _fish_music_player
+	_fish_music_tween = create_tween()
+	_fish_music_tween.tween_property(player, "volume_db", -60.0, maxf(fish_music_fade_out, 0.01))
+	_fish_music_tween.tween_callback(player.stop)
+	_suppress_scene_music(false)
+
+
+# Asks GameManager to silence (true) or bring back (false) the normal scene music.
+# Needs GameManager.set_music_suppressed(suppressed: bool, fade_seconds: float).
+func _suppress_scene_music(suppressed: bool) -> void:
+	if _scene_music_suppressed == suppressed:
+		return
+	if _game_manager == null or not _game_manager.has_method("set_music_suppressed"):
+		_warn_once("music_suppress", "GameManager.set_music_suppressed() not found - scene music keeps playing under the fish music.")
+		return
+	_scene_music_suppressed = suppressed
+	_game_manager.set_music_suppressed(suppressed, fish_music_fade_in if suppressed else fish_music_fade_out)
 
 
 # Tells QuestManager about a catch ("catch X times" quests).
@@ -1261,6 +1339,7 @@ func _set_state(s: FishingSession, new_state: int) -> void:
 			node_to_hide_on_bite.visible = false
 
 	if old == State.REELING:
+		_stop_fish_music()
 		if s.anchor != null:
 			s.anchor.rotation.x = 0.0
 			s.anchor.rotation.y = s.base_yaw + s.look_offset

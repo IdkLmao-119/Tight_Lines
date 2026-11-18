@@ -3,13 +3,7 @@
 [ext_resource type="Script" uid="uid://dx1akc0mc2hlt" path="res://data/item_class_templates/pool_entry.gd" id="1_nj8qx"]
 [ext_resource type="Script" uid="uid://ct4mpw3eqe0jb" path="res://data/item_class_templates/odds_modifier.gd" id="3_k0om5"]
 [ext_resource type="Resource" uid="uid://kl5o4umhdp0f" path="res://data/fish/fish_marlin.tres" id="26_qqmxs"]
-[ext_resource type="Resource" uid="uid://dwkjdo1ytjou6" path="res://data/fish/fish_yellowfin_tuna.tres" id="52_ofgod"]
 [ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://data/item_class_templates/location_data.gd" id="53_ad67m"]
-
-[sub_resource type="Resource" id="Resource_ogcpy"]
-script = ExtResource("1_nj8qx")
-fish = ExtResource("52_ofgod")
-metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
 
 [sub_resource type="Resource" id="Resource_ff85y"]
 script = ExtResource("1_nj8qx")
@@ -18,7 +12,7 @@ metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
 
 [resource]
 script = ExtResource("53_ad67m")
-fish_pool = Array[ExtResource("1_nj8qx")]([SubResource("Resource_ogcpy"), SubResource("Resource_ff85y")])
+fish_pool = Array[ExtResource("1_nj8qx")]([SubResource("Resource_ff85y")])
 id = "location_debug_2"
 display_name = "debug loc"
 metadata/_custom_type_script = "uid://bbts02hgiiwr"

@@ -265,6 +265,7 @@ var _music_b: AudioStreamPlayer
 var _music_active: AudioStreamPlayer     # the one currently audible
 var _music_tween: Tween
 var _current_music_path: String = ""
+var _music_suppressed := false           # true while a fish song overrides the scene music
 var _warned_missing: Dictionary = {}     # so each missing file warns once
 
 
@@ -588,7 +589,8 @@ func play_music(path: String, fade_time: float = MUSIC_CROSSFADE_TIME) -> void:
 	_music_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	_music_tween.set_parallel(true)
 	_music_tween.set_trans(Tween.TRANS_SINE)
-	_music_tween.tween_property(new_player, "volume_db", 0.0, fade_time)
+	# While a fish song overrides the music, new tracks start (and stay) silent.
+	_music_tween.tween_property(new_player, "volume_db", SILENT_DB if _music_suppressed else 0.0, fade_time)
 	if old_player.playing:
 		_music_tween.tween_property(old_player, "volume_db", SILENT_DB, fade_time)
 		_music_tween.chain().tween_callback(old_player.stop)
@@ -607,6 +609,30 @@ func stop_music(fade_time: float = MUSIC_CROSSFADE_TIME) -> void:
 	_music_tween.chain().tween_callback(func():
 		_music_a.stop()
 		_music_b.stop())
+
+
+# Silences (true) or restores (false) the scene music without stopping it, so it
+# carries on from the same point afterwards. FishingManager uses this so a fish's
+# own song overrides the scene music while that fish is on the line.
+func set_music_suppressed(suppressed: bool, fade_seconds: float = 0.5) -> void:
+	if suppressed == _music_suppressed:
+		return
+	_music_suppressed = suppressed
+	if _music_tween and _music_tween.is_valid():
+		_music_tween.kill()
+	_music_tween = create_tween()
+	_music_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_music_tween.set_parallel(true)
+	var fade := maxf(fade_seconds, 0.0)
+	for p in [_music_a, _music_b]:
+		if not p.playing:
+			continue
+		if p == _music_active:
+			_music_tween.tween_property(p, "volume_db", SILENT_DB if suppressed else 0.0, fade)
+		else:
+			# A leftover crossfade player: finish its fade-out.
+			_music_tween.tween_property(p, "volume_db", SILENT_DB, fade)
+			_music_tween.chain().tween_callback(p.stop)
 
 
 func _play_scene_music(entry: Dictionary) -> void:
