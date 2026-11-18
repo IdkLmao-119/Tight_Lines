@@ -79,15 +79,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor accelSensor;
 
     private static final long TILT_SEND_INTERVAL_MS = 50L;
-    private static final float TILT_FULL_ANGLE_DEG = 40f;
-    private static final float TILT_FILTER_ALPHA = 0.8f;
-    private static final long TILT_HOLD_AFTER_SWING_MS = 250L;
+    private static final float TILT_FULL_ANGLE_DEG = 20f;
+    private static final float TILT_FILTER_ALPHA = 0.95f;
+    private static final long TILT_HOLD_AFTER_SWING_MS = 100L; // Reduced so tilt recovers quickly after a cast
 
     private final float[] gravity = new float[3];
     private boolean gravityInitialized = false;
     private long lastTiltSentMs = 0L;
 
-    private static final float SWING_THRESHOLD = 8.0f;
+    // Increased threshold to 12.0f so normal tilts don't accidentally trigger swings
+    private static final float SWING_THRESHOLD = 16.0f;
     private static final long SWING_COOLDOWN_MS = 500L;
     private long lastSwingTimeMs = 0L;
 
@@ -98,16 +99,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private String deviceId;
 
-    // --- Dynamic UI State Management ---
     private enum AppState { CONNECTION, OVERWORLD, CASTING, REELING }
     private AppState currentState = null;
 
-    // UI elements (re-bound dynamically per screen)
     private TextView statusText;
     private EditText serverIpInput;
     private Button connectButton;
     private Button discoverButton;
     private GestureDetector gestureDetector;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         accelSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        // Start on the connection setup view
         switchToState(AppState.CONNECTION);
     }
 
@@ -160,25 +159,77 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             getLayoutInflater().inflate(layoutResId, rootContainer, true);
 
-            // Bind specific view listeners depending on state
             if (newState == AppState.CONNECTION) {
                 setupConnectionUI();
-            } else if (newState == AppState.REELING) {
-                FishingReelView reelView = findViewById(R.id.fishingReelView);
-                if (reelView != null) {
-                    reelView.setOnReelListener(deltaDegrees -> {
-                        JSONObject msg = new JSONObject();
-                        try {
-                            msg.put("type", "reel");
-                            msg.put("delta", deltaDegrees);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        sendMessage(msg);
-                    });
+            } else {
+                setupMenuHeaderButtons();
+
+                if (newState == AppState.OVERWORLD) {
+                    DPadView dpadView = findViewById(R.id.dpadView);
+                    if (dpadView != null) {
+                        dpadView.setOnMoveListener((x, y) -> {
+                            JSONObject msg = new JSONObject();
+                            try {
+                                msg.put("type", "move");
+                                msg.put("x", x);
+                                msg.put("y", y);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            sendMessage(msg);
+                        });
+                    }
+
+                    Button btnInteract = findViewById(R.id.btnInteract);
+                    if (btnInteract != null) {
+                        btnInteract.setOnClickListener(v -> {
+                            JSONObject msg = new JSONObject();
+                            try {
+                                msg.put("type", "interact");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            sendMessage(msg);
+                        });
+                    }
+                } else if (newState == AppState.REELING) {
+                    FishingReelView reelView = findViewById(R.id.fishingReelView);
+                    if (reelView != null) {
+                        reelView.setOnReelListener(deltaDegrees -> {
+                            JSONObject msg = new JSONObject();
+                            try {
+                                msg.put("type", "reel");
+                                msg.put("delta", deltaDegrees);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            sendMessage(msg);
+                        });
+                    }
                 }
             }
         });
+    }
+
+    private void setupMenuHeaderButtons() {
+        Button btnFishBox = findViewById(R.id.btnFishBox);
+        Button btnAlmanac = findViewById(R.id.btnAlmanac);
+        Button btnEquipment = findViewById(R.id.btnEquipment);
+
+        if (btnFishBox != null) btnFishBox.setOnClickListener(v -> sendMenuAction("fish_box"));
+        if (btnAlmanac != null) btnAlmanac.setOnClickListener(v -> sendMenuAction("almanac"));
+        if (btnEquipment != null) btnEquipment.setOnClickListener(v -> sendMenuAction("equipment"));
+    }
+
+    private void sendMenuAction(String action) {
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("type", "menu");
+            msg.put("action", action);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessage(msg);
     }
 
     private void setupConnectionUI() {
@@ -204,9 +255,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (gestureDetector != null) {
-            gestureDetector.onTouchEvent(event);
-        }
+        if (gestureDetector != null) gestureDetector.onTouchEvent(event);
         return true;
     }
 
@@ -243,8 +292,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onOpen(WebSocket ws, Response response) {
                 if (attempt != connectionAttempt) return;
                 isConnected = true;
-
-                // Jump straight to Overworld controller screen on connection success
                 switchToState(AppState.OVERWORLD);
 
                 JSONObject msg = new JSONObject();
@@ -257,7 +304,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sendMessage(msg);
             }
 
-            // Safety net: if the PC ever sends a BINARY frame, read it as text too.
             @Override
             public void onMessage(WebSocket ws, ByteString bytes) {
                 onMessage(ws, bytes.utf8());
@@ -266,16 +312,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onMessage(WebSocket ws, String text) {
                 if (attempt != connectionAttempt) return;
-                Log.d("TightLines", "from PC: " + text);
                 try {
                     JSONObject json = new JSONObject(text);
 
-                    // Vibration from the PC: {"type":"vibrate","reason":"bite"|"escape"}
                     if ("vibrate".equals(json.optString("type"))) {
                         if ("bite".equals(json.optString("reason"))) {
-                            vibrateOnce(300);                                  // one firm buzz
+                            vibrateOnce(300);
                         } else {
-                            vibratePattern(new long[]{0, 120, 80, 120});       // double buzz
+                            vibratePattern(new long[]{0, 120, 80, 120});
                         }
                     }
 
@@ -395,9 +439,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }).start();
     }
 
-    // ------------------------------------------------------------------------
-    // VIBRATION (needs <uses-permission android:name="android.permission.VIBRATE" />)
-    // ------------------------------------------------------------------------
     @SuppressWarnings("deprecation")
     private void vibrateOnce(long ms) {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -409,7 +450,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    // pattern = {delay, on, off, on, ...} in ms, played once.
     @SuppressWarnings("deprecation")
     private void vibratePattern(long[] pattern) {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -428,9 +468,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void sendMessage(JSONObject json) {
-        if (webSocket != null) {
-            webSocket.send(json.toString());
-        }
+        if (webSocket != null) webSocket.send(json.toString());
     }
 
     public String getConnectionStatus() {
@@ -445,14 +483,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            float normalizedX = e.getX() / getResources().getDisplayMetrics().widthPixels;
-            float normalizedY = e.getY() / getResources().getDisplayMetrics().heightPixels;
-
             JSONObject msg = new JSONObject();
             try {
-                msg.put("type", "tap");
-                msg.put("x", normalizedX);
-                msg.put("y", normalizedY);
+                msg.put("type", "cancel");
             } catch (JSONException ex) {
                 ex.printStackTrace();
             }
@@ -467,12 +500,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float dx = e2.getX() - e1.getX();
             float dy = e2.getY() - e1.getY();
 
-            String direction;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                direction = (dx > 0) ? "right" : "left";
-            } else {
-                direction = (dy > 0) ? "down" : "up";
-            }
+            String direction = (Math.abs(dx) > Math.abs(dy)) ? ((dx > 0) ? "right" : "left") : ((dy > 0) ? "down" : "up");
 
             JSONObject msg = new JSONObject();
             try {
@@ -567,9 +595,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 break;
         }
         if (currentState == AppState.REELING) return;
-        float ratio = Math.max(-1f, Math.min(1f, -screenRight / SensorManager.GRAVITY_EARTH));
-        double angleDeg = Math.toDegrees(Math.asin(ratio));
-        double value = Math.max(-1.0, Math.min(1.0, angleDeg / TILT_FULL_ANGLE_DEG));
+
+        float maxSin = (float) Math.sin(Math.toRadians(TILT_FULL_ANGLE_DEG));
+        double ratio = -screenRight / (SensorManager.GRAVITY_EARTH * maxSin);
+        double value = Math.max(-1.0, Math.min(1.0, ratio));
 
         JSONObject msg = new JSONObject();
         try {
@@ -587,12 +616,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onResume() {
         super.onResume();
-        if (gyroSensor != null) {
-            sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
-        }
-        if (accelSensor != null) {
-            sensorManager.registerListener(this, accelSensor, SensorManager.SENSOR_DELAY_GAME);
-        }
+        if (gyroSensor != null) sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
+        if (accelSensor != null) sensorManager.registerListener(this, accelSensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
@@ -607,8 +632,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onDestroy();
         wantConnected = false;
         handler.removeCallbacks(reconnectRunnable);
-        if (webSocket != null) {
-            webSocket.close(1000, "App closed");
-        }
+        if (webSocket != null) webSocket.close(1000, "App closed");
     }
 }

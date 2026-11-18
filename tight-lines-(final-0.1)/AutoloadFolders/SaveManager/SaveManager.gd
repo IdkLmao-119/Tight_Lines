@@ -333,12 +333,16 @@ func set_equipped_bait(bait_id: String) -> bool:
 
 func save_settings() -> bool:
 	var game_manager := _autoload("GameManager")
+	var input_manager := _autoload("InputManager")
 	if game_manager == null:
 		return false
-	return _write_json(SETTINGS_PATH, {
+	var data := {
 		"version": SETTINGS_FORMAT_VERSION,
 		"volume": game_manager.call("get_volume_settings"),
-	})
+	}
+	if input_manager != null:
+		data["cast_sensitivity"] = input_manager.cast_sensitivity
+	return _write_json(SETTINGS_PATH, data)
 
 
 func load_settings() -> bool:
@@ -346,12 +350,13 @@ func load_settings() -> bool:
 	if data.is_empty():
 		return false
 	var game_manager := _autoload("GameManager")
-	if game_manager == null:
-		return false
-	var volume := _clean_volume(data.get("volume"))
-	if volume.is_empty():
-		return false
-	game_manager.call("apply_volume_settings", volume)
+	if game_manager != null:
+		var volume := _clean_volume(data.get("volume"))
+		if not volume.is_empty():
+			game_manager.call("apply_volume_settings", volume)
+	var input_manager := _autoload("InputManager")
+	if input_manager != null and data.has("cast_sensitivity"):
+		input_manager.cast_sensitivity = float(data.get("cast_sensitivity", 1.0))
 	return true
 
 

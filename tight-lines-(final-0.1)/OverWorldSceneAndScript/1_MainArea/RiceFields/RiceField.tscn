@@ -329,3 +329,7 @@ shape = SubResource("RectangleShape2D_fu8dt")
 [connection signal="body_entered" from="RiceFieldsToRiceFishingSpot1/RiceFieldsToRiceFishingSpot1" to="Player" method="_on_rice_fields_to_rice_fishing_spot_1_body_entered"]
 [connection signal="body_entered" from="RiceFieldsToRiceFishingSpot2/RiceFieldsToRiceFishingSpot2" to="Player" method="_on_rice_fields_to_rice_fishing_spot_2_body_entered"]
 [connection signal="body_entered" from="RiceFieldsToSpawn/RiceFieldsToSpawn" to="Player" method="_on_rice_fields_to_spawn_body_entered"]
+
+[editable path="Player"]
+[editable path="Player/CanvasLayer/2DSceneUI"]
+[editable path="Player/CanvasLayer/2DSceneUI/3DSceneUI"]

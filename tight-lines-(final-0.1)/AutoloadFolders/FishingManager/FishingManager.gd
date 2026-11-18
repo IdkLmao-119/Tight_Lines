@@ -1,7 +1,7 @@
 extends Node3D
 
 # ============================================================================
-# FISHING MANAGER (SCENE NODE) - TightLines          Version 0.4.9 (2026-11-16)
+# FISHING MANAGER (SCENE NODE) - TightLines          Version 0.5.1 (2026-11-17)
 # ============================================================================
 # Put this script on a Node3D inside FishingMinigame.tscn (or the 2-player
 # versus scene). It is NOT an autoload. It runs one fishing session per
@@ -20,6 +20,9 @@ extends Node3D
 #   - Casual vs Angler difficulty.
 #   - Camera shake, tension bar HUD, on-screen messages, catch popup.
 #
+# 0.5.1: replaced the random pan with a smooth fish sweep (left then right, or right
+#        then left); the camera eases toward the bobber instead of moving on its own
+#        (exports under "Fish Sweep (reeling)").
 # 0.4.9: tension only falls when the player RELEASES the reel (get_release_strength).
 # Variable labels: every export/const has "what it does | when to tweak".
 # ============================================================================
@@ -68,8 +71,19 @@ enum Difficulty { CASUAL, ANGLER }
 @export var shake_base_intensity := 0.06         # Shake size (radians), scales with tension. | Lower if it is nauseating, raise for drama.
 @export var shake_frequency := 30.0              # Shake speed. | Lower for a slow rumble, raise for a rattle.
 
+@export_group("Fish Sweep (reeling)")
+@export var enable_fish_sweep := true            # While reeling the fish swims left then right (or right then left) in smooth sweeps, and the camera follows the bobber. | Turn off for a fixed view.
+@export var pan_bobber_meters := 4.0             # How far the bobber sweeps to each side of the line (metres). | Match your water width.
+@export var pan_period_calm := 3.2               # Seconds for one full left-and-right sweep while the fish is calm. | Raise for slower, lazier sweeps.
+@export var pan_period_surge := 1.8              # Same, while the fish is surging. | Lower for a more frantic fish.
+@export var pan_amount_calm := 0.6               # How wide the sweep is while calm (0..1 of the full width). | Raise for wider swims.
+@export var pan_amount_surge := 1.0              # How wide the sweep is while surging (0..1). | Lower to calm surges down.
+@export var pan_bobber_smooth := 5.0             # How tightly the bobber follows the sweep (higher = snappier). | Lower for floatier motion.
+@export var pan_camera_follow := 0.8             # How much of the bobber's sideways angle the camera follows (0 = fixed, 1 = fully centred on it). | Lower to keep the view steadier.
+@export var pan_camera_smooth := 3.0             # How smoothly the camera catches up (higher = tighter). | Lower for a lazier camera.
+
 @export_group("HUD / UI")
-@export var show_tension_bar := true             # On-screen tension bar while reeling. | Turn off if your own HUD draws it.
+@export var show_tension_bar := true            # On-screen tension bar while reeling. | Turn off if your own HUD draws it.
 @export var node_to_hide_on_bite: CanvasLayer    # CanvasLayer to set invisible on bite, and visible again after reeling. | Assign your UI layer here.
 
 @export_group("Messages")
@@ -110,7 +124,7 @@ const TEMP_ROD_REEL_SPEED := 1.0         # Default reel speed; how fast reeling 
 # TENSION BAR = fish half + reel half, each capped (FISH_SHARE_MAX / REEL_SHARE_MAX).
 # Tension only goes UP by itself and only goes DOWN when the player releases the reel.
 const REEL_PROGRESS_RATE := 0.20         # Line won per second at full reeling (progress 0..1). | Lower = longer fights, higher = quicker catches.
-const TENSION_RISE_RATE := 1          # How fast tension builds (line-strength units/sec; /line_strength = bar fraction/sec). Used for the fish surge AND for reeling. | Lower if the bar fills too fast, raise if the fight is too safe.
+const TENSION_RISE_RATE := 1             # How fast tension builds (line-strength units/sec; /line_strength = bar fraction/sec). Used for the fish surge AND for reeling. | Lower if the bar fills too fast, raise if the fight is too safe.
 const TENSION_FALL_RATE := 3.0           # How fast RELEASING the reel lowers tension (same units, at full release). | Raise if releasing is too slow to save the line, lower to make it riskier.
 const FISH_SHARE_MAX := 0.6              # Fish's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to make the fish matter more than your reeling.
 const REEL_SHARE_MAX := 1.0              # Reeling's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to punish heavy reeling more.
@@ -120,15 +134,15 @@ const START_PROGRESS := 0.35             # Fight starts this far toward landed (
 const SNAP_GRACE_SEC := 0.5              # Seconds the bar may stay in the danger zone before the line snaps (x rod control, x2.5 in Casual). | Raise to forgive, lower to be strict.
 const PULL_FOR_FULL_SHARE := 6.0         # Fish pull that fills the fish's whole half. Higher = fish fills less of its half. | Raise if fish fill their half too easily.
 const SNAP_RATIO := 0.90                 # Bar level (0..1) where the snap timer starts. | Raise toward 1.0 to make snaps rarer.
-const SURGE_REEL_PROGRESS_MULT := 0.0    # Share of line won when reeling DURING a surge. | Lower to discourage reeling into a surge, raise to soften it.
+const SURGE_REEL_PROGRESS_MULT := 0.4    # Share of line won when reeling DURING a surge. | Lower to discourage reeling into a surge, raise to soften it.
 const CALM_REEL_PROGRESS_MULT := 1.1     # Multiplier for reeling while fish is calm | Lower to discourage reeling while calm, raise to encourage reeling while calm
-const SURGE_PULL_MULT := 1.5             # Fish pull multiplier while surging. | Lower to make surges gentler.
+const SURGE_PULL_MULT := 1.4             # Fish pull multiplier while surging. | Lower to make surges gentler.
 const CALM_PULL_MULT := 0.8              # Fish pull multiplier while calm. | Raise so calm moments are less restful.
-const SURGE_DRAIN := 1.0                 # Stamina lost per second while surging. | Raise so fish tire faster.
-const CALM_DRAIN := 0.5                  # Stamina lost per second while calm. | Raise so fish tire faster.
+const SURGE_DRAIN := 1.5                 # Stamina lost per second while surging. | Raise so fish tire faster.
+const CALM_DRAIN := 1.0                  # Stamina lost per second while calm. | Raise so fish tire faster.
 const CAST_ARC_BASE := 2.0               # Height of the cast arc at zero power (metres). | Visual only.
 const CAST_ARC_POWER := 3.0              # Extra arc height at full power (metres). | Visual only.
-const CATCH_STOP_DISTANCE := 1.5         # How close the bobber gets to the player when the fish is nearly landed. | Visual only.
+const CATCH_STOP_DISTANCE := 2.0         # How close the bobber gets to the player when the fish is nearly landed. | Visual only.
 
 const MSG_BITE := "There's a bite"       # Text shown on a bite. | Change wording / language.
 const MSG_REEL := "Reel now"             # Text shown after the bite message. | Change wording / language.
@@ -180,6 +194,12 @@ class FishingSession extends RefCounted:
 
 	var msg_token := 0
 	var shake_time := 0.0
+
+	var pan_pos := 0.0                   # sideways sweep position, -1..1
+	var pan_phase := 0.0                 # position in the left/right cycle (radians)
+	var pan_sign := 1.0                  # +1 = sweep one way first, -1 = the other way first
+	var pan_amp := 0.6                   # current sweep width (eases between calm and surge)
+	var pan_cam := 0.0                   # camera yaw offset (radians), eased toward the bobber
 
 	var catches: Array = []
 	var total_weight := 0.0
@@ -527,6 +547,11 @@ func _try_bite(s: FishingSession) -> void:
 	s.surge_timer = randf_range(1.0, 2.0)
 	s.surge_vibrate_timer = 0.0
 	s.snap_timer = 0.0
+	s.pan_pos = 0.0
+	s.pan_phase = 0.0
+	s.pan_sign = 1.0 if randf() < 0.5 else -1.0
+	s.pan_amp = pan_amount_calm
+	s.pan_cam = 0.0
 
 	_set_state(s, State.REELING)
 	fish_bit.emit(s.player_id)
@@ -899,9 +924,14 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 	else:
 		s.snap_timer = maxf(s.snap_timer - delta * 2.0, 0.0)
 
-	# Camera shake
+	# Fish sweep (drives the bobber; the camera follows the bobber)
+	_update_pan(s, delta)
+
+	# Camera shake (the pan yaw is part of the base aim)
 	if s.anchor != null:
 		var base_yaw := s.base_yaw + s.look_offset
+		if enable_fish_sweep:
+			base_yaw += s.pan_cam
 		if enable_camera_shake and s.surging and s.tension > 0.0:
 			s.shake_time += delta * shake_frequency
 			var tension_ratio := clampf(s.tension / maxf(line_strength, 0.001), 0.2, 2.0)
@@ -920,6 +950,10 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 		var to_target := s.cast_target - origin
 		var away := clampf((1.0 - s.progress) / maxf(1.0 - START_PROGRESS, 0.01), 0.0, 2.0)
 		var wanted := origin + to_target.normalized() * maxf(to_target.length() * away, CATCH_STOP_DISTANCE)
+		if enable_fish_sweep:
+			# Sideways sweep, perpendicular to the line; smaller as the fish gets close.
+			var side := to_target.normalized().cross(Vector3.UP)
+			wanted += side * s.pan_pos * pan_bobber_meters * clampf(away, 0.3, 1.0)
 
 		var sink_t := clampf(s.state_time / maxf(bobber_sink_duration, 0.01), 0.0, 1.0)
 		var sink_depth := bobber_bite_sink * sink_t * (1.2 if s.surging else 1.0)
@@ -934,6 +968,36 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 		_fish_escapes(s, "got_away")
 	elif s.progress >= 1.0:
 		_fish_won(s)
+
+
+# Smooth left-then-right (or right-then-left) sweep of the fish. The sweep is a sine wave,
+# so it eases at each end and never jerks. It is wider and faster while the fish surges.
+# The camera does not move on its own: it eases toward the bobber's sideways angle.
+func _update_pan(s: FishingSession, delta: float) -> void:
+	if not enable_fish_sweep:
+		s.pan_pos = 0.0
+		s.pan_cam = 0.0
+		return
+
+	var period := maxf(pan_period_surge if s.surging else pan_period_calm, 0.2)
+	var amount := pan_amount_surge if s.surging else pan_amount_calm
+	s.pan_amp = lerpf(s.pan_amp, amount, 1.0 - exp(-3.0 * delta))
+	s.pan_phase = fposmod(s.pan_phase + delta * TAU / period, TAU)   # phase, not time: no jump when the period changes
+
+	var target := sin(s.pan_phase) * s.pan_sign * s.pan_amp
+	s.pan_pos = lerpf(s.pan_pos, target, 1.0 - exp(-pan_bobber_smooth * delta))
+
+	# Camera follows where the bobber actually is (smoothly), not a separate motion.
+	var cam_target := 0.0
+	if s.bobber != null and is_instance_valid(s.bobber):
+		var origin := _anchor_water_pos(s)
+		var aim := s.cast_target - origin
+		var now := s.bobber.global_position - origin
+		if aim.length() > 0.01 and now.length() > 0.01:
+			var aim_yaw := atan2(-aim.x, -aim.z)
+			var bobber_yaw := atan2(-now.x, -now.z)
+			cam_target = wrapf(bobber_yaw - aim_yaw, -PI, PI) * pan_camera_follow
+	s.pan_cam = lerpf(s.pan_cam, cam_target, 1.0 - exp(-pan_camera_smooth * delta))
 
 
 # Release strength 0..1 (reel spun counterclockwise). InputManager has no such function
@@ -1126,8 +1190,16 @@ func _on_cancel(player_id: int) -> void:
 	if _multiplayer:
 		return
 	var s := _sessions.get(player_id) as FishingSession
-	if s != null and s.state == State.IDLE:
-		finish_session()
+	if s == null:
+		return
+	
+	# If the bobber is out or waiting for a fish, cancel/recall it back to IDLE
+	if s.state == State.WAITING or s.state == State.CASTING:
+		_remove_bobber(s)
+		_set_state(s, State.IDLE)
+		if debug_log:
+			print("[FishingManager] player %d canceled cast/wait -> returned to IDLE" % player_id)
+	# Do nothing if already IDLE, preventing accidental scene exits
 
 
 # --- Helpers ---

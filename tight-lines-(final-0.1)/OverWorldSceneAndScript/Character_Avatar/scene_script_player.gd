@@ -6,6 +6,8 @@ var character_direction : Vector2
 
 func _physics_process(_delta):
 	var dir = Input.get_vector("Left", "Right", "Up", "Down")
+	if dir == Vector2.ZERO and get_node_or_null("/root/InputManager") != null:
+		dir = get_node_or_null("/root/InputManager").get_move_vector()
 
 	velocity = dir * 200.0
 	move_and_slide()

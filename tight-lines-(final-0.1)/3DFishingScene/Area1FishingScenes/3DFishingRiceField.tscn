@@ -6,8 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="4_5ivq8"]
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="5_ed3u3"]
 [ext_resource type="Texture2D" uid="uid://der6y27lfrk8w" path="res://Assets/3D/Grass.png" id="6_t1afk"]
-[ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="7_op18d"]
-[ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_1dwb6"]
 [ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/FishingUI/FishingUI.tscn" id="9_s4xdn"]
 [ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="10_q70uh"]
 [ext_resource type="PackedScene" uid="uid://gs0b8245xrex" path="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/rock_02.glb" id="11_03g4m"]
@@ -89,19 +87,6 @@ sorting_use_aabb_center = false
 material_overlay = SubResource("StandardMaterial3D_goktk")
 ignore_occlusion_culling = true
 mesh = SubResource("PlaneMesh_goktk")
-
-[node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
-script = ExtResource("7_op18d")
-player_anchors = [NodePath("../PlayerFishing")]
-rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
-bobber_scene = ExtResource("8_1dwb6")
-difficulty = 1
-bobber_bite_sink = 0.15
-shake_base_intensity = 0.05
-shake_frequency = 90.0
-debug_spot_id = "location_imus"
-debug_rod_id = "rod_debug"
-debug_bait_id = "bait_0_debug"
 
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 3.0786262)

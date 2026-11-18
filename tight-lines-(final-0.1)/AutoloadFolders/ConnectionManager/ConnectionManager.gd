@@ -32,13 +32,22 @@ signal player_disconnected(player_id)
 signal swipe_input(player_id, direction, dx, dy)
 signal tap_input(player_id, x, y)
 signal swing_input(player_id, magnitude)
-
+signal cancel_input(player_id)
 # reel - circular "crank" gesture on the phone, streamed as degrees turned
 # since the last message (+ = clockwise = reel in, - = counter-clockwise)
 signal reel_input(player_id, delta)
 
 # tilt - how far the phone is tilted left/right, streamed continuously
 signal tilt_input(player_id, value)
+
+# move - d-pad / analog joystick movement vector (x, y)
+signal move_input(player_id, x, y)
+
+# menu - button actions for fish_box, almanac, equipment
+signal menu_action_input(player_id, action)
+
+# interact - direct interact button press
+signal interact_input(player_id)
 
 const PORT := 9080
 
@@ -339,7 +348,11 @@ func _handle_message(player_id: int, message: String):
 		"connected":
 			# Harmless duplicate: identification already happened in _process().
 			pass
-
+			
+		"cancel":
+			_warn_if_unconnected("cancel_input")
+			emit_signal("cancel_input", player_id)
+			
 		"swipe":
 			_warn_if_unconnected("swipe_input")
 			emit_signal(
@@ -367,6 +380,15 @@ func _handle_message(player_id: int, message: String):
 			# value is -1.0 (left) .. +1.0 (right). Not passed through
 			# _warn_if_unconnected: it streams constantly.
 			emit_signal("tilt_input", player_id, data.get("value", 0.0))
+
+		"move":
+			emit_signal("move_input", player_id, float(data.get("x", 0.0)), float(data.get("y", 0.0)))
+
+		"menu":
+			emit_signal("menu_action_input", player_id, String(data.get("action", "")))
+
+		"interact":
+			emit_signal("interact_input", player_id)
 
 
 # Sends a message to EVERY connected player at once.

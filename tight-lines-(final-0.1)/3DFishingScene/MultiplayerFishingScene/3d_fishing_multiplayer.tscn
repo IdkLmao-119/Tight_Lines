@@ -209,21 +209,7 @@ theme_override_fonts/font = ExtResource("6_rtbn7")
 theme_override_font_sizes/font_size = 30
 text = "Back"
 
-[node name="SoundSlider" type="HSlider" parent="CanvasLayer/3DSceneUI/Options" unique_id=277129724]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -268.0
-offset_top = -127.75
-offset_right = 273.0
-offset_bottom = -69.25
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Sound" type="Label" parent="CanvasLayer/3DSceneUI/Options" unique_id=1763794568]
+[node name="SensitivityLabel" type="Label" parent="CanvasLayer/3DSceneUI/Options" unique_id=1763794568]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -232,9 +218,45 @@ offset_bottom = 106.5
 grow_horizontal = 2
 theme_override_fonts/font = ExtResource("6_rtbn7")
 theme_override_font_sizes/font_size = 40
-text = "Sound"
+text = "Sensitivity"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="SensitivitySlider" type="HSlider" parent="CanvasLayer/3DSceneUI/Options" unique_id=277129724]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -268.0
+offset_top = -127.75
+offset_right = 160.0
+offset_bottom = -69.25
+grow_horizontal = 2
+grow_vertical = 2
+min_value = 0.2
+max_value = 2.0
+step = 0.05
+value = 1.0
+
+[node name="SensitivityInput" type="LineEdit" parent="CanvasLayer/3DSceneUI/Options" unique_id=987654321]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 175.0
+offset_top = -120.0
+offset_right = 273.0
+offset_bottom = -75.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("6_rtbn7")
+theme_override_font_sizes/font_size = 28
+text = "1.00"
+alignment = 1
 
 [node name="Music" type="Label" parent="CanvasLayer/3DSceneUI/Options" unique_id=814905018]
 layout_mode = 1

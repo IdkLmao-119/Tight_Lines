@@ -1,0 +1,87 @@
+[gd_scene format=3 uid="uid://c8b74x2m9y8q5"]
+
+[ext_resource type="Script" uid="uid://c5m7n8b9v2x1p" path="res://UIScenesAndScript/MobileControlsUI/scene_script_mobile_controls.gd" id="1_mctl"]
+
+[node name="MobileControlsUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_mctl")
+
+[node name="DPadContainer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -240.0
+offset_right = 240.0
+offset_bottom = -40.0
+grow_vertical = 0
+
+[node name="UpButton" type="Button" parent="DPadContainer"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -30.0
+offset_top = 0.0
+offset_right = 30.0
+offset_bottom = 60.0
+grow_horizontal = 2
+text = "▲"
+
+[node name="DownButton" type="Button" parent="DPadContainer"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_left = 0.5
+anchor_bottom = 1.0
+offset_left = -30.0
+offset_top = -60.0
+offset_right = 30.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "▼"
+
+[node name="LeftButton" type="Button" parent="DPadContainer"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 0.0
+offset_top = -30.0
+offset_right = 60.0
+offset_bottom = 30.0
+grow_vertical = 2
+text = "◀"
+
+[node name="RightButton" type="Button" parent="DPadContainer"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -30.0
+offset_right = 0.0
+offset_bottom = 30.0
+grow_horizontal = 0
+grow_vertical = 2
+text = "▶"
+
+[connection signal="button_down" from="DPadContainer/UpButton" to="." method="_on_dpad_up_pressed"]
+[connection signal="button_up" from="DPadContainer/UpButton" to="." method="_on_dpad_up_released"]
+[connection signal="button_down" from="DPadContainer/DownButton" to="." method="_on_dpad_down_pressed"]
+[connection signal="button_up" from="DPadContainer/DownButton" to="." method="_on_dpad_down_released"]
+[connection signal="button_down" from="DPadContainer/LeftButton" to="." method="_on_dpad_left_pressed"]
+[connection signal="button_up" from="DPadContainer/LeftButton" to="." method="_on_dpad_left_released"]
+[connection signal="button_down" from="DPadContainer/RightButton" to="." method="_on_dpad_right_pressed"]
+[connection signal="button_up" from="DPadContainer/RightButton" to="." method="_on_dpad_right_released"]
