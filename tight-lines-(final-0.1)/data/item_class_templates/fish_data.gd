@@ -91,6 +91,12 @@ func get_price_multiplier(size_cm: float) -> float:
 
 
 ## The sell price of a fish that is [param size_cm] long: base_price x size / avg_size, rounded to the
-## nearest whole currency unit.
+## nearest whole currency unit. Falls back to a size-class default if base_price was left at 0.
 func get_sell_price(size_cm: float) -> int:
-	return roundi(base_price * get_price_multiplier(size_cm))
+	var effective_base := base_price
+	if effective_base <= 0:
+		match size_class:
+			"large": effective_base = 80
+			"medium": effective_base = 35
+			_: effective_base = 15
+	return maxi(roundi(effective_base * get_price_multiplier(size_cm)), 1)

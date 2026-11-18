@@ -63,7 +63,6 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_k13s0")
 text = "Back"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel" unique_id=982845463]
-clip_children = 2
 layout_mode = 0
 offset_left = 80.0
 offset_top = 100.0
@@ -118,6 +117,7 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("10_8q0gp")
 
 [node name="Worm" type="TextureButton" parent="Panel/VBoxContainer" unique_id=249713733]
@@ -138,6 +138,7 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("11_arwrg")
 
 [node name="Hardbait" type="TextureButton" parent="Panel/VBoxContainer" unique_id=312733814]
@@ -158,6 +159,7 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("12_mvmj1")
 
 [node name="Shrimp" type="TextureButton" parent="Panel/VBoxContainer" unique_id=1446770290]
@@ -178,12 +180,12 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("13_5701q")
 
 [node name="Softbait" type="TextureButton" parent="Panel/VBoxContainer" unique_id=25920737]
 layout_mode = 2
 texture_normal = ExtResource("4_0qqbt")
-texture_click_mask = SubResource("BitMap_jnaoe")
 stretch_mode = 0
 
 [node name="TextureRect" type="TextureRect" parent="Panel/VBoxContainer/Softbait" unique_id=578371176]
@@ -199,6 +201,7 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("14_diiat")
 
 [node name="TopwaterLure" type="TextureButton" parent="Panel/VBoxContainer" unique_id=937600864]
@@ -219,6 +222,7 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("15_2xogq")
 
 [connection signal="pressed" from="Panel/BackButton" to="." method="_on_back_button_pressed"]

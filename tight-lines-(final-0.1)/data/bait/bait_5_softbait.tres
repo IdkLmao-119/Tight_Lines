@@ -16,5 +16,6 @@ script = ExtResource("5_k6x75")
 enables_fish = Array[ExtResource("2_d8mme")]([ExtResource("3_sjnby"), ExtResource("4_dug18"), ExtResource("5_6u1dw"), ExtResource("6_uhdih"), ExtResource("7_07y4w"), ExtResource("8_apa0t")])
 unlimited = true
 icon = ExtResource("4_ldklj")
+max_stack = 99
 id = "bait_5"
 display_name = "Soft bait"

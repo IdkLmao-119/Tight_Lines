@@ -78,7 +78,6 @@ metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
 
 [resource]
 script = ExtResource("15_i3quy")
-unlock_flag = "unlock_dock"
 fish_pool = Array[ExtResource("1_t0es1")]([SubResource("Resource_mq45n"), SubResource("Resource_abasy"), SubResource("Resource_rq60a"), SubResource("Resource_i7bcc"), SubResource("Resource_mjk4o"), SubResource("Resource_kjui5"), SubResource("Resource_5bxha"), SubResource("Resource_xbju1"), SubResource("Resource_fwptp"), SubResource("Resource_s1uka"), SubResource("Resource_bn5f7"), SubResource("Resource_fw0i5")])
 id = "location_marikina"
 display_name = "Marikina Riverside"

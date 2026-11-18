@@ -1,9 +1,11 @@
 [gd_resource type="Resource" script_class="RodData" format=3 uid="uid://5bpj1flrpllj"]
 
 [ext_resource type="Script" uid="uid://dgqkh62vpaosc" path="res://data/item_class_templates/rod_data.gd" id="1_fmj2y"]
+[ext_resource type="Texture2D" uid="uid://caala042b8xs0" path="res://Assets/2D/Rod_Sprites_Standing/Heavy_Rod.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1_fmj2y")
+icon = ExtResource("2_icon")
 rod_price = 500
 chance_small = 0.2
 chance_medium = 0.3

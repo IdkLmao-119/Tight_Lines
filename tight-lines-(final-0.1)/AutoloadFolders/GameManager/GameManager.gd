@@ -101,6 +101,20 @@ const SCENES: Dictionary = {
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 	},
+	"overworld_rod_shop": {
+		"path": "res://OverWorldSceneAndScript/1_MainArea/Shop_Folder/RodShopInterior.tscn",
+		"input": "overworld",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
+		"pausable": true,
+		"display_name": "Tackle & Fish Shop",
+	},
+	"overworld_fish_barter_shop": {
+		"path": "res://OverWorldSceneAndScript/1_MainArea/Shop_Folder/FishBarterShop.tscn",
+		"input": "overworld",
+		"music": "res://Assets/Audio/The+Other+Side.mp3",
+		"pausable": true,
+		"display_name": "Fish Barter Shop",
+	},
 
 	#Area 2
 	"overworld_fish_market": {

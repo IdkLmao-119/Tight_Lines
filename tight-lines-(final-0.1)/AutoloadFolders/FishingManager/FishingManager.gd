@@ -258,8 +258,6 @@ func _ready() -> void:
 	if _game_manager != null and _game_manager.has_method("consume_context"):
 		_context = _game_manager.consume_context().duplicate(true)
 
-	_fill_debug_defaults()
-
 	if _context.has("difficulty"):
 		var ctx_diff: Variant = _context.get("difficulty")
 		if ctx_diff is int:
@@ -277,10 +275,14 @@ func _ready() -> void:
 	if _multiplayer and time_limit_sec <= 0.0:
 		push_warning("FishingManager: multiplayer round has no time_limit_sec - Cancel is disabled in multiplayer.")
 
+	_fill_debug_defaults()
+
 	if _input != null:
 		_connect_input()
 	if _connection != null and _connection.has_signal("player_connected"):
 		_connection.player_connected.connect(_on_phone_connected)
+	if _save != null and _save.has_signal("equipment_changed"):
+		_save.equipment_changed.connect(_on_save_equipment_changed)
 
 	start_session(_pick_player_ids())
 
@@ -292,6 +294,9 @@ func _exit_tree() -> void:
 	if _connection != null and _connection.has_signal("player_connected") \
 			and _connection.player_connected.is_connected(_on_phone_connected):
 		_connection.player_connected.disconnect(_on_phone_connected)
+	if _save != null and _save.has_signal("equipment_changed") \
+			and _save.equipment_changed.is_connected(_on_save_equipment_changed):
+		_save.equipment_changed.disconnect(_on_save_equipment_changed)
 	if _input == null:
 		return
 	if _input.cast_triggered.is_connected(_on_cast):
@@ -1293,10 +1298,44 @@ func _on_cancel(player_id: int) -> void:
 
 # --- Helpers ---
 func _fill_debug_defaults() -> void:
+	# In single-player, pull the player's equipped rod and bait from SaveManager
+	# (set via the Equipment Inventory UI) before falling back to debug exports.
+	if not _multiplayer and _save != null:
+		if String(_context.get("rod_id", "")) == "" and _save.has_method("get_equipped_rod"):
+			var eq_rod := String(_save.get_equipped_rod())
+			if eq_rod != "":
+				_context["rod_id"] = eq_rod
+		if String(_context.get("bait_id", "")) == "" and _save.has_method("get_equipped_bait"):
+			var eq_bait := String(_save.get_equipped_bait())
+			if eq_bait != "":
+				_context["bait_id"] = eq_bait
+
 	var fallbacks := {"spot_id": debug_spot_id, "rod_id": debug_rod_id, "bait_id": debug_bait_id}
 	for key in fallbacks:
 		if String(_context.get(key, "")) == "" and String(fallbacks[key]) != "":
 			_context[key] = fallbacks[key]
+
+
+func _on_save_equipment_changed() -> void:
+	if _multiplayer or _save == null:
+		return
+	var new_rod := String(_save.get_equipped_rod()) if _save.has_method("get_equipped_rod") else ""
+	var new_bait := String(_save.get_equipped_bait()) if _save.has_method("get_equipped_bait") else ""
+	if new_rod != "":
+		_context["rod_id"] = new_rod
+		for pid in _order:
+			if not set_rod(pid, new_rod):
+				var s := _sessions.get(pid) as FishingSession
+				if s != null:
+					s.rod_id = new_rod
+					_load_rod(s)
+	if new_bait != "":
+		_context["bait_id"] = new_bait
+		for pid in _order:
+			if not set_bait(pid, new_bait):
+				var s := _sessions.get(pid) as FishingSession
+				if s != null:
+					s.bait_id = new_bait
 
 
 func _pick_player_ids() -> Array[int]:
@@ -1378,6 +1417,10 @@ func _anchor_water_pos(s: FishingSession) -> Vector3:
 func _spend_bait(s: FishingSession) -> bool:
 	if _multiplayer:
 		return true
+	if _db != null and s.bait_id != "" and _db.has_bait(s.bait_id):
+		var bait_rec: BaitData = _db.get_bait(s.bait_id)
+		if bait_rec != null and bait_rec.unlimited:
+			return true
 	if _inventory == null or not _inventory.has_method("consume_item"):
 		return true
 	return bool(_inventory.consume_item(s.bait_id, 1))

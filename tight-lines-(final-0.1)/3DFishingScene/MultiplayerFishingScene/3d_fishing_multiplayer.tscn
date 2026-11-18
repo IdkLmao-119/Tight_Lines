@@ -374,8 +374,8 @@ player_anchors = [NodePath("../GridContainer/SubViewportContainer/SubViewport/Pl
 rod_holders = [NodePath("../GridContainer/SubViewportContainer/SubViewport/PlayerFishing/CharacterBody3D"), NodePath("../GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2/CharacterBody3D")]
 bobber_scene = ExtResource("9_7ac3p")
 max_players = 3
-debug_spot_id = "location_rice_fields"
-debug_rod_id = "rod_basic"
+debug_spot_id = "location_imus"
+debug_rod_id = "rod_light"
 debug_bait_id = "bait_1"
 debug_multiplayer = true
 

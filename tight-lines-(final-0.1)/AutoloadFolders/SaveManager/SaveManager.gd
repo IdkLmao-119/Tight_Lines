@@ -31,6 +31,7 @@ signal unlock_flag_added(flag: String)
 signal equipment_changed   # owned rods, equipped rod or equipped bait changed
 signal difficulty_changed(difficulty: String)
 signal fish_caught(fish_id: String)
+signal money_changed(amount: int)
 
 const SAVE_DIR := "user://saves/"
 const SETTINGS_PATH := "user://settings.json"
@@ -40,11 +41,12 @@ const SETTINGS_FORMAT_VERSION := 1
 const VOLUME_KEYS := ["master", "music", "sfx"]
 
 # --- What a brand-new game starts with (D10) ---
-const NEW_GAME_OWNED_ROD_IDS: Array = []
-const NEW_GAME_EQUIPPED_ROD := ""
-const NEW_GAME_EQUIPPED_BAIT := ""
+const NEW_GAME_OWNED_ROD_IDS: Array = ["rod_light"]
+const NEW_GAME_EQUIPPED_ROD := "rod_light"
+const NEW_GAME_EQUIPPED_BAIT := "bait_1"
 const NEW_GAME_DIFFICULTY := "casual"
-const NEW_GAME_STARTER_ITEMS: Dictionary = {}
+const NEW_GAME_STARTER_MONEY := 0
+const NEW_GAME_STARTER_ITEMS: Dictionary = {"bait_1": 10}
 
 const DEFAULT_START_SCENE := "overworld_spawn"
 const NON_SAVABLE_SCENES := ["main_menu", "save_slots"]
@@ -57,6 +59,7 @@ var _equipped_rod := ""
 var _equipped_bait := ""
 var _difficulty := NEW_GAME_DIFFICULTY
 var _saved_scene := DEFAULT_START_SCENE
+var _money: int = NEW_GAME_STARTER_MONEY
 
 var _slug_regex := RegEx.new()     # same rule as GameDB: lowercase snake_case
 
@@ -119,6 +122,7 @@ func build_save_data() -> Dictionary:
 	var data := {
 		"scene": scene_to_save,
 		"difficulty": _difficulty,
+		"money": _money,
 		"unlock_flags": _unlock_flags.duplicate(),
 		"owned_rods": _owned_rods.duplicate(),
 		"caught_fish": _caught_fish.duplicate(),
@@ -149,6 +153,10 @@ func apply_save_data(data: Dictionary) -> void:
 		if diff == "casual" or diff == "angler":
 			_difficulty = diff
 
+	# Money.
+	if data.has("money") and (data["money"] is int or data["money"] is float):
+		_money = maxi(int(data["money"]), 0)
+
 	# Inventory.
 	var inventory := _autoload("InventoryManager")
 	if inventory != null:
@@ -167,8 +175,15 @@ func apply_save_data(data: Dictionary) -> void:
 
 	# Rods.
 	if data.has("owned_rods"):
-		_owned_rods = _clean_ids(data["owned_rods"], "has_rod", "rod")
-	var rod := String(data["equipped_rod"]) if data.get("equipped_rod") is String else _equipped_rod
+		var raw_rods: Array = []
+		if data["owned_rods"] is Array:
+			for r in data["owned_rods"]:
+				if r is String:
+					raw_rods.append(_migrate_rod_id(r))
+		_owned_rods = _clean_ids(raw_rods, "has_rod", "rod")
+	if _owned_rods.is_empty() and _db_knows("has_rod", NEW_GAME_EQUIPPED_ROD):
+		_owned_rods.append(NEW_GAME_EQUIPPED_ROD)
+	var rod := _migrate_rod_id(String(data["equipped_rod"])) if data.get("equipped_rod") is String else _equipped_rod
 	if rod != "" and not _owned_rods.has(rod):
 		push_warning("SaveManager: equipped rod '%s' is not an owned rod; choosing another." % rod)
 		rod = ""
@@ -181,6 +196,8 @@ func apply_save_data(data: Dictionary) -> void:
 	if bait != "" and not _db_knows("has_bait", bait):
 		push_warning("SaveManager: equipped bait '%s' is not in the database; clearing it." % bait)
 		bait = ""
+	if bait == "" and _db_knows("has_bait", NEW_GAME_EQUIPPED_BAIT):
+		bait = NEW_GAME_EQUIPPED_BAIT
 	_equipped_bait = bait
 
 	# Quests. Kept LAST on purpose: loading can complete a quest, and that
@@ -190,9 +207,12 @@ func apply_save_data(data: Dictionary) -> void:
 	if quests != null:
 		var quest_data: Dictionary = data["quests"] if data.get("quests") is Dictionary else {}
 		quests.call("load_save_data", quest_data)
+		if quests.has_method("claim_pending_rewards"):
+			quests.call("claim_pending_rewards")
 
 	equipment_changed.emit()
 	difficulty_changed.emit(_difficulty)
+	money_changed.emit(_money)
 
 
 func save_slot(slot: int) -> bool:
@@ -346,6 +366,44 @@ func set_equipped_bait(bait_id: String) -> bool:
 
 
 # ============================================================================
+# CURRENCY (MONEY)
+# ============================================================================
+
+func get_money() -> int:
+	return _money
+
+
+func set_money(amount: int) -> void:
+	var clean := maxi(amount, 0)
+	if _money != clean:
+		_money = clean
+		money_changed.emit(_money)
+
+
+func add_money(amount: int) -> void:
+	if amount <= 0:
+		return
+	_money += amount
+	money_changed.emit(_money)
+
+
+func can_afford(amount: int) -> bool:
+	return _money >= maxi(amount, 0)
+
+
+func spend_money(amount: int) -> bool:
+	if amount < 0:
+		return false
+	if amount == 0:
+		return true
+	if _money < amount:
+		return false
+	_money -= amount
+	money_changed.emit(_money)
+	return true
+
+
+# ============================================================================
 # SETTINGS
 # ============================================================================
 
@@ -398,6 +456,16 @@ func _reset_player_state() -> void:
 	_equipped_bait = NEW_GAME_EQUIPPED_BAIT
 	_difficulty = NEW_GAME_DIFFICULTY
 	_saved_scene = DEFAULT_START_SCENE
+	_money = NEW_GAME_STARTER_MONEY
+
+
+func _migrate_rod_id(rod_id: String) -> String:
+	match rod_id:
+		"rod_basic":
+			return "rod_light"
+		"rod_sturdy":
+			return "rod_medium"
+	return rod_id
 
 
 func _db_knows(method: String, id: String) -> bool:

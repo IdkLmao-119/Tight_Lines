@@ -100,9 +100,9 @@ rod_holders = [NodePath("../PlayerFishing/CharacterBody3D/FishingRod_Lvl3")]
 bobber_scene = ExtResource("5_5ivq8")
 fish_music = Array[ExtResource("6_ed3u3")]([ExtResource("7_t1afk")])
 fish_music_volume_db = 10.0
-debug_spot_id = "location_debug_2"
-debug_rod_id = "rod_debug"
-debug_bait_id = "bait_0_debug"
+debug_spot_id = "location_imus"
+debug_rod_id = "rod_light"
+debug_bait_id = "bait_1"
 
 [node name="PlayerFishing" type="Node3D" parent="." unique_id=502106798]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 3.0786262)

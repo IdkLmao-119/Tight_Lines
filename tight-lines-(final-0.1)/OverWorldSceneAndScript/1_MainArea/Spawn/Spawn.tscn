@@ -1977,8 +1977,8 @@ position = Vector2(1206, 377)
 position = Vector2(-1.0000229, -3.8146973e-06)
 scale = Vector2(1.3124988, 1.4687498)
 
-[node name="CanvasLayer" parent="Player" index="3" unique_id=1927995293]
-visible = false
+[node name="2DSceneUI" parent="Player/CanvasLayer" parent_id_path=PackedInt32Array(394178850, 1927995293) index="0" unique_id=1628659695]
+visible = true
 
 [node name="SpawnToHouse1" type="Node2D" parent="." unique_id=1899106149]
 visible = false

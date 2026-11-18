@@ -198,8 +198,8 @@ script = ExtResource("7_8sce2")
 player_anchors = [NodePath("../PlayerFishing")]
 rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
 bobber_scene = ExtResource("8_mifwt")
-debug_spot_id = "location_rice_fields"
-debug_rod_id = "rod_basic"
+debug_spot_id = "location_salt_farm"
+debug_rod_id = "rod_light"
 debug_bait_id = "bait_1"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]

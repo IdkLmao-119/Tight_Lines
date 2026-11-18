@@ -18,5 +18,6 @@ script = ExtResource("5_fos1t")
 enables_fish = Array[ExtResource("2_xx04s")]([ExtResource("3_60122"), ExtResource("4_xw8w6"), ExtResource("5_bvvor"), ExtResource("6_rpk0b"), ExtResource("7_7ns2f"), ExtResource("8_dq73s"), ExtResource("9_e5e7u"), ExtResource("10_2gkxx")])
 unlimited = true
 icon = ExtResource("4_wfhup")
+max_stack = 99
 id = "bait_4"
 display_name = "Shrimp"
