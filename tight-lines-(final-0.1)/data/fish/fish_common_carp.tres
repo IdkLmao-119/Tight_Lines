@@ -10,8 +10,9 @@ description = "A resourceful and sturdy bottom-feeder known for testing the stre
 Local Name: Bangus-Karpa"
 size_class = "medium"
 base_price = 35
-speed = 1.2
-pull_strength = 5.5
+speed = 4.5
+pull_strength = 12.0
+stamina = 60.0
 min_size = 25.0
 avg_size = 50.0
 max_size = 85.0

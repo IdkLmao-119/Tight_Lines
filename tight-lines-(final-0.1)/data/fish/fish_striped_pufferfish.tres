@@ -9,7 +9,9 @@ scientific_name = "Arothron hispidus"
 description = "A round, slow-moving fish capable of inflating itself with water when threatened.
 Local Name: Butete"
 base_price = 30
-pull_strength = 3.5
+pull_strength = 8.0
+speed = 3.0
+stamina = 45.0
 min_size = 12.0
 avg_size = 25.0
 max_size = 40.0

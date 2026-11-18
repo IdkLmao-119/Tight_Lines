@@ -10,8 +10,9 @@ description = "A sleek, powerful swimmer with a forked tail that travels in scho
 Local Name: Bangus"
 size_class = "medium"
 base_price = 42
-speed = 2.0
-pull_strength = 6.2
+speed = 4.5
+pull_strength = 12.0
+stamina = 60.0
 min_size = 30.0
 avg_size = 55.0
 max_size = 90.0

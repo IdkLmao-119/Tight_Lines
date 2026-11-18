@@ -10,8 +10,9 @@ description = "A prominent freshwater species with vertical stripes along its ta
 Local Name: Tilapia"
 size_class = "medium"
 base_price = 30
-speed = 1.4
-pull_strength = 4.2
+speed = 4.5
+pull_strength = 12.0
+stamina = 60.0
 min_size = 15.0
 avg_size = 32.0
 max_size = 50.0

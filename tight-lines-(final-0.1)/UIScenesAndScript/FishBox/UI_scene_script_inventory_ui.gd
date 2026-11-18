@@ -16,6 +16,11 @@ var _button_uids: Array[int] = []
 
 var _sell_all_button: Button = null
 var _info_label: Label = null
+var _focused_index: int = 0
+var _cursor_highlight: Panel = null
+
+const GRID_ROWS := 4
+const GRID_COLS := 7
 
 # Matches the image property lookup used in FishingManager
 const FISH_IMAGE_PROPERTIES := ["jpg", "image", "icon", "texture"]
@@ -39,10 +44,67 @@ func _ready() -> void:
 		btn.pressed.connect(_on_fish_button_pressed.bind(i))
 
 	_build_extra_ui()
+	_build_cursor_highlight()
 	InventoryManager.inventory_changed.connect(_on_inventory_changed)
 	visibility_changed.connect(_on_visibility_changed)
 	_refresh_fish_buttons()
 	_update_mode_ui()
+
+
+func _build_cursor_highlight() -> void:
+	_cursor_highlight = Panel.new()
+	_cursor_highlight.name = "MobileCursorHighlight"
+	_cursor_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cursor_highlight.z_index = 10
+	_cursor_highlight.visible = false
+	var style := StyleBoxFlat.new()
+	style.draw_center = false
+	style.border_color = Color(1.0, 0.85, 0.2, 1.0)
+	style.set_border_width_all(4)
+	style.set_corner_radius_all(8)
+	_cursor_highlight.add_theme_stylebox_override("panel", style)
+	add_child(_cursor_highlight)
+
+
+func _update_cursor_highlight() -> void:
+	if _cursor_highlight == null or not visible or TextureButtonGroup.is_empty():
+		return
+	_focused_index = clampi(_focused_index, 0, TextureButtonGroup.size() - 1)
+	var target: Control = TextureButtonGroup[_focused_index]
+	_cursor_highlight.visible = true
+	_cursor_highlight.global_position = target.global_position - Vector2(3, 3)
+	_cursor_highlight.size = target.size + Vector2(6, 6)
+
+
+func handle_mobile_action(action: String) -> void:
+	if TextureButtonGroup.is_empty():
+		return
+	var col := _focused_index / GRID_ROWS
+	var row := _focused_index % GRID_ROWS
+
+	match action:
+		"up":
+			if row > 0:
+				row -= 1
+		"down":
+			if row < GRID_ROWS - 1:
+				row += 1
+		"left":
+			if col > 0:
+				col -= 1
+		"right":
+			if col < GRID_COLS - 1:
+				col += 1
+		"select":
+			_on_fish_button_pressed(_focused_index)
+		"back":
+			_on_back_button_pressed()
+			return
+
+	var next_idx := col * GRID_ROWS + row
+	if next_idx >= 0 and next_idx < TextureButtonGroup.size():
+		_focused_index = next_idx
+	_update_cursor_highlight.call_deferred()
 
 
 func _build_extra_ui() -> void:
@@ -74,6 +136,9 @@ func _on_visibility_changed() -> void:
 	if visible:
 		_refresh_fish_buttons()
 		_update_mode_ui()
+		_update_cursor_highlight.call_deferred()
+	elif _cursor_highlight != null:
+		_cursor_highlight.visible = false
 
 
 func _update_mode_ui(extra_msg: String = "") -> void:

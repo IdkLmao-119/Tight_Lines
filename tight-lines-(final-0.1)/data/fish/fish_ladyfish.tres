@@ -10,8 +10,9 @@ description = "A slender, hyper-active coastal fish prized for its incredible bu
 Local Name: Bidbid"
 size_class = "medium"
 base_price = 50
-speed = 2.4
-pull_strength = 6.0
+speed = 4.5
+pull_strength = 12.0
+stamina = 60.0
 min_size = 25.0
 avg_size = 45.0
 max_size = 75.0

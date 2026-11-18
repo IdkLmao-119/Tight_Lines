@@ -58,11 +58,20 @@ func _enter_fishing(scene_id: String, spot_id: String) -> void:
 	GameManager.change_scene(scene_id, ctx)
 
 
+func _try_change_scene(scene_id: String, required_flag: String = "", locked_msg: String = "") -> void:
+	if required_flag != "" and not SaveManager.has_unlock_flag(required_flag):
+		var story := get_node_or_null("/root/StoryManager")
+		if story != null and locked_msg != "":
+			story.call("show_notice", locked_msg)
+		return
+	GameManager.change_scene(scene_id)
+
+
 # Spawn Signals
 func _on_spawn_to_fish_market_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
-	GameManager.change_scene("overworld_fish_market")
+	_try_change_scene("overworld_fish_market", "unlock_kawit", "Catch every small fish in Imus to unlock Kawit!")
 
 func _on_spawn_to_house_1_body_entered(body: Node2D) -> void:
 	if body != self:
@@ -72,7 +81,7 @@ func _on_spawn_to_house_1_body_entered(body: Node2D) -> void:
 func _on_spawn_to_rice_fields_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
-	GameManager.change_scene("overworld_rice_field")
+	_try_change_scene("overworld_rice_field", "unlock_imus", "Catch every small fish in Marikina River to unlock Imus!")
 
 func _on_spawn_to_river_park_body_entered(body: Node2D) -> void:
 	if body != self:
@@ -131,7 +140,7 @@ func _on_fish_market_to_spawn_body_entered(body: Node2D) -> void:
 func _on_fish_market_to_fish_pens_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
-	GameManager.change_scene("overworld_fishing_pens")
+	_try_change_scene("overworld_fishing_pens", "unlock_fish_pens", "Catch every small fish in Kawit to unlock Noveleta!")
 
 # Seaside Park 3D Scene (Kawit Seaside Park -> location_kawit)
 func _on_seaside_park_3d_scene_body_entered(body: Node2D) -> void:
@@ -148,7 +157,7 @@ func _on_fish_pens_to_seaside_park_body_entered(body: Node2D) -> void:
 func _on_fish_pen_to_salt_farm_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
-	GameManager.change_scene("overworld_salt_farm")
+	_try_change_scene("overworld_salt_farm", "unlock_salt_farm", "Catch every small & medium fish in the Fishing Pen to unlock the Salt Farm!")
 
 # Fish Pens 3D Signal (Noveleta Fish Pens -> location_fish_pens)
 func _on_fish_pen_3d_scene_body_entered(body: Node2D) -> void:
@@ -165,7 +174,7 @@ func _on_salt_farm_to_fish_pens_body_entered(body: Node2D) -> void:
 func _on_salt_farm_to_mangrove_forest_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
-	GameManager.change_scene("overworld_mangrove")
+	_try_change_scene("overworld_mangrove", "unlock_calatagan", "Catch every small & medium fish in the Salt Farm to unlock Batangas!")
 
 # Salt Farm 3D Signal (Noveleta Salt Farm -> location_salt_farm)
 func _on_salt_farm_3d_scene_body_entered(body: Node2D) -> void:
@@ -177,7 +186,7 @@ func _on_salt_farm_3d_scene_body_entered(body: Node2D) -> void:
 func _on_mangrove_to_island_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
-	GameManager.change_scene("overworld_island")
+	_try_change_scene("overworld_island", "unlock_fortune_island", "Catch every fish in Calatagan Mangrove Forest to unlock Fortune Island!")
 
 func _on_mangrove_to_salt_farm_body_entered(body: Node2D) -> void:
 	if body != self:

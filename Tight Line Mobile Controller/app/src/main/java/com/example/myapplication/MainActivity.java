@@ -3,6 +3,8 @@ package com.example.myapplication;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,14 +21,18 @@ import android.os.Vibrator;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.Surface;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -100,8 +106,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private String deviceId;
 
-    private enum AppState { CONNECTION, OVERWORLD, CASTING, REELING }
+    private enum AppState { CONNECTION, OVERWORLD, CASTING, REELING, MENU }
     private AppState currentState = null;
+    private AppState underlyingGameState = AppState.OVERWORLD;
+    private String activeMenu = "none";
 
     private TextView statusText;
     private EditText serverIpInput;
@@ -152,6 +160,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     break;
                 case REELING:
                     layoutResId = R.layout.view_reeling;
+                    break;
+                case MENU:
+                    layoutResId = R.layout.view_menu;
                     break;
                 default:
                     layoutResId = R.layout.view_connection;
@@ -207,6 +218,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             sendMessage(msg);
                         });
                     }
+                } else if (newState == AppState.MENU) {
+                    setupMenuControlsUI();
                 }
             }
         });
@@ -220,6 +233,99 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (btnFishBox != null) btnFishBox.setOnClickListener(v -> sendMenuAction("fish_box"));
         if (btnAlmanac != null) btnAlmanac.setOnClickListener(v -> sendMenuAction("almanac"));
         if (btnEquipment != null) btnEquipment.setOnClickListener(v -> sendMenuAction("equipment"));
+
+        styleMenuHeaderButtons();
+    }
+
+    private void styleMenuHeaderButtons() {
+        MaterialButton btnFishBox = findViewById(R.id.btnFishBox);
+        MaterialButton btnAlmanac = findViewById(R.id.btnAlmanac);
+        MaterialButton btnEquipment = findViewById(R.id.btnEquipment);
+
+        applyHeaderButtonStyle(btnFishBox, "fish_box".equals(activeMenu), "#2E86DE");
+        applyHeaderButtonStyle(btnAlmanac, "almanac".equals(activeMenu), "#00BFA5");
+        applyHeaderButtonStyle(btnEquipment, "equipment".equals(activeMenu), "#F4A261");
+    }
+
+    private void applyHeaderButtonStyle(MaterialButton btn, boolean isActive, String activeHex) {
+        if (btn == null) return;
+        if (isActive) {
+            btn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(activeHex)));
+            btn.setTextColor(Color.parseColor("#0F172A"));
+            btn.setStrokeColor(ColorStateList.valueOf(Color.WHITE));
+            btn.setStrokeWidth(4);
+        } else {
+            btn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#263248")));
+            btn.setTextColor(Color.parseColor("#E2E8F0"));
+            btn.setStrokeWidth(0);
+        }
+    }
+
+    private void setupMenuControlsUI() {
+        Button btnUp = findViewById(R.id.btnNavUp);
+        Button btnDown = findViewById(R.id.btnNavDown);
+        Button btnLeft = findViewById(R.id.btnNavLeft);
+        Button btnRight = findViewById(R.id.btnNavRight);
+        Button btnSelect = findViewById(R.id.btnMenuSelect);
+        Button btnBack = findViewById(R.id.btnMenuBack);
+        Button btnTabPrev = findViewById(R.id.btnTabPrev);
+        Button btnTabNext = findViewById(R.id.btnTabNext);
+
+        if (btnUp != null) btnUp.setOnClickListener(v -> sendMenuAction("up"));
+        if (btnDown != null) btnDown.setOnClickListener(v -> sendMenuAction("down"));
+        if (btnLeft != null) btnLeft.setOnClickListener(v -> sendMenuAction("left"));
+        if (btnRight != null) btnRight.setOnClickListener(v -> sendMenuAction("right"));
+        if (btnSelect != null) btnSelect.setOnClickListener(v -> sendMenuAction("select"));
+        if (btnBack != null) btnBack.setOnClickListener(v -> sendMenuAction("back"));
+        if (btnTabPrev != null) btnTabPrev.setOnClickListener(v -> sendMenuAction("tab_prev"));
+        if (btnTabNext != null) btnTabNext.setOnClickListener(v -> sendMenuAction("tab_next"));
+
+        refreshMenuUI();
+    }
+
+    private void refreshMenuUI() {
+        styleMenuHeaderButtons();
+        if (currentState != AppState.MENU) return;
+
+        TextView menuTitle = findViewById(R.id.menuTitle);
+        TextView menuHint = findViewById(R.id.menuHint);
+        LinearLayout menuTabBar = findViewById(R.id.menuTabBar);
+        Button btnTabPrev = findViewById(R.id.btnTabPrev);
+        Button btnTabNext = findViewById(R.id.btnTabNext);
+        Button btnSelect = findViewById(R.id.btnMenuSelect);
+
+        if (menuTitle == null || menuHint == null) return;
+
+        switch (activeMenu) {
+            case "almanac":
+                menuTitle.setText("📖 ALMANAC");
+                menuHint.setText("D-Pad: Browse Fish  •  Select: View Entry");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.VISIBLE);
+                if (btnTabPrev != null) btnTabPrev.setText("◀ Prev Area");
+                if (btnTabNext != null) btnTabNext.setText("Next Area ▶");
+                if (btnSelect != null) btnSelect.setText("✓ VIEW");
+                break;
+            case "fish_box":
+                menuTitle.setText("🐟 FISH BOX");
+                menuHint.setText("D-Pad: Browse Slots  •  Select: Inspect Fish");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.GONE);
+                if (btnSelect != null) btnSelect.setText("✓ INSPECT");
+                break;
+            case "equipment":
+                menuTitle.setText("🎒 INVENTORY");
+                menuHint.setText("D-Pad: Browse Rods & Bait  •  Select: Equip");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.VISIBLE);
+                if (btnTabPrev != null) btnTabPrev.setText("🎣 Rods");
+                if (btnTabNext != null) btnTabNext.setText("🪱 Bait");
+                if (btnSelect != null) btnSelect.setText("✓ EQUIP");
+                break;
+            default:
+                menuTitle.setText("MENU");
+                menuHint.setText("D-Pad: Navigate  •  Select: Confirm");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.GONE);
+                if (btnSelect != null) btnSelect.setText("✓ SELECT");
+                break;
+        }
     }
 
     private void sendMenuAction(String action) {
@@ -340,14 +446,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         String stateStr = json.getString("game_state");
                         switch (stateStr) {
                             case "overworld":
-                                switchToState(AppState.OVERWORLD);
+                                underlyingGameState = AppState.OVERWORLD;
                                 break;
                             case "casting":
-                                switchToState(AppState.CASTING);
+                                underlyingGameState = AppState.CASTING;
                                 break;
                             case "reeling":
-                                switchToState(AppState.REELING);
+                                underlyingGameState = AppState.REELING;
+                                activeMenu = "none";
                                 break;
+                        }
+                        if (underlyingGameState == AppState.REELING || "none".equals(activeMenu)) {
+                            switchToState(underlyingGameState);
+                        }
+                    }
+
+                    if (json.has("active_menu")) {
+                        activeMenu = json.optString("active_menu", "none");
+                        if ("none".equals(activeMenu)) {
+                            switchToState(underlyingGameState);
+                        } else if (currentState != AppState.MENU) {
+                            switchToState(AppState.MENU);
+                        } else {
+                            runOnUiThread(MainActivity.this::refreshMenuUI);
                         }
                     }
                 } catch (JSONException e) {
@@ -359,6 +480,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onFailure(WebSocket ws, Throwable t, Response response) {
                 if (attempt != connectionAttempt) return;
                 isConnected = false;
+                activeMenu = "none";
                 switchToState(AppState.CONNECTION);
                 scheduleReconnect();
             }
@@ -367,6 +489,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClosed(WebSocket ws, int code, String reason) {
                 if (attempt != connectionAttempt) return;
                 isConnected = false;
+                activeMenu = "none";
                 switchToState(AppState.CONNECTION);
                 scheduleReconnect();
             }

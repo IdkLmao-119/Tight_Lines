@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://UIScenesAndScript/DialogueBox/DialogueBox.gd" id="1_script"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_box"]
-bg_color = Color(0.08, 0.1, 0.14, 0.92)
+bg_color = Color(0.08, 0.1, 0.14, 0.94)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
@@ -18,9 +18,102 @@ content_margin_top = 14.0
 content_margin_right = 18.0
 content_margin_bottom = 14.0
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
+bg_color = Color(0.06, 0.08, 0.12, 0.84)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.42, 0.72, 0.92, 0.9)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 14.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_banner"]
+bg_color = Color(0.1, 0.13, 0.2, 0.95)
+border_width_top = 3
+border_width_bottom = 3
+border_color = Color(0.96, 0.8, 0.32, 1)
+content_margin_left = 28.0
+content_margin_top = 14.0
+content_margin_right = 28.0
+content_margin_bottom = 14.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_credits"]
+bg_color = Color(0.03, 0.04, 0.07, 0.96)
+content_margin_left = 40.0
+content_margin_top = 40.0
+content_margin_right = 40.0
+content_margin_bottom = 40.0
+
 [node name="DialogueBox" type="CanvasLayer"]
 layer = 50
 script = ExtResource("1_script")
+
+[node name="ObjectivePanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 360.0
+offset_bottom = 66.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="ObjectiveLabel" type="Label" parent="ObjectivePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "Objective: ..."
+autowrap_mode = 3
+
+[node name="TutorialToast" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -260.0
+offset_top = 18.0
+offset_right = 260.0
+offset_bottom = 64.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="TutorialLabel" type="Label" parent="TutorialToast"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.94, 0.72, 1)
+theme_override_font_sizes/font_size = 16
+text = "Tip"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="BannerPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 110.0
+offset_bottom = 176.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_banner")
+
+[node name="BannerLabel" type="Label" parent="BannerPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.48, 1)
+theme_override_font_sizes/font_size = 26
+text = "Area Complete"
+horizontal_alignment = 1
 
 [node name="Box" type="PanelContainer" parent="."]
 unique_name_in_owner = true
@@ -29,7 +122,7 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 40.0
-offset_top = -180.0
+offset_top = -186.0
 offset_right = -40.0
 offset_bottom = -24.0
 grow_horizontal = 2
@@ -52,16 +145,29 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="NameLabel" type="Label" parent="Box/HBox/VBox"]
+[node name="HeaderRow" type="HBoxContainer" parent="Box/HBox/VBox"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="Box/HBox/VBox/HeaderRow"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 text = "John"
+
+[node name="SkipButton" type="Button" parent="Box/HBox/VBox/HeaderRow"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 13
+text = "Skip >>"
+flat = true
 
 [node name="TextLabel" type="RichTextLabel" parent="Box/HBox/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 theme_override_font_sizes/normal_font_size = 22
 bbcode_enabled = true
 scroll_active = false
@@ -80,3 +186,49 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "▼"
 horizontal_alignment = 2
+
+[node name="CreditsOverlay" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_credits")
+
+[node name="CreditsVBox" type="VBoxContainer" parent="CreditsOverlay"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 18
+
+[node name="CreditsTitle" type="Label" parent="CreditsOverlay/CreditsVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.52, 1)
+theme_override_font_sizes/font_size = 38
+text = "Tight Lines — Continued."
+horizontal_alignment = 1
+
+[node name="CreditsBody" type="Label" parent="CreditsOverlay/CreditsVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.92, 0.98, 1)
+theme_override_font_sizes/font_size = 20
+text = "Marikina River • Imus • Kawit • Noveleta • Calatagan • Fortune Island
+
+Thank you for completing The Unfinished Almanac."
+horizontal_alignment = 1
+
+[node name="KeepFishingPrompt" type="Label" parent="CreditsOverlay/CreditsVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "Keep fishing?"
+horizontal_alignment = 1
+
+[node name="KeepFishingButton" type="Button" parent="CreditsOverlay/CreditsVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 44)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 18
+text = "Yes — Any area, any time"

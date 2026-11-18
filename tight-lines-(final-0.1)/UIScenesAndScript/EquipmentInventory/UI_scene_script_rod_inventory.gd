@@ -34,12 +34,22 @@ const BAIT_IDS := {
 	"bait_6": get_node_or_null("Panel/VBoxContainer/TopwaterLure"),
 }
 
+const ROD_ORDER := ["rod_light", "rod_medium_light", "rod_medium", "rod_medium_heavy", "rod_heavy"]
+const BAIT_ORDER := ["bait_1", "bait_2", "bait_3", "bait_4", "bait_5", "bait_6"]
+
+enum FocusSection { RODS, BAITS }
+
 var _status_label: Label = null
+var _focus_section: FocusSection = FocusSection.RODS
+var _focused_rod_idx: int = 0
+var _focused_bait_idx: int = 0
+var _cursor_highlight: Panel = null
 
 
 func _ready() -> void:
 	_ensure_starter_equipment()
 	_build_status_label()
+	_build_cursor_highlight()
 
 	if SaveManager.has_signal("equipment_changed"):
 		SaveManager.equipment_changed.connect(_refresh_ui)
@@ -48,6 +58,80 @@ func _ready() -> void:
 	visibility_changed.connect(_on_visibility_changed)
 
 	_refresh_ui()
+
+
+func _build_cursor_highlight() -> void:
+	_cursor_highlight = Panel.new()
+	_cursor_highlight.name = "MobileCursorHighlight"
+	_cursor_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cursor_highlight.z_index = 10
+	_cursor_highlight.visible = false
+	var style := StyleBoxFlat.new()
+	style.draw_center = false
+	style.border_color = Color(1.0, 0.85, 0.2, 1.0)
+	style.set_border_width_all(4)
+	style.set_corner_radius_all(8)
+	_cursor_highlight.add_theme_stylebox_override("panel", style)
+	add_child(_cursor_highlight)
+
+
+func _update_cursor_highlight() -> void:
+	if _cursor_highlight == null or not visible:
+		return
+	var target: Control = null
+	if _focus_section == FocusSection.RODS:
+		var rod_id: String = ROD_ORDER[clampi(_focused_rod_idx, 0, ROD_ORDER.size() - 1)]
+		target = _rod_buttons.get(rod_id)
+	else:
+		var bait_id: String = BAIT_ORDER[clampi(_focused_bait_idx, 0, BAIT_ORDER.size() - 1)]
+		target = _bait_buttons.get(bait_id)
+
+	if target == null:
+		_cursor_highlight.visible = false
+		return
+
+	var rect := target.get_global_rect()
+	_cursor_highlight.visible = true
+	_cursor_highlight.global_position = rect.position - Vector2(4, 4)
+	_cursor_highlight.size = rect.size + Vector2(8, 8)
+
+
+func handle_mobile_action(action: String) -> void:
+	match action:
+		"back":
+			_on_back_button_pressed()
+			return
+		"tab_prev":
+			_focus_section = FocusSection.RODS
+		"tab_next":
+			_focus_section = FocusSection.BAITS
+		"select":
+			if _focus_section == FocusSection.RODS:
+				_equip_rod(ROD_ORDER[_focused_rod_idx])
+			else:
+				_equip_bait(BAIT_ORDER[_focused_bait_idx])
+		_:
+			if _focus_section == FocusSection.RODS:
+				match action:
+					"left":
+						_focused_rod_idx = maxi(0, _focused_rod_idx - 1)
+					"right":
+						if _focused_rod_idx < ROD_ORDER.size() - 1:
+							_focused_rod_idx += 1
+						else:
+							_focus_section = FocusSection.BAITS
+					"down":
+						_focus_section = FocusSection.BAITS
+			else:
+				match action:
+					"up":
+						_focused_bait_idx = maxi(0, _focused_bait_idx - 1)
+					"down":
+						_focused_bait_idx = mini(BAIT_ORDER.size() - 1, _focused_bait_idx + 1)
+					"left":
+						_focus_section = FocusSection.RODS
+
+	_update_cursor_highlight.call_deferred()
 
 
 func _ensure_starter_equipment() -> void:
@@ -84,6 +168,9 @@ func _on_visibility_changed() -> void:
 	if visible:
 		_ensure_starter_equipment()
 		_refresh_ui()
+		_update_cursor_highlight.call_deferred()
+	elif _cursor_highlight != null:
+		_cursor_highlight.visible = false
 
 
 func _refresh_ui(extra_msg: String = "") -> void:

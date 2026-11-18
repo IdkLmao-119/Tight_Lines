@@ -27,9 +27,11 @@ signal choices_shown(options: PackedStringArray)
 signal dialogue_hidden
 signal box_style_changed(style: String)
 signal command_emitted(command: String, args: PackedStringArray)
+signal notice_requested(text: String)
 
 signal _advanced
 signal _chosen(index: int)
+signal _skipped
 
 # ============================================================================
 # STORY FILES  -  the ORDER of this list is the order of the story
@@ -76,6 +78,7 @@ var variables: Dictionary = {"player": "John"}
 var _cutscenes: Dictionary = {}        # { id: {id, file, options, ops, labels} }
 var _order: Array = []                 # cutscene ids in story order
 var _running_id := ""
+var _skipping := false
 var _scene_after := ""
 var _queued_cutscene := ""             # e.g. quest completion waiting for overworld
 var _prev_input_context := -1
@@ -125,6 +128,7 @@ func play(cutscene_id: String) -> void:
 		push_error("StoryManager: unknown cutscene '%s'." % cutscene_id)
 		return
 	_running_id = cutscene_id
+	_skipping = false
 	_scene_after = ""
 	_lock_input()
 	box_style_changed.emit("normal")
@@ -138,6 +142,7 @@ func play(cutscene_id: String) -> void:
 	_mark_seen(cutscene_id)
 	_unlock_input()
 	_running_id = ""
+	_skipping = false
 	cutscene_finished.emit(cutscene_id)
 	if _scene_after != "":
 		var gm := _autoload("GameManager")
@@ -163,6 +168,20 @@ func advance() -> void:
 func choose(index: int) -> void:
 	if is_playing():
 		_chosen.emit(index)
+
+
+# Skips the currently playing cutscene, applying any !flag commands left in it.
+func skip() -> void:
+	if not is_playing() or _skipping:
+		return
+	_skipping = true
+	_advanced.emit()
+	_chosen.emit(0)
+
+
+# Shows a quick non-blocking notice (e.g. locked area gate message).
+func show_notice(text: String) -> void:
+	notice_requested.emit(text)
 
 
 func has_cutscene(cutscene_id: String) -> bool:
@@ -462,12 +481,17 @@ func _run(cs: Dictionary) -> void:
 		match op["op"]:
 			"say":
 				steps = 0
+				if _skipping:
+					continue
 				_show_line(op)
 				var has_choices: bool = pc < ops.size() and ops[pc]["op"] == "choice"
 				if not has_choices:
 					await _advanced
 			"choice":
 				steps = 0
+				if _skipping:
+					pc = labels[op["options"][0]["label"]]
+					continue
 				var texts := PackedStringArray()
 				for option in op["options"]:
 					texts.append(_substitute(String(option["text"])))
@@ -492,7 +516,8 @@ func _run_command(op: Dictionary) -> bool:
 		"shake":
 			shake_camera(_arg_float(args, 0, 8.0), _arg_float(args, 1, 0.4))
 		"wait":
-			await get_tree().create_timer(_arg_float(args, 0, 0.5), false).timeout
+			if not _skipping:
+				await get_tree().create_timer(_arg_float(args, 0, 0.5), false).timeout
 		"hide":
 			dialogue_hidden.emit()
 		"box":

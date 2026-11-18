@@ -9,6 +9,9 @@ scientific_name = "Cephalopholis miniata"
 description = "A striking, brightly colored predatory reef fish belonging to the family Epinephelidae, found across the Indo-Pacific in coral-rich areas and deep lagoons. It feeds primarily on small reef fishes and crustaceans.
 Local Name: Pugapo"
 size_class = "large"
+speed = 6.0
+pull_strength = 15.0
+stamina = 75.0
 min_size = 100.0
 avg_size = 170.0
 max_size = 240.0
