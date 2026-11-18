@@ -71,21 +71,21 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Spawn",
+		"display_name": "Marikina City",
 	},
 	"overworld_river_park": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/RiverPark/RiverPark.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "River Park",
+		"display_name": "Marikina River Park",
 	},
 	"overworld_rice_field": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/RiceFields/RiceField.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Rice Fields",
+		"display_name": "Imus Fields",
 	},
 
 	#House Sub-Area
@@ -94,14 +94,12 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "House 1",
 	},
 	"overworld_house_2": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/House_Folder/House2.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "House 2",
 	},
 
 	#Area 2
@@ -110,21 +108,21 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Seaside Park",
+		"display_name": "Kawit Seaside Park",
 	},
 	"overworld_fishing_pens": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/FishPens/FishPens.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Fishing Pens",
+		"display_name": "Noveleta Fishing Pens",
 	},
 	"overworld_salt_farm": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/AbandonedSaltfarm/SaltFarm.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Abandoned Salt Farm",
+		"display_name": "Noveleta Salt Farm",
 	},
 
 	#Area 3
@@ -133,14 +131,14 @@ const SCENES: Dictionary = {
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Mangrove Area",
+		"display_name": "Calatagan Mangrove Forest",
 	},
 	"overworld_island": {
 		"path": "res://OverWorldSceneAndScript/3_Shore/Island/Island.tscn",
 		"input": "overworld",
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
-		"display_name": "Island",
+		"display_name": "Fortune Island",
 	},
 
 	#3D Fishing
@@ -149,56 +147,48 @@ const SCENES: Dictionary = {
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Rice Fields - Fishing",
 	},
 	"fishing_river_park": {
 		"path": "res://3DFishingScene/Area1FishingScenes/3DFishingRiverPark.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "River Park - Fishing",
 	},
 	"fishing_fish_market": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingSeasidePark.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Seaside Park - Fishing",
 	},
 	"fishing_fishing_pens": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingFishPens.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Fishing Pens - Fishing",
 	},
 	"fishing_salt_farm": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingSaltFarm.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Abandoned Salt Farm - Fishing",
 	},
 	"fishing_mangrove": {
 		"path": "res://3DFishingScene/Area3FishingScenes/3DFishingMangrove.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Mangrove Area - Fishing",
 	},
 	"fishing_island": {
 		"path": "res://3DFishingScene/Area3FishingScenes/3DFishingIsland.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
-		"display_name": "Island - Fishing",
 	},
 	"multiplayer": {
 		"path": "res://3DFishingScene/MultiplayerFishingScene/3d_fishing_multiplayer.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Sunday.mp3",
 		"pausable": true,
-		"display_name": "Multiplayer Fishing",
 	},
 }
 
@@ -275,7 +265,10 @@ var _music_b: AudioStreamPlayer
 var _music_active: AudioStreamPlayer     # the one currently audible
 var _music_tween: Tween
 var _current_music_path: String = ""
+var _music_suppressed := false           # true while a fish song overrides the scene music
 var _warned_missing: Dictionary = {}     # so each missing file warns once
+var _pause_panel: Control
+var _last_resume_frame := -1
 
 
 func _ready() -> void:
@@ -410,35 +403,45 @@ func flash_scene_title(title_text: String) -> void:
 		_title_tween.kill()
 
 	_scene_title_label.text = title_text
-	# Removed the instant self_modulate = 0.0 snap here!
+	# No alpha snap: fades in from whatever alpha it currently has.
 	_scene_title_label.scale = Vector2(0.85, 0.85)
 	_scene_title_label.show()
 
 	# Wait 1 frame so title_root's FULL_RECT size matches the current screen resolution
 	await get_tree().process_frame
+
+	# Another flash may have started during the await - make sure only one runs.
+	if _title_tween and _title_tween.is_valid():
+		_title_tween.kill()
+	_scene_title_label.text = title_text
 	_scene_title_label.pivot_offset = _scene_title_label.size / 2.0
 
 	_title_tween = create_tween()
 	_title_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-
-	# Phase 1 (2.5s): Fade In from current alpha to 1.0 + Enlarge
 	_title_tween.set_parallel(true)
-	_title_tween.tween_property(_scene_title_label, "self_modulate:a", 1.0, 2.5)\
+
+	# Phase 1 (2.5s): Fade In + Enlarge (0.85 -> 1.0), both run together.
+	# NOTE: uses "modulate" (not self_modulate) - the label is hidden via
+	# modulate.a = 0.0 in setup, so we must animate that same property.
+	_title_tween.tween_property(_scene_title_label, "modulate:a", 1.0, 2.5)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_OUT)
-		
 	_title_tween.tween_property(_scene_title_label, "scale", Vector2(1.0, 1.0), 2.5)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_OUT)
 
-	# Phase 2 (2.5s): Fade Out + Enlarge
-	_title_tween.chain().set_parallel(true)
-	_title_tween.tween_property(_scene_title_label, "self_modulate:a", 0.0, 2.5)\
+	# Phase 2 (2.5s): Fade Out + Enlarge (1.0 -> 1.15), starts after Phase 1.
+	# chain() on the first tweener starts a new step; the second tweener joins
+	# it in parallel (set_parallel(true) is still the default).
+	_title_tween.chain().tween_property(_scene_title_label, "modulate:a", 0.0, 2.5)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_IN)
 	_title_tween.tween_property(_scene_title_label, "scale", Vector2(1.15, 1.15), 2.5)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_IN)
+
+	# Hide when done so the invisible label isn't left shown.
+	_title_tween.chain().tween_callback(_scene_title_label.hide)
 
 # --- Scene memory ----------------------------------------------------------
 # Before leaving a scene, GameManager calls get_scene_state() on it (if it has
@@ -588,7 +591,8 @@ func play_music(path: String, fade_time: float = MUSIC_CROSSFADE_TIME) -> void:
 	_music_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	_music_tween.set_parallel(true)
 	_music_tween.set_trans(Tween.TRANS_SINE)
-	_music_tween.tween_property(new_player, "volume_db", 0.0, fade_time)
+	# While a fish song overrides the music, new tracks start (and stay) silent.
+	_music_tween.tween_property(new_player, "volume_db", SILENT_DB if _music_suppressed else 0.0, fade_time)
 	if old_player.playing:
 		_music_tween.tween_property(old_player, "volume_db", SILENT_DB, fade_time)
 		_music_tween.chain().tween_callback(old_player.stop)
@@ -607,6 +611,30 @@ func stop_music(fade_time: float = MUSIC_CROSSFADE_TIME) -> void:
 	_music_tween.chain().tween_callback(func():
 		_music_a.stop()
 		_music_b.stop())
+
+
+# Silences (true) or restores (false) the scene music without stopping it, so it
+# carries on from the same point afterwards. FishingManager uses this so a fish's
+# own song overrides the scene music while that fish is on the line.
+func set_music_suppressed(suppressed: bool, fade_seconds: float = 0.5) -> void:
+	if suppressed == _music_suppressed:
+		return
+	_music_suppressed = suppressed
+	if _music_tween and _music_tween.is_valid():
+		_music_tween.kill()
+	_music_tween = create_tween()
+	_music_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_music_tween.set_parallel(true)
+	var fade := maxf(fade_seconds, 0.0)
+	for p in [_music_a, _music_b]:
+		if not p.playing:
+			continue
+		if p == _music_active:
+			_music_tween.tween_property(p, "volume_db", SILENT_DB if suppressed else 0.0, fade)
+		else:
+			# A leftover crossfade player: finish its fade-out.
+			_music_tween.tween_property(p, "volume_db", SILENT_DB, fade)
+			_music_tween.chain().tween_callback(p.stop)
 
 
 func _play_scene_music(entry: Dictionary) -> void:
@@ -654,6 +682,16 @@ func toggle_pause() -> void:
 		_resume_from_pause()
 	else:
 		set_paused(true)
+
+func _input(event: InputEvent) -> void:
+	if not event.is_action_pressed("ui_cancel") or event.is_echo():
+		return
+	if _overlay_node != null:
+		close_inventory()
+		get_viewport().set_input_as_handled()
+	elif get_tree().paused and _pause_reasons.has(REASON_USER):
+		_resume_from_pause()
+		get_viewport().set_input_as_handled()
 
 
 # Clears the player's pause. In SINGLE-PLAYER it also clears a disconnect

@@ -1,6 +1,6 @@
 extends Node
 # ============================================================================
-# SAVE MANAGER (GODOT)  — TightLines                                  (Ver. 3.1)
+# SAVE MANAGER (GODOT)  — TightLines                                  (Ver. 3.2)
 # ============================================================================
 # Autoload singleton named "SaveManager". Autoload order (DECISIONS.md C11):
 #   GameDB, SaveManager, ConnectionManager, InputManager, GameManager,
@@ -13,13 +13,16 @@ extends Node
 #                     (original names kept). Safe writes: temp file first,
 #                     replace the slot only when complete.
 #   2. GAME STATE     build_save_data() / apply_save_data() collect and hand
-#                     back the state of the other modules. save_slot(slot) and
-#                     load_slot(slot) combine both. Owns the player state that
-#                     has no other home: saved scene, difficulty, unlock flags,
-#                     owned rods, equipped rod, equipped bait, caught fish.
+#                     back the state of the other modules (inventory, quests).
+#                     save_slot(slot) and load_slot(slot) combine both. Owns
+#                     the player state that has no other home: saved scene,
+#                     difficulty, unlock flags, owned rods, equipped rod,
+#                     equipped bait, caught fish.
 #   3. SETTINGS       Volume lives in its OWN global file, user://settings.json
 #                     (C3), NOT in slot files. save_settings() / load_settings();
 #                     volume is applied at startup with call_deferred.
+#
+# Ver. 3.2: quest progress is saved under data["quests"] (QuestManager).
 # ============================================================================
 
 signal slot_saved(slot: int)
@@ -125,6 +128,11 @@ func build_save_data() -> Dictionary:
 	var inventory := _autoload("InventoryManager")
 	if inventory != null:
 		data["inventory"] = inventory.call("to_save_data")
+
+	# Quest progress (QuestManager owns the format).
+	var quests := _autoload("QuestManager")
+	if quests != null:
+		data["quests"] = quests.call("to_save_data")
 	return data
 
 
@@ -175,6 +183,14 @@ func apply_save_data(data: Dictionary) -> void:
 		bait = ""
 	_equipped_bait = bait
 
+	# Quests. Kept LAST on purpose: loading can complete a quest, and that
+	# gives rewards (rods, bait, unlock flags) that the blocks above would
+	# otherwise overwrite. A missing/invalid "quests" section = new quests (D8).
+	var quests := _autoload("QuestManager")
+	if quests != null:
+		var quest_data: Dictionary = data["quests"] if data.get("quests") is Dictionary else {}
+		quests.call("load_save_data", quest_data)
+
 	equipment_changed.emit()
 	difficulty_changed.emit(_difficulty)
 
@@ -202,6 +218,8 @@ func get_saved_scene() -> String:
 
 
 func new_game() -> void:
+	# apply_save_data({}) also resets QuestManager, which makes every
+	# questline starter IN_PROGRESS.
 	apply_save_data({})
 	var inventory := _autoload("InventoryManager")
 	if inventory == null:
@@ -333,12 +351,16 @@ func set_equipped_bait(bait_id: String) -> bool:
 
 func save_settings() -> bool:
 	var game_manager := _autoload("GameManager")
+	var input_manager := _autoload("InputManager")
 	if game_manager == null:
 		return false
-	return _write_json(SETTINGS_PATH, {
+	var data := {
 		"version": SETTINGS_FORMAT_VERSION,
 		"volume": game_manager.call("get_volume_settings"),
-	})
+	}
+	if input_manager != null:
+		data["cast_sensitivity"] = input_manager.cast_sensitivity
+	return _write_json(SETTINGS_PATH, data)
 
 
 func load_settings() -> bool:
@@ -346,12 +368,13 @@ func load_settings() -> bool:
 	if data.is_empty():
 		return false
 	var game_manager := _autoload("GameManager")
-	if game_manager == null:
-		return false
-	var volume := _clean_volume(data.get("volume"))
-	if volume.is_empty():
-		return false
-	game_manager.call("apply_volume_settings", volume)
+	if game_manager != null:
+		var volume := _clean_volume(data.get("volume"))
+		if not volume.is_empty():
+			game_manager.call("apply_volume_settings", volume)
+	var input_manager := _autoload("InputManager")
+	if input_manager != null and data.has("cast_sensitivity"):
+		input_manager.cast_sensitivity = float(data.get("cast_sensitivity", 1.0))
 	return true
 
 

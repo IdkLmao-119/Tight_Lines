@@ -76,6 +76,7 @@ signal reel_crank(player_id, delta_degrees)   # signed: + clockwise (reel in), -
 signal interact_pressed(player_id)
 signal cancel_pressed(player_id)
 signal pause_pressed(player_id)
+signal menu_action(player_id, action)
 
 # NOTE: view rotation (tilt / A-D keys) is continuous, so it is POLLING ONLY:
 #       call get_look(player_id) each frame.
@@ -94,11 +95,35 @@ const DEBUG_PLAYER2_ID := 2
 const CONNECTION_MANAGER_PATH := "/root/ConnectionManager"
 
 # --- Tuning -----------------------------------------------------------------
-# Phone swing magnitudes (rad/s) mapped onto 0..1 cast power. The phone app
-# only reports swings above 4.0, so that is the floor.
-const SWING_MIN_MAGNITUDE := 8.0
-const SWING_MAX_MAGNITUDE := 18.0
+# Phone swing magnitudes (rad/s) mapped onto 0..1 cast power.
+const SWING_MIN_MAGNITUDE := 4.0
+const SWING_MAX_MAGNITUDE := 16.0
 const MIN_CAST_POWER := 0.15
+
+@export var cast_sensitivity: float = 0.5:
+	set(val):
+		cast_sensitivity = val
+		sync_phone_config()
+
+func sync_phone_config(player_id: int = -1) -> void:
+	var t := clampf(cast_sensitivity, 0.0, 1.0)
+	# High sensitivity (1.0) -> swing threshold 12.0f, tilt filter alpha 0.70f (faster tilt, easier swing)
+	# Low sensitivity (0.0) -> swing threshold 16.0f, tilt filter alpha 0.95f (heavy smoothing, harder swing)
+	var swing_th := lerpf(16.0, 12.0, t)
+	var tilt_alpha := lerpf(0.95, 0.70, t)
+	var payload := {
+		"type": "config",
+		"swing_threshold": swing_th,
+		"tilt_filter_alpha": tilt_alpha,
+		"sensitivity": t
+	}
+	if _connection_manager != null:
+		if player_id >= 0:
+			if _connection_manager.has_method("send_to_player"):
+				_connection_manager.send_to_player(player_id, payload)
+		else:
+			if _connection_manager.has_method("send_to_all"):
+				_connection_manager.send_to_all(payload)
 
 # Holding the cast key this long (seconds) gives full power.
 const KEYBOARD_CAST_CHARGE_TIME := 1.0
@@ -115,12 +140,12 @@ const CRANK_ACTIVE_SEC := 0.3     # how long reeling stays "on" after the last c
 # Tilt: values inside the deadzone count as 0 so a phone held roughly level
 # doesn't drift the view. The phone sends -1..+1 where +/-1 = 40 degrees, so
 # 0.12 is roughly a 5 degree deadzone. Raise it if the view creeps.
-const TILT_DEADZONE := 0.12
+const TILT_DEADZONE := 0.05
 # The phone streams tilt ~20x/sec. If nothing arrives for this long, tilt is
 # treated as 0 (protects against a stuck view if the connection stalls).
 const TILT_TIMEOUT_SEC := 0.5
 
-@export var debug_log := false
+@export var debug_log := true
 
 # DEBUG: lets the keyboard play in multiplayer FISHING. Keyboard = Player 1
 # (normal keys) AND a second keyboard scheme (IJKL) = Player 2. Only has an
@@ -224,8 +249,14 @@ func _connect_connection_manager() -> void:
 		_connection_manager.connect("reel_input", _on_phone_reel)
 	if _connection_manager.has_signal("tilt_input"):
 		_connection_manager.connect("tilt_input", _on_phone_tilt)
-	else:
-		push_warning("InputManager: ConnectionManager has no 'tilt_input' signal — update it to the version with tilt support.")
+	if _connection_manager.has_signal("move_input"):
+		_connection_manager.connect("move_input", _on_phone_move)
+	if _connection_manager.has_signal("menu_action_input"):
+		_connection_manager.connect("menu_action_input", _on_phone_menu_action)
+	if _connection_manager.has_signal("interact_input"):
+		_connection_manager.connect("interact_input", _on_phone_interact)
+	if _connection_manager.has_signal("cancel_input"):
+		_connection_manager.connect("cancel_input", _on_phone_cancel)
 
 	# Pick up phones that connected before we finished starting.
 	for pid in _connection_manager.get_connected_players():
@@ -410,6 +441,7 @@ func _on_phone_connected(phone_id: int) -> void:
 		_phones.append(phone_id)
 	print("[InputManager] controller connected: player %d" % phone_id)
 	controller_connected.emit(phone_id)
+	sync_phone_config(phone_id)
 
 func _on_phone_disconnected(phone_id: int) -> void:
 	_phones.erase(phone_id)
@@ -457,8 +489,11 @@ func _on_phone_tap(phone_id: int, _x: float, _y: float) -> void:
 	match context:
 		InputContext.MENU:
 			_inject_ui_action(&"ui_accept")
-		InputContext.OVERWORLD, InputContext.FISHING:
+		InputContext.OVERWORLD:
 			interact_pressed.emit(pid)
+		InputContext.FISHING:
+			interact_pressed.emit(pid)
+			cast_triggered.emit(pid, 0.6)
 
 func _on_phone_swing(phone_id: int, magnitude: float) -> void:
 	var pid := _accept_phone_input(phone_id)
@@ -485,6 +520,35 @@ func _on_phone_tilt(phone_id: int, value: float) -> void:
 	st["look"] = clampf(value, -1.0, 1.0)
 	st["look_time"] = _now()
 
+func _on_phone_move(phone_id: int, x: float, y: float) -> void:
+	var pid := _accept_phone_input(phone_id)
+	if pid < 0:
+		return
+	var st := _get_state(pid)
+	var dir := Vector2(x, y)
+	st["move"] = dir
+	if dir != Vector2.ZERO:
+		st["move_until"] = _now() + 0.35
+	else:
+		st["move_until"] = 0.0
+
+func _on_phone_menu_action(phone_id: int, action: String) -> void:
+	var pid := _accept_phone_input(phone_id)
+	if pid < 0:
+		return
+	menu_action.emit(pid, action)
+
+func _on_phone_interact(phone_id: int) -> void:
+	var pid := _accept_phone_input(phone_id)
+	if pid < 0:
+		return
+	interact_pressed.emit(pid)
+
+func _on_phone_cancel(phone_id: int) -> void:
+	var pid := _accept_phone_input(phone_id)
+	if pid < 0:
+		return
+	cancel_pressed.emit(pid)
 # ----------------------------------------------------------------------------
 # Helpers
 # ----------------------------------------------------------------------------

@@ -15,6 +15,7 @@
 [ext_resource type="Resource" uid="uid://deme8b0f3v6sm" path="res://data/fish/fish_tarpon.tres" id="12_1oaf8"]
 [ext_resource type="Resource" uid="uid://bl2r31ww2hogd" path="res://data/fish/fish_long_comb_sawfish.tres" id="13_0i0wl"]
 [ext_resource type="Resource" uid="uid://0ge21e7b8yf5" path="res://data/fish/fish_sea_bream.tres" id="14_jyp3w"]
+[ext_resource type="Resource" uid="uid://kl5o4umhdp0f" path="res://data/fish/fish_marlin.tres" id="15_bdjlv"]
 
 [sub_resource type="Resource" id="Resource_kdqr3"]
 script = ExtResource("1_yome2")
@@ -76,9 +77,14 @@ script = ExtResource("1_yome2")
 fish = ExtResource("14_jyp3w")
 metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
 
+[sub_resource type="Resource" id="Resource_ohb6o"]
+script = ExtResource("1_yome2")
+fish = ExtResource("15_bdjlv")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
 [resource]
 script = ExtResource("2_utvat")
-fish_pool = Array[ExtResource("1_yome2")]([SubResource("Resource_kdqr3"), SubResource("Resource_jpymo"), SubResource("Resource_xj6q2"), SubResource("Resource_75ipr"), SubResource("Resource_v3nr8"), SubResource("Resource_ftmxa"), SubResource("Resource_u73qm"), SubResource("Resource_i5rgf"), SubResource("Resource_w7nmy"), SubResource("Resource_7mn51"), SubResource("Resource_5xuq5"), SubResource("Resource_p6exn")])
+fish_pool = Array[ExtResource("1_yome2")]([SubResource("Resource_kdqr3"), SubResource("Resource_jpymo"), SubResource("Resource_xj6q2"), SubResource("Resource_75ipr"), SubResource("Resource_v3nr8"), SubResource("Resource_ftmxa"), SubResource("Resource_u73qm"), SubResource("Resource_i5rgf"), SubResource("Resource_w7nmy"), SubResource("Resource_7mn51"), SubResource("Resource_5xuq5"), SubResource("Resource_p6exn"), SubResource("Resource_ohb6o")])
 id = "location_fortune_island"
 display_name = "Fortune Island"
 metadata/_custom_type_script = "uid://bbts02hgiiwr"

@@ -5,26 +5,90 @@
     android:background="#121212"
     android:padding="16dp">
 
-    <TextView
-        android:layout_width="295dp"
+    <!-- Top Menu Header Bar -->
+    <LinearLayout
+        android:id="@+id/menuHeaderBar"
+        android:layout_marginTop="80dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/textView"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginBottom="175dp"
-        android:textAlignment="center"
-        android:text="[ Overworld Controller Mode ]"
-        android:textColor="#00FF66"
-        android:textSize="16sp" />
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/btnFishBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#2E4057"
+            android:text="🐟 Fish Box"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnAlmanac"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#048A81"
+            android:text="📖 Almanac"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnEquipment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#545B77"
+            android:text="🎣 Equipment"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- D-Pad View -->
+
+    <!-- Interact Action Button -->
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Tap, Swipe, or Tilt to move/interact"
-        android:textColor="#888888"
-        android:textSize="14sp" />
+        android:id="@+id/modeTitle"
+        android:layout_width="340dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/menuHeaderBar"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="62dp"
+        android:layout_marginEnd="8dp"
+        android:text="[ Overworld Controller ]"
+        android:textAlignment="center"
+        android:textColor="#00FF66"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <com.example.myapplication.DPadView
+        android:id="@+id/dpadView"
+        android:layout_width="249dp"
+        android:layout_height="266dp"
+        android:layout_above="@+id/btnInteract"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="108dp"
+        android:layout_marginEnd="101dp"
+        android:layout_marginBottom="98dp" />
+
+    <Button
+        android:id="@+id/btnInteract"
+        android:layout_width="160dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#F4A261"
+        android:text="INTERACT (E)"
+        android:textColor="#121212"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
 </RelativeLayout>
