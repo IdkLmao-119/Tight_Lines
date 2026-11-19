@@ -1,174 +1,117 @@
 extends Control
 
+signal close_requested
 signal back_requested
 signal fish_sold(fish_name: String, price: int)
+
+const GRID_COLS := 7
+const SLOT_SIZE := Vector2(96, 96)
 
 @export var sell_mode: bool = false:
 	set(val):
 		sell_mode = val
-		_update_mode_ui()
+		if is_node_ready():
+			_update_mode_ui()
 
-@onready var TextureButtonGroupNode = $TextureButtonGroup
-var TextureButtonGroup: Array[TextureButton] = []
+@onready var _info_label: Label = %InfoLabel
+@onready var _sell_all_button: Button = %SellAllButton
+@onready var _back_button: Button = %BackButton
+@onready var _fish_scroll: ScrollContainer = %FishScroll
+@onready var _fish_grid: GridContainer = %FishGrid
+@onready var _cursor_highlight: MobileCursorHighlight = %CursorHighlight
 
-# Stores the uid of the fish assigned to each button index (0 = empty slot)
-var _button_uids: Array[int] = []
-
-var _sell_all_button: Button = null
-var _info_label: Label = null
+var _slot_buttons: Array[TextureButton] = []
+var _slot_uids: Array[int] = []
 var _focused_index: int = 0
-var _cursor_highlight: Panel = null
-
-const GRID_ROWS := 4
-const GRID_COLS := 7
-
-# Matches the image property lookup used in FishingManager
-const FISH_IMAGE_PROPERTIES := ["jpg", "image", "icon", "texture"]
-const FISH_NAME_PROPERTIES := ["display_name", "name", "title"]
 
 
 func _ready() -> void:
-	if TextureButtonGroupNode == null:
-		push_error("Could not find TextureButtonGroup! Check the node path or Unique Name.")
-		return
-
-	TextureButtonGroup.assign(TextureButtonGroupNode.get_children())
-	_button_uids.resize(TextureButtonGroup.size())
-	_button_uids.fill(0)
-
-	for i in TextureButtonGroup.size():
-		var btn: TextureButton = TextureButtonGroup[i]
-		# Center and scale the fish image proportionally inside the button
-		btn.ignore_texture_size = true
-		btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-		btn.pressed.connect(_on_fish_button_pressed.bind(i))
-
-	_build_extra_ui()
-	_build_cursor_highlight()
+	_build_fish_slots()
+	_sell_all_button.pressed.connect(_on_sell_all_pressed)
+	_back_button.pressed.connect(close)
 	InventoryManager.inventory_changed.connect(_on_inventory_changed)
 	visibility_changed.connect(_on_visibility_changed)
+
 	_refresh_fish_buttons()
 	_update_mode_ui()
 
 
-func _build_cursor_highlight() -> void:
-	_cursor_highlight = Panel.new()
-	_cursor_highlight.name = "MobileCursorHighlight"
-	_cursor_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_cursor_highlight.z_index = 10
-	_cursor_highlight.visible = false
-	var style := StyleBoxFlat.new()
-	style.draw_center = false
-	style.border_color = Color(1.0, 0.85, 0.2, 1.0)
-	style.set_border_width_all(4)
-	style.set_corner_radius_all(8)
-	_cursor_highlight.add_theme_stylebox_override("panel", style)
-	add_child(_cursor_highlight)
+func open() -> void:
+	visible = true
+	_refresh_fish_buttons()
+	_update_mode_ui()
+	_highlight_focused.call_deferred()
 
 
-func _update_cursor_highlight() -> void:
-	if _cursor_highlight == null or not visible or TextureButtonGroup.is_empty():
-		return
-	_focused_index = clampi(_focused_index, 0, TextureButtonGroup.size() - 1)
-	var target: Control = TextureButtonGroup[_focused_index]
-	_cursor_highlight.visible = true
-	_cursor_highlight.global_position = target.global_position - Vector2(3, 3)
-	_cursor_highlight.size = target.size + Vector2(6, 6)
+func close() -> void:
+	_cursor_highlight.clear()
+	visible = false
+	back_requested.emit()
+	close_requested.emit()
 
 
 func handle_mobile_action(action: String) -> void:
-	if TextureButtonGroup.is_empty():
+	if _slot_buttons.is_empty():
 		return
-	var col := _focused_index / GRID_ROWS
-	var row := _focused_index % GRID_ROWS
 
+	var col := _focused_index % GRID_COLS
 	match action:
 		"up":
-			if row > 0:
-				row -= 1
+			if _focused_index - GRID_COLS >= 0:
+				_focused_index -= GRID_COLS
 		"down":
-			if row < GRID_ROWS - 1:
-				row += 1
+			if _focused_index + GRID_COLS < _slot_buttons.size():
+				_focused_index += GRID_COLS
 		"left":
 			if col > 0:
-				col -= 1
+				_focused_index -= 1
 		"right":
-			if col < GRID_COLS - 1:
-				col += 1
+			if col < GRID_COLS - 1 and _focused_index + 1 < _slot_buttons.size():
+				_focused_index += 1
 		"select":
-			_on_fish_button_pressed(_focused_index)
+			_on_fish_slot_pressed(_focused_index)
 		"back":
-			_on_back_button_pressed()
+			close()
 			return
 
-	var next_idx := col * GRID_ROWS + row
-	if next_idx >= 0 and next_idx < TextureButtonGroup.size():
-		_focused_index = next_idx
-	_update_cursor_highlight.call_deferred()
+	_fish_scroll.ensure_control_visible(_slot_buttons[_focused_index])
+	_highlight_focused.call_deferred()
 
 
-func _build_extra_ui() -> void:
-	_info_label = Label.new()
-	_info_label.name = "FishBoxInfoLabel"
-	_info_label.offset_left = 180.0
-	_info_label.offset_top = 42.0
-	_info_label.offset_right = 760.0
-	_info_label.offset_bottom = 95.0
-	_info_label.add_theme_font_size_override("font_size", 28)
-	_info_label.add_theme_color_override("font_color", Color.WHITE)
-	_info_label.add_theme_color_override("font_outline_color", Color.BLACK)
-	_info_label.add_theme_constant_override("outline_size", 6)
-	add_child(_info_label)
+func _build_fish_slots() -> void:
+	for child in _fish_grid.get_children():
+		child.queue_free()
+	_slot_buttons.clear()
 
-	_sell_all_button = Button.new()
-	_sell_all_button.name = "SellAllButton"
-	_sell_all_button.offset_left = 770.0
-	_sell_all_button.offset_top = 42.0
-	_sell_all_button.offset_right = 955.0
-	_sell_all_button.offset_bottom = 105.0
-	_sell_all_button.add_theme_font_size_override("font_size", 24)
-	_sell_all_button.text = "Sell All"
-	_sell_all_button.pressed.connect(_on_sell_all_pressed)
-	add_child(_sell_all_button)
+	var capacity := maxi(InventoryManager.get_container_capacity(InventoryManager.FISH_BOX), 28)
+	_slot_uids.resize(capacity)
+	_slot_uids.fill(0)
+
+	for i in capacity:
+		var btn := TextureButton.new()
+		btn.custom_minimum_size = SLOT_SIZE
+		btn.ignore_texture_size = true
+		btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+		btn.pressed.connect(_on_fish_slot_pressed.bind(i))
+		_fish_grid.add_child(btn)
+		_slot_buttons.append(btn)
+
+
+func _highlight_focused() -> void:
+	if not visible or _slot_buttons.is_empty():
+		_cursor_highlight.clear()
+		return
+	_focused_index = clampi(_focused_index, 0, _slot_buttons.size() - 1)
+	_cursor_highlight.highlight(_slot_buttons[_focused_index])
 
 
 func _on_visibility_changed() -> void:
 	if visible:
 		_refresh_fish_buttons()
 		_update_mode_ui()
-		_update_cursor_highlight.call_deferred()
-	elif _cursor_highlight != null:
-		_cursor_highlight.visible = false
-
-
-func _update_mode_ui(extra_msg: String = "") -> void:
-	if _sell_all_button != null:
-		_sell_all_button.visible = sell_mode
-		var total_value := _get_total_fish_value()
-		var fish_count := InventoryManager.get_used_slot_count(InventoryManager.FISH_BOX)
-		_sell_all_button.text = "Sell All (+%dG)" % total_value
-		_sell_all_button.disabled = (fish_count <= 0)
-
-	if _info_label != null:
-		if extra_msg != "":
-			_info_label.text = extra_msg
-		elif sell_mode:
-			var count := InventoryManager.get_used_slot_count(InventoryManager.FISH_BOX)
-			if count > 0:
-				_info_label.text = "Click any fish to sell it! (%d fish in box)" % count
-			else:
-				_info_label.text = "Your Fish Box is empty. Catch some fish first!"
-		else:
-			var count := InventoryManager.get_used_slot_count(InventoryManager.FISH_BOX)
-			_info_label.text = "Fish Box (%d / %d)" % [count, InventoryManager.get_container_capacity(InventoryManager.FISH_BOX)]
-
-
-func _get_total_fish_value() -> int:
-	var total := 0
-	for fish: Dictionary in InventoryManager.get_items(InventoryManager.FISH_BOX):
-		var uid: int = fish["uid"]
-		total += InventoryManager.get_fish_sell_price(uid)
-	return total
+		_highlight_focused.call_deferred()
+	else:
+		_cursor_highlight.clear()
 
 
 func _on_inventory_changed(container_id: String) -> void:
@@ -178,87 +121,88 @@ func _on_inventory_changed(container_id: String) -> void:
 
 
 func _refresh_fish_buttons() -> void:
-	# Get all fish currently stored in the Fish Box
 	var fish_list: Array = InventoryManager.get_items(InventoryManager.FISH_BOX)
 
-	for i in TextureButtonGroup.size():
-		var btn: TextureButton = TextureButtonGroup[i]
-
+	for i in _slot_buttons.size():
+		var btn: TextureButton = _slot_buttons[i]
 		if i < fish_list.size():
 			var fish: Dictionary = fish_list[i]
 			var uid: int = fish["uid"]
 			var fish_id: String = fish["item_id"]
 
-			_button_uids[i] = uid
+			_slot_uids[i] = uid
 			btn.texture_normal = _get_fish_texture(fish_id)
 			btn.disabled = false
-			btn.visible = true
 
-			var display_name: String = _get_fish_display_name(fish_id)
+			var display_name := _get_fish_display_name(fish_id)
 			var size_cm := float(fish["meta"].get("size_cm", 0.0))
-			var weight: float = InventoryManager.get_fish_weight_kg(uid)
-			var price: int = InventoryManager.get_fish_sell_price(uid)
+			var weight := InventoryManager.get_fish_weight_kg(uid)
+			var price := InventoryManager.get_fish_sell_price(uid)
 			btn.tooltip_text = "%s\n%.1f cm | %.2f kg | %d G" % [display_name, size_cm, weight, price]
 		else:
-			# Clear unused button slots
-			_button_uids[i] = 0
+			_slot_uids[i] = 0
 			btn.texture_normal = null
 			btn.disabled = true
 			btn.tooltip_text = ""
 
 
-# Looks up the fish's record in GameDB and returns its display name (falls back to fish_id)
+func _update_mode_ui(extra_msg: String = "") -> void:
+	var fish_count := InventoryManager.get_used_slot_count(InventoryManager.FISH_BOX)
+	var total_value := _get_total_fish_value()
+
+	_sell_all_button.visible = sell_mode
+	_sell_all_button.text = "Sell All (+%dG)" % total_value
+	_sell_all_button.disabled = (fish_count <= 0)
+
+	if extra_msg != "":
+		_info_label.text = extra_msg
+	elif sell_mode:
+		if fish_count > 0:
+			_info_label.text = "Click any fish to sell it! (%d fish in box)" % fish_count
+		else:
+			_info_label.text = "Your Fish Box is empty. Catch some fish first!"
+	else:
+		var capacity := InventoryManager.get_container_capacity(InventoryManager.FISH_BOX)
+		_info_label.text = "Fish Box (%d / %d)" % [fish_count, capacity]
+
+
+func _get_total_fish_value() -> int:
+	var total := 0
+	for fish: Dictionary in InventoryManager.get_items(InventoryManager.FISH_BOX):
+		total += InventoryManager.get_fish_sell_price(int(fish["uid"]))
+	return total
+
+
 func _get_fish_display_name(fish_id: String) -> String:
-	var db := get_node_or_null("/root/GameDB")
-	if db == null or not db.has_fish(fish_id):
-		return fish_id
-
-	var record: Object = db.get_fish(fish_id)
-	if record == null:
-		return fish_id
-
-	for prop in FISH_NAME_PROPERTIES:
-		var value: Variant = record.get(prop)
-		if (value is String or value is StringName) and String(value) != "":
-			return String(value)
-
+	if GameDB.has_fish(fish_id):
+		var record: FishData = GameDB.get_fish(fish_id)
+		if record != null and record.display_name != "":
+			return record.display_name
 	return fish_id
 
 
-# Looks up the fish's record in GameDB and returns its Texture2D
 func _get_fish_texture(fish_id: String) -> Texture2D:
-	var db := get_node_or_null("/root/GameDB")
-	if db == null or not db.has_fish(fish_id):
-		return null
-
-	var record: Object = db.get_fish(fish_id)
-	if record == null:
-		return null
-
-	for prop in FISH_IMAGE_PROPERTIES:
-		var value: Variant = record.get(prop)
-		if value is Texture2D:
-			return value
-		if (value is String or value is StringName) and String(value) != "":
-			return load(String(value)) as Texture2D
-
+	if GameDB.has_fish(fish_id):
+		var record: FishData = GameDB.get_fish(fish_id)
+		if record != null:
+			return record.icon_3d if record.icon_3d != null else record.icon
 	return null
 
 
-# Runs when the player clicks one of the fish buttons
-func _on_fish_button_pressed(slot_index: int) -> void:
-	var uid: int = _button_uids[slot_index]
+func _on_fish_slot_pressed(slot_index: int) -> void:
+	var uid: int = _slot_uids[slot_index]
 	if uid == 0:
 		return
 
 	var fish: Dictionary = InventoryManager.get_item(uid)
 	if fish.is_empty():
 		return
+
 	var fish_id: String = fish["item_id"]
-	var display_name: String = _get_fish_display_name(fish_id)
+	var display_name := _get_fish_display_name(fish_id)
 	var size_cm := float(fish["meta"].get("size_cm", 0.0))
-	var weight: float = InventoryManager.get_fish_weight_kg(uid)
-	var price: int = InventoryManager.get_fish_sell_price(uid)
+	var weight := InventoryManager.get_fish_weight_kg(uid)
+	var price := InventoryManager.get_fish_sell_price(uid)
 
 	if sell_mode:
 		InventoryManager.remove_item(uid)
@@ -267,12 +211,6 @@ func _on_fish_button_pressed(slot_index: int) -> void:
 		_update_mode_ui("Sold %s (%.1f cm) for +%d G!" % [display_name, size_cm, price])
 	else:
 		_update_mode_ui("%s — %.1f cm | %.2f kg | Value: %d G" % [display_name, size_cm, weight, price])
-		print("Clicked fish in slot %d -> id: %s, uid: %d, size: %.1f cm" % [
-			slot_index,
-			fish_id,
-			uid,
-			size_cm
-		])
 
 
 func _on_sell_all_pressed() -> void:
@@ -281,22 +219,17 @@ func _on_sell_all_pressed() -> void:
 	var fish_list: Array = InventoryManager.get_items(InventoryManager.FISH_BOX)
 	if fish_list.is_empty():
 		return
+
 	var total_earned := 0
 	var count_sold := 0
 	for fish: Dictionary in fish_list:
 		var uid: int = fish["uid"]
-		var price: int = InventoryManager.get_fish_sell_price(uid)
+		var price := InventoryManager.get_fish_sell_price(uid)
 		if InventoryManager.remove_item(uid) > 0:
 			total_earned += price
 			count_sold += 1
+
 	if total_earned > 0:
 		SaveManager.add_money(total_earned)
 	fish_sold.emit("%d fish" % count_sold, total_earned)
 	_update_mode_ui("Sold %d fish for +%d G!" % [count_sold, total_earned])
-
-
-func _on_back_button_pressed() -> void:
-	if get_signal_connection_list("back_requested").is_empty():
-		visible = false
-	else:
-		back_requested.emit()

@@ -1,9 +1,15 @@
 [gd_scene format=3 uid="uid://c0u77axaegcsm"]
 
-[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="1_0omtf"]
 [ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/Options/UI_scene_script_options.gd" id="1_cs2hp"]
-[ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="2_cs2hp"]
-[ext_resource type="PackedScene" uid="uid://pybkck3eooas" path="res://UIScenesAndScript/SaveSlots/SaveSlots.tscn" id="4_x1gqh"]
+[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_0omtf"]
+[ext_resource type="PackedScene" uid="uid://pybkck3eooas" path="res://UIScenesAndScript/SaveSlots/SaveSlots.tscn" id="3_x1gqh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.42352942, 0.2784314, 0.13725491, 0.8745098)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="Options" type="Control" unique_id=100843613]
 layout_mode = 3
@@ -14,168 +20,135 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_cs2hp")
 
-[node name="Options" type="Panel" parent="." unique_id=48226238]
+[node name="DimOverlay" type="ColorRect" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -290.0
-offset_top = -179.5
-offset_right = 290.0
-offset_bottom = 269.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.45)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="OptionsLabel" type="Label" parent="Options" unique_id=796201848]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 23.0
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("1_0omtf")
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer" unique_id=48226238]
+custom_minimum_size = Vector2(580, 440)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 28
+
+[node name="ContentVBox" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox" unique_id=796201848]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_0omtf")
 theme_override_font_sizes/font_size = 50
 text = "Options"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="BackButton" type="Button" parent="Options" unique_id=1410271780]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -55.0
-offset_top = -52.0
-offset_right = 50.0
-offset_bottom = -13.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_fonts/font = ExtResource("1_0omtf")
-theme_override_font_sizes/font_size = 30
-text = "Back"
+[node name="SensitivitySection" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
 
-[node name="SensitivityLabel" type="Label" parent="Options" unique_id=1816271119]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 55.5
-offset_bottom = 106.5
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("1_0omtf")
-theme_override_font_sizes/font_size = 40
+[node name="SensitivityLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox/SensitivitySection" unique_id=1816271119]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_0omtf")
+theme_override_font_sizes/font_size = 36
 text = "Sensitivity"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SensitivitySlider" type="HSlider" parent="Options" unique_id=2070049158]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -268.0
-offset_top = -127.75
-offset_right = 160.0
-offset_bottom = -69.25
-grow_horizontal = 2
-grow_vertical = 2
-min_value = 0.0
+[node name="SensitivityRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox/SensitivitySection"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SensitivitySlider" type="HSlider" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox/SensitivitySection/SensitivityRow" unique_id=2070049158]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
 max_value = 1.0
 step = 0.01
 value = 0.5
 
-[node name="SensitivityInput" type="LineEdit" parent="Options" unique_id=987654321]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 175.0
-offset_top = -120.0
-offset_right = 273.0
-offset_bottom = -75.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_fonts/font = ExtResource("1_0omtf")
+[node name="SensitivityInput" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox/SensitivitySection/SensitivityRow" unique_id=987654321]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 44)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_0omtf")
 theme_override_font_sizes/font_size = 28
-text = "1.00"
+text = "0.50"
 alignment = 1
 
-[node name="Music" type="Label" parent="Options" unique_id=1323081348]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 1.0
-offset_top = 150.5
-offset_right = 1.0
-offset_bottom = 201.5
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("1_0omtf")
-theme_override_font_sizes/font_size = 40
+[node name="MusicSection" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MusicLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox/MusicSection" unique_id=1323081348]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_0omtf")
+theme_override_font_sizes/font_size = 36
 text = "Music"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MusicSlider" type="HSlider" parent="Options" unique_id=473635232]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -265.0
-offset_top = -35.75
-offset_right = 276.0
-offset_bottom = 22.75
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MusicSlider" type="HSlider" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox/MusicSection" unique_id=473635232]
+unique_name_in_owner = true
+layout_mode = 2
 max_value = 1.0
-step = 0.001
-script = ExtResource("2_cs2hp")
+step = 0.01
+value = 1.0
 
-[node name="SaveButton" type="Button" parent="Options" unique_id=1339816481]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -206.0
-offset_top = -52.0
-offset_right = -101.0
-offset_bottom = -13.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_fonts/font = ExtResource("1_0omtf")
+[node name="Spacer" type="Control" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ButtonRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="SaveButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox/ButtonRow" unique_id=1339816481]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_0omtf")
 theme_override_font_sizes/font_size = 30
 text = "Save"
 
-[node name="MenuButton" type="Button" parent="Options" unique_id=1533192303]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = 97.0
-offset_top = -52.0
-offset_right = 202.0
-offset_bottom = -13.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_fonts/font = ExtResource("1_0omtf")
+[node name="BackButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox/ButtonRow" unique_id=1410271780]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_0omtf")
+theme_override_font_sizes/font_size = 30
+text = "Back"
+
+[node name="MenuButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/ContentVBox/ButtonRow" unique_id=1533192303]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_0omtf")
 theme_override_font_sizes/font_size = 30
 text = "Menu"
 
-[node name="SaveSlotMenu" parent="." unique_id=1702898332 instance=ExtResource("4_x1gqh")]
+[node name="SaveSlotMenu" parent="." unique_id=1702898332 instance=ExtResource("3_x1gqh")]
+unique_name_in_owner = true
 visible = false
 layout_mode = 1
-
-[connection signal="pressed" from="Options/BackButton" to="." method="_on_back_button_pressed"]
-[connection signal="pressed" from="Options/SaveButton" to="." method="_on_save_button_pressed"]
-[connection signal="pressed" from="Options/MenuButton" to="." method="_on_menu_button_pressed"]
+allow_saving = true

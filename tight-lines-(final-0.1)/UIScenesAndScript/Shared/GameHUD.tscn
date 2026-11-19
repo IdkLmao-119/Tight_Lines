@@ -1,0 +1,190 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://UIScenesAndScript/Shared/game_hud.gd" id="1_hud"]
+[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_font"]
+[ext_resource type="Texture2D" uid="uid://cry2te8geq2pe" path="res://Assets/Fish Box.png" id="3_fishbox_tex"]
+[ext_resource type="Texture2D" uid="uid://b2cdd1hh8eh8t" path="res://Assets/2D/Almanac_icon.png" id="4_almanac_tex"]
+[ext_resource type="Texture2D" uid="uid://bgch78mw1pv2s" path="res://Assets/2D/rod_sprites/Ultralight Rod.png" id="5_rod_tex"]
+[ext_resource type="PackedScene" uid="uid://c67j2bnervxgj" path="res://UIScenesAndScript/FishBox/inventory_ui.tscn" id="6_fishbox"]
+[ext_resource type="PackedScene" uid="uid://b3mamplrn4kpe" path="res://UIScenesAndScript/EquipmentInventory/rod_inventory.tscn" id="7_equipment"]
+[ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="8_almanac"]
+[ext_resource type="PackedScene" uid="uid://c8tqiturk1ud6" path="res://UIScenesAndScript/QuestLog/QuestLog.tscn" id="9_questlog"]
+[ext_resource type="PackedScene" uid="uid://c0u77axaegcsm" path="res://UIScenesAndScript/Options/Options.tscn" id="10_options"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_almanac"]
+texture = ExtResource("4_almanac_tex")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rod"]
+texture = ExtResource("5_rod_tex")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fishbox"]
+texture = ExtResource("3_fishbox_tex")
+
+[node name="GameHUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="HUDButtons" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PauseButton" type="Button" parent="HUDButtons"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 18.0
+offset_top = 17.0
+offset_right = 127.0
+offset_bottom = 109.0
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+text = "II"
+
+[node name="ReturnButton" type="Button" parent="HUDButtons"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -215.0
+offset_top = 17.0
+offset_right = -16.0
+offset_bottom = 80.0
+grow_horizontal = 0
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+text = "Overworld"
+
+[node name="LeftMenuColumn" type="VBoxContainer" parent="HUDButtons"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -420.0
+offset_right = 224.0
+offset_bottom = -20.0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 24
+alignment = 2
+
+[node name="QuestButton" type="Button" parent="HUDButtons/LeftMenuColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 175)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxTexture_almanac")
+text = "  Quests"
+alignment = 0
+
+[node name="EquipmentButton" type="Button" parent="HUDButtons/LeftMenuColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxTexture_rod")
+text = "Equipment"
+
+[node name="RightMenuColumn" type="VBoxContainer" parent="HUDButtons"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -244.0
+offset_top = -430.0
+offset_right = -16.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 16
+alignment = 2
+
+[node name="AlmanacButton" type="Button" parent="HUDButtons/RightMenuColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 175)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxTexture_almanac")
+text = " Almanac"
+alignment = 0
+
+[node name="FishBoxButton" type="Button" parent="HUDButtons/RightMenuColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 200)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxTexture_fishbox")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_fishbox")
+theme_override_styles/hover = SubResource("StyleBoxTexture_fishbox")
+text = "Fish Box"
+
+[node name="Overlays" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="FishBoxUI" parent="Overlays" instance=ExtResource("6_fishbox")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="EquipmentUI" parent="Overlays" instance=ExtResource("7_equipment")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="AlmanacUI" parent="Overlays" instance=ExtResource("8_almanac")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="QuestLog" parent="Overlays" instance=ExtResource("9_questlog")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+close_on_cancel = false
+
+[node name="OptionsMenu" parent="Overlays" instance=ExtResource("10_options")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1

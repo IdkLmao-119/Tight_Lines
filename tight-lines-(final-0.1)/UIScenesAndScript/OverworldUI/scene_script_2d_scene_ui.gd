@@ -1,17 +1,11 @@
-extends Node
+extends Control
 
-@export var fishing_manager: Node
-@onready var Options: Control = $Options
-# Called when the node enters the sne tree for the first time.
+@onready var hud: GameHUD = %GameHUD
 
-func _ready() -> void:
-	pass
-	
-func _process(delta: float) -> void:
-	pass
 
-func _on_Pause_button_pressed() -> void:
-	Options.visible = true
+func open_menu(menu_id: String) -> void:
+	hud.open_menu(menu_id)
 
-func _on_almanac_button_pressed() -> void:
-	pass
+
+func close_all_menus() -> void:
+	hud.close_all_menus()

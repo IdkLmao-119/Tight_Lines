@@ -1,64 +1,129 @@
 extends Control
 
-@onready var main_menu: Panel = get_node_or_null("../MainMenu")
-@onready var options: Panel = get_node_or_null("Options")
-@onready var music_slider: HSlider = get_node_or_null("Options/MusicSlider")
-@onready var sensitivity_slider: HSlider = get_node_or_null("Options/SensitivitySlider")
-@onready var sensitivity_input: LineEdit = get_node_or_null("Options/SensitivityInput")
+signal close_requested
+
+@export var show_save_button: bool = true:
+	set(value):
+		show_save_button = value
+		if is_node_ready():
+			_apply_button_visibility()
+
+@export var show_main_menu_button: bool = true:
+	set(value):
+		show_main_menu_button = value
+		if is_node_ready():
+			_apply_button_visibility()
+
+@onready var _music_slider: HSlider = %MusicSlider
+@onready var _sensitivity_slider: HSlider = %SensitivitySlider
+@onready var _sensitivity_input: LineEdit = %SensitivityInput
+@onready var _save_button: Button = %SaveButton
+@onready var _back_button: Button = %BackButton
+@onready var _menu_button: Button = %MenuButton
+@onready var _save_slot_menu: Control = %SaveSlotMenu
+
 
 func _ready() -> void:
-	if music_slider != null:
-		music_slider.value = GameManager.get_bus_volume(GameManager.BUS_MUSIC)
-		if not music_slider.value_changed.is_connected(_on_music_slider_changed):
-			music_slider.value_changed.connect(_on_music_slider_changed)
+	process_mode = Node.PROCESS_MODE_ALWAYS
 
-	_setup_sensitivity_controls()
+	_music_slider.value_changed.connect(_on_music_slider_changed)
+	_music_slider.drag_ended.connect(_on_slider_drag_ended)
 
-func _setup_sensitivity_controls() -> void:
-	var im = get_node_or_null("/root/InputManager")
-	var initial_sens: float = im.cast_sensitivity if im != null else 0.5
+	_sensitivity_slider.value_changed.connect(_on_sensitivity_slider_changed)
+	_sensitivity_slider.drag_ended.connect(_on_slider_drag_ended)
+	_sensitivity_input.text_submitted.connect(_on_sensitivity_input_submitted)
 
-	if sensitivity_slider != null:
-		sensitivity_slider.min_value = 0.0
-		sensitivity_slider.max_value = 1.0
-		sensitivity_slider.step = 0.01
-		sensitivity_slider.value = initial_sens
-		if not sensitivity_slider.value_changed.is_connected(_on_sensitivity_slider_changed):
-			sensitivity_slider.value_changed.connect(_on_sensitivity_slider_changed)
+	_save_button.pressed.connect(_on_save_button_pressed)
+	_back_button.pressed.connect(close)
+	_menu_button.pressed.connect(_on_menu_button_pressed)
+	_save_slot_menu.close_requested.connect(_on_save_slot_menu_closed)
+	visibility_changed.connect(_on_visibility_changed)
 
-	if sensitivity_input != null:
-		sensitivity_input.text = "%.2f" % initial_sens
-		if not sensitivity_input.text_submitted.is_connected(_on_sensitivity_input_submitted):
-			sensitivity_input.text_submitted.connect(_on_sensitivity_input_submitted)
+	_apply_button_visibility()
+	_sync_values()
+
+
+func open() -> void:
+	_save_slot_menu.visible = false
+	visible = true
+	_apply_button_visibility()
+	_sync_values()
+	_back_button.grab_focus()
+
+
+func close() -> void:
+	_save_slot_menu.visible = false
+	_save_settings()
+	visible = false
+	close_requested.emit()
+
+
+func _on_visibility_changed() -> void:
+	if visible:
+		_save_slot_menu.visible = false
+		_apply_button_visibility()
+		_sync_values()
+
+
+func _apply_button_visibility() -> void:
+	_save_button.visible = show_save_button
+	_menu_button.visible = show_main_menu_button
+
+
+func _sync_values() -> void:
+	_music_slider.set_value_no_signal(GameManager.get_bus_volume(GameManager.BUS_MUSIC))
+
+	var im := get_node_or_null("/root/InputManager")
+	var sens: float = float(im.get("cast_sensitivity")) if im != null else 0.5
+	_sensitivity_slider.set_value_no_signal(sens)
+	if not _sensitivity_input.has_focus():
+		_sensitivity_input.text = "%.2f" % sens
+
 
 func _on_music_slider_changed(value: float) -> void:
 	GameManager.set_bus_volume(GameManager.BUS_MUSIC, value)
 
+
 func _on_sensitivity_slider_changed(value: float) -> void:
-	var im = get_node_or_null("/root/InputManager")
+	var im := get_node_or_null("/root/InputManager")
 	if im != null:
-		im.cast_sensitivity = value
-	if sensitivity_input != null and not sensitivity_input.has_focus():
-		sensitivity_input.text = "%.2f" % value
-	var sm = get_node_or_null("/root/SaveManager")
-	if sm != null and sm.has_method("save_settings"):
-		sm.save_settings()
+		im.set("cast_sensitivity", value)
+	if not _sensitivity_input.has_focus():
+		_sensitivity_input.text = "%.2f" % value
+
+
+func _on_slider_drag_ended(_changed: bool) -> void:
+	_save_settings()
+
 
 func _on_sensitivity_input_submitted(new_text: String) -> void:
-	var val := new_text.to_float()
-	val = clampf(val, 0.0, 1.0)
-	if sensitivity_slider != null:
-		sensitivity_slider.value = val
+	var val := clampf(new_text.to_float(), 0.0, 1.0)
+	_sensitivity_slider.set_value_no_signal(val)
 	_on_sensitivity_slider_changed(val)
+	_sensitivity_input.text = "%.2f" % val
+	_save_settings()
 
-func _on_back_button_pressed() -> void:
-	if main_menu != null and GameManager.current_scene_id == "main_menu":
-		main_menu.visible = true
-	visible = false
-	
+
 func _on_save_button_pressed() -> void:
-	if has_node("SaveSlotMenu"):
-		$SaveSlotMenu.visible = true
-	
+	if _save_slot_menu.has_method(&"open"):
+		_save_slot_menu.call(&"open")
+	else:
+		_save_slot_menu.visible = true
+
+
+func _on_save_slot_menu_closed() -> void:
+	_save_slot_menu.visible = false
+	_back_button.grab_focus()
+
+
 func _on_menu_button_pressed() -> void:
+	_save_slot_menu.visible = false
+	_save_settings()
+	visible = false
 	GameManager.change_scene("main_menu")
+
+
+func _save_settings() -> void:
+	var sm := get_node_or_null("/root/SaveManager")
+	if sm != null and sm.has_method(&"save_settings"):
+		sm.call(&"save_settings")

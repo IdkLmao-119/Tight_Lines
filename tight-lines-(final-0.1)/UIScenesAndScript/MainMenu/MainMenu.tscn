@@ -2,36 +2,17 @@
 
 [ext_resource type="Script" uid="uid://dlmcx3h4vh8ol" path="res://UIScenesAndScript/MainMenu/scene_script_main_menu.gd" id="1_w82c0"]
 [ext_resource type="Script" uid="uid://db1up6ssl3kie" path="res://UIScenesAndScript/MainMenu/background_layer.gd" id="2_0pent"]
-[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="3_0pent"]
-[ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="4_16aw6"]
+[ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="3_16aw6"]
 [ext_resource type="Texture2D" uid="uid://btduj7rj47w40" path="res://Assets/2D/Bubble.png" id="4_doce8"]
 [ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="5_16aw6"]
-[ext_resource type="Script" uid="uid://biqw6afonu1td" path="res://UIScenesAndScript/Options/UI_scene_script_options.gd" id="5_lgxut"]
 [ext_resource type="Texture2D" uid="uid://5b3gsqgca5tc" path="res://Assets/2D/SignBoard.png" id="6_16aw6"]
-[ext_resource type="Script" uid="uid://bn2wyu8xb1iqn" path="res://UIScenesAndScript/MainMenu/music_slider.gd" id="6_doce8"]
+[ext_resource type="PackedScene" uid="uid://c0u77axaegcsm" path="res://UIScenesAndScript/Options/Options.tscn" id="7_opts"]
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vps3o"]
-texture = ExtResource("4_16aw6")
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bg"]
+texture = ExtResource("3_16aw6")
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lskcr"]
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lgxut"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_signboard"]
 texture = ExtResource("6_16aw6")
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_doce8"]
-texture = ExtResource("6_16aw6")
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_16aw6"]
-texture = ExtResource("6_16aw6")
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qc8aa"]
-texture = ExtResource("6_16aw6")
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dng2c"]
-texture = ExtResource("6_16aw6")
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_doce8"]
-bg_color = Color(0.42352942, 0.2784314, 0.13725491, 0.8745098)
 
 [node name="MainMenu" type="Control" unique_id=1662043218]
 layout_mode = 3
@@ -42,14 +23,14 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_w82c0")
 
-[node name="Panel" type="Panel" parent="." unique_id=957359471]
+[node name="BackgroundPanel" type="Panel" parent="." unique_id=957359471]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxTexture_vps3o")
+theme_override_styles/panel = SubResource("StyleBoxTexture_bg")
 
 [node name="BackgroundLayer" type="Control" parent="." unique_id=1016745381]
 layout_mode = 1
@@ -69,216 +50,76 @@ horizontal_max_speed = 80.0
 vertical_min_speed = 150.0
 vertical_max_speed = 250.0
 
-[node name="MainMenu" type="Panel" parent="." unique_id=2050093436]
+[node name="MenuContent" type="CenterContainer" parent="." unique_id=2050093436]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxTexture_lskcr")
 
-[node name="MainMenuButtons" type="VBoxContainer" parent="MainMenu" unique_id=1070791132]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -146.40985
-offset_top = 324.0
-offset_right = 150.40985
-offset_bottom = 527.0
-grow_horizontal = 2
-
-[node name="StartButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=2029253338]
+[node name="VBoxContainer" type="VBoxContainer" parent="MenuContent"]
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("5_16aw6")
-theme_override_font_sizes/font_size = 31
-theme_override_styles/normal = SubResource("StyleBoxTexture_lgxut")
-text = "Start"
+theme_override_constants/separation = 36
+alignment = 1
 
-[node name="OptionsButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=1605044471]
+[node name="TitleLabel" type="Label" parent="MenuContent/VBoxContainer" unique_id=494958756]
+custom_minimum_size = Vector2(530, 112)
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("5_16aw6")
-theme_override_font_sizes/font_size = 31
-theme_override_styles/normal = SubResource("StyleBoxTexture_doce8")
-text = "Options"
-
-[node name="MultiButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=218283224]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("5_16aw6")
-theme_override_font_sizes/font_size = 31
-theme_override_styles/normal = SubResource("StyleBoxTexture_16aw6")
-text = "Multiplayer"
-
-[node name="ExitButton" type="Button" parent="MainMenu/MainMenuButtons" unique_id=775846875]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("5_16aw6")
-theme_override_font_sizes/font_size = 31
-theme_override_styles/normal = SubResource("StyleBoxTexture_qc8aa")
-text = "Exit"
-
-[node name="Label" type="Label" parent="." unique_id=494958756]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -265.0
-offset_top = -174.0
-offset_right = 262.0
-offset_bottom = -63.0
-grow_horizontal = 2
-grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("5_16aw6")
 theme_override_font_sizes/font_size = 70
-theme_override_styles/normal = SubResource("StyleBoxTexture_dng2c")
+theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
 text = "Tight Lines"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Options" type="Control" parent="." unique_id=100843613]
+[node name="MainMenuButtons" type="VBoxContainer" parent="MenuContent/VBoxContainer" unique_id=1070791132]
+custom_minimum_size = Vector2(300, 224)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 8
+
+[node name="StartButton" type="Button" parent="MenuContent/VBoxContainer/MainMenuButtons" unique_id=2029253338]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_font_sizes/font_size = 31
+theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
+text = "Start"
+
+[node name="OptionsButton" type="Button" parent="MenuContent/VBoxContainer/MainMenuButtons" unique_id=1605044471]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_font_sizes/font_size = 31
+theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
+text = "Options"
+
+[node name="MultiButton" type="Button" parent="MenuContent/VBoxContainer/MainMenuButtons" unique_id=218283224]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_font_sizes/font_size = 31
+theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
+text = "Multiplayer"
+
+[node name="ExitButton" type="Button" parent="MenuContent/VBoxContainer/MainMenuButtons" unique_id=775846875]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_font_sizes/font_size = 31
+theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
+text = "Exit"
+
+[node name="OptionsMenu" parent="." unique_id=100843613 instance=ExtResource("7_opts")]
+unique_name_in_owner = true
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("5_lgxut")
-
-[node name="Options" type="Panel" parent="Options" unique_id=48226238]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -290.0
-offset_top = -179.5
-offset_right = 290.0
-offset_bottom = 269.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_doce8")
-
-[node name="OptionsLabel" type="Label" parent="Options/Options" unique_id=796201848]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 23.0
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("3_0pent")
-theme_override_font_sizes/font_size = 50
-text = "Options"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="BackButton" type="Button" parent="Options/Options" unique_id=1410271780]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -53.0
-offset_top = -55.0
-offset_right = 52.0
-offset_bottom = -16.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_fonts/font = ExtResource("3_0pent")
-theme_override_font_sizes/font_size = 30
-text = "Back"
-
-[node name="SensitivityLabel" type="Label" parent="Options/Options" unique_id=1816271119]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 55.5
-offset_bottom = 106.5
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("3_0pent")
-theme_override_font_sizes/font_size = 40
-text = "Sensitivity"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="SensitivitySlider" type="HSlider" parent="Options/Options" unique_id=2070049158]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -268.0
-offset_top = -127.75
-offset_right = 160.0
-offset_bottom = -69.25
-grow_horizontal = 2
-grow_vertical = 2
-min_value = 0.2
-max_value = 2.0
-step = 0.05
-value = 1.0
-
-[node name="SensitivityInput" type="LineEdit" parent="Options/Options" unique_id=987654321]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 175.0
-offset_top = -120.0
-offset_right = 273.0
-offset_bottom = -75.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_fonts/font = ExtResource("3_0pent")
-theme_override_font_sizes/font_size = 28
-text = "1.00"
-alignment = 1
-
-[node name="Music" type="Label" parent="Options/Options" unique_id=1323081348]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 1.0
-offset_top = 150.5
-offset_right = 1.0
-offset_bottom = 201.5
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("3_0pent")
-theme_override_font_sizes/font_size = 40
-text = "Music"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="MusicSlider" type="HSlider" parent="Options/Options" unique_id=473635232]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -265.0
-offset_top = -35.75
-offset_right = 276.0
-offset_bottom = 22.75
-grow_horizontal = 2
-grow_vertical = 2
-max_value = 1.0
-step = 0.001
-script = ExtResource("6_doce8")
-
-[connection signal="pressed" from="MainMenu/MainMenuButtons/StartButton" to="." method="_on_start_button_pressed"]
-[connection signal="pressed" from="MainMenu/MainMenuButtons/OptionsButton" to="." method="_on_options_button_pressed"]
-[connection signal="pressed" from="MainMenu/MainMenuButtons/MultiButton" to="." method="_on_multi_button_pressed"]
-[connection signal="pressed" from="MainMenu/MainMenuButtons/ExitButton" to="." method="_on_exit_button_pressed"]
-[connection signal="pressed" from="Options/Options/BackButton" to="Options" method="_on_back_button_pressed"]
+show_save_button = false
+show_main_menu_button = false

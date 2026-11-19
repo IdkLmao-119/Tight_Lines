@@ -1,18 +1,29 @@
 extends Control
 
-@onready var main_menu: Panel = $MainMenu
-@onready var main_menu_buttons: VBoxContainer = $MainMenu/MainMenuButtons
-@onready var options: Control = $Options
-@onready var start_button: Button = $MainMenu/MainMenuButtons/StartButton # Adjust path if needed
+@onready var _menu_content: Control = %MenuContent
+@onready var _start_button: Button = %StartButton
+@onready var _options_button: Button = %OptionsButton
+@onready var _multi_button: Button = %MultiButton
+@onready var _exit_button: Button = %ExitButton
+@onready var _options_menu: Control = %OptionsMenu
 
 
 func _ready() -> void:
-	main_menu.visible = true
-	options.visible = false
-	
-	# Ensures keyboard/controller navigation works right away
-	if start_button:
-		start_button.grab_focus()
+	_start_button.pressed.connect(_on_start_button_pressed)
+	_options_button.pressed.connect(_on_options_button_pressed)
+	_multi_button.pressed.connect(_on_multi_button_pressed)
+	_exit_button.pressed.connect(_on_exit_button_pressed)
+	_options_menu.close_requested.connect(_on_options_closed)
+
+	_menu_content.visible = true
+	_options_menu.visible = false
+	_start_button.grab_focus()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if _options_menu.visible and event.is_action_pressed(&"ui_cancel") and not event.is_echo():
+		get_viewport().set_input_as_handled()
+		_options_menu.call(&"close")
 
 
 func _on_start_button_pressed() -> void:
@@ -24,16 +35,14 @@ func _on_multi_button_pressed() -> void:
 
 
 func _on_options_button_pressed() -> void:
-	main_menu.visible = false
-	options.visible = true
+	_menu_content.visible = false
+	_options_menu.call(&"open")
 
 
-# Connect a signal from your Options menu to this function when closing it
 func _on_options_closed() -> void:
-	options.visible = false
-	main_menu.visible = true
-	if start_button:
-		start_button.grab_focus()
+	_options_menu.visible = false
+	_menu_content.visible = true
+	_start_button.grab_focus()
 
 
 func _on_exit_button_pressed() -> void:

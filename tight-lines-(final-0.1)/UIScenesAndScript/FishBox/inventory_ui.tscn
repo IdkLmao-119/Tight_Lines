@@ -3,11 +3,9 @@
 [ext_resource type="Script" uid="uid://ddb7po8ibpai0" path="res://UIScenesAndScript/FishBox/UI_scene_script_inventory_ui.gd" id="1_gf3dx"]
 [ext_resource type="Texture2D" uid="uid://d232l72u3sb3b" path="res://Assets/2D/Inside Cooler.png" id="2_dsksw"]
 [ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="3_cwpgd"]
+[ext_resource type="Script" path="res://UIScenesAndScript/Shared/mobile_cursor_highlight.gd" id="4_cursor"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dsksw"]
-bg_color = Color(0, 0, 0, 0.58431375)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iclar"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back"]
 bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
@@ -26,243 +24,89 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_gf3dx")
 
-[node name="Panel" type="Panel" parent="." unique_id=1099088060]
+[node name="DimOverlay" type="ColorRect" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -572.0
-offset_top = -325.0
-offset_right = 574.0
-offset_bottom = 318.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_dsksw")
+color = Color(0, 0, 0, 0.58431375)
 
-[node name="TextureRect" type="TextureRect" parent="." unique_id=428384805]
-layout_mode = 0
-offset_left = -10.0
-offset_top = -159.0
-offset_right = 1150.0
-offset_bottom = 781.0
+[node name="CoolerBackground" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("2_dsksw")
-expand_mode = 3
+expand_mode = 1
+stretch_mode = 5
 
-[node name="TextureButtonGroup" type="Control" parent="." unique_id=1590785454]
-anchors_preset = 0
-offset_left = 126.0
-offset_top = 74.0
-offset_right = 166.0
-offset_bottom = 114.0
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 32
 
-[node name="TextureButton" type="TextureButton" parent="TextureButtonGroup" unique_id=1806602573]
-layout_mode = 0
-offset_left = 64.0
-offset_top = 32.0
-offset_right = 160.0
-offset_bottom = 128.0
+[node name="RootVBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
 
-[node name="TextureButton2" type="TextureButton" parent="TextureButtonGroup" unique_id=2000185117]
-layout_mode = 0
-offset_left = 64.0
-offset_top = 144.0
-offset_right = 160.0
-offset_bottom = 240.0
+[node name="HeaderBar" type="HBoxContainer" parent="MarginContainer/RootVBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
 
-[node name="TextureButton3" type="TextureButton" parent="TextureButtonGroup" unique_id=16389714]
-layout_mode = 0
-offset_left = 64.0
-offset_top = 256.0
-offset_right = 160.0
-offset_bottom = 352.0
+[node name="InfoLabel" type="Label" parent="MarginContainer/RootVBox/HeaderBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 28
 
-[node name="TextureButton4" type="TextureButton" parent="TextureButtonGroup" unique_id=1298625287]
-layout_mode = 0
-offset_left = 64.0
-offset_top = 368.0
-offset_right = 160.0
-offset_bottom = 464.0
+[node name="SellAllButton" type="Button" parent="MarginContainer/RootVBox/HeaderBar"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(185, 56)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Sell All"
 
-[node name="TextureButton5" type="TextureButton" parent="TextureButtonGroup" unique_id=835344906]
-layout_mode = 0
-offset_left = 176.0
-offset_top = 32.0
-offset_right = 272.0
-offset_bottom = 128.0
-
-[node name="TextureButton6" type="TextureButton" parent="TextureButtonGroup" unique_id=473288934]
-layout_mode = 0
-offset_left = 176.0
-offset_top = 144.0
-offset_right = 272.0
-offset_bottom = 240.0
-
-[node name="TextureButton7" type="TextureButton" parent="TextureButtonGroup" unique_id=1580843811]
-layout_mode = 0
-offset_left = 176.0
-offset_top = 256.0
-offset_right = 272.0
-offset_bottom = 352.0
-
-[node name="TextureButton8" type="TextureButton" parent="TextureButtonGroup" unique_id=2063228551]
-layout_mode = 0
-offset_left = 176.0
-offset_top = 368.0
-offset_right = 272.0
-offset_bottom = 464.0
-
-[node name="TextureButton9" type="TextureButton" parent="TextureButtonGroup" unique_id=278849473]
-layout_mode = 0
-offset_left = 288.0
-offset_top = 32.0
-offset_right = 384.0
-offset_bottom = 128.0
-
-[node name="TextureButton10" type="TextureButton" parent="TextureButtonGroup" unique_id=1405380565]
-layout_mode = 0
-offset_left = 288.0
-offset_top = 144.0
-offset_right = 384.0
-offset_bottom = 240.0
-
-[node name="TextureButton11" type="TextureButton" parent="TextureButtonGroup" unique_id=842957505]
-layout_mode = 0
-offset_left = 288.0
-offset_top = 256.0
-offset_right = 384.0
-offset_bottom = 352.0
-
-[node name="TextureButton12" type="TextureButton" parent="TextureButtonGroup" unique_id=1098791843]
-layout_mode = 0
-offset_left = 288.0
-offset_top = 368.0
-offset_right = 384.0
-offset_bottom = 464.0
-
-[node name="TextureButton13" type="TextureButton" parent="TextureButtonGroup" unique_id=1034234007]
-layout_mode = 0
-offset_left = 400.0
-offset_top = 32.0
-offset_right = 496.0
-offset_bottom = 128.0
-
-[node name="TextureButton14" type="TextureButton" parent="TextureButtonGroup" unique_id=1909441611]
-layout_mode = 0
-offset_left = 400.0
-offset_top = 144.0
-offset_right = 496.0
-offset_bottom = 240.0
-
-[node name="TextureButton15" type="TextureButton" parent="TextureButtonGroup" unique_id=483642231]
-layout_mode = 0
-offset_left = 400.0
-offset_top = 256.0
-offset_right = 496.0
-offset_bottom = 352.0
-
-[node name="TextureButton16" type="TextureButton" parent="TextureButtonGroup" unique_id=742392477]
-layout_mode = 0
-offset_left = 400.0
-offset_top = 368.0
-offset_right = 496.0
-offset_bottom = 464.0
-
-[node name="TextureButton17" type="TextureButton" parent="TextureButtonGroup" unique_id=634802144]
-layout_mode = 0
-offset_left = 512.0
-offset_top = 32.0
-offset_right = 608.0
-offset_bottom = 128.0
-
-[node name="TextureButton18" type="TextureButton" parent="TextureButtonGroup" unique_id=523053966]
-layout_mode = 0
-offset_left = 512.0
-offset_top = 144.0
-offset_right = 608.0
-offset_bottom = 240.0
-
-[node name="TextureButton19" type="TextureButton" parent="TextureButtonGroup" unique_id=2129422236]
-layout_mode = 0
-offset_left = 512.0
-offset_top = 256.0
-offset_right = 608.0
-offset_bottom = 352.0
-
-[node name="TextureButton20" type="TextureButton" parent="TextureButtonGroup" unique_id=1984493940]
-layout_mode = 0
-offset_left = 512.0
-offset_top = 368.0
-offset_right = 608.0
-offset_bottom = 464.0
-
-[node name="TextureButton21" type="TextureButton" parent="TextureButtonGroup" unique_id=1393338243]
-layout_mode = 0
-offset_left = 624.0
-offset_top = 32.0
-offset_right = 720.0
-offset_bottom = 128.0
-
-[node name="TextureButton22" type="TextureButton" parent="TextureButtonGroup" unique_id=1426471798]
-layout_mode = 0
-offset_left = 624.0
-offset_top = 144.0
-offset_right = 720.0
-offset_bottom = 240.0
-
-[node name="TextureButton23" type="TextureButton" parent="TextureButtonGroup" unique_id=1511446641]
-layout_mode = 0
-offset_left = 624.0
-offset_top = 256.0
-offset_right = 720.0
-offset_bottom = 352.0
-
-[node name="TextureButton24" type="TextureButton" parent="TextureButtonGroup" unique_id=1852217301]
-layout_mode = 0
-offset_left = 624.0
-offset_top = 368.0
-offset_right = 720.0
-offset_bottom = 464.0
-
-[node name="TextureButton25" type="TextureButton" parent="TextureButtonGroup" unique_id=409728212]
-layout_mode = 0
-offset_left = 736.0
-offset_top = 32.0
-offset_right = 832.0
-offset_bottom = 128.0
-
-[node name="TextureButton26" type="TextureButton" parent="TextureButtonGroup" unique_id=1265325239]
-layout_mode = 0
-offset_left = 736.0
-offset_top = 144.0
-offset_right = 832.0
-offset_bottom = 240.0
-
-[node name="TextureButton27" type="TextureButton" parent="TextureButtonGroup" unique_id=441523791]
-layout_mode = 0
-offset_left = 736.0
-offset_top = 256.0
-offset_right = 832.0
-offset_bottom = 352.0
-
-[node name="TextureButton28" type="TextureButton" parent="TextureButtonGroup" unique_id=2057818401]
-layout_mode = 0
-offset_left = 736.0
-offset_top = 368.0
-offset_right = 832.0
-offset_bottom = 464.0
-
-[node name="BackButton" type="Button" parent="." unique_id=149723377]
-layout_mode = 0
-offset_left = 971.0
-offset_top = 42.0
-offset_right = 1097.0
-offset_bottom = 105.0
-size_flags_vertical = 3
+[node name="BackButton" type="Button" parent="MarginContainer/RootVBox/HeaderBar" unique_id=149723377]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(126, 56)
+layout_mode = 2
 theme_override_fonts/font = ExtResource("3_cwpgd")
 theme_override_font_sizes/font_size = 40
-theme_override_styles/normal = SubResource("StyleBoxFlat_iclar")
+theme_override_styles/normal = SubResource("StyleBoxFlat_back")
 text = "Back"
 
-[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
+[node name="FishScroll" type="ScrollContainer" parent="MarginContainer/RootVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+
+[node name="FishGrid" type="GridContainer" parent="MarginContainer/RootVBox/FishScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 6
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+columns = 7
+
+[node name="CursorHighlight" type="Panel" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+script = ExtResource("4_cursor")

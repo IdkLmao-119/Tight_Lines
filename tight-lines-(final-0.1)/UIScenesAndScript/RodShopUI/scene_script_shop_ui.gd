@@ -1,112 +1,95 @@
 extends Control
 
-@onready var choice_panel: Panel = $ChoicePanel
-@onready var sell_fish_button: Button = $ChoicePanel/VBoxContainer/SellFishButton
-@onready var buy_button: Button = $ChoicePanel/VBoxContainer/BuyButton
-@onready var close_button: Button = $ChoicePanel/VBoxContainer/CloseButton
+signal close_requested
 
-@onready var rod_shop: Control = $RodShop
-@onready var bait_shop: Control = $BaitShop
-@onready var sell_fish_ui: Control = $SellFishUI
-
-@onready var money_label: Label = $TopBar/MoneyLabel
-@onready var status_label: Label = $TopBar/StatusLabel
+@onready var _money_label: Label = %MoneyLabel
+@onready var _status_label: Label = %StatusLabel
+@onready var _choice_center: Control = %ChoiceCenter
+@onready var _sell_fish_button: Button = %SellFishButton
+@onready var _buy_button: Button = %BuyButton
+@onready var _close_button: Button = %CloseButton
+@onready var _rod_shop: Control = %RodShop
+@onready var _bait_shop: Control = %BaitShop
+@onready var _sell_fish_ui: Control = %SellFishUI
 
 
 func _ready() -> void:
-	sell_fish_button.pressed.connect(_on_sell_fish_pressed)
-	buy_button.pressed.connect(_on_buy_pressed)
-	close_button.pressed.connect(close_shop)
+	_sell_fish_button.pressed.connect(_on_sell_fish_pressed)
+	_buy_button.pressed.connect(_show_rod_shop)
+	_close_button.pressed.connect(close_shop)
 
-	if rod_shop != null:
-		if rod_shop.has_signal("switch_to_bait_requested"):
-			rod_shop.connect("switch_to_bait_requested", _show_bait_shop)
-		if rod_shop.has_signal("back_requested"):
-			rod_shop.connect("back_requested", show_choices)
-		if rod_shop.has_signal("rod_purchased"):
-			rod_shop.connect("rod_purchased", _on_rod_purchased)
-		if rod_shop.has_signal("purchase_failed"):
-			rod_shop.connect("purchase_failed", _set_status)
+	_rod_shop.switch_to_bait_requested.connect(_show_bait_shop)
+	_rod_shop.back_requested.connect(show_choices)
+	_rod_shop.rod_purchased.connect(_on_rod_purchased)
+	_rod_shop.purchase_failed.connect(_set_status)
 
-	if bait_shop != null:
-		if bait_shop.has_signal("switch_to_rods_requested"):
-			bait_shop.connect("switch_to_rods_requested", _show_rod_shop)
-		if bait_shop.has_signal("back_requested"):
-			bait_shop.connect("back_requested", show_choices)
-		if bait_shop.has_signal("item_purchased"):
-			bait_shop.connect("item_purchased", _on_bait_purchased)
-		if bait_shop.has_signal("purchase_failed"):
-			bait_shop.connect("purchase_failed", _set_status)
+	_bait_shop.switch_to_rods_requested.connect(_show_rod_shop)
+	_bait_shop.back_requested.connect(show_choices)
+	_bait_shop.item_purchased.connect(_on_bait_purchased)
+	_bait_shop.purchase_failed.connect(_set_status)
 
-	if sell_fish_ui != null:
-		sell_fish_ui.set("sell_mode", true)
-		if sell_fish_ui.has_signal("back_requested"):
-			sell_fish_ui.connect("back_requested", show_choices)
-		if sell_fish_ui.has_signal("fish_sold"):
-			sell_fish_ui.connect("fish_sold", _on_fish_sold)
+	_sell_fish_ui.set(&"sell_mode", true)
+	_sell_fish_ui.back_requested.connect(show_choices)
+	_sell_fish_ui.fish_sold.connect(_on_fish_sold)
 
-	if SaveManager.has_signal("money_changed"):
+	if SaveManager.has_signal(&"money_changed"):
 		SaveManager.money_changed.connect(_update_money_label)
 
-	_update_money_label(SaveManager.get_money() if SaveManager.has_method("get_money") else 0)
+	_update_money_label(SaveManager.get_money())
 	show_choices()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible or not event.is_action_pressed(&"ui_cancel") or event.is_echo():
+		return
+	get_viewport().set_input_as_handled()
+	if _choice_center.visible:
+		close_shop()
+	else:
+		show_choices()
 
 
 func open_shop() -> void:
 	visible = true
-	_update_money_label(SaveManager.get_money() if SaveManager.has_method("get_money") else 0)
+	_update_money_label(SaveManager.get_money())
 	show_choices()
+	_sell_fish_button.grab_focus()
 
 
 func close_shop() -> void:
 	visible = false
+	close_requested.emit()
 
 
 func show_choices() -> void:
-	choice_panel.visible = true
-	rod_shop.visible = false
-	bait_shop.visible = false
-	sell_fish_ui.visible = false
-	_set_status("Welcome! Would you like to sell fish or buy gear?")
+	_set_active_view(_choice_center, "Welcome! Would you like to sell fish or buy gear?")
+
+
+func _set_active_view(active_view: Control, status_msg: String) -> void:
+	for view: Control in [_choice_center, _rod_shop, _bait_shop, _sell_fish_ui]:
+		view.visible = (view == active_view)
+	_set_status(status_msg)
 
 
 func _on_sell_fish_pressed() -> void:
-	choice_panel.visible = false
-	rod_shop.visible = false
-	bait_shop.visible = false
-	sell_fish_ui.set("sell_mode", true)
-	sell_fish_ui.visible = true
-	_set_status("Select fish to sell for currency.")
-
-
-func _on_buy_pressed() -> void:
-	_show_rod_shop()
+	_sell_fish_ui.set(&"sell_mode", true)
+	_set_active_view(_sell_fish_ui, "Select fish to sell for currency.")
 
 
 func _show_rod_shop() -> void:
-	choice_panel.visible = false
-	sell_fish_ui.visible = false
-	bait_shop.visible = false
-	rod_shop.visible = true
-	_set_status("Browse rods or click 'Bait' at the top to switch to the Bait Shop.")
+	_set_active_view(_rod_shop, "Browse rods or click 'Bait' at the top to switch to the Bait Shop.")
 
 
 func _show_bait_shop() -> void:
-	choice_panel.visible = false
-	sell_fish_ui.visible = false
-	rod_shop.visible = false
-	bait_shop.visible = true
-	_set_status("Browse bait or click 'Rods' at the top to switch to the Rod Shop.")
+	_set_active_view(_bait_shop, "Browse bait or click 'Rods' at the top to switch to the Rod Shop.")
 
 
 func _update_money_label(amount: int) -> void:
-	if money_label != null:
-		money_label.text = "Money: %d G" % amount
+	_money_label.text = "Money: %d G" % amount
 
 
 func _set_status(msg: String) -> void:
-	if status_label != null:
-		status_label.text = msg
+	_status_label.text = msg
 
 
 func _on_rod_purchased(rod_name: String, cost: int) -> void:
