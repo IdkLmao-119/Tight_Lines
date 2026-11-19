@@ -4,15 +4,35 @@
 [ext_resource type="Script" uid="uid://db1up6ssl3kie" path="res://UIScenesAndScript/MainMenu/background_layer.gd" id="2_0pent"]
 [ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="3_16aw6"]
 [ext_resource type="Texture2D" uid="uid://btduj7rj47w40" path="res://Assets/2D/Bubble.png" id="4_doce8"]
-[ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="5_16aw6"]
 [ext_resource type="Texture2D" uid="uid://5b3gsqgca5tc" path="res://Assets/2D/SignBoard.png" id="6_16aw6"]
 [ext_resource type="PackedScene" uid="uid://c0u77axaegcsm" path="res://UIScenesAndScript/Options/Options.tscn" id="7_opts"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="8_theme"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bg"]
 texture = ExtResource("3_16aw6")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_signboard"]
 texture = ExtResource("6_16aw6")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_signboard_hover"]
+texture = ExtResource("6_16aw6")
+modulate_color = Color(1.12, 1.08, 0.96, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_signboard_pressed"]
+texture = ExtResource("6_16aw6")
+modulate_color = Color(0.88, 0.82, 0.72, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_signboard_focus"]
+draw_center = false
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.88, 0.45, 0.95)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [node name="MainMenu" type="Control" unique_id=1662043218]
 layout_mode = 3
@@ -21,6 +41,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("8_theme")
 script = ExtResource("1_w82c0")
 
 [node name="BackgroundPanel" type="Panel" parent="." unique_id=957359471]
@@ -68,7 +89,8 @@ alignment = 1
 custom_minimum_size = Vector2(530, 112)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 70
 theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
 text = "Tight Lines"
@@ -85,36 +107,52 @@ theme_override_constants/separation = 8
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 31
 theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_signboard_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_signboard_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_signboard_focus")
 text = "Start"
 
 [node name="OptionsButton" type="Button" parent="MenuContent/VBoxContainer/MainMenuButtons" unique_id=1605044471]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 31
 theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_signboard_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_signboard_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_signboard_focus")
 text = "Options"
 
 [node name="MultiButton" type="Button" parent="MenuContent/VBoxContainer/MainMenuButtons" unique_id=218283224]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 31
 theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_signboard_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_signboard_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_signboard_focus")
 text = "Multiplayer"
 
 [node name="ExitButton" type="Button" parent="MenuContent/VBoxContainer/MainMenuButtons" unique_id=775846875]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_fonts/font = ExtResource("5_16aw6")
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 31
 theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_signboard_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_signboard_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_signboard_focus")
 text = "Exit"
 
 [node name="OptionsMenu" parent="." unique_id=100843613 instance=ExtResource("7_opts")]

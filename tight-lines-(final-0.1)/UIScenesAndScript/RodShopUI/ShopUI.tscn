@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cajdmvamqsccc" path="res://UIScenesAndScript/RodShopUI/RodShop.tscn" id="2_rodshop"]
 [ext_resource type="PackedScene" uid="uid://cagdljje3yryi" path="res://UIScenesAndScript/RodShopUI/BaitShop.tscn" id="3_baitshop"]
 [ext_resource type="PackedScene" uid="uid://c67j2bnervxgj" path="res://UIScenesAndScript/FishBox/inventory_ui.tscn" id="4_fishbox"]
-[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="5_font"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="5_theme"]
 
 [node name="ShopUI" type="Control"]
 layout_mode = 3
@@ -13,6 +13,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("5_theme")
 script = ExtResource("1_shopui")
 
 [node name="RootVBox" type="VBoxContainer" parent="."]
@@ -42,8 +43,10 @@ theme_override_constants/separation = 16
 [node name="MoneyLabel" type="Label" parent="RootVBox/TopBar/MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_fonts/font = ExtResource("5_font")
-theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1, 0.9, 0.48, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.07, 0.04, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 24
 text = "Money: 0 G"
 vertical_alignment = 1
 
@@ -51,11 +54,12 @@ vertical_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("5_font")
-theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.96, 0.95, 0.9, 1)
+theme_override_font_sizes/font_size = 18
 text = "Welcome! Would you like to sell fish or buy gear?"
 horizontal_alignment = 2
 vertical_alignment = 1
+autowrap_mode = 2
 
 [node name="ContentArea" type="Control" parent="RootVBox"]
 layout_mode = 2
@@ -88,8 +92,10 @@ alignment = 1
 
 [node name="TitleLabel" type="Label" parent="RootVBox/ContentArea/ChoiceCenter/ChoicePanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("5_font")
-theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.07, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 30
 text = "Tackle & Fish Shop"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -99,8 +105,8 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(240, 46)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_fonts/font = ExtResource("5_font")
-theme_override_font_sizes/font_size = 30
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 24
 text = "Sell Fish"
 
 [node name="BuyButton" type="Button" parent="RootVBox/ContentArea/ChoiceCenter/ChoicePanel/MarginContainer/VBoxContainer"]
@@ -108,8 +114,8 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(240, 46)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_fonts/font = ExtResource("5_font")
-theme_override_font_sizes/font_size = 30
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 24
 text = "Buy"
 
 [node name="CloseButton" type="Button" parent="RootVBox/ContentArea/ChoiceCenter/ChoicePanel/MarginContainer/VBoxContainer"]
@@ -117,8 +123,8 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(240, 42)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_fonts/font = ExtResource("5_font")
-theme_override_font_sizes/font_size = 26
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 22
 text = "Leave"
 
 [node name="RodShop" parent="RootVBox/ContentArea" instance=ExtResource("2_rodshop")]

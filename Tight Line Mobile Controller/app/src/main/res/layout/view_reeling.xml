@@ -21,6 +21,22 @@
         android:textSize="15sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/playerIdentityBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/reelingBadge"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_pill_badge"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="5dp"
+        android:text=""
+        android:textColor="@color/text_light"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
     <com.example.myapplication.FishingReelView
         android:id="@+id/fishingReelView"
         android:layout_width="280dp"

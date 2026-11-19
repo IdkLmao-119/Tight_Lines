@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://dy2xk4ubjv640" path="res://Assets/2D/Rod_Sprites_Standing/Ultralight_Rod.png" id="4_o53mb"]
 [ext_resource type="Texture2D" uid="uid://blson0d38ulbr" path="res://Assets/2D/Rod_Sprites_Standing/Medium_Light_Rod.png" id="5_fach7"]
 [ext_resource type="Texture2D" uid="uid://b7dxlfulce1yb" path="res://Assets/2D/Rod_Sprites_Standing/Medium_Rod.png" id="6_24drq"]
-[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="7_hlxw8"]
 [ext_resource type="Texture2D" uid="uid://bl0hnm65tanjx" path="res://Assets/2D/Rod_Sprites_Standing/Medium_Heavy_Rod.png" id="8_58vlc"]
 [ext_resource type="Texture2D" uid="uid://caala042b8xs0" path="res://Assets/2D/Rod_Sprites_Standing/Heavy_Rod.png" id="9_rvvq1"]
 [ext_resource type="Texture2D" uid="uid://c5ltlchnh26q1" path="res://Assets/2D/bait_sprites/Dough.png" id="10_8q0gp"]
@@ -16,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://cm2b7aetehvjq" path="res://Assets/2D/bait_sprites/Softbait-lure.png" id="14_diiat"]
 [ext_resource type="Texture2D" uid="uid://cnjd2m0sx1qeb" path="res://Assets/2D/bait_sprites/Top water lure-c64d.png" id="15_2xogq"]
 [ext_resource type="Script" path="res://UIScenesAndScript/Shared/mobile_cursor_highlight.gd" id="16_cursor"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="17_theme"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bg"]
 texture = ExtResource("2_ny8wm")
@@ -31,6 +31,26 @@ shadow_color = Color(0, 0, 0, 0.45882353)
 shadow_size = 5
 shadow_offset = Vector2(0, 3)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_hover"]
+bg_color = Color(0.92, 0.58, 0.42, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_pressed"]
+bg_color = Color(0.72, 0.4, 0.28, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
 [node name="Rod_Inventory" type="Control" unique_id=1263013518]
 layout_mode = 3
 anchors_preset = 15
@@ -38,6 +58,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("17_theme")
 script = ExtResource("1_jnaoe")
 
 [node name="BackgroundPanel" type="Panel" parent="." unique_id=732595924]
@@ -74,17 +95,21 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 28
+theme_override_colors/font_outline_color = Color(0.08, 0.06, 0.04, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 2
 
 [node name="BackButton" type="Button" parent="MarginContainer/RootVBox/HeaderBar" unique_id=549736018]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(126, 60)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("7_hlxw8")
-theme_override_font_sizes/font_size = 40
+theme_override_colors/font_outline_color = Color(0.12, 0.08, 0.05, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 26
 theme_override_styles/normal = SubResource("StyleBoxFlat_back")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_back_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_back_hover")
 text = "Back"
 
 [node name="ContentHBox" type="HBoxContainer" parent="MarginContainer/RootVBox"]

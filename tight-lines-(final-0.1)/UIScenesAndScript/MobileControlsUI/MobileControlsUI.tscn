@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c8b74x2m9y8q5"]
 
 [ext_resource type="Script" uid="uid://b5ss6cd335evf" path="res://UIScenesAndScript/MobileControlsUI/scene_script_mobile_controls.gd" id="1_mctl"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="2_theme"]
 
 [node name="MobileControlsUI" type="Control"]
 layout_mode = 3
@@ -10,6 +11,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme = ExtResource("2_theme")
 script = ExtResource("1_mctl")
 
 [node name="DPadContainer" type="Control" parent="."]
@@ -34,6 +36,7 @@ offset_top = 0.0
 offset_right = 30.0
 offset_bottom = 60.0
 grow_horizontal = 2
+theme_override_font_sizes/font_size = 24
 text = "▲"
 
 [node name="DownButton" type="Button" parent="DPadContainer"]
@@ -50,6 +53,7 @@ offset_right = 30.0
 offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_font_sizes/font_size = 24
 text = "▼"
 
 [node name="LeftButton" type="Button" parent="DPadContainer"]
@@ -63,6 +67,7 @@ offset_top = -30.0
 offset_right = 60.0
 offset_bottom = 30.0
 grow_vertical = 2
+theme_override_font_sizes/font_size = 24
 text = "◀"
 
 [node name="RightButton" type="Button" parent="DPadContainer"]
@@ -79,4 +84,5 @@ offset_right = 0.0
 offset_bottom = 30.0
 grow_horizontal = 0
 grow_vertical = 2
+theme_override_font_sizes/font_size = 24
 text = "▶"

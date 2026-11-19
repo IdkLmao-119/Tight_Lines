@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bmoettm0ijjix" path="res://UIScenesAndScript/OverworldUI/scene_script_2d_scene_ui.gd" id="1_aao6p"]
 [ext_resource type="PackedScene" path="res://UIScenesAndScript/Shared/GameHUD.tscn" id="2_hud"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="3_theme"]
 
 [node name="2DSceneUI" type="Control" unique_id=1628659695]
 layout_mode = 3
@@ -11,6 +12,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme = ExtResource("3_theme")
 script = ExtResource("1_aao6p")
 
 [node name="GameHUD" parent="." instance=ExtResource("2_hud")]

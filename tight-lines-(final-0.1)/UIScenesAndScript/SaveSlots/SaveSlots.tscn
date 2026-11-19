@@ -2,14 +2,38 @@
 
 [ext_resource type="Script" uid="uid://ctov7s2usrqns" path="res://UIScenesAndScript/SaveSlots/scene_script_save_slots.gd" id="1_ymcjr"]
 [ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="2_lo0ty"]
-[ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="3_2xeyn"]
 [ext_resource type="Texture2D" uid="uid://5b3gsqgca5tc" path="res://Assets/2D/SignBoard.png" id="4_2xeyn"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="5_theme"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bg"]
 texture = ExtResource("2_lo0ty")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn"]
 texture = ExtResource("4_2xeyn")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_hover"]
+texture = ExtResource("4_2xeyn")
+modulate_color = Color(1.12, 1.08, 0.96, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_pressed"]
+texture = ExtResource("4_2xeyn")
+modulate_color = Color(1.18, 1.02, 0.68, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_disabled"]
+texture = ExtResource("4_2xeyn")
+modulate_color = Color(0.55, 0.55, 0.55, 0.75)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_focus"]
+draw_center = false
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.88, 0.45, 0.95)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [node name="SaveSlotMenu" type="Control" unique_id=1702898332]
 layout_mode = 3
@@ -18,6 +42,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("5_theme")
 script = ExtResource("1_ymcjr")
 
 [node name="BackgroundPanel" type="Panel" parent="." unique_id=1750572237]
@@ -52,9 +77,14 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 56)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("3_2xeyn")
-theme_override_font_sizes/font_size = 36
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_btn_focus")
 text = "Back"
 
 [node name="ContentCenter" type="CenterContainer" parent="MarginContainer/RootVBox"]
@@ -76,27 +106,42 @@ theme_override_constants/separation = 12
 layout_mode = 2
 size_flags_vertical = 3
 toggle_mode = true
-theme_override_fonts/font = ExtResource("3_2xeyn")
-theme_override_font_sizes/font_size = 34
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 25
 theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_btn_focus")
 text = "Slot 1"
 
 [node name="SaveSlot2" type="Button" parent="MarginContainer/RootVBox/ContentCenter/ContentVBox/SlotList" unique_id=520558238]
 layout_mode = 2
 size_flags_vertical = 3
 toggle_mode = true
-theme_override_fonts/font = ExtResource("3_2xeyn")
-theme_override_font_sizes/font_size = 34
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 25
 theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_btn_focus")
 text = "Slot 2"
 
 [node name="SaveSlot3" type="Button" parent="MarginContainer/RootVBox/ContentCenter/ContentVBox/SlotList" unique_id=136135349]
 layout_mode = 2
 size_flags_vertical = 3
 toggle_mode = true
-theme_override_fonts/font = ExtResource("3_2xeyn")
-theme_override_font_sizes/font_size = 34
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 25
 theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_btn_focus")
 text = "Slot 3"
 
 [node name="ActionBar" type="HBoxContainer" parent="MarginContainer/RootVBox/ContentCenter/ContentVBox" unique_id=2058910101]
@@ -108,25 +153,40 @@ theme_override_constants/separation = 16
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("3_2xeyn")
-theme_override_font_sizes/font_size = 34
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_btn_focus")
 text = "Make Save"
 
 [node name="LoadSaveButton" type="Button" parent="MarginContainer/RootVBox/ContentCenter/ContentVBox/ActionBar" unique_id=1796686349]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("3_2xeyn")
-theme_override_font_sizes/font_size = 34
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_btn_focus")
 text = "Load Save"
 
 [node name="DeleteSaveButton" type="Button" parent="MarginContainer/RootVBox/ContentCenter/ContentVBox/ActionBar" unique_id=39648435]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("3_2xeyn")
-theme_override_font_sizes/font_size = 34
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_btn_focus")
 text = "Delete Save"

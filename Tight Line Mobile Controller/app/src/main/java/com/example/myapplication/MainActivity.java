@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.VibrationEffect;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.os.Vibrator;
 import android.view.GestureDetector;
@@ -68,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static final long RECONNECT_DELAY_MS = 2000L;
     private static final long AUTO_DISCOVER_INTERVAL_MS = 3500L;
     private static final String PREF_LAST_IP = "last_pc_ip";
+    private static final String PREF_PLAYER_NAME = "player_name";
+    private static final int MAX_PLAYER_NAME_LENGTH = 18;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable reconnectRunnable;
     private Runnable autoDiscoverRunnable;
@@ -117,10 +121,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private AppState currentState = null;
     private AppState underlyingGameState = AppState.OVERWORLD;
     private String activeMenu = "none";
+    private String assignedPlayerName = "";
+    private String assignedScreenSide = "";
 
     private TextView statusText;
     private TextView connectionSubtext;
     private ProgressBar connectingSpinner;
+    private EditText playerNameInput;
     private EditText serverIpInput;
     private Button connectButton;
     private Button discoverButton;
@@ -236,6 +243,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 } else if (newState == AppState.MENU) {
                     setupMenuControlsUI();
                 }
+
+                updatePlayerIdentityBadge();
+                sendScreenState();
             }
         });
     }
@@ -359,11 +369,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         statusText = findViewById(R.id.statusText);
         connectionSubtext = findViewById(R.id.connectionSubtext);
         connectingSpinner = findViewById(R.id.connectingSpinner);
+        playerNameInput = findViewById(R.id.playerNameInput);
         serverIpInput = findViewById(R.id.serverIpInput);
         connectButton = findViewById(R.id.connectButton);
         discoverButton = findViewById(R.id.discoverButton);
         Button btnToggleManual = findViewById(R.id.btnToggleManual);
         LinearLayout manualConnectSection = findViewById(R.id.manualConnectSection);
+
+        if (playerNameInput != null) {
+            playerNameInput.setText(getSavedPlayerName());
+            playerNameInput.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    savePlayerName(s != null ? s.toString() : "");
+                }
+            });
+        }
 
         String savedIp = getSavedIp();
         if (serverIpInput != null && savedIp != null && !savedIp.isEmpty()) {
@@ -428,6 +455,65 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 .apply();
     }
 
+    private String getSavedPlayerName() {
+        String saved = getSharedPreferences("controller_prefs", MODE_PRIVATE).getString(PREF_PLAYER_NAME, "");
+        return saved == null ? "" : saved.trim();
+    }
+
+    private void savePlayerName(String name) {
+        String clean = name == null ? "" : name.trim();
+        if (clean.length() > MAX_PLAYER_NAME_LENGTH) {
+            clean = clean.substring(0, MAX_PLAYER_NAME_LENGTH);
+        }
+        getSharedPreferences("controller_prefs", MODE_PRIVATE)
+                .edit()
+                .putString(PREF_PLAYER_NAME, clean)
+                .apply();
+    }
+
+    private String getCurrentScreenName() {
+        if (currentState == null) return "connection";
+        switch (currentState) {
+            case OVERWORLD: return "overworld";
+            case CASTING: return "casting";
+            case REELING: return "reeling";
+            case MENU: return "menu";
+            case CONNECTION:
+            default:
+                return "connection";
+        }
+    }
+
+    private void sendScreenState() {
+        if (!isConnected) return;
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("type", "screen_state");
+            msg.put("screen", getCurrentScreenName());
+            msg.put("active_menu", activeMenu);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessage(msg);
+    }
+
+    private void updatePlayerIdentityBadge() {
+        TextView badge = findViewById(R.id.playerIdentityBadge);
+        if (badge == null) return;
+        String name = assignedPlayerName == null ? "" : assignedPlayerName.trim();
+        if ("left".equals(assignedScreenSide)) {
+            badge.setVisibility(View.VISIBLE);
+            badge.setText(name.isEmpty() ? "◀ LEFT SCREEN" : "◀ LEFT SCREEN  •  " + name);
+            badge.setTextColor(Color.parseColor("#7CE8FF"));
+        } else if ("right".equals(assignedScreenSide)) {
+            badge.setVisibility(View.VISIBLE);
+            badge.setText(name.isEmpty() ? "RIGHT SCREEN ▶" : name + "  •  RIGHT SCREEN ▶");
+            badge.setTextColor(Color.parseColor("#FFB28A"));
+        } else {
+            badge.setVisibility(View.GONE);
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -476,16 +562,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 saveLastIp(ip);
                 handler.removeCallbacks(autoDiscoverRunnable);
                 handler.removeCallbacks(reconnectRunnable);
-                switchToState(AppState.OVERWORLD);
 
                 JSONObject msg = new JSONObject();
                 try {
                     msg.put("type", "connected");
                     msg.put("device_id", deviceId);
+                    msg.put("screen", "overworld");
+                    String savedName = getSavedPlayerName();
+                    if (!savedName.isEmpty()) {
+                        msg.put("player_name", savedName);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 sendMessage(msg);
+                switchToState(AppState.OVERWORLD);
             }
 
             @Override
@@ -505,6 +596,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         } else {
                             vibratePattern(new long[]{0, 120, 80, 120});
                         }
+                    }
+
+                    if ("player_info".equals(json.optString("type"))) {
+                        assignedPlayerName = json.optString("player_name", "").trim();
+                        assignedScreenSide = json.optString("screen_side", "").trim().toLowerCase();
+                        runOnUiThread(MainActivity.this::updatePlayerIdentityBadge);
                     }
 
                     if ("config".equals(json.optString("type")) || json.has("sensitivity") || json.has("swing_threshold") || json.has("tilt_filter_alpha")) {
@@ -546,6 +643,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             switchToState(AppState.MENU);
                         } else {
                             runOnUiThread(MainActivity.this::refreshMenuUI);
+                            sendScreenState();
                         }
                     }
                 } catch (JSONException e) {
@@ -570,6 +668,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void handleConnectionLost() {
         isConnected = false;
         activeMenu = "none";
+        assignedScreenSide = "";
         reconnectFailureCount++;
         switchToState(AppState.CONNECTION);
         if (wantConnected && lastIp != null && reconnectFailureCount <= 1) {

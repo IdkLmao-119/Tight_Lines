@@ -123,6 +123,8 @@ var season := ""
 
 # --- Fallback defaults used if GameDB records lack a field ---
 # These only matter until the record has its own value. | Tweak only to change the "default" rod/fish.
+const UI_THEME: Theme = preload("res://UIScenesAndScript/Shared/ui_theme.tres")
+const UI_FONT: FontFile = preload("res://Assets/2D/ShortStack-Regular.ttf")
 const TEMP_ROD_LINE_STRENGTH := 10.0     # Default line strength; the tension bar is measured against it. | Raise for a sturdier default rod.
 const TEMP_ROD_MAX_CAST_DISTANCE := 20.0 # Default max cast distance (metres). | Match your water size.
 const TEMP_ROD_CONTROL := 1.0            # Default control; multiplies the snap grace time. | Raise to forgive longer overloads.
@@ -236,6 +238,8 @@ var _warned: Dictionary = {}
 var _fish_layout: Node = null
 var _fish_layout_token := 0
 var _popup: CanvasLayer = null
+var _popups: Dictionary = {}
+var _player_names: Dictionary = {}
 var _msg_layer: CanvasLayer = null
 var _msg_labels: Dictionary = {}
 var _tension_layer: CanvasLayer = null
@@ -258,6 +262,11 @@ func _ready() -> void:
 
 	if _game_manager != null and _game_manager.has_method("consume_context"):
 		_context = _game_manager.consume_context().duplicate(true)
+
+	if _context.has("time_limit_sec"):
+		time_limit_sec = maxf(float(_context.get("time_limit_sec", 0.0)), 0.0)
+	if _context.has("player_names") and _context["player_names"] is Dictionary:
+		set_player_names(_context["player_names"])
 
 	if _context.has("difficulty"):
 		var ctx_diff: Variant = _context.get("difficulty")
@@ -343,6 +352,7 @@ func start_session(player_ids: Array[int]) -> void:
 	_order.clear()
 	_clear_messages()
 	_clear_tension_bars()
+	_clear_popups()
 	_elapsed = 0.0
 	_time_up = false
 	_finished = false
@@ -434,6 +444,35 @@ func get_time_left() -> float:
 	return maxf(time_limit_sec - _elapsed, 0.0)
 
 
+func is_time_up() -> bool:
+	return _time_up
+
+
+func get_context() -> Dictionary:
+	return _context.duplicate(true)
+
+
+func get_player_order() -> Array[int]:
+	return _order.duplicate()
+
+
+func set_player_names(names: Dictionary) -> void:
+	_player_names.clear()
+	for key in names:
+		var clean := String(names[key]).strip_edges()
+		if clean != "":
+			_player_names[int(key)] = clean
+
+
+func get_player_name(player_id: int) -> String:
+	var custom := String(_player_names.get(player_id, "")).strip_edges()
+	if custom != "":
+		return custom
+	if _connection != null and _connection.has_method("get_player_name"):
+		return String(_connection.call("get_player_name", player_id))
+	return "Player %d" % player_id
+
+
 func finish_session() -> void:
 	if _finished:
 		return
@@ -441,10 +480,12 @@ func finish_session() -> void:
 	if node_to_hide_on_bite != null:
 		node_to_hide_on_bite.visible = true
 	var results := {}
+	var names_snapshot := {}
 	for pid in _order:
 		var s: FishingSession = _sessions[pid]
 		_remove_bobber(s)
 		results[pid] = {"catches": s.catches.duplicate(true), "total_weight": s.total_weight}
+		names_snapshot[pid] = get_player_name(pid)
 		_send_game_state(pid, "overworld")
 	_clear_tension_bars()
 	session_finished.emit(results)
@@ -452,6 +493,9 @@ func finish_session() -> void:
 	var payload := {"results": results}
 	if _multiplayer:
 		payload["winner"] = _winner_id(results)
+		payload["player_names"] = names_snapshot
+		payload["player_order"] = _order.duplicate()
+		payload["time_limit_sec"] = time_limit_sec
 	if _game_manager == null:
 		return
 	if _game_manager.has_method("end_fishing"):
@@ -538,6 +582,11 @@ func _update_casting(s: FishingSession, delta: float) -> void:
 
 # --- WAITING ---
 func _update_waiting(s: FishingSession, delta: float) -> void:
+	if _time_up:
+		_remove_bobber(s)
+		_set_state(s, State.IDLE)
+		return
+
 	if s.bobber != null:
 		var pos := s.cast_target
 		pos.y += sin(s.state_time * 3.0) * 0.03
@@ -679,6 +728,8 @@ func _get_message_label(player_id: int) -> Label:
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.theme = UI_THEME
+	label.add_theme_font_override("font", UI_FONT)
 	label.add_theme_font_size_override("font_size", message_font_size)
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
 	label.add_theme_constant_override("outline_size", 10)
@@ -744,6 +795,7 @@ func _get_tension_bar(player_id: int) -> ProgressBar:
 	bar.value = 0.0
 	bar.show_percentage = false
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.theme = UI_THEME
 
 	bar.anchor_left = (float(index) / count) + 0.1
 	bar.anchor_right = (float(index + 1) / count) - 0.1
@@ -1146,11 +1198,9 @@ func _store_fish(fish: Dictionary) -> bool:
 func _show_catch_popup(player_id: int, fish: Dictionary, kept: bool) -> void:
 	_show_catch_picture(fish)
 
-	if is_instance_valid(_popup):
-		_popup.queue_free()
 	var text := ""
 	if _multiplayer:
-		text += "Player %d caught\n" % player_id
+		text += "%s caught\n" % get_player_name(player_id)
 	text += "%s\n%.1f cm   %.2f kg" % [String(fish["display_name"]), float(fish["size_cm"]), float(fish["weight"])]
 	if not kept:
 		text += "\nFish Box full: released"
@@ -1161,13 +1211,47 @@ func _show_catch_popup(player_id: int, fish: Dictionary, kept: bool) -> void:
 	label.text = text
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.theme = UI_THEME
+	label.add_theme_font_override("font", UI_FONT)
 	label.add_theme_font_size_override("font_size", 32)
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
 	label.add_theme_constant_override("outline_size", 8)
 	layer.add_child(label)
-	label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE, Control.PRESET_MODE_MINSIZE, 40)
-	_popup = layer
-	get_tree().create_timer(CATCH_POPUP_SECONDS).timeout.connect(layer.queue_free)
+
+	if _multiplayer:
+		var prev_popup: Variant = _popups.get(player_id)
+		if prev_popup is Node and is_instance_valid(prev_popup):
+			(prev_popup as Node).queue_free()
+		_popups[player_id] = layer
+		var index := maxi(_order.find(player_id), 0)
+		var count := maxi(_order.size(), 1)
+		label.anchor_left = float(index) / count
+		label.anchor_right = float(index + 1) / count
+		label.anchor_top = 0.0
+		label.anchor_bottom = 0.0
+		label.offset_left = 16.0
+		label.offset_right = -16.0
+		label.offset_top = 96.0
+		label.offset_bottom = 260.0
+	else:
+		if is_instance_valid(_popup):
+			_popup.queue_free()
+		label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE, Control.PRESET_MODE_MINSIZE, 40)
+		_popup = layer
+
+	get_tree().create_timer(CATCH_POPUP_SECONDS).timeout.connect(func() -> void:
+		if is_instance_valid(layer):
+			layer.queue_free())
+
+
+func _clear_popups() -> void:
+	if is_instance_valid(_popup):
+		_popup.queue_free()
+	_popup = null
+	for p in _popups.values():
+		if p is Node and is_instance_valid(p):
+			(p as Node).queue_free()
+	_popups.clear()
 
 
 func _show_catch_picture(fish: Dictionary) -> void:
@@ -1347,6 +1431,17 @@ func _on_save_equipment_changed() -> void:
 
 func _pick_player_ids() -> Array[int]:
 	var ids: Array[int] = []
+	if _multiplayer:
+		var ctx_ids: Variant = _context.get("player_ids", [])
+		if ctx_ids is Array and not ctx_ids.is_empty():
+			for raw_id in ctx_ids:
+				var pid := int(raw_id)
+				if not ids.has(pid):
+					ids.append(pid)
+					if ids.size() >= max_players:
+						break
+			if not ids.is_empty():
+				return ids
 	if _multiplayer and _input != null:
 		ids.assign(_input.get_connected_phone_ids())
 		ids.sort()

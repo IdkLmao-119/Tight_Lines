@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://UIScenesAndScript/Shared/game_hud.gd" id="1_hud"]
-[ext_resource type="FontFile" uid="uid://cfg3ye2rujox0" path="res://Assets/2D/GrapeSoda.ttf" id="2_font"]
+[ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="2_font"]
 [ext_resource type="Texture2D" uid="uid://cry2te8geq2pe" path="res://Assets/Fish Box.png" id="3_fishbox_tex"]
 [ext_resource type="Texture2D" uid="uid://b2cdd1hh8eh8t" path="res://Assets/2D/Almanac_icon.png" id="4_almanac_tex"]
 [ext_resource type="Texture2D" uid="uid://bgch78mw1pv2s" path="res://Assets/2D/rod_sprites/Ultralight Rod.png" id="5_rod_tex"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="8_almanac"]
 [ext_resource type="PackedScene" uid="uid://c8tqiturk1ud6" path="res://UIScenesAndScript/QuestLog/QuestLog.tscn" id="9_questlog"]
 [ext_resource type="PackedScene" uid="uid://c0u77axaegcsm" path="res://UIScenesAndScript/Options/Options.tscn" id="10_options"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="11_theme"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
 bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
@@ -21,14 +22,68 @@ shadow_color = Color(0, 0, 0, 0.45882353)
 shadow_size = 5
 shadow_offset = Vector2(0, 3)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+bg_color = Color(0.92, 0.58, 0.42, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_pressed"]
+bg_color = Color(0.72, 0.4, 0.28, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_almanac"]
 texture = ExtResource("4_almanac_tex")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_almanac_hover"]
+texture = ExtResource("4_almanac_tex")
+modulate_color = Color(1.12, 1.12, 1.12, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_almanac_pressed"]
+texture = ExtResource("4_almanac_tex")
+modulate_color = Color(0.88, 0.88, 0.88, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rod"]
 texture = ExtResource("5_rod_tex")
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rod_hover"]
+texture = ExtResource("5_rod_tex")
+modulate_color = Color(1.12, 1.12, 1.12, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rod_pressed"]
+texture = ExtResource("5_rod_tex")
+modulate_color = Color(0.88, 0.88, 0.88, 1)
+
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fishbox"]
 texture = ExtResource("3_fishbox_tex")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fishbox_hover"]
+texture = ExtResource("3_fishbox_tex")
+modulate_color = Color(1.12, 1.12, 1.12, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fishbox_pressed"]
+texture = ExtResource("3_fishbox_tex")
+modulate_color = Color(0.88, 0.88, 0.88, 1)
+
+[sub_resource type="Theme" id="Theme_hud_buttons"]
+Button/colors/font_color = Color(1, 1, 1, 1)
+Button/colors/font_focus_color = Color(1, 0.95, 0.72, 1)
+Button/colors/font_hover_color = Color(1, 0.94, 0.62, 1)
+Button/colors/font_outline_color = Color(0.12, 0.08, 0.05, 1)
+Button/colors/font_pressed_color = Color(0.92, 0.82, 0.52, 1)
+Button/constants/outline_size = 5
+Button/font_sizes/font_size = 26
+Button/fonts/font = ExtResource("2_font")
 
 [node name="GameHUD" type="Control"]
 layout_mode = 3
@@ -38,6 +93,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme = ExtResource("11_theme")
 script = ExtResource("1_hud")
 
 [node name="HUDButtons" type="Control" parent="."]
@@ -49,6 +105,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme = SubResource("Theme_hud_buttons")
 
 [node name="PauseButton" type="Button" parent="HUDButtons"]
 unique_name_in_owner = true
@@ -57,9 +114,9 @@ offset_left = 18.0
 offset_top = 17.0
 offset_right = 127.0
 offset_bottom = 109.0
-theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
 text = "II"
 
 [node name="ReturnButton" type="Button" parent="HUDButtons"]
@@ -74,9 +131,9 @@ offset_top = 17.0
 offset_right = -16.0
 offset_bottom = 80.0
 grow_horizontal = 0
-theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
 text = "Overworld"
 
 [node name="LeftMenuColumn" type="VBoxContainer" parent="HUDButtons"]
@@ -98,9 +155,9 @@ alignment = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 175)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxTexture_almanac")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_almanac_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_almanac_hover")
 text = "  Quests"
 alignment = 0
 
@@ -109,9 +166,9 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(180, 150)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxTexture_rod")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_rod_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_rod_hover")
 text = "Equipment"
 
 [node name="RightMenuColumn" type="VBoxContainer" parent="HUDButtons"]
@@ -137,9 +194,9 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 175)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxTexture_almanac")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_almanac_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_almanac_hover")
 text = " Almanac"
 alignment = 0
 
@@ -147,11 +204,9 @@ alignment = 0
 unique_name_in_owner = true
 custom_minimum_size = Vector2(220, 200)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxTexture_fishbox")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_fishbox")
-theme_override_styles/hover = SubResource("StyleBoxTexture_fishbox")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_fishbox_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_fishbox_hover")
 text = "Fish Box"
 
 [node name="Overlays" type="Control" parent="."]

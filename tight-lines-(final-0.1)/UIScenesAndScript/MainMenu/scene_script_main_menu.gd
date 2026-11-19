@@ -19,6 +19,10 @@ func _ready() -> void:
 	_options_menu.visible = false
 	_start_button.grab_focus()
 
+	var cm := get_node_or_null("/root/ConnectionManager")
+	if cm != null and cm.has_method(&"clear_all_player_screen_sides"):
+		cm.call(&"clear_all_player_screen_sides")
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _options_menu.visible and event.is_action_pressed(&"ui_cancel") and not event.is_echo():
@@ -31,7 +35,7 @@ func _on_start_button_pressed() -> void:
 
 
 func _on_multi_button_pressed() -> void:
-	GameManager.change_scene("multiplayer")
+	GameManager.change_scene("multiplayer_lobby")
 
 
 func _on_options_button_pressed() -> void:

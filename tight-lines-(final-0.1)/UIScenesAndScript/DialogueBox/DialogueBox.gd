@@ -260,6 +260,7 @@ func _open_choices(options: PackedStringArray) -> void:
 	for text in options:
 		var label := Label.new()
 		label.text = text
+		label.add_theme_font_size_override(&"font_size", 18)
 		_choices.add_child(label)
 	_choice_index = 0
 	_choices.show()
@@ -287,6 +288,7 @@ func _refresh_choices() -> void:
 	for i in _choices.get_child_count():
 		var label := _choices.get_child(i) as Label
 		label.text = ("▶ " if i == _choice_index else "   ") + _options[i]
+		label.add_theme_color_override(&"font_color", Color(1.0, 0.92, 0.55, 1.0) if i == _choice_index else Color(0.86, 0.9, 0.96, 0.9))
 
 
 func _hide_all() -> void:

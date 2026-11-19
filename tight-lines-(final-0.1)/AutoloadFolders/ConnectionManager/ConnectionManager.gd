@@ -25,6 +25,8 @@ extends Node
 
 signal player_connected(player_id)
 signal player_disconnected(player_id)
+signal player_screen_changed(player_id, screen_name)
+signal player_name_changed(player_id, player_name)
 
 # swipe - player dragged a finger across the phone screen
 # tap   - player briefly pressed the screen
@@ -100,7 +102,13 @@ var _pending_peers: Array = [] # [ WebSocketPeer, ... ]
 # reconnects gets its original player_id back.
 var _device_id_to_player_id: Dictionary = {} # { device_id: player_id }
 
+const MAX_PLAYER_NAME_LENGTH := 18
+
 var _next_player_id := 1
+
+var _player_screens: Dictionary = {} # { player_id: String }
+var _player_base_screens: Dictionary = {} # { player_id: String }
+var _player_names: Dictionary = {} # { player_id: String }
 
 
 func _ready():
@@ -269,7 +277,21 @@ func _process(_delta):
 					if _peers.has(player_id) and _peers[player_id] != ws:
 						_peers[player_id].close()
 					_peers[player_id] = ws
+
+					var initial_screen := String(data.get("screen", "overworld")).strip_edges().to_lower()
+					if initial_screen == "":
+						initial_screen = "overworld"
+					_player_base_screens[player_id] = initial_screen
+					_player_screens[player_id] = initial_screen
+
+					var raw_name := String(data.get("player_name", "")).strip_edges()
+					if raw_name != "" and not has_custom_player_name(player_id):
+						_player_names[player_id] = raw_name.substr(0, MAX_PLAYER_NAME_LENGTH)
+
 					emit_signal("player_connected", player_id)
+					emit_signal("player_screen_changed", player_id, _player_screens[player_id])
+					if has_custom_player_name(player_id):
+						emit_signal("player_name_changed", player_id, get_player_name(player_id))
 					identified = true
 					break # remaining packets are handled next frame
 
@@ -304,7 +326,10 @@ func _process(_delta):
 	# device gets its same player_id back when it reconnects.
 	for player_id in disconnected_ids:
 		_peers.erase(player_id)
+		_player_screens.erase(player_id)
+		_player_base_screens.erase(player_id)
 		emit_signal("player_disconnected", player_id)
+		emit_signal("player_screen_changed", player_id, "disconnected")
 
 
 # Replies to phone discovery broadcasts with this PC's IP address.
@@ -347,7 +372,30 @@ func _handle_message(player_id: int, message: String):
 	match data.get("type"):
 		"connected":
 			# Harmless duplicate: identification already happened in _process().
-			pass
+			if data.has("screen"):
+				var dup_screen := String(data.get("screen", "overworld")).strip_edges().to_lower()
+				if dup_screen == "":
+					dup_screen = "overworld"
+				_player_base_screens[player_id] = dup_screen
+				_set_player_screen(player_id, dup_screen)
+			if data.has("player_name"):
+				var dup_name := String(data.get("player_name", "")).strip_edges()
+				if dup_name != "" and not has_custom_player_name(player_id):
+					set_player_name(player_id, dup_name)
+
+		"screen_state":
+			var screen := String(data.get("screen", "overworld")).strip_edges().to_lower()
+			var active_menu := String(data.get("active_menu", "none")).strip_edges().to_lower()
+			if screen == "":
+				screen = "overworld"
+			if screen != "menu":
+				_player_base_screens[player_id] = screen
+			elif active_menu != "" and active_menu != "none":
+				screen = "menu:" + active_menu
+			_set_player_screen(player_id, screen)
+
+		"set_name":
+			set_player_name(player_id, String(data.get("name", "")))
 			
 		"cancel":
 			_warn_if_unconnected("cancel_input")
@@ -401,6 +449,7 @@ func send_to_all(data: Dictionary):
 		var ws: WebSocketPeer = _peers[player_id]
 		if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
 			ws.send_text(message)
+			_track_outgoing_screen(player_id, data)
 
 
 # Sends a message to just ONE specific player.
@@ -412,6 +461,127 @@ func send_to_player(player_id: int, data: Dictionary):
 	var ws: WebSocketPeer = _peers[player_id]
 	if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		ws.send_text(JSON.stringify(data))
+		_track_outgoing_screen(player_id, data)
+
+
+func _track_outgoing_screen(player_id: int, data: Dictionary) -> void:
+	if data.has("game_state"):
+		var state := String(data.get("game_state", "")).strip_edges().to_lower()
+		if state != "":
+			_player_base_screens[player_id] = state
+			var cur := String(_player_screens.get(player_id, ""))
+			if not cur.begins_with("menu") or state == "reeling":
+				_set_player_screen(player_id, state)
+	if data.has("active_menu"):
+		var menu := String(data.get("active_menu", "")).strip_edges().to_lower()
+		if menu == "" or menu == "none":
+			_set_player_screen(player_id, String(_player_base_screens.get(player_id, "overworld")))
+		else:
+			_set_player_screen(player_id, "menu:" + menu)
+
+
+func _set_player_screen(player_id: int, screen: String) -> void:
+	var clean := screen.strip_edges().to_lower()
+	if clean == "":
+		clean = "overworld"
+	if String(_player_screens.get(player_id, "")) == clean:
+		return
+	_player_screens[player_id] = clean
+	emit_signal("player_screen_changed", player_id, clean)
+
+
+func is_player_connected(player_id: int) -> bool:
+	if not _peers.has(player_id):
+		return false
+	var ws: WebSocketPeer = _peers[player_id]
+	return ws != null and ws.get_ready_state() == WebSocketPeer.STATE_OPEN
+
+
+func get_player_screen(player_id: int) -> String:
+	if not is_player_connected(player_id):
+		return ""
+	return String(_player_screens.get(player_id, "overworld"))
+
+
+func get_player_screen_display(player_id: int) -> String:
+	if not is_player_connected(player_id):
+		return "Disconnected"
+	var screen := get_player_screen(player_id)
+	match screen:
+		"overworld":
+			return "Overworld"
+		"casting":
+			return "Casting"
+		"reeling":
+			return "Reeling"
+		"connection":
+			return "Connecting"
+		"menu":
+			return "Menu"
+		"menu:fish_box":
+			return "Menu (Fish Box)"
+		"menu:almanac":
+			return "Menu (Almanac)"
+		"menu:equipment":
+			return "Menu (Inventory)"
+		_:
+			return screen.replace("menu:", "Menu: ").capitalize()
+
+
+func get_player_name(player_id: int) -> String:
+	var custom := String(_player_names.get(player_id, "")).strip_edges()
+	if custom != "":
+		return custom
+	return "Player %d" % player_id
+
+
+func has_custom_player_name(player_id: int) -> bool:
+	return String(_player_names.get(player_id, "")).strip_edges() != ""
+
+
+func set_player_name(player_id: int, new_name: String) -> void:
+	var clean := new_name.strip_edges()
+	if clean.length() > MAX_PLAYER_NAME_LENGTH:
+		clean = clean.substr(0, MAX_PLAYER_NAME_LENGTH)
+	var prev_display := get_player_name(player_id)
+	if clean == "":
+		_player_names.erase(player_id)
+	else:
+		_player_names[player_id] = clean
+	var next_display := get_player_name(player_id)
+	if next_display != prev_display:
+		emit_signal("player_name_changed", player_id, next_display)
+
+
+func get_local_ip() -> String:
+	return _get_local_ip()
+
+
+func get_port() -> int:
+	return PORT
+
+
+func ping_player(player_id: int) -> bool:
+	if not is_player_connected(player_id):
+		return false
+	send_to_player(player_id, {"type": "vibrate", "reason": "bite"})
+	return true
+
+
+func sync_player_identity(player_id: int, display_name: String, screen_side: String) -> void:
+	if not is_player_connected(player_id):
+		return
+	send_to_player(player_id, {
+		"type": "player_info",
+		"player_id": player_id,
+		"player_name": display_name,
+		"screen_side": screen_side,
+	})
+
+
+func clear_all_player_screen_sides() -> void:
+	for player_id in _peers.keys():
+		sync_player_identity(int(player_id), get_player_name(int(player_id)), "")
 
 
 func get_connected_players() -> Array:
