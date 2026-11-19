@@ -226,6 +226,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             sendMessage(msg);
                         });
                     }
+                } else if (newState == AppState.CASTING) {
+                    Button btnCycleBait = findViewById(R.id.btnCycleBait);
+                    if (btnCycleBait != null) {
+                        btnCycleBait.setOnClickListener(v -> sendMenuAction("cycle_bait"));
+                    }
                 } else if (newState == AppState.REELING) {
                     FishingReelView reelView = findViewById(R.id.fishingReelView);
                     if (reelView != null) {
@@ -254,10 +259,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Button btnFishBox = findViewById(R.id.btnFishBox);
         Button btnAlmanac = findViewById(R.id.btnAlmanac);
         Button btnEquipment = findViewById(R.id.btnEquipment);
+        Button btnQuests = findViewById(R.id.btnQuests);
 
         if (btnFishBox != null) btnFishBox.setOnClickListener(v -> sendMenuAction("fish_box"));
         if (btnAlmanac != null) btnAlmanac.setOnClickListener(v -> sendMenuAction("almanac"));
         if (btnEquipment != null) btnEquipment.setOnClickListener(v -> sendMenuAction("equipment"));
+        if (btnQuests != null) btnQuests.setOnClickListener(v -> sendMenuAction("quests"));
 
         styleMenuHeaderButtons();
     }
@@ -266,10 +273,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         MaterialButton btnFishBox = findViewById(R.id.btnFishBox);
         MaterialButton btnAlmanac = findViewById(R.id.btnAlmanac);
         MaterialButton btnEquipment = findViewById(R.id.btnEquipment);
+        MaterialButton btnQuests = findViewById(R.id.btnQuests);
 
         applyHeaderButtonStyle(btnFishBox, "fish_box".equals(activeMenu), "#D95D48", "#FFF9EE");
         applyHeaderButtonStyle(btnAlmanac, "almanac".equals(activeMenu), "#2A9D8F", "#FFF9EE");
         applyHeaderButtonStyle(btnEquipment, "equipment".equals(activeMenu), "#F4C95D", "#3B2312");
+        applyHeaderButtonStyle(btnQuests, "quests".equals(activeMenu), "#7D5BA6", "#FFF9EE");
     }
 
     private void applyHeaderButtonStyle(MaterialButton btn, boolean isActive, String activeHex, String activeTextHex) {
@@ -344,6 +353,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 if (btnTabPrev != null) btnTabPrev.setText("Rods");
                 if (btnTabNext != null) btnTabNext.setText("Bait");
                 if (btnSelect != null) btnSelect.setText("EQUIP");
+                break;
+            case "quests":
+                menuTitle.setText("QUESTS");
+                menuHint.setText("D-Pad: Browse Quests  •  Tabs: Active / Completed");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.VISIBLE);
+                if (btnTabPrev != null) btnTabPrev.setText("Active");
+                if (btnTabNext != null) btnTabNext.setText("Completed");
+                if (btnSelect != null) btnSelect.setText("VIEW");
                 break;
             default:
                 menuTitle.setText("MENU");
@@ -604,6 +621,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         runOnUiThread(MainActivity.this::updatePlayerIdentityBadge);
                     }
 
+                    if ("telemetry".equals(json.optString("type"))) {
+                        final float tension = (float) json.optDouble("tension", 0.0);
+                        final boolean surging = json.optBoolean("surging", false);
+                        runOnUiThread(() -> updateReelingTelemetryUI(tension, surging));
+                    }
+
                     if ("config".equals(json.optString("type")) || json.has("sensitivity") || json.has("swing_threshold") || json.has("tilt_filter_alpha")) {
                         if (json.has("sensitivity")) {
                             applySensitivity((float) json.getDouble("sensitivity"));
@@ -822,6 +845,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void sendMessage(JSONObject json) {
         if (webSocket != null) webSocket.send(json.toString());
+    }
+
+    private void updateReelingTelemetryUI(float tension, boolean surging) {
+        if (currentState != AppState.REELING) return;
+        ProgressBar bar = findViewById(R.id.reelingTensionBar);
+        TextView badge = findViewById(R.id.reelingBadge);
+        float clamped = Math.max(0.0f, Math.min(1.0f, tension));
+        if (bar != null) {
+            bar.setProgress(Math.round(clamped * 100f));
+            int tint = (clamped >= 0.80f || surging) ? Color.parseColor("#FF4B3E")
+                    : (clamped >= 0.55f ? Color.parseColor("#F4C95D") : Color.parseColor("#48CAE4"));
+            bar.setProgressTintList(ColorStateList.valueOf(tint));
+        }
+        if (badge != null) {
+            if (surging || clamped >= 0.85f) {
+                badge.setText("SURGE! SPIN CCW TO RELEASE");
+                badge.setTextColor(Color.parseColor("#FF6B6B"));
+            } else if (clamped >= 0.60f) {
+                badge.setText("TENSION HIGH — CAREFUL!");
+                badge.setTextColor(Color.parseColor("#FFD166"));
+            } else {
+                badge.setText("FISH ON! REEL IT IN");
+                badge.setTextColor(Color.parseColor("#F4C95D"));
+            }
+        }
     }
 
     public String getConnectionStatus() {

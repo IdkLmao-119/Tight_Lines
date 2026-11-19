@@ -76,7 +76,21 @@ func refresh_slot_labels() -> void:
 	for i in range(_slot_buttons.size()):
 		var info: Dictionary = SaveManager.get_slot_info(i)
 		if info["exists"]:
-			_slot_buttons[i].text = "Slot %d\n%s" % [i + 1, info["timestamp"]]
+			var line1 := "Slot %d — %s  •  Day %d (%s)" % [
+				i + 1,
+				String(info.get("scene_name", "Unknown")),
+				int(info.get("day_count", 1)),
+				String(info.get("clock_text", "08:00")),
+			]
+			var line2 := "₱%d  •  Almanac %d%% (%d/%d)  •  %s" % [
+				int(info.get("money", 0)),
+				int(info.get("almanac_percent", 0)),
+				int(info.get("caught_count", 0)),
+				int(info.get("total_fish", 0)),
+				String(info.get("difficulty", "Casual")),
+			]
+			var ts := String(info.get("timestamp", ""))
+			_slot_buttons[i].text = "%s\n%s\n%s" % [line1, line2, ts]
 		else:
 			_slot_buttons[i].text = "Slot %d\nEmpty" % (i + 1)
 

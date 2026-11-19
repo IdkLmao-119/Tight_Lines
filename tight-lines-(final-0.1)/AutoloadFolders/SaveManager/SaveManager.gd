@@ -31,6 +31,7 @@ signal unlock_flag_added(flag: String)
 signal equipment_changed   # owned rods, equipped rod or equipped bait changed
 signal difficulty_changed(difficulty: String)
 signal fish_caught(fish_id: String)
+signal fish_record_broken(fish_id: String, size_cm: float, weight_kg: float)
 signal money_changed(amount: int)
 
 const SAVE_DIR := "user://saves/"
@@ -55,6 +56,7 @@ const NON_SAVABLE_SCENES := ["main_menu", "save_slots", "multiplayer_lobby", "mu
 var _unlock_flags: Array = []      # Array of String
 var _owned_rods: Array = []        # Array of String (rod ids)
 var _caught_fish: Array = []       # Array of String (fish ids)
+var _fish_records: Dictionary = {} # { fish_id: { count, best_size_cm, best_weight_kg } }
 var _equipped_rod := ""
 var _equipped_bait := ""
 var _difficulty := NEW_GAME_DIFFICULTY
@@ -99,11 +101,38 @@ func slot_exists(slot: int) -> bool:
 func get_slot_info(slot: int) -> Dictionary:
 	var data := load_game(slot)
 	if data.is_empty():
-		return {"exists": false, "timestamp": "", "version": 0}
+		return {
+			"exists": false, "timestamp": "", "version": 0,
+			"scene_id": "", "scene_name": "", "money": 0,
+			"caught_count": 0, "total_fish": 0, "almanac_percent": 0,
+			"day_count": 1, "clock_text": "", "difficulty": NEW_GAME_DIFFICULTY,
+		}
+	var scene_id := String(data.get("scene", DEFAULT_START_SCENE))
+	var gm := _autoload("GameManager")
+	var scene_name := String(gm.call("get_scene_display_name", scene_id)) if (gm != null and gm.has_method("get_scene_display_name")) else scene_id
+	var caught: Array = data.get("caught_fish", []) if data.get("caught_fish") is Array else []
+	var db := _autoload("GameDB")
+	var total_fish := 0
+	if db != null and bool(db.get("is_loaded")) and db.has_method("get_ids"):
+		total_fish = (db.call("get_ids", "fish") as Array).size()
+	var almanac_pct := int(round(float(caught.size()) / float(total_fish) * 100.0)) if total_fish > 0 else 0
+	var wt: Dictionary = data.get("world_time", {}) if data.get("world_time") is Dictionary else {}
+	var day_num := maxi(int(wt.get("day_count", 1)), 1)
+	var mins := float(wt.get("game_minutes", 480.0))
+	var clock_str := "%02d:%02d" % [int(mins / 60.0) % 24, int(mins) % 60]
 	return {
 		"exists": true,
 		"timestamp": String(data.get("timestamp", "")),
 		"version": int(data.get("version", 0)),
+		"scene_id": scene_id,
+		"scene_name": scene_name,
+		"money": maxi(int(data.get("money", 0)), 0),
+		"caught_count": caught.size(),
+		"total_fish": total_fish,
+		"almanac_percent": almanac_pct,
+		"day_count": day_num,
+		"clock_text": clock_str,
+		"difficulty": String(data.get("difficulty", NEW_GAME_DIFFICULTY)).capitalize(),
 	}
 
 
@@ -126,6 +155,7 @@ func build_save_data() -> Dictionary:
 		"unlock_flags": _unlock_flags.duplicate(),
 		"owned_rods": _owned_rods.duplicate(),
 		"caught_fish": _caught_fish.duplicate(),
+		"fish_records": _fish_records.duplicate(true),
 		"equipped_rod": _equipped_rod,
 		"equipped_bait": _equipped_bait,
 	}
@@ -137,6 +167,10 @@ func build_save_data() -> Dictionary:
 	var quests := _autoload("QuestManager")
 	if quests != null:
 		data["quests"] = quests.call("to_save_data")
+
+	# Persistent world clock & weather.
+	if game_manager != null and game_manager.has_method("get_world_time_state"):
+		data["world_time"] = game_manager.call("get_world_time_state")
 	return data
 
 
@@ -169,9 +203,14 @@ func apply_save_data(data: Dictionary) -> void:
 	if data.has("unlock_flags"):
 		_unlock_flags = _clean_flags(data["unlock_flags"])
 
-	# Caught fish (Almanac).
+	# Caught fish (Almanac) & Personal Best records.
 	if data.has("caught_fish"):
 		_caught_fish = _clean_ids(data["caught_fish"], "has_fish", "fish")
+	if data.has("fish_records"):
+		_fish_records = _clean_fish_records(data["fish_records"])
+		for fid in _fish_records.keys():
+			if not _caught_fish.has(fid):
+				_caught_fish.append(fid)
 
 	# Rods.
 	if data.has("owned_rods"):
@@ -209,6 +248,14 @@ func apply_save_data(data: Dictionary) -> void:
 		quests.call("load_save_data", quest_data)
 		if quests.has_method("claim_pending_rewards"):
 			quests.call("claim_pending_rewards")
+
+	# World clock & weather.
+	var gm := _autoload("GameManager")
+	if gm != null:
+		if data.get("world_time") is Dictionary and gm.has_method("set_world_time_state"):
+			gm.call("set_world_time_state", data["world_time"])
+		elif gm.has_method("reset_world_time"):
+			gm.call("reset_world_time")
 
 	equipment_changed.emit()
 	difficulty_changed.emit(_difficulty)
@@ -312,6 +359,70 @@ func has_caught_fish(fish_id: String) -> bool:
 
 func get_caught_fish() -> Array:
 	return _caught_fish.duplicate()
+
+
+func record_fish_catch(fish_id: String, size_cm: float, weight_kg: float = -1.0) -> Dictionary:
+	if not _db_knows("has_fish", fish_id):
+		push_warning("SaveManager: unknown fish id '%s'." % fish_id)
+		return {"is_new_species": false, "is_new_record": false, "trophy_tier": "", "record": {}}
+	var clean_size := maxf(size_cm, 0.0)
+	var clean_weight := weight_kg
+	if clean_weight < 0.0:
+		var db := _autoload("GameDB")
+		if db != null and bool(db.get("is_loaded")) and db.has_method("get_weight_for_size_kg"):
+			clean_weight = float(db.call("get_weight_for_size_kg", fish_id, clean_size))
+		else:
+			clean_weight = 0.0
+	clean_weight = maxf(clean_weight, 0.0)
+
+	var is_new_species := record_caught_fish(fish_id)
+	var rec: Dictionary = _fish_records.get(fish_id, {
+		"count": 0,
+		"best_size_cm": 0.0,
+		"best_weight_kg": 0.0,
+	})
+	var prev_best := float(rec.get("best_size_cm", 0.0))
+	rec["count"] = int(rec.get("count", 0)) + 1
+	var is_new_record := (not is_new_species) and (clean_size > prev_best + 0.001)
+	if clean_size > prev_best:
+		rec["best_size_cm"] = snappedf(clean_size, 0.1)
+		rec["best_weight_kg"] = snappedf(clean_weight, 0.01)
+	_fish_records[fish_id] = rec
+	if is_new_record:
+		fish_record_broken.emit(fish_id, float(rec["best_size_cm"]), float(rec["best_weight_kg"]))
+	return {
+		"is_new_species": is_new_species,
+		"is_new_record": is_new_record,
+		"trophy_tier": get_trophy_tier(fish_id, clean_size),
+		"record": rec.duplicate(true),
+	}
+
+
+func get_fish_record(fish_id: String) -> Dictionary:
+	if not _fish_records.has(fish_id):
+		return {"count": 1 if _caught_fish.has(fish_id) else 0, "best_size_cm": 0.0, "best_weight_kg": 0.0}
+	return (_fish_records[fish_id] as Dictionary).duplicate(true)
+
+
+func get_trophy_tier(fish_id: String, size_cm: float) -> String:
+	var db := _autoload("GameDB")
+	if db == null or not bool(db.get("is_loaded")) or not bool(db.call("has_fish", fish_id)):
+		return ""
+	var fish: Object = db.call("get_fish", fish_id)
+	if fish == null:
+		return ""
+	var lo := float(fish.get("min_size"))
+	var hi := float(fish.get("max_size"))
+	if hi <= lo:
+		return "Bronze"
+	var ratio := clampf((size_cm - lo) / (hi - lo), 0.0, 1.0)
+	if ratio >= 0.90:
+		return "Gold"
+	if ratio >= 0.70:
+		return "Silver"
+	if ratio >= 0.50:
+		return "Bronze"
+	return ""
 
 
 # ============================================================================
@@ -452,6 +563,7 @@ func _reset_player_state() -> void:
 	_unlock_flags = []
 	_owned_rods = NEW_GAME_OWNED_ROD_IDS.duplicate()
 	_caught_fish = []
+	_fish_records = {}
 	_equipped_rod = NEW_GAME_EQUIPPED_ROD
 	_equipped_bait = NEW_GAME_EQUIPPED_BAIT
 	_difficulty = NEW_GAME_DIFFICULTY
@@ -501,6 +613,25 @@ func _clean_ids(raw: Variant, method: String, label: String) -> Array:
 			push_warning("SaveManager: dropped unknown %s id '%s'." % [label, id])
 		elif not result.has(id):
 			result.append(id)
+	return result
+
+
+func _clean_fish_records(raw: Variant) -> Dictionary:
+	var result := {}
+	if not (raw is Dictionary):
+		return result
+	for raw_id in raw:
+		var fid := String(raw_id)
+		if not _db_knows("has_fish", fid):
+			continue
+		var entry: Variant = raw[raw_id]
+		if not (entry is Dictionary):
+			continue
+		result[fid] = {
+			"count": maxi(int(entry.get("count", 1)), 1),
+			"best_size_cm": maxf(float(entry.get("best_size_cm", 0.0)), 0.0),
+			"best_weight_kg": maxf(float(entry.get("best_weight_kg", 0.0)), 0.0),
+		}
 	return result
 
 

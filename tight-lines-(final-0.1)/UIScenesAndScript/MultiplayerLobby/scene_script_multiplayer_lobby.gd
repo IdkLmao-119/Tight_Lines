@@ -7,6 +7,22 @@ const DEFAULT_DURATION_SEC := 120
 const PRESET_DURATIONS := [60, 120, 180, 300]
 const ACTIVITY_FLASH_SEC := 1.8
 
+const WIN_MODES: Array[Dictionary] = [
+	{"id": "total_weight", "label": "Total Weight"},
+	{"id": "biggest_fish", "label": "Biggest Fish"},
+	{"id": "most_fish", "label": "Most Fish"},
+]
+
+const ARENA_SPOTS: Array[Dictionary] = [
+	{"id": "location_marikina", "label": "Marikina River"},
+	{"id": "location_imus", "label": "Imus Fields"},
+	{"id": "location_kawit", "label": "Kawit Seaside"},
+	{"id": "location_fish_pens", "label": "Noveleta Pens"},
+	{"id": "location_salt_farm", "label": "Noveleta Salt Farm"},
+	{"id": "location_calatagan", "label": "Calatagan Mangroves"},
+	{"id": "location_fortune_island", "label": "Fortune Island"},
+]
+
 const COLOR_CONNECTED := Color(0.45, 0.95, 0.56, 1.0)
 const COLOR_WAITING := Color(1.0, 0.72, 0.42, 1.0)
 const COLOR_SCREEN_ACTIVE := Color(0.68, 0.92, 1.0, 1.0)
@@ -58,7 +74,11 @@ const COLOR_ACTIVITY_IDLE := Color(0.84, 0.82, 0.78, 1.0)
 @onready var _results_rematch_button: Button = %ResultsRematchButton
 
 var _duration_sec: int = DEFAULT_DURATION_SEC
+var _win_mode_idx: int = 0
+var _arena_idx: int = 0
 var _slot_player_ids: Array[int] = [1, 2]
+var _win_mode_button: Button = null
+var _arena_button: Button = null
 var _is_syncing_ui := false
 var _activity_timers: Array[float] = [0.0, 0.0]
 
@@ -84,6 +104,7 @@ func _ready() -> void:
 	}
 
 	_restore_lobby_memory()
+	_build_match_options_bar()
 	_connect_ui_signals()
 	_connect_connection_manager()
 	_reconcile_connected_slots()
@@ -136,6 +157,8 @@ func get_scene_state() -> Dictionary:
 	return {
 		"duration_sec": _duration_sec,
 		"slot_player_ids": _slot_player_ids.duplicate(),
+		"win_mode_idx": _win_mode_idx,
+		"arena_idx": _arena_idx,
 	}
 
 
@@ -145,12 +168,68 @@ func _restore_lobby_memory() -> void:
 		return
 	if mem.has("duration_sec"):
 		_duration_sec = clampi(int(mem["duration_sec"]), MIN_DURATION_SEC, MAX_DURATION_SEC)
+	if mem.has("win_mode_idx"):
+		_win_mode_idx = clampi(int(mem["win_mode_idx"]), 0, WIN_MODES.size() - 1)
+	if mem.has("arena_idx"):
+		_arena_idx = clampi(int(mem["arena_idx"]), 0, ARENA_SPOTS.size() - 1)
 	var saved_ids: Variant = mem.get("slot_player_ids", [])
 	if saved_ids is Array and saved_ids.size() >= 2:
 		var p0 := int(saved_ids[0])
 		var p1 := int(saved_ids[1])
 		if p0 > 0 and p1 > 0 and p0 != p1:
 			_slot_player_ids.assign([p0, p1])
+
+
+func _build_match_options_bar() -> void:
+	var parent_box := _duration_value_label.get_parent().get_parent()
+	if parent_box == null:
+		return
+	var row := HBoxContainer.new()
+	row.name = "MatchOptionsRow"
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 14)
+
+	_win_mode_button = Button.new()
+	_win_mode_button.name = "WinModeButton"
+	_win_mode_button.custom_minimum_size = Vector2(240, 42)
+	_win_mode_button.add_theme_font_size_override("font_size", 18)
+	_win_mode_button.pressed.connect(_cycle_win_mode)
+	row.add_child(_win_mode_button)
+
+	_arena_button = Button.new()
+	_arena_button.name = "ArenaButton"
+	_arena_button.custom_minimum_size = Vector2(260, 42)
+	_arena_button.add_theme_font_size_override("font_size", 18)
+	_arena_button.pressed.connect(_cycle_arena)
+	row.add_child(_arena_button)
+
+	parent_box.add_child(row)
+	_refresh_match_options_ui()
+
+
+func _cycle_win_mode() -> void:
+	_win_mode_idx = (_win_mode_idx + 1) % WIN_MODES.size()
+	_refresh_match_options_ui()
+
+
+func _cycle_arena() -> void:
+	_arena_idx = (_arena_idx + 1) % ARENA_SPOTS.size()
+	_refresh_match_options_ui()
+
+
+func _refresh_match_options_ui() -> void:
+	if _win_mode_button != null:
+		_win_mode_button.text = "Mode: %s" % WIN_MODES[_win_mode_idx]["label"]
+	if _arena_button != null:
+		_arena_button.text = "Arena: %s" % ARENA_SPOTS[_arena_idx]["label"]
+
+
+func get_selected_win_mode() -> String:
+	return String(WIN_MODES[_win_mode_idx]["id"])
+
+
+func get_selected_arena_id() -> String:
+	return String(ARENA_SPOTS[_arena_idx]["id"])
 
 
 func _connect_ui_signals() -> void:
@@ -546,6 +625,8 @@ func _start_match() -> void:
 		"multiplayer": true,
 		"return_to": "multiplayer_lobby",
 		"time_limit_sec": float(_duration_sec),
+		"win_mode": get_selected_win_mode(),
+		"spot_id": get_selected_arena_id(),
 		"player_ids": [left_pid, right_pid],
 		"player_names": {
 			left_pid: left_name,
@@ -592,10 +673,16 @@ func _show_results_overlay(payload: Dictionary) -> void:
 	_results_right_stats.text = _format_player_stats(results.get(right_pid, {}))
 
 	var winner_id := int(payload.get("winner", -1))
+	var mode_id := String(payload.get("win_mode", "total_weight"))
+	var mode_label := "Total Weight"
+	for m in WIN_MODES:
+		if String(m["id"]) == mode_id:
+			mode_label = String(m["label"])
+			break
 	if winner_id == -1:
-		_results_winner_label.text = "It's a Tie!"
+		_results_winner_label.text = "It's a Tie! (%s)" % mode_label
 	else:
-		_results_winner_label.text = "%s Wins!" % _result_player_name(winner_id, names)
+		_results_winner_label.text = "%s Wins! (%s)" % [_result_player_name(winner_id, names), mode_label]
 
 	_results_overlay.visible = true
 	_results_close_button.grab_focus()

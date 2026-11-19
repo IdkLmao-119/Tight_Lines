@@ -89,7 +89,16 @@ func _refresh_timer_hud() -> void:
 		_timer_value_label.add_theme_color_override("font_color", Color(1.0, 0.36, 0.32, 1.0))
 		return
 
-	_timer_title_label.text = "TIME LEFT"
+	var mode_id := "total_weight"
+	if fishing_manager.has_method(&"get_context"):
+		mode_id = String(fishing_manager.get_context().get("win_mode", "total_weight"))
+	var mode_tag := "WEIGHT"
+	match mode_id:
+		"biggest_fish":
+			mode_tag = "BIGGEST FISH"
+		"most_fish":
+			mode_tag = "MOST FISH"
+	_timer_title_label.text = "TIME LEFT  •  %s" % mode_tag
 	var whole_sec := ceili(time_left)
 	var mins := whole_sec / 60
 	var secs := whole_sec % 60

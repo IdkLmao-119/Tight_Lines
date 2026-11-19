@@ -85,7 +85,7 @@ func _show_bait_shop() -> void:
 
 
 func _update_money_label(amount: int) -> void:
-	_money_label.text = "Money: %d G" % amount
+	_money_label.text = "Pesos: ₱%d" % amount
 
 
 func _set_status(msg: String) -> void:
@@ -93,12 +93,12 @@ func _set_status(msg: String) -> void:
 
 
 func _on_rod_purchased(rod_name: String, cost: int) -> void:
-	_set_status("Bought & equipped %s for %d G!" % [rod_name, cost])
+	_set_status("Bought & equipped %s for ₱%d!" % [rod_name, cost])
 
 
 func _on_bait_purchased(item_name: String, count: int, cost: int) -> void:
-	_set_status("Bought & equipped %s x%d for %d G!" % [item_name, count, cost])
+	_set_status("Bought & equipped %s x%d for ₱%d!" % [item_name, count, cost])
 
 
 func _on_fish_sold(fish_name: String, price: int) -> void:
-	_set_status("Sold %s for +%d G!" % [fish_name, price])
+	_set_status("Sold %s for +₱%d!" % [fish_name, price])

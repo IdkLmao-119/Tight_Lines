@@ -93,7 +93,7 @@ func refresh_ui() -> void:
 		var owned_count := InventoryManager.count_of(bait_id)
 		var title := "%s (x%d)" % [display_name, owned_count]
 		var has_room := InventoryManager.can_add(bait_id, pack_count)
-		var btn_text := "Full" if not has_room else "Buy x%d (%dG)" % [pack_count, price]
+		var btn_text := "Full" if not has_room else "Buy x%d (₱%d)" % [pack_count, price]
 		var btn_disabled := (not has_room) or (money < price)
 		card.configure(bait_id, title, tex, btn_text, btn_disabled)
 

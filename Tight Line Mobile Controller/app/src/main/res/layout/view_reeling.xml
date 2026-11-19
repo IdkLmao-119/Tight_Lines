@@ -37,6 +37,17 @@
         android:textStyle="bold"
         android:visibility="gone" />
 
+    <ProgressBar
+        android:id="@+id/reelingTensionBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="18dp"
+        android:layout_below="@id/playerIdentityBadge"
+        android:layout_marginHorizontal="28dp"
+        android:layout_marginTop="10dp"
+        android:max="100"
+        android:progress="0" />
+
     <com.example.myapplication.FishingReelView
         android:id="@+id/fishingReelView"
         android:layout_width="280dp"

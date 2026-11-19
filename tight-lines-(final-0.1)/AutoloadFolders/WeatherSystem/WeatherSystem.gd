@@ -120,11 +120,15 @@ func _ready() -> void:
 
 	_build_rain()
 
-	set_hour(start_hour)
-	var first := start_weather if start_weather != "" else _pick_weather()
-	if start_weather != "" and not _pool.has(start_weather):
-		_warn_once("start_weather", "start_weather '%s' is not in the weather list %s." % [start_weather, str(_pool)])
-	set_weather(first, true)
+	var gm := get_node_or_null("/root/GameManager")
+	if gm != null and gm.has_method("get_world_time_state"):
+		sync_from_world_state(gm.call("get_world_time_state"))
+	else:
+		set_hour(start_hour)
+		var first := start_weather if start_weather != "" else _pick_weather()
+		if start_weather != "" and not _pool.has(start_weather):
+			_warn_once("start_weather", "start_weather '%s' is not in the weather list %s." % [start_weather, str(_pool)])
+		set_weather(first, true)
 	_update_sun()
 
 
@@ -184,11 +188,37 @@ func set_weather(word: String, immediate := false) -> void:
 		print("[WeatherSystem] weather %s -> %s at %s" % [old if old != "" else "(none)", word, get_clock_text()])
 	if old != word:
 		weather_changed.emit(word, old)
+	_push_to_game_manager()
 
 
 # Pick a new random weather right now and restart the 10-minute timer.
 func roll_weather() -> void:
 	set_weather(_pick_weather())
+
+
+func sync_from_world_state(state: Dictionary) -> void:
+	if state.has("day_count"):
+		day_count = maxi(int(state["day_count"]), 1)
+	if state.has("game_minutes"):
+		game_minutes = fposmod(float(state["game_minutes"]), 1440.0)
+		_update_time_of_day()
+	var w := String(state.get("weather", "")).strip_edges().to_lower()
+	if w == "":
+		w = start_weather if start_weather != "" else _pick_weather()
+	set_weather(w, true)
+	_update_sun()
+
+
+func _push_to_game_manager() -> void:
+	var gm := get_node_or_null("/root/GameManager")
+	if gm == null:
+		return
+	gm.world_game_minutes = game_minutes
+	gm.world_day_count = maxi(day_count, 1)
+	if weather != "":
+		gm.world_weather = weather
+	if time_of_day != "":
+		gm.world_time_of_day = time_of_day
 
 
 # ----------------------------------------------------------------------------
@@ -203,6 +233,7 @@ func _advance_minutes(minutes: float) -> void:
 	_update_time_of_day()
 
 	if weather_change_game_minutes <= 0.0:
+		_push_to_game_manager()
 		return
 	_weather_timer += minutes
 	var guard := 0
@@ -210,6 +241,7 @@ func _advance_minutes(minutes: float) -> void:
 		_weather_timer -= weather_change_game_minutes
 		roll_weather()
 		guard += 1
+	_push_to_game_manager()
 
 
 func _update_time_of_day() -> void:
@@ -370,14 +402,31 @@ func _build_rain() -> void:
 	add_child(_rain)
 
 
-# One rain area that follows the main camera. (Split-screen: each player would
-# need its own rain node; not built yet.)
+# Follows the main camera, or the midpoint of all active split-screen SubViewport cameras.
 func _follow_camera() -> void:
 	if _rain == null:
 		return
-	var cam := get_viewport().get_camera_3d()
-	if cam != null:
-		_rain.global_position = cam.global_position + Vector3(0.0, rain_height, 0.0)
+	var cams: Array[Camera3D] = []
+	var main_cam := get_viewport().get_camera_3d()
+	if main_cam != null:
+		cams.append(main_cam)
+	if get_tree() != null and get_tree().current_scene != null:
+		for vp in get_tree().current_scene.find_children("*", "SubViewport", true, false):
+			var sub_cam := (vp as SubViewport).get_camera_3d()
+			if sub_cam != null and not cams.has(sub_cam):
+				cams.append(sub_cam)
+	if cams.is_empty():
+		return
+	var center := Vector3.ZERO
+	for c in cams:
+		center += c.global_position
+	center /= float(cams.size())
+	_rain.global_position = center + Vector3(0.0, rain_height, 0.0)
+	if cams.size() > 1 and _rain.process_material is ParticleProcessMaterial:
+		var spread_x := rain_radius
+		for c in cams:
+			spread_x = maxf(spread_x, absf(c.global_position.x - center.x) + rain_radius)
+		(_rain.process_material as ParticleProcessMaterial).emission_box_extents = Vector3(spread_x, 0.5, rain_radius)
 
 
 # ----------------------------------------------------------------------------

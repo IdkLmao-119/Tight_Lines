@@ -90,7 +90,7 @@ func refresh_ui() -> void:
 			tex = record.icon
 
 		var owned := SaveManager.has_rod(rod_id)
-		var btn_text := "Owned" if owned else "Buy (%dG)" % price
+		var btn_text := "Owned" if owned else "Buy (₱%d)" % price
 		var btn_disabled := owned or (money < price)
 		card.configure(rod_id, display_name, tex, btn_text, btn_disabled)
 
