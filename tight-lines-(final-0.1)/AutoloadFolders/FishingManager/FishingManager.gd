@@ -112,6 +112,7 @@ enum Difficulty { CASUAL, ANGLER }
 @export var debug_spot_id := ""                  # Spot used when no GameManager context is passed. | Fill in for F6 testing.
 @export var debug_rod_id := ""                   # Rod used when no context is passed. | Fill in for F6 testing.
 @export var debug_bait_id := ""                  # Bait used when no context is passed. | Fill in for F6 testing.
+@export var force_debug_equipment := false       # Always use debug_rod_id and debug_bait_id, ignoring SaveManager/context.
 @export var debug_multiplayer := false           # Test the 2-player scene without GameManager. | F6 testing only.
 @export var debug_log := true                    # Print state changes and rejections. | Turn off in a release build.
 
@@ -1298,17 +1299,23 @@ func _on_cancel(player_id: int) -> void:
 
 # --- Helpers ---
 func _fill_debug_defaults() -> void:
-	# In single-player, pull the player's equipped rod and bait from SaveManager
-	# (set via the Equipment Inventory UI) before falling back to debug exports.
-	if not _multiplayer and _save != null:
-		if String(_context.get("rod_id", "")) == "" and _save.has_method("get_equipped_rod"):
-			var eq_rod := String(_save.get_equipped_rod())
-			if eq_rod != "":
-				_context["rod_id"] = eq_rod
-		if String(_context.get("bait_id", "")) == "" and _save.has_method("get_equipped_bait"):
-			var eq_bait := String(_save.get_equipped_bait())
-			if eq_bait != "":
-				_context["bait_id"] = eq_bait
+	if force_debug_equipment:
+		if debug_rod_id != "":
+			_context["rod_id"] = debug_rod_id
+		if debug_bait_id != "":
+			_context["bait_id"] = debug_bait_id
+	else:
+		# In single-player, pull the player's equipped rod and bait from SaveManager
+		# (set via the Equipment Inventory UI) before falling back to debug exports.
+		if not _multiplayer and _save != null:
+			if String(_context.get("rod_id", "")) == "" and _save.has_method("get_equipped_rod"):
+				var eq_rod := String(_save.get_equipped_rod())
+				if eq_rod != "":
+					_context["rod_id"] = eq_rod
+			if String(_context.get("bait_id", "")) == "" and _save.has_method("get_equipped_bait"):
+				var eq_bait := String(_save.get_equipped_bait())
+				if eq_bait != "":
+					_context["bait_id"] = eq_bait
 
 	var fallbacks := {"spot_id": debug_spot_id, "rod_id": debug_rod_id, "bait_id": debug_bait_id}
 	for key in fallbacks:
@@ -1317,7 +1324,7 @@ func _fill_debug_defaults() -> void:
 
 
 func _on_save_equipment_changed() -> void:
-	if _multiplayer or _save == null:
+	if force_debug_equipment or _multiplayer or _save == null:
 		return
 	var new_rod := String(_save.get_equipped_rod()) if _save.has_method("get_equipped_rod") else ""
 	var new_bait := String(_save.get_equipped_bait()) if _save.has_method("get_equipped_bait") else ""

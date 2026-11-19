@@ -16,9 +16,16 @@ public class FishingReelView extends View {
 
     private OnReelListener listener;
 
+    private final Paint shadowBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint spoolCorePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint lineWindPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint ringPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint goldRimPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint spokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint hubCapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint handleHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint handlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint handleRimPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private float currentAngleDeg = 0f;
     private float lastTouchAngleDeg = 0f;
@@ -36,16 +43,42 @@ public class FishingReelView extends View {
     }
 
     private void init() {
-        ringPaint.setColor(Color.parseColor("#C19A6B"));
+        shadowBorderPaint.setColor(Color.parseColor("#3B2312"));
+        shadowBorderPaint.setStyle(Paint.Style.STROKE);
+        shadowBorderPaint.setStrokeWidth(26f);
+
+        spoolCorePaint.setColor(Color.parseColor("#103763"));
+        spoolCorePaint.setStyle(Paint.Style.FILL);
+
+        lineWindPaint.setColor(Color.parseColor("#2A5E9E"));
+        lineWindPaint.setStyle(Paint.Style.STROKE);
+        lineWindPaint.setStrokeWidth(4f);
+
+        ringPaint.setColor(Color.parseColor("#D4A259"));
         ringPaint.setStyle(Paint.Style.STROKE);
-        ringPaint.setStrokeWidth(16f);
+        ringPaint.setStrokeWidth(18f);
 
-        spokePaint.setColor(Color.parseColor("#C19A6B"));
+        goldRimPaint.setColor(Color.parseColor("#F4C95D"));
+        goldRimPaint.setStyle(Paint.Style.STROKE);
+        goldRimPaint.setStrokeWidth(4f);
+
+        spokePaint.setColor(Color.parseColor("#D4A259"));
         spokePaint.setStyle(Paint.Style.STROKE);
-        spokePaint.setStrokeWidth(8f);
+        spokePaint.setStrokeWidth(11f);
+        spokePaint.setStrokeCap(Paint.Cap.ROUND);
 
-        handlePaint.setColor(Color.parseColor("#C19A6B"));
+        hubCapPaint.setColor(Color.parseColor("#F4C95D"));
+        hubCapPaint.setStyle(Paint.Style.FILL);
+
+        handleHaloPaint.setColor(Color.parseColor("#66F4C95D"));
+        handleHaloPaint.setStyle(Paint.Style.FILL);
+
+        handlePaint.setColor(Color.parseColor("#7A4E2D"));
         handlePaint.setStyle(Paint.Style.FILL);
+
+        handleRimPaint.setColor(Color.parseColor("#FFF3DC"));
+        handleRimPaint.setStyle(Paint.Style.STROKE);
+        handleRimPaint.setStrokeWidth(4f);
     }
 
     public void setOnReelListener(OnReelListener listener) {
@@ -63,15 +96,32 @@ public class FishingReelView extends View {
         canvas.save();
         canvas.rotate(currentAngleDeg, cx, cy);
 
-        // Outer reel circle
+        // Deep-ocean spool core & wound fishing line rings
+        canvas.drawCircle(cx, cy, radius, spoolCorePaint);
+        canvas.drawCircle(cx, cy, radius * 0.76f, lineWindPaint);
+        canvas.drawCircle(cx, cy, radius * 0.56f, lineWindPaint);
+        canvas.drawCircle(cx, cy, radius * 0.36f, lineWindPaint);
+
+        // Brushed brass reel rim with dark outline & gold highlight
+        canvas.drawCircle(cx, cy, radius, shadowBorderPaint);
         canvas.drawCircle(cx, cy, radius, ringPaint);
+        canvas.drawCircle(cx, cy, radius + 5f, goldRimPaint);
 
-        // Cross spokes so rotation is visually obvious
-        canvas.drawLine(cx - radius, cy, cx + radius, cy, spokePaint);
-        canvas.drawLine(cx, cy - radius, cx, cy + radius, spokePaint);
+        // Bold brass spokes
+        canvas.drawLine(cx - radius * 0.9f, cy, cx + radius * 0.9f, cy, spokePaint);
+        canvas.drawLine(cx, cy - radius * 0.9f, cx, cy + radius * 0.9f, spokePaint);
 
-        // Reel handle/knob near the edge
-        canvas.drawCircle(cx + radius * 0.75f, cy, 28f, handlePaint);
+        // Center brass cap + bolt
+        canvas.drawCircle(cx, cy, 24f, hubCapPaint);
+        canvas.drawCircle(cx, cy, 10f, handlePaint);
+
+        // Wooden crank handle/knob near the edge
+        float hx = cx + radius * 0.75f;
+        if (isDragging) {
+            canvas.drawCircle(hx, cy, 42f, handleHaloPaint);
+        }
+        canvas.drawCircle(hx, cy, 28f, handlePaint);
+        canvas.drawCircle(hx, cy, 28f, handleRimPaint);
 
         canvas.restore();
     }

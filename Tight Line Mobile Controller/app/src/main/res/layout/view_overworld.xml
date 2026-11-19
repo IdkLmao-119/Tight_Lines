@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"
+    android:background="@drawable/bg_screen_water"
     android:fitsSystemWindows="true"
     android:padding="16dp">
 
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:id="@+id/modeTitle"
@@ -21,33 +21,38 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/menuHeaderBar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
-        android:text="[ Overworld Controller ]"
-        android:textAlignment="center"
-        android:textColor="#00FF66"
-        android:textSize="16sp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/bg_pill_badge"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="7dp"
+        android:text="OVERWORLD"
+        android:textColor="@color/gold_highlight"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <com.example.myapplication.DPadView
         android:id="@+id/dpadView"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
         android:layout_centerInParent="true" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnInteract"
-        android:layout_width="180dp"
-        android:layout_height="58dp"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="#F4A261"
+        android:backgroundTint="@color/coral_primary"
         android:insetTop="0dp"
         android:insetBottom="0dp"
-        android:text="INTERACT (E)"
-        android:textColor="#121212"
-        android:textSize="16sp"
+        android:text="INTERACT"
+        android:textAllCaps="false"
+        android:textColor="@color/text_light"
+        android:textSize="17sp"
         android:textStyle="bold"
-        app:cornerRadius="14dp" />
+        app:cornerRadius="16dp"
+        app:strokeColor="@color/parchment"
+        app:strokeWidth="2dp" />
 
 </RelativeLayout>

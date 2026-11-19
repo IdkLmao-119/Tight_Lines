@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,11 +66,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private WebSocket webSocket;
 
     private static final long RECONNECT_DELAY_MS = 2000L;
+    private static final long AUTO_DISCOVER_INTERVAL_MS = 3500L;
+    private static final String PREF_LAST_IP = "last_pc_ip";
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable reconnectRunnable;
+    private Runnable autoDiscoverRunnable;
     private String lastIp = null;
     private boolean wantConnected = false;
     private int connectionAttempt = 0;
+    private volatile boolean isDiscovering = false;
+    private boolean triedSavedIpThisCycle = false;
+    private int reconnectFailureCount = 0;
 
     private String serverUrl = null;
     private static final int SERVER_PORT = 9080;
@@ -112,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private String activeMenu = "none";
 
     private TextView statusText;
+    private TextView connectionSubtext;
+    private ProgressBar connectingSpinner;
     private EditText serverIpInput;
     private Button connectButton;
     private Button discoverButton;
@@ -128,6 +137,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         reconnectRunnable = () -> {
             if (wantConnected && !isConnected && lastIp != null) {
                 connectToServer(lastIp);
+            }
+        };
+
+        autoDiscoverRunnable = () -> {
+            if (currentState == AppState.CONNECTION && !isConnected) {
+                startAutoDiscovery(false);
             }
         };
 
@@ -242,22 +257,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         MaterialButton btnAlmanac = findViewById(R.id.btnAlmanac);
         MaterialButton btnEquipment = findViewById(R.id.btnEquipment);
 
-        applyHeaderButtonStyle(btnFishBox, "fish_box".equals(activeMenu), "#2E86DE");
-        applyHeaderButtonStyle(btnAlmanac, "almanac".equals(activeMenu), "#00BFA5");
-        applyHeaderButtonStyle(btnEquipment, "equipment".equals(activeMenu), "#F4A261");
+        applyHeaderButtonStyle(btnFishBox, "fish_box".equals(activeMenu), "#D95D48", "#FFF9EE");
+        applyHeaderButtonStyle(btnAlmanac, "almanac".equals(activeMenu), "#2A9D8F", "#FFF9EE");
+        applyHeaderButtonStyle(btnEquipment, "equipment".equals(activeMenu), "#F4C95D", "#3B2312");
     }
 
-    private void applyHeaderButtonStyle(MaterialButton btn, boolean isActive, String activeHex) {
+    private void applyHeaderButtonStyle(MaterialButton btn, boolean isActive, String activeHex, String activeTextHex) {
         if (btn == null) return;
         if (isActive) {
             btn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(activeHex)));
-            btn.setTextColor(Color.parseColor("#0F172A"));
-            btn.setStrokeColor(ColorStateList.valueOf(Color.WHITE));
-            btn.setStrokeWidth(4);
+            btn.setTextColor(Color.parseColor(activeTextHex));
+            btn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#FFF9EE")));
+            btn.setStrokeWidth(5);
         } else {
-            btn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#263248")));
-            btn.setTextColor(Color.parseColor("#E2E8F0"));
-            btn.setStrokeWidth(0);
+            btn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#6C4527")));
+            btn.setTextColor(Color.parseColor("#FFF3DC"));
+            btn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#C89B6E")));
+            btn.setStrokeWidth(2);
         }
     }
 
@@ -298,32 +314,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         switch (activeMenu) {
             case "almanac":
-                menuTitle.setText("📖 ALMANAC");
-                menuHint.setText("D-Pad: Browse Fish  •  Select: View Entry");
+                menuTitle.setText("ALMANAC");
+                menuHint.setText("D-Pad: Browse Fish  •  View: Open Entry");
                 if (menuTabBar != null) menuTabBar.setVisibility(View.VISIBLE);
-                if (btnTabPrev != null) btnTabPrev.setText("◀ Prev Area");
-                if (btnTabNext != null) btnTabNext.setText("Next Area ▶");
-                if (btnSelect != null) btnSelect.setText("✓ VIEW");
+                if (btnTabPrev != null) btnTabPrev.setText("< Prev Area");
+                if (btnTabNext != null) btnTabNext.setText("Next Area >");
+                if (btnSelect != null) btnSelect.setText("VIEW");
                 break;
             case "fish_box":
-                menuTitle.setText("🐟 FISH BOX");
-                menuHint.setText("D-Pad: Browse Slots  •  Select: Inspect Fish");
+                menuTitle.setText("FISH BOX");
+                menuHint.setText("D-Pad: Browse Slots  •  Inspect: Check Fish");
                 if (menuTabBar != null) menuTabBar.setVisibility(View.GONE);
-                if (btnSelect != null) btnSelect.setText("✓ INSPECT");
+                if (btnSelect != null) btnSelect.setText("INSPECT");
                 break;
             case "equipment":
-                menuTitle.setText("🎒 INVENTORY");
-                menuHint.setText("D-Pad: Browse Rods & Bait  •  Select: Equip");
+                menuTitle.setText("INVENTORY");
+                menuHint.setText("D-Pad: Browse Rods & Bait  •  Equip: Set Active");
                 if (menuTabBar != null) menuTabBar.setVisibility(View.VISIBLE);
-                if (btnTabPrev != null) btnTabPrev.setText("🎣 Rods");
-                if (btnTabNext != null) btnTabNext.setText("🪱 Bait");
-                if (btnSelect != null) btnSelect.setText("✓ EQUIP");
+                if (btnTabPrev != null) btnTabPrev.setText("Rods");
+                if (btnTabNext != null) btnTabNext.setText("Bait");
+                if (btnSelect != null) btnSelect.setText("EQUIP");
                 break;
             default:
                 menuTitle.setText("MENU");
                 menuHint.setText("D-Pad: Navigate  •  Select: Confirm");
                 if (menuTabBar != null) menuTabBar.setVisibility(View.GONE);
-                if (btnSelect != null) btnSelect.setText("✓ SELECT");
+                if (btnSelect != null) btnSelect.setText("SELECT");
                 break;
         }
     }
@@ -341,22 +357,75 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void setupConnectionUI() {
         statusText = findViewById(R.id.statusText);
+        connectionSubtext = findViewById(R.id.connectionSubtext);
+        connectingSpinner = findViewById(R.id.connectingSpinner);
         serverIpInput = findViewById(R.id.serverIpInput);
         connectButton = findViewById(R.id.connectButton);
         discoverButton = findViewById(R.id.discoverButton);
+        Button btnToggleManual = findViewById(R.id.btnToggleManual);
+        LinearLayout manualConnectSection = findViewById(R.id.manualConnectSection);
 
-        statusText.setText(getConnectionStatus());
+        String savedIp = getSavedIp();
+        if (serverIpInput != null && savedIp != null && !savedIp.isEmpty()) {
+            serverIpInput.setText(savedIp);
+        }
 
-        connectButton.setOnClickListener(v -> {
-            String ip = serverIpInput.getText().toString().trim();
-            if (ip.isEmpty()) {
-                Toast.makeText(this, "Enter an IP address first", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            connectToServer(ip);
-        });
+        if (btnToggleManual != null && manualConnectSection != null) {
+            btnToggleManual.setOnClickListener(v -> {
+                boolean show = manualConnectSection.getVisibility() != View.VISIBLE;
+                manualConnectSection.setVisibility(show ? View.VISIBLE : View.GONE);
+                btnToggleManual.setText(show ? "Hide Manual Setup ▴" : "Manual IP Setup ▾");
+            });
+        }
 
-        discoverButton.setOnClickListener(v -> performDiscovery());
+        if (connectButton != null) {
+            connectButton.setOnClickListener(v -> {
+                String ip = serverIpInput != null ? serverIpInput.getText().toString().trim() : "";
+                if (ip.isEmpty()) {
+                    Toast.makeText(this, "Enter an IP address first", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                handler.removeCallbacks(autoDiscoverRunnable);
+                reconnectFailureCount = 0;
+                connectToServer(ip);
+            });
+        }
+
+        if (discoverButton != null) {
+            discoverButton.setOnClickListener(v -> {
+                triedSavedIpThisCycle = false;
+                reconnectFailureCount = 0;
+                startAutoDiscovery(true);
+            });
+        }
+
+        if (wantConnected && lastIp != null && reconnectFailureCount <= 1) {
+            setConnectionStatusUI("Reconnecting to " + lastIp + "...", "Hold tight — restoring link", true);
+        } else if (isDiscovering) {
+            setConnectionStatusUI("Searching for Tight Lines PC...", "Auto-connecting on the same Wi-Fi or Hotspot", true);
+        } else {
+            startAutoDiscovery(false);
+        }
+    }
+
+    private void setConnectionStatusUI(String status, String subtext, boolean busy) {
+        if (statusText != null) statusText.setText(status);
+        if (connectionSubtext != null && subtext != null) connectionSubtext.setText(subtext);
+        if (connectingSpinner != null) {
+            connectingSpinner.setVisibility(busy ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    private String getSavedIp() {
+        return getSharedPreferences("controller_prefs", MODE_PRIVATE).getString(PREF_LAST_IP, null);
+    }
+
+    private void saveLastIp(String ip) {
+        if (ip == null || ip.isEmpty()) return;
+        getSharedPreferences("controller_prefs", MODE_PRIVATE)
+                .edit()
+                .putString(PREF_LAST_IP, ip)
+                .apply();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -385,20 +454,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         lastIp = ip;
         wantConnected = true;
         handler.removeCallbacks(reconnectRunnable);
+        handler.removeCallbacks(autoDiscoverRunnable);
         final int attempt = ++connectionAttempt;
 
         serverUrl = "ws://" + ip + ":" + SERVER_PORT;
         Request request = new Request.Builder().url(serverUrl).build();
 
-        runOnUiThread(() -> {
-            if (statusText != null) statusText.setText("Connecting to " + ip + "...");
-        });
+        runOnUiThread(() -> setConnectionStatusUI(
+                "Connecting to " + ip + "...",
+                "Handshaking with Tight Lines PC",
+                true
+        ));
 
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onOpen(WebSocket ws, Response response) {
                 if (attempt != connectionAttempt) return;
                 isConnected = true;
+                reconnectFailureCount = 0;
+                triedSavedIpThisCycle = false;
+                saveLastIp(ip);
+                handler.removeCallbacks(autoDiscoverRunnable);
+                handler.removeCallbacks(reconnectRunnable);
                 switchToState(AppState.OVERWORLD);
 
                 JSONObject msg = new JSONObject();
@@ -479,21 +556,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onFailure(WebSocket ws, Throwable t, Response response) {
                 if (attempt != connectionAttempt) return;
-                isConnected = false;
-                activeMenu = "none";
-                switchToState(AppState.CONNECTION);
-                scheduleReconnect();
+                handleConnectionLost();
             }
 
             @Override
             public void onClosed(WebSocket ws, int code, String reason) {
                 if (attempt != connectionAttempt) return;
-                isConnected = false;
-                activeMenu = "none";
-                switchToState(AppState.CONNECTION);
-                scheduleReconnect();
+                handleConnectionLost();
             }
         });
+    }
+
+    private void handleConnectionLost() {
+        isConnected = false;
+        activeMenu = "none";
+        reconnectFailureCount++;
+        switchToState(AppState.CONNECTION);
+        if (wantConnected && lastIp != null && reconnectFailureCount <= 1) {
+            scheduleReconnect();
+        } else {
+            wantConnected = false;
+            runOnUiThread(() -> {
+                if (currentState == AppState.CONNECTION && !isConnected) {
+                    startAutoDiscovery(false);
+                }
+            });
+        }
     }
 
     private List<InetAddress> getBroadcastAddresses() {
@@ -521,10 +609,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return addresses;
     }
 
-    private void performDiscovery() {
-        runOnUiThread(() -> {
-            if (statusText != null) statusText.setText("Searching for PC...");
-        });
+    private void startAutoDiscovery(boolean userInitiated) {
+        if (isConnected) return;
+        handler.removeCallbacks(autoDiscoverRunnable);
+        if (isDiscovering) return;
+        performDiscovery(userInitiated);
+    }
+
+    private void performDiscovery(boolean userInitiated) {
+        if (isDiscovering || isConnected) return;
+        isDiscovering = true;
+
+        runOnUiThread(() -> setConnectionStatusUI(
+                "Searching for Tight Lines PC...",
+                "Auto-connecting on the same Wi-Fi or Hotspot",
+                true
+        ));
 
         new Thread(() -> {
             try (DatagramSocket socket = new DatagramSocket()) {
@@ -555,24 +655,42 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     discoveredIp = new String(receivePacket.getData(), 0, receivePacket.getLength()).trim();
                 }
                 final String foundIp = discoveredIp;
+                isDiscovering = false;
 
                 runOnUiThread(() -> {
                     if (serverIpInput != null) serverIpInput.setText(foundIp);
-                    if (statusText != null) statusText.setText("Found PC at " + foundIp);
+                    setConnectionStatusUI("Found PC at " + foundIp, "Connecting automatically...", true);
                     connectToServer(foundIp);
                 });
 
             } catch (SocketTimeoutException e) {
-                runOnUiThread(() -> {
-                    if (statusText != null) statusText.setText("No PC found — enter IP manually");
-                    Toast.makeText(this, "Discovery timed out", Toast.LENGTH_SHORT).show();
-                });
+                isDiscovering = false;
+                runOnUiThread(() -> onDiscoveryMissed(userInitiated, "Make sure Tight Lines is running on your PC"));
             } catch (IOException e) {
-                runOnUiThread(() -> {
-                    if (statusText != null) statusText.setText("Discovery error: " + e.getMessage());
-                });
+                isDiscovering = false;
+                runOnUiThread(() -> onDiscoveryMissed(userInitiated, "Check Wi-Fi or Hotspot connection"));
             }
         }).start();
+    }
+
+    private void onDiscoveryMissed(boolean userInitiated, String hint) {
+        if (isConnected || currentState != AppState.CONNECTION) return;
+
+        String savedIp = getSavedIp();
+        if (!triedSavedIpThisCycle && savedIp != null && !savedIp.isEmpty()) {
+            triedSavedIpThisCycle = true;
+            setConnectionStatusUI("Trying last PC (" + savedIp + ")...", hint, true);
+            connectToServer(savedIp);
+            return;
+        }
+
+        triedSavedIpThisCycle = false;
+        setConnectionStatusUI("Searching for Tight Lines PC...", hint + " • Retrying automatically", true);
+        if (userInitiated) {
+            Toast.makeText(this, "No PC found yet — still scanning", Toast.LENGTH_SHORT).show();
+        }
+        handler.removeCallbacks(autoDiscoverRunnable);
+        handler.postDelayed(autoDiscoverRunnable, AUTO_DISCOVER_INTERVAL_MS);
     }
 
     @SuppressWarnings("deprecation")
@@ -762,6 +880,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onResume();
         if (gyroSensor != null) sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
         if (accelSensor != null) sensorManager.registerListener(this, accelSensor, SensorManager.SENSOR_DELAY_GAME);
+        if (currentState == AppState.CONNECTION && !isConnected) {
+            startAutoDiscovery(false);
+        }
     }
 
     @Override
@@ -769,12 +890,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onPause();
         sensorManager.unregisterListener(this);
         swingWindowOpen = false;
+        handler.removeCallbacks(autoDiscoverRunnable);
+        handler.removeCallbacks(reconnectRunnable);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         wantConnected = false;
+        handler.removeCallbacks(autoDiscoverRunnable);
         handler.removeCallbacks(reconnectRunnable);
         if (webSocket != null) webSocket.close(1000, "App closed");
     }
