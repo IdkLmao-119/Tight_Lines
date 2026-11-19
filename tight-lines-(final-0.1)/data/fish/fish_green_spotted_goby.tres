@@ -9,8 +9,9 @@ scientific_name = "Glossogobius giuris"
 description = "A benthic ambush hunter that blends seamlessly into sandy and muddy bottoms.
 Local Name: Biya"
 base_price = 18
-speed = 1.5
-pull_strength = 2.2
+speed = 3.0
+pull_strength = 8.0
+stamina = 45.0
 min_size = 8.0
 avg_size = 16.0
 max_size = 28.0

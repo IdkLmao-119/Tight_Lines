@@ -3,6 +3,8 @@ package com.example.myapplication;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,19 +16,26 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.VibrationEffect;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.os.Vibrator;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.Surface;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,11 +68,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private WebSocket webSocket;
 
     private static final long RECONNECT_DELAY_MS = 2000L;
+    private static final long AUTO_DISCOVER_INTERVAL_MS = 3500L;
+    private static final String PREF_LAST_IP = "last_pc_ip";
+    private static final String PREF_PLAYER_NAME = "player_name";
+    private static final int MAX_PLAYER_NAME_LENGTH = 18;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable reconnectRunnable;
+    private Runnable autoDiscoverRunnable;
     private String lastIp = null;
     private boolean wantConnected = false;
     private int connectionAttempt = 0;
+    private volatile boolean isDiscovering = false;
+    private boolean triedSavedIpThisCycle = false;
+    private int reconnectFailureCount = 0;
 
     private String serverUrl = null;
     private static final int SERVER_PORT = 9080;
@@ -100,10 +117,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private String deviceId;
 
-    private enum AppState { CONNECTION, OVERWORLD, CASTING, REELING }
+    private enum AppState { CONNECTION, OVERWORLD, CASTING, REELING, MENU }
     private AppState currentState = null;
+    private AppState underlyingGameState = AppState.OVERWORLD;
+    private String activeMenu = "none";
+    private String assignedPlayerName = "";
+    private String assignedScreenSide = "";
 
     private TextView statusText;
+    private TextView connectionSubtext;
+    private ProgressBar connectingSpinner;
+    private EditText playerNameInput;
     private EditText serverIpInput;
     private Button connectButton;
     private Button discoverButton;
@@ -120,6 +144,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         reconnectRunnable = () -> {
             if (wantConnected && !isConnected && lastIp != null) {
                 connectToServer(lastIp);
+            }
+        };
+
+        autoDiscoverRunnable = () -> {
+            if (currentState == AppState.CONNECTION && !isConnected) {
+                startAutoDiscovery(false);
             }
         };
 
@@ -152,6 +182,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     break;
                 case REELING:
                     layoutResId = R.layout.view_reeling;
+                    break;
+                case MENU:
+                    layoutResId = R.layout.view_menu;
                     break;
                 default:
                     layoutResId = R.layout.view_connection;
@@ -207,7 +240,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             sendMessage(msg);
                         });
                     }
+                } else if (newState == AppState.MENU) {
+                    setupMenuControlsUI();
                 }
+
+                updatePlayerIdentityBadge();
+                sendScreenState();
             }
         });
     }
@@ -220,6 +258,100 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (btnFishBox != null) btnFishBox.setOnClickListener(v -> sendMenuAction("fish_box"));
         if (btnAlmanac != null) btnAlmanac.setOnClickListener(v -> sendMenuAction("almanac"));
         if (btnEquipment != null) btnEquipment.setOnClickListener(v -> sendMenuAction("equipment"));
+
+        styleMenuHeaderButtons();
+    }
+
+    private void styleMenuHeaderButtons() {
+        MaterialButton btnFishBox = findViewById(R.id.btnFishBox);
+        MaterialButton btnAlmanac = findViewById(R.id.btnAlmanac);
+        MaterialButton btnEquipment = findViewById(R.id.btnEquipment);
+
+        applyHeaderButtonStyle(btnFishBox, "fish_box".equals(activeMenu), "#D95D48", "#FFF9EE");
+        applyHeaderButtonStyle(btnAlmanac, "almanac".equals(activeMenu), "#2A9D8F", "#FFF9EE");
+        applyHeaderButtonStyle(btnEquipment, "equipment".equals(activeMenu), "#F4C95D", "#3B2312");
+    }
+
+    private void applyHeaderButtonStyle(MaterialButton btn, boolean isActive, String activeHex, String activeTextHex) {
+        if (btn == null) return;
+        if (isActive) {
+            btn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(activeHex)));
+            btn.setTextColor(Color.parseColor(activeTextHex));
+            btn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#FFF9EE")));
+            btn.setStrokeWidth(5);
+        } else {
+            btn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#6C4527")));
+            btn.setTextColor(Color.parseColor("#FFF3DC"));
+            btn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#C89B6E")));
+            btn.setStrokeWidth(2);
+        }
+    }
+
+    private void setupMenuControlsUI() {
+        Button btnUp = findViewById(R.id.btnNavUp);
+        Button btnDown = findViewById(R.id.btnNavDown);
+        Button btnLeft = findViewById(R.id.btnNavLeft);
+        Button btnRight = findViewById(R.id.btnNavRight);
+        Button btnSelect = findViewById(R.id.btnMenuSelect);
+        Button btnBack = findViewById(R.id.btnMenuBack);
+        Button btnTabPrev = findViewById(R.id.btnTabPrev);
+        Button btnTabNext = findViewById(R.id.btnTabNext);
+
+        if (btnUp != null) btnUp.setOnClickListener(v -> sendMenuAction("up"));
+        if (btnDown != null) btnDown.setOnClickListener(v -> sendMenuAction("down"));
+        if (btnLeft != null) btnLeft.setOnClickListener(v -> sendMenuAction("left"));
+        if (btnRight != null) btnRight.setOnClickListener(v -> sendMenuAction("right"));
+        if (btnSelect != null) btnSelect.setOnClickListener(v -> sendMenuAction("select"));
+        if (btnBack != null) btnBack.setOnClickListener(v -> sendMenuAction("back"));
+        if (btnTabPrev != null) btnTabPrev.setOnClickListener(v -> sendMenuAction("tab_prev"));
+        if (btnTabNext != null) btnTabNext.setOnClickListener(v -> sendMenuAction("tab_next"));
+
+        refreshMenuUI();
+    }
+
+    private void refreshMenuUI() {
+        styleMenuHeaderButtons();
+        if (currentState != AppState.MENU) return;
+
+        TextView menuTitle = findViewById(R.id.menuTitle);
+        TextView menuHint = findViewById(R.id.menuHint);
+        LinearLayout menuTabBar = findViewById(R.id.menuTabBar);
+        Button btnTabPrev = findViewById(R.id.btnTabPrev);
+        Button btnTabNext = findViewById(R.id.btnTabNext);
+        Button btnSelect = findViewById(R.id.btnMenuSelect);
+
+        if (menuTitle == null || menuHint == null) return;
+
+        switch (activeMenu) {
+            case "almanac":
+                menuTitle.setText("ALMANAC");
+                menuHint.setText("D-Pad: Browse Fish  •  View: Open Entry");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.VISIBLE);
+                if (btnTabPrev != null) btnTabPrev.setText("< Prev Area");
+                if (btnTabNext != null) btnTabNext.setText("Next Area >");
+                if (btnSelect != null) btnSelect.setText("VIEW");
+                break;
+            case "fish_box":
+                menuTitle.setText("FISH BOX");
+                menuHint.setText("D-Pad: Browse Slots  •  Inspect: Check Fish");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.GONE);
+                if (btnSelect != null) btnSelect.setText("INSPECT");
+                break;
+            case "equipment":
+                menuTitle.setText("INVENTORY");
+                menuHint.setText("D-Pad: Browse Rods & Bait  •  Equip: Set Active");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.VISIBLE);
+                if (btnTabPrev != null) btnTabPrev.setText("Rods");
+                if (btnTabNext != null) btnTabNext.setText("Bait");
+                if (btnSelect != null) btnSelect.setText("EQUIP");
+                break;
+            default:
+                menuTitle.setText("MENU");
+                menuHint.setText("D-Pad: Navigate  •  Select: Confirm");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.GONE);
+                if (btnSelect != null) btnSelect.setText("SELECT");
+                break;
+        }
     }
 
     private void sendMenuAction(String action) {
@@ -235,22 +367,151 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void setupConnectionUI() {
         statusText = findViewById(R.id.statusText);
+        connectionSubtext = findViewById(R.id.connectionSubtext);
+        connectingSpinner = findViewById(R.id.connectingSpinner);
+        playerNameInput = findViewById(R.id.playerNameInput);
         serverIpInput = findViewById(R.id.serverIpInput);
         connectButton = findViewById(R.id.connectButton);
         discoverButton = findViewById(R.id.discoverButton);
+        Button btnToggleManual = findViewById(R.id.btnToggleManual);
+        LinearLayout manualConnectSection = findViewById(R.id.manualConnectSection);
 
-        statusText.setText(getConnectionStatus());
+        if (playerNameInput != null) {
+            playerNameInput.setText(getSavedPlayerName());
+            playerNameInput.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        connectButton.setOnClickListener(v -> {
-            String ip = serverIpInput.getText().toString().trim();
-            if (ip.isEmpty()) {
-                Toast.makeText(this, "Enter an IP address first", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            connectToServer(ip);
-        });
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
-        discoverButton.setOnClickListener(v -> performDiscovery());
+                @Override
+                public void afterTextChanged(Editable s) {
+                    savePlayerName(s != null ? s.toString() : "");
+                }
+            });
+        }
+
+        String savedIp = getSavedIp();
+        if (serverIpInput != null && savedIp != null && !savedIp.isEmpty()) {
+            serverIpInput.setText(savedIp);
+        }
+
+        if (btnToggleManual != null && manualConnectSection != null) {
+            btnToggleManual.setOnClickListener(v -> {
+                boolean show = manualConnectSection.getVisibility() != View.VISIBLE;
+                manualConnectSection.setVisibility(show ? View.VISIBLE : View.GONE);
+                btnToggleManual.setText(show ? "Hide Manual Setup ▴" : "Manual IP Setup ▾");
+            });
+        }
+
+        if (connectButton != null) {
+            connectButton.setOnClickListener(v -> {
+                String ip = serverIpInput != null ? serverIpInput.getText().toString().trim() : "";
+                if (ip.isEmpty()) {
+                    Toast.makeText(this, "Enter an IP address first", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                handler.removeCallbacks(autoDiscoverRunnable);
+                reconnectFailureCount = 0;
+                connectToServer(ip);
+            });
+        }
+
+        if (discoverButton != null) {
+            discoverButton.setOnClickListener(v -> {
+                triedSavedIpThisCycle = false;
+                reconnectFailureCount = 0;
+                startAutoDiscovery(true);
+            });
+        }
+
+        if (wantConnected && lastIp != null && reconnectFailureCount <= 1) {
+            setConnectionStatusUI("Reconnecting to " + lastIp + "...", "Hold tight — restoring link", true);
+        } else if (isDiscovering) {
+            setConnectionStatusUI("Searching for Tight Lines PC...", "Auto-connecting on the same Wi-Fi or Hotspot", true);
+        } else {
+            startAutoDiscovery(false);
+        }
+    }
+
+    private void setConnectionStatusUI(String status, String subtext, boolean busy) {
+        if (statusText != null) statusText.setText(status);
+        if (connectionSubtext != null && subtext != null) connectionSubtext.setText(subtext);
+        if (connectingSpinner != null) {
+            connectingSpinner.setVisibility(busy ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    private String getSavedIp() {
+        return getSharedPreferences("controller_prefs", MODE_PRIVATE).getString(PREF_LAST_IP, null);
+    }
+
+    private void saveLastIp(String ip) {
+        if (ip == null || ip.isEmpty()) return;
+        getSharedPreferences("controller_prefs", MODE_PRIVATE)
+                .edit()
+                .putString(PREF_LAST_IP, ip)
+                .apply();
+    }
+
+    private String getSavedPlayerName() {
+        String saved = getSharedPreferences("controller_prefs", MODE_PRIVATE).getString(PREF_PLAYER_NAME, "");
+        return saved == null ? "" : saved.trim();
+    }
+
+    private void savePlayerName(String name) {
+        String clean = name == null ? "" : name.trim();
+        if (clean.length() > MAX_PLAYER_NAME_LENGTH) {
+            clean = clean.substring(0, MAX_PLAYER_NAME_LENGTH);
+        }
+        getSharedPreferences("controller_prefs", MODE_PRIVATE)
+                .edit()
+                .putString(PREF_PLAYER_NAME, clean)
+                .apply();
+    }
+
+    private String getCurrentScreenName() {
+        if (currentState == null) return "connection";
+        switch (currentState) {
+            case OVERWORLD: return "overworld";
+            case CASTING: return "casting";
+            case REELING: return "reeling";
+            case MENU: return "menu";
+            case CONNECTION:
+            default:
+                return "connection";
+        }
+    }
+
+    private void sendScreenState() {
+        if (!isConnected) return;
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("type", "screen_state");
+            msg.put("screen", getCurrentScreenName());
+            msg.put("active_menu", activeMenu);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessage(msg);
+    }
+
+    private void updatePlayerIdentityBadge() {
+        TextView badge = findViewById(R.id.playerIdentityBadge);
+        if (badge == null) return;
+        String name = assignedPlayerName == null ? "" : assignedPlayerName.trim();
+        if ("left".equals(assignedScreenSide)) {
+            badge.setVisibility(View.VISIBLE);
+            badge.setText(name.isEmpty() ? "◀ LEFT SCREEN" : "◀ LEFT SCREEN  •  " + name);
+            badge.setTextColor(Color.parseColor("#7CE8FF"));
+        } else if ("right".equals(assignedScreenSide)) {
+            badge.setVisibility(View.VISIBLE);
+            badge.setText(name.isEmpty() ? "RIGHT SCREEN ▶" : name + "  •  RIGHT SCREEN ▶");
+            badge.setTextColor(Color.parseColor("#FFB28A"));
+        } else {
+            badge.setVisibility(View.GONE);
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -279,30 +540,43 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         lastIp = ip;
         wantConnected = true;
         handler.removeCallbacks(reconnectRunnable);
+        handler.removeCallbacks(autoDiscoverRunnable);
         final int attempt = ++connectionAttempt;
 
         serverUrl = "ws://" + ip + ":" + SERVER_PORT;
         Request request = new Request.Builder().url(serverUrl).build();
 
-        runOnUiThread(() -> {
-            if (statusText != null) statusText.setText("Connecting to " + ip + "...");
-        });
+        runOnUiThread(() -> setConnectionStatusUI(
+                "Connecting to " + ip + "...",
+                "Handshaking with Tight Lines PC",
+                true
+        ));
 
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onOpen(WebSocket ws, Response response) {
                 if (attempt != connectionAttempt) return;
                 isConnected = true;
-                switchToState(AppState.OVERWORLD);
+                reconnectFailureCount = 0;
+                triedSavedIpThisCycle = false;
+                saveLastIp(ip);
+                handler.removeCallbacks(autoDiscoverRunnable);
+                handler.removeCallbacks(reconnectRunnable);
 
                 JSONObject msg = new JSONObject();
                 try {
                     msg.put("type", "connected");
                     msg.put("device_id", deviceId);
+                    msg.put("screen", "overworld");
+                    String savedName = getSavedPlayerName();
+                    if (!savedName.isEmpty()) {
+                        msg.put("player_name", savedName);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 sendMessage(msg);
+                switchToState(AppState.OVERWORLD);
             }
 
             @Override
@@ -324,6 +598,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         }
                     }
 
+                    if ("player_info".equals(json.optString("type"))) {
+                        assignedPlayerName = json.optString("player_name", "").trim();
+                        assignedScreenSide = json.optString("screen_side", "").trim().toLowerCase();
+                        runOnUiThread(MainActivity.this::updatePlayerIdentityBadge);
+                    }
+
                     if ("config".equals(json.optString("type")) || json.has("sensitivity") || json.has("swing_threshold") || json.has("tilt_filter_alpha")) {
                         if (json.has("sensitivity")) {
                             applySensitivity((float) json.getDouble("sensitivity"));
@@ -340,14 +620,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         String stateStr = json.getString("game_state");
                         switch (stateStr) {
                             case "overworld":
-                                switchToState(AppState.OVERWORLD);
+                                underlyingGameState = AppState.OVERWORLD;
                                 break;
                             case "casting":
-                                switchToState(AppState.CASTING);
+                                underlyingGameState = AppState.CASTING;
                                 break;
                             case "reeling":
-                                switchToState(AppState.REELING);
+                                underlyingGameState = AppState.REELING;
+                                activeMenu = "none";
                                 break;
+                        }
+                        if (underlyingGameState == AppState.REELING || "none".equals(activeMenu)) {
+                            switchToState(underlyingGameState);
+                        }
+                    }
+
+                    if (json.has("active_menu")) {
+                        activeMenu = json.optString("active_menu", "none");
+                        if ("none".equals(activeMenu)) {
+                            switchToState(underlyingGameState);
+                        } else if (currentState != AppState.MENU) {
+                            switchToState(AppState.MENU);
+                        } else {
+                            runOnUiThread(MainActivity.this::refreshMenuUI);
+                            sendScreenState();
                         }
                     }
                 } catch (JSONException e) {
@@ -358,19 +654,33 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onFailure(WebSocket ws, Throwable t, Response response) {
                 if (attempt != connectionAttempt) return;
-                isConnected = false;
-                switchToState(AppState.CONNECTION);
-                scheduleReconnect();
+                handleConnectionLost();
             }
 
             @Override
             public void onClosed(WebSocket ws, int code, String reason) {
                 if (attempt != connectionAttempt) return;
-                isConnected = false;
-                switchToState(AppState.CONNECTION);
-                scheduleReconnect();
+                handleConnectionLost();
             }
         });
+    }
+
+    private void handleConnectionLost() {
+        isConnected = false;
+        activeMenu = "none";
+        assignedScreenSide = "";
+        reconnectFailureCount++;
+        switchToState(AppState.CONNECTION);
+        if (wantConnected && lastIp != null && reconnectFailureCount <= 1) {
+            scheduleReconnect();
+        } else {
+            wantConnected = false;
+            runOnUiThread(() -> {
+                if (currentState == AppState.CONNECTION && !isConnected) {
+                    startAutoDiscovery(false);
+                }
+            });
+        }
     }
 
     private List<InetAddress> getBroadcastAddresses() {
@@ -398,10 +708,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return addresses;
     }
 
-    private void performDiscovery() {
-        runOnUiThread(() -> {
-            if (statusText != null) statusText.setText("Searching for PC...");
-        });
+    private void startAutoDiscovery(boolean userInitiated) {
+        if (isConnected) return;
+        handler.removeCallbacks(autoDiscoverRunnable);
+        if (isDiscovering) return;
+        performDiscovery(userInitiated);
+    }
+
+    private void performDiscovery(boolean userInitiated) {
+        if (isDiscovering || isConnected) return;
+        isDiscovering = true;
+
+        runOnUiThread(() -> setConnectionStatusUI(
+                "Searching for Tight Lines PC...",
+                "Auto-connecting on the same Wi-Fi or Hotspot",
+                true
+        ));
 
         new Thread(() -> {
             try (DatagramSocket socket = new DatagramSocket()) {
@@ -432,24 +754,42 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     discoveredIp = new String(receivePacket.getData(), 0, receivePacket.getLength()).trim();
                 }
                 final String foundIp = discoveredIp;
+                isDiscovering = false;
 
                 runOnUiThread(() -> {
                     if (serverIpInput != null) serverIpInput.setText(foundIp);
-                    if (statusText != null) statusText.setText("Found PC at " + foundIp);
+                    setConnectionStatusUI("Found PC at " + foundIp, "Connecting automatically...", true);
                     connectToServer(foundIp);
                 });
 
             } catch (SocketTimeoutException e) {
-                runOnUiThread(() -> {
-                    if (statusText != null) statusText.setText("No PC found — enter IP manually");
-                    Toast.makeText(this, "Discovery timed out", Toast.LENGTH_SHORT).show();
-                });
+                isDiscovering = false;
+                runOnUiThread(() -> onDiscoveryMissed(userInitiated, "Make sure Tight Lines is running on your PC"));
             } catch (IOException e) {
-                runOnUiThread(() -> {
-                    if (statusText != null) statusText.setText("Discovery error: " + e.getMessage());
-                });
+                isDiscovering = false;
+                runOnUiThread(() -> onDiscoveryMissed(userInitiated, "Check Wi-Fi or Hotspot connection"));
             }
         }).start();
+    }
+
+    private void onDiscoveryMissed(boolean userInitiated, String hint) {
+        if (isConnected || currentState != AppState.CONNECTION) return;
+
+        String savedIp = getSavedIp();
+        if (!triedSavedIpThisCycle && savedIp != null && !savedIp.isEmpty()) {
+            triedSavedIpThisCycle = true;
+            setConnectionStatusUI("Trying last PC (" + savedIp + ")...", hint, true);
+            connectToServer(savedIp);
+            return;
+        }
+
+        triedSavedIpThisCycle = false;
+        setConnectionStatusUI("Searching for Tight Lines PC...", hint + " • Retrying automatically", true);
+        if (userInitiated) {
+            Toast.makeText(this, "No PC found yet — still scanning", Toast.LENGTH_SHORT).show();
+        }
+        handler.removeCallbacks(autoDiscoverRunnable);
+        handler.postDelayed(autoDiscoverRunnable, AUTO_DISCOVER_INTERVAL_MS);
     }
 
     @SuppressWarnings("deprecation")
@@ -639,6 +979,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onResume();
         if (gyroSensor != null) sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
         if (accelSensor != null) sensorManager.registerListener(this, accelSensor, SensorManager.SENSOR_DELAY_GAME);
+        if (currentState == AppState.CONNECTION && !isConnected) {
+            startAutoDiscovery(false);
+        }
     }
 
     @Override
@@ -646,12 +989,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onPause();
         sensorManager.unregisterListener(this);
         swingWindowOpen = false;
+        handler.removeCallbacks(autoDiscoverRunnable);
+        handler.removeCallbacks(reconnectRunnable);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         wantConnected = false;
+        handler.removeCallbacks(autoDiscoverRunnable);
         handler.removeCallbacks(reconnectRunnable);
         if (webSocket != null) webSocket.close(1000, "App closed");
     }

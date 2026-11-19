@@ -1,6 +1,28 @@
 [gd_scene format=3 uid="uid://c8tqiturk1ud6"]
 
 [ext_resource type="Script" uid="uid://bpc8pte8damvv" path="res://UIScenesAndScript/QuestLog/QuestLog.gd" id="1_67dld"]
+[ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="3_body"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="4_theme"]
+
+[sub_resource type="FontVariation" id="FontVariation_quest_bold"]
+base_font = ExtResource("3_body")
+variation_embolden = 0.6
+
+[sub_resource type="FontVariation" id="FontVariation_quest_italic"]
+base_font = ExtResource("3_body")
+variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.14, 0.12, 0.11, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.62, 0.45, 0.28, 0.9)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="QuestLog" type="Control" unique_id=968593407]
 layout_mode = 3
@@ -9,6 +31,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("4_theme")
 script = ExtResource("1_67dld")
 
 [node name="Dim" type="ColorRect" parent="." unique_id=471413217]
@@ -31,6 +54,7 @@ grow_vertical = 2
 [node name="Panel" type="PanelContainer" parent="Center" unique_id=776556101]
 custom_minimum_size = Vector2(900, 520)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="Margin" type="MarginContainer" parent="Center/Panel" unique_id=27231553]
 layout_mode = 2
@@ -49,13 +73,20 @@ layout_mode = 2
 [node name="TitleLabel" type="Label" parent="Center/Panel/Margin/Root/Header" unique_id=1251211206]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 0.93, 0.64, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.07, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = SubResource("FontVariation_quest_bold")
+theme_override_font_sizes/font_size = 30
 text = "Quests"
 
 [node name="CloseButton" type="Button" parent="Center/Panel/Margin/Root/Header" unique_id=549895751]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 42)
 layout_mode = 2
 focus_mode = 0
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 20
 text = "Close"
 
 [node name="Tabs" type="TabBar" parent="Center/Panel/Margin/Root" unique_id=1458374809]
@@ -81,23 +112,30 @@ theme_override_constants/separation = 8
 [node name="NameLabel" type="Label" parent="Center/Panel/Margin/Root/Split/Details" unique_id=2028647070]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.62, 1)
+theme_override_fonts/font = SubResource("FontVariation_quest_bold")
 theme_override_font_sizes/font_size = 22
 autowrap_mode = 3
 
 [node name="StateLabel" type="Label" parent="Center/Panel/Margin/Root/Split/Details" unique_id=767875081]
 unique_name_in_owner = true
-modulate = Color(1, 1, 1, 0.7)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.86, 0.96, 0.9)
+theme_override_font_sizes/font_size = 15
 
 [node name="StoryLabel" type="Label" parent="Center/Panel/Margin/Root/Split/Details" unique_id=1863965088]
 unique_name_in_owner = true
-modulate = Color(1, 1, 1, 0.85)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.91, 0.82, 0.92)
+theme_override_fonts/font = SubResource("FontVariation_quest_italic")
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 3
 
 [node name="DescriptionLabel" type="Label" parent="Center/Panel/Margin/Root/Split/Details" unique_id=1316074613]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.98, 0.96, 1)
+theme_override_font_sizes/font_size = 17
 autowrap_mode = 3
 
 [node name="ProgressBar" type="ProgressBar" parent="Center/Panel/Margin/Root/Split/Details" unique_id=124388536]
@@ -109,17 +147,22 @@ show_percentage = false
 [node name="ProgressLabel" type="Label" parent="Center/Panel/Margin/Root/Split/Details" unique_id=1759712468]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.96, 0.98, 1)
+theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
 [node name="RewardsLabel" type="Label" parent="Center/Panel/Margin/Root/Split/Details" unique_id=1280205730]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0.84, 0.96, 0.82, 1)
+theme_override_font_sizes/font_size = 17
 autowrap_mode = 3
 
 [node name="PendingLabel" type="Label" parent="Center/Panel/Margin/Root" unique_id=1198908433]
 unique_name_in_owner = true
 visible = false
-modulate = Color(1, 0.85, 0.4, 1)
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.4, 1)
+theme_override_font_sizes/font_size = 16
 text = "Some rewards are waiting for room in your Tackle Box."
 autowrap_mode = 3

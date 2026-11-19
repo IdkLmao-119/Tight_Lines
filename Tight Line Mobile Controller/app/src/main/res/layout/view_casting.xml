@@ -2,59 +2,84 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0A192F"
+    android:background="@drawable/bg_screen_water"
+    android:fitsSystemWindows="true"
     android:padding="16dp">
 
-    <!-- Top Menu Header Bar -->
-    <LinearLayout
+    <include
         android:id="@+id/menuHeaderBar"
+        layout="@layout/include_menu_header"
         android:layout_width="match_parent"
-        android:layout_marginTop="80dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:orientation="horizontal"
-        android:weightSum="3">
-
-        <Button
-            android:id="@+id/btnFishBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#2E4057"
-            android:text="🐟 Fish Box"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnAlmanac"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#048A81"
-            android:text="📖 Almanac"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnEquipment"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#545B77"
-            android:text="🎣 Equipment"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+        android:layout_marginTop="8dp" />
 
     <TextView
+        android:id="@+id/castingModeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="FLICK PHONE TO CAST"
-        android:textColor="#64FFDA"
-        android:textSize="20sp"
+        android:layout_below="@id/menuHeaderBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/bg_pill_badge"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="7dp"
+        android:text="CASTING MODE"
+        android:textColor="@color/gold_highlight"
+        android:textSize="14sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/playerIdentityBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/castingModeTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_pill_badge"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="5dp"
+        android:text=""
+        android:textColor="@color/text_light"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="16dp"
+        android:background="@drawable/bg_wood_card"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="28dp">
+
+        <ImageView
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_marginBottom="14dp"
+            android:contentDescription="Fishing Rod"
+            android:src="@drawable/ic_rod" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="FLICK TO CAST!"
+            android:textColor="@color/gold_highlight"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Tilt phone to aim  •  Tap screen to cancel"
+            android:textColor="@color/parchment"
+            android:textSize="13sp" />
+    </LinearLayout>
+
 </RelativeLayout>

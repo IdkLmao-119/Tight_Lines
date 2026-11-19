@@ -41,6 +41,9 @@ signal volume_changed(bus_name: String, linear: float)
 # "pausable"     : false for menus/cutscenes (pause requests are ignored there)
 # "input"        : InputManager context: "menu", "overworld" or "fishing".
 # "display_name" : Optional title flashed for 5s on enter (omit or "" to skip).
+const UI_THEME: Theme = preload("res://UIScenesAndScript/Shared/ui_theme.tres")
+const UI_FONT: FontFile = preload("res://Assets/2D/ShortStack-Regular.ttf")
+
 const SCENES: Dictionary = {
 	#Main Menu
 	"main_menu": {
@@ -53,6 +56,12 @@ const SCENES: Dictionary = {
 		"path": "res://UIScenesAndScript/SaveSlots/SaveSlots.tscn",
 		"input": "menu",
 		"music": "res://Assets/Audio/Reluctance.mp3",   # same track = no restart
+		"pausable": false,
+	},
+	"multiplayer_lobby": {
+		"path": "res://UIScenesAndScript/MultiplayerLobby/MultiplayerLobby.tscn",
+		"input": "menu",
+		"music": "res://Assets/Audio/Reluctance.mp3",
 		"pausable": false,
 	},
 
@@ -867,6 +876,7 @@ func _build_overlay() -> void:
 	var title_root := Control.new()
 	title_root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	title_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_root.theme = UI_THEME
 	title_layer.add_child(title_root)
 
 	_scene_title_label = Label.new()
@@ -874,6 +884,7 @@ func _build_overlay() -> void:
 	_scene_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_scene_title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_scene_title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_scene_title_label.add_theme_font_override("font", UI_FONT)
 	_scene_title_label.add_theme_font_size_override("font_size", 64)
 	_scene_title_label.add_theme_color_override("font_color", Color.WHITE)
 	_scene_title_label.add_theme_constant_override("outline_size", 12)
@@ -891,6 +902,7 @@ func _build_overlay() -> void:
 	_fade_rect.color = Color.BLACK
 	_fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fade_rect.theme = UI_THEME
 	_fade_rect.modulate.a = 0.0
 	layer.add_child(_fade_rect)
 
@@ -907,6 +919,11 @@ func _build_overlay() -> void:
 	_loading_label.text = "Loading..."
 	_loading_label.visible = false
 	_loading_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_loading_label.add_theme_font_override("font", UI_FONT)
+	_loading_label.add_theme_font_size_override("font_size", 22)
+	_loading_label.add_theme_color_override("font_color", Color.WHITE)
+	_loading_label.add_theme_constant_override("outline_size", 4)
+	_loading_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	box.add_child(_loading_label)
 
 	_loading_bar = ProgressBar.new()

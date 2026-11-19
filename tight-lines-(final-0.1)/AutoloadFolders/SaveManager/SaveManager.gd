@@ -48,8 +48,8 @@ const NEW_GAME_DIFFICULTY := "casual"
 const NEW_GAME_STARTER_MONEY := 0
 const NEW_GAME_STARTER_ITEMS: Dictionary = {"bait_1": 10}
 
-const DEFAULT_START_SCENE := "overworld_spawn"
-const NON_SAVABLE_SCENES := ["main_menu", "save_slots"]
+const DEFAULT_START_SCENE := "overworld_house_2"
+const NON_SAVABLE_SCENES := ["main_menu", "save_slots", "multiplayer_lobby", "multiplayer"]
 
 # --- Player state owned here ---
 var _unlock_flags: Array = []      # Array of String

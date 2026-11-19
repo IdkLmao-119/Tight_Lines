@@ -1971,17 +1971,16 @@ visible = false
 polygon = PackedVector2Array(1013, 310, 1512, 310, 1511, 214, 1432, 213, 1432, 97, 1479, 97, 1478, 163, 1576, 164, 1576, 87, 1702, 87, 2030, 88, 2030, 430, 1698, 432, 1224, 435, 1014, 435, 1013, 310, 915, 343, 921, 440, 925, 476, 1086, 493, 1628, 480, 2063, 484, 2086, 176, 2066, 15, 1737, 12, 1495, 13, 1218, 48, 1068, 167, 881, 266, 832, 323, 890, 447)
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_841g0")]
-position = Vector2(1206, 377)
+position = Vector2(1281, 338)
 
 [node name="AnimatedSprite2D" parent="Player" index="2" unique_id=1961882914]
 position = Vector2(-1.0000229, -3.8146973e-06)
 scale = Vector2(1.3124988, 1.4687498)
 
-[node name="2DSceneUI" parent="Player/CanvasLayer" parent_id_path=PackedInt32Array(394178850, 1927995293) index="0" unique_id=1628659695]
-visible = true
+[node name="CanvasLayer" parent="Player" index="3" unique_id=1927995293]
+visible = false
 
 [node name="SpawnToHouse1" type="Node2D" parent="." unique_id=1899106149]
-visible = false
 position = Vector2(1352, 315)
 scale = Vector2(2, 1)
 
@@ -1992,7 +1991,6 @@ position = Vector2(-36.25, 2.5)
 shape = SubResource("RectangleShape2D_841g0")
 
 [node name="SpawnToRiverPark" type="Node2D" parent="." unique_id=1739409681]
-visible = false
 
 [node name="SpawnToRiverPark" type="Area2D" parent="SpawnToRiverPark" unique_id=554587951]
 position = Vector2(3, 1)
@@ -2002,7 +2000,6 @@ position = Vector2(1031, 360)
 shape = SubResource("RectangleShape2D_s3d8v")
 
 [node name="Node2D" type="Node2D" parent="." unique_id=1684424726]
-visible = false
 
 [node name="SpawnToRodShop" type="Area2D" parent="Node2D" unique_id=175642451]
 

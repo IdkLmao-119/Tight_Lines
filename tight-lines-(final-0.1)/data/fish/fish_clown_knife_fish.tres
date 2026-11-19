@@ -10,8 +10,9 @@ description = "An elongated nocturnal predator featuring striking spot patterns 
 Local Name: Knife Fish"
 size_class = "large"
 base_price = 70
-speed = 1.7
-pull_strength = 7.0
+speed = 6.0
+pull_strength = 15.0
+stamina = 75.0
 min_size = 40.0
 avg_size = 70.0
 max_size = 100.0

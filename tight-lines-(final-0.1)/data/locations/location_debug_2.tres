@@ -5,14 +5,14 @@
 [ext_resource type="Resource" uid="uid://kl5o4umhdp0f" path="res://data/fish/fish_marlin.tres" id="26_qqmxs"]
 [ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://data/item_class_templates/location_data.gd" id="53_ad67m"]
 
-[sub_resource type="Resource" id="Resource_ff85y"]
+[sub_resource type="Resource" id="Resource_gdgth"]
 script = ExtResource("1_nj8qx")
 fish = ExtResource("26_qqmxs")
 metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
 
 [resource]
 script = ExtResource("53_ad67m")
-fish_pool = Array[ExtResource("1_nj8qx")]([SubResource("Resource_ff85y")])
+fish_pool = Array[ExtResource("1_nj8qx")]([SubResource("Resource_gdgth")])
 id = "location_debug_2"
 display_name = "debug loc"
 metadata/_custom_type_script = "uid://bbts02hgiiwr"

@@ -1,0 +1,51 @@
+# ============================================================
+# Area 3 - Kawit (Seaside)
+# ============================================================
+
+=== kawit_arrival | scene: overworld_fish_market | requires: unlock_kawit
+@john
+(steps off, breathing in) There it is. The sea.
+Last time I was here, I stared at the bay and ignored the shrine. Now I get why.
+
+!open_ui almanac
+These look tougher than the paddy fish. Salt water, stronger fighters.
+
+Imus taught me patience. Let's see if it's enough out here.
+!tutorial Walk to the seawall. Press [E] / A to cast. Stronger sea fish may need better gear from the Store.
+!objective Catch every small fish at the Kawit seaside.
+
+
+=== kawit_first_bite | side
+@john:shocked
+That's a hard pull! Stronger than anything in Imus!
+
+
+=== kawit_first_catch | side
+@john:happy
+Got it! Let's see what the sea gave me.
+Kawit, page one.
+
+
+=== kawit_first_fail | side
+@john
+The sea took it back. Fair enough.
+
+
+=== kawit_complete | requires: quest_salt_and_sea
+!banner Kawit Complete
+@john:happy
+(quietly) That's all of Kawit.
+I used to think fishing was just sitting around and waiting.
+
+But the waiting is part of it. The tug on the line,
+the guess about what's down there, the moment it finally shows up.
+
+I haven't thought about homework in... hours. Actually, hours.
+Lolo, I get it now. This is the most fun I've had in a long time.
+
+Hold on. Cavite isn't finished.
+There's still Noveleta.
+
+!open_ui map
+!objective Travel to Noveleta.
+The sea can wait. Let's see what's in Noveleta.

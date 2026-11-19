@@ -76,9 +76,11 @@ func _ready() -> void:
 	# quests_changed can fire many times in one frame (a completion cascades),
 	# so redraws are merged into one.
 	QuestManager.quests_changed.connect(_queue_refresh)
+	visibility_changed.connect(_on_visibility_changed)
 
 	_refresh()
-	_tree.grab_focus()
+	if visible:
+		_tree.grab_focus()
 
 
 # ============================================================================
@@ -101,6 +103,50 @@ func toggle() -> void:
 		close()
 	else:
 		open()
+
+
+func handle_mobile_action(action: String) -> void:
+	match action:
+		"back":
+			close()
+		"tab_prev", "left":
+			_step_tab(-1)
+		"tab_next", "right":
+			_step_tab(1)
+		"up":
+			_step_selection(-1)
+		"down":
+			_step_selection(1)
+
+
+func _on_visibility_changed() -> void:
+	if visible:
+		_refresh()
+		_tree.grab_focus()
+
+
+func _step_selection(step: int) -> void:
+	var root := _tree.get_root()
+	if root == null:
+		return
+	var items: Array[TreeItem] = []
+	var header := root.get_first_child()
+	while header != null:
+		var child := header.get_first_child()
+		while child != null:
+			items.append(child)
+			child = child.get_next()
+		header = header.get_next()
+	if items.is_empty():
+		return
+	var selected := _tree.get_selected()
+	var idx := items.find(selected)
+	idx = 0 if idx < 0 else clampi(idx + step, 0, items.size() - 1)
+	var target := items[idx]
+	target.select(0)
+	_tree.ensure_cursor_is_visible()
+	if target.get_metadata(0) != null:
+		_show_details(String(target.get_metadata(0)))
 
 
 # ============================================================================

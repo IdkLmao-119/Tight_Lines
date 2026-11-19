@@ -10,7 +10,9 @@ description = "An adaptable and robust fish capable of thriving across fresh and
 Local Name: Tilapiang Pla-pla"
 size_class = "medium"
 base_price = 28
-speed = 1.4
+speed = 4.5
+pull_strength = 12.0
+stamina = 60.0
 min_size = 15.0
 avg_size = 30.0
 max_size = 45.0

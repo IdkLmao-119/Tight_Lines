@@ -9,6 +9,9 @@ scientific_name = "Balistoides viridescens"
 description = "The largest species of triggerfish in the Indo-Pacific, inhabiting coral reefs, lagoons, and rocky reef slopes. Armed with powerful jaws and chisel-like teeth, it crushes hard-shelled prey such as sea urchins, crabs, mollusks, and coral branches.
 Local Name: Pakol"
 size_class = "medium"
+speed = 4.5
+pull_strength = 12.0
+stamina = 60.0
 min_size = 40.0
 avg_size = 57.5
 max_size = 75.0

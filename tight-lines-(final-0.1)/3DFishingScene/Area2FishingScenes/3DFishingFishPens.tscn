@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dojfyxl7hhbhe" path="res://Assets/3D/GrassTexture.jpg" id="5_1bgt8"]
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="6_gl7ty"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="7_tgr45"]
+[ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_5s4s2"]
 [ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/FishingUI/FishingUI.tscn" id="9_ffhi4"]
 [ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="10_3w45k"]
 
@@ -288,6 +289,7 @@ environment = SubResource("Environment_i1y24")
 script = ExtResource("7_tgr45")
 player_anchors = [NodePath("../PlayerFishing")]
 rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
+bobber_scene = ExtResource("8_5s4s2")
 debug_spot_id = "location_fish_pens"
 debug_rod_id = "rod_light"
 debug_bait_id = "bait_1"

@@ -1,0 +1,147 @@
+# ============================================================
+# Area 1 - Marikina (NCR)
+# ============================================================
+
+=== marikina_room | scene: overworld_house_2
+@john:tired
+(sighs) Three essays, two problem sets, and a project due Monday...
+My brain feels like overcooked rice.
+
+I need some air. Five minutes. Just five.
+!tutorial Use WASD / D-pad to move. Walk to the door.
+
+
+=== marikina_desk
+@john:tired
+Not now. If I look at that pile again, I'll cry.
+
+
+=== marikina_hallway | scene: overworld_house_1 | requires: marikina_room
+@john:curious
+Huh? This photo... I've walked past it a thousand times.
+
+!open_ui photo_lolo
+Lolo Jeremy... and that fish is almost as big as he is!
+I never asked him where this was taken.
+
+And what's this book?
+
+!open_ui almanac
+"The Fish Almanac"... It's like an encyclopedia.
+Real fish, with descriptions, habitats, sizes.
+
+Amazon River... Congo... Mekong...
+Lolo really went everywhere.
+
+Look at all these entries.
+Hundreds of fish, and he caught every single one.
+
+He wrote down the date, the weight,
+even how hard the fight was.
+
+Wait...
+Why is the Philippines section so empty?
+
+Lolo caught fish on almost every continent,
+but here... where he lived... nothing?
+
+!box parchment
+@diary
+"Moved to the Philippines today. Warm weather, kind people,
+and water everywhere. I have never seen so many rivers, lakes, and seas in one country."
+
+"My hands shake now when I hold the rod. My back aches after an hour.
+The fish here are waiting for me, but my body is not."
+
+"I regret it. I traveled the whole world for fish,
+but I never got to fish in the country I came to call home. The Almanac stays unfinished."
+
+"Maybe someone else will pick up the rod one day.
+Maybe someone who still has the strength, and the curiosity."
+
+!box normal
+@john:sad
+(quietly) Lolo...
+You never said anything. You always just smiled when I asked about your trips.
+
+You spent your whole life filling this Almanac,
+and the one place you wanted to finish, you couldn't.
+
+@john:determined
+Okay. Okay, Lolo.
+I'll fill these pages. As many as I can.
+
+And then I'll make my own Almanac.
+!flag met_lolo_diary
+!objective Find a place to fish.
+
+
+=== marikina_street | scene: overworld_spawn | requires: met_lolo_diary
+@john
+Okay... where do I even start?
+I'll start here at Marikina River. I remember there are fishing areas nearby.
+
+!objective Explore the nearby fishing areas.
+!open_ui map
+Cavite and Batangas... Lolo's Almanac is waiting.
+!tutorial Open the map to travel.
+
+
+=== marikina_phone_store | requires: marikina_street
+@john
+Okay, I have a rod. That's a start.
+But it's pretty basic. I don't think it can handle every fish in the Almanac.
+
+Some of these need a different rod. Or a different bait.
+Lolo must have had a whole collection. I need to find where to get gear.
+
+Wait. There's an app for this.
+!open_ui phone_store
+There it is. The store.
+!tutorial Press [P] / Phone button to open the Phone. Tap the Store icon.
+
+Rods, reels, bait... Wow, there's a lot here.
+Most of this is out of my budget. I'll unlock the better stuff as I go.
+
+Different bait for different fish. That makes sense.
+!tutorial Buy a bait to try. Different rods and bait let you catch different fish.
+!objective Travel to a fishing area.
+
+
+=== marikina_duplicate_fish
+@john:curious
+Huh? I already have this one in the Almanac.
+So what do I do with the extra?
+
+I can't keep them all. They'll just spoil.
+Wait... the store. Maybe I can sell them there.
+
+!open_ui phone_sell
+There's a Sell tab. Of course there is.
+!tutorial Open the Phone, tap Store, then tap Sell. Select your duplicate fish.
+
+It won't let me sell the first one of each fish. Smart. That one belongs in the Almanac.
+But the extras? Those are fair game.
+
+Pesos! That's actually decent.
+So I catch fish, fill the Almanac, and sell the extras for gear. That's how this works.
+
+Lolo probably did the same thing, one way or another.
+!objective Sell duplicate fish to earn pesos. Upgrade your gear at the Store.
+
+
+=== marikina_complete | requires: quest_gear_up
+!banner Marikina River Complete
+@john:happy
+That's the last one!
+Every small fish in this area is in the Almanac now.
+
+One area down. And look at all these empty pages.
+Where else can I go?
+
+Wait... Imus. I remember there's a fishing spot in Imus.
+!open_ui map
+!objective Travel to the fishing spot in Imus.
+
+Before I go, let me check the Store. A new area probably means new fish.
+Okay, Lolo. Next stop, Imus.

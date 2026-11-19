@@ -19,9 +19,15 @@ public class DPadView extends View {
 
     private OnMoveListener listener;
 
+    private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint woodRingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint bevelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint basePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint activeHaloPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint activePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint arrowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint activeArrowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint centerCapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private float currentX = 0f;
     private float currentY = 0f;
@@ -46,14 +52,33 @@ public class DPadView extends View {
     }
 
     private void init() {
-        basePaint.setColor(Color.parseColor("#2A2D3E"));
+        borderPaint.setColor(Color.parseColor("#3B2312"));
+        borderPaint.setStyle(Paint.Style.FILL);
+
+        woodRingPaint.setColor(Color.parseColor("#6C4527"));
+        woodRingPaint.setStyle(Paint.Style.FILL);
+
+        bevelPaint.setColor(Color.parseColor("#C89B6E"));
+        bevelPaint.setStyle(Paint.Style.STROKE);
+        bevelPaint.setStrokeWidth(4f);
+
+        basePaint.setColor(Color.parseColor("#123A6F"));
         basePaint.setStyle(Paint.Style.FILL);
 
-        activePaint.setColor(Color.parseColor("#4A4E69"));
+        activeHaloPaint.setColor(Color.parseColor("#55F4C95D"));
+        activeHaloPaint.setStyle(Paint.Style.FILL);
+
+        activePaint.setColor(Color.parseColor("#E6F4C95D"));
         activePaint.setStyle(Paint.Style.FILL);
 
-        arrowPaint.setColor(Color.parseColor("#F2E9E4"));
+        arrowPaint.setColor(Color.parseColor("#FFF3DC"));
         arrowPaint.setStyle(Paint.Style.FILL);
+
+        activeArrowPaint.setColor(Color.parseColor("#FFE28A"));
+        activeArrowPaint.setStyle(Paint.Style.FILL);
+
+        centerCapPaint.setColor(Color.parseColor("#7A4E2D"));
+        centerCapPaint.setStyle(Paint.Style.FILL);
     }
 
     public void setOnMoveListener(OnMoveListener listener) {
@@ -68,23 +93,34 @@ public class DPadView extends View {
         float cy = getHeight() / 2f;
         float radius = Math.min(cx, cy) - 10f;
 
-        // Base circle / D-pad outline
-        canvas.drawCircle(cx, cy, radius, basePaint);
+        // Cozy wooden outer frame + inner deep-ocean disc
+        canvas.drawCircle(cx, cy, radius, borderPaint);
+        canvas.drawCircle(cx, cy, radius * 0.94f, woodRingPaint);
+        canvas.drawCircle(cx, cy, radius * 0.84f, bevelPaint);
+        canvas.drawCircle(cx, cy, radius * 0.82f, basePaint);
 
-        // Highlight active direction
-        if (isPressed && (currentX != 0f || currentY != 0f)) {
-            canvas.drawCircle(cx + currentX * radius * 0.4f, cy + currentY * radius * 0.4f, radius * 0.4f, activePaint);
+        // Warm golden active direction glow
+        boolean moving = isPressed && (currentX != 0f || currentY != 0f);
+        if (moving) {
+            float ax = cx + currentX * radius * 0.42f;
+            float ay = cy + currentY * radius * 0.42f;
+            canvas.drawCircle(ax, ay, radius * 0.38f, activeHaloPaint);
+            canvas.drawCircle(ax, ay, radius * 0.25f, activePaint);
         }
 
         // Draw directional arrows
-        float arrowSize = radius * 0.2f;
-        drawArrow(canvas, cx, cy - radius * 0.65f, arrowSize, 0);   // UP
-        drawArrow(canvas, cx + radius * 0.65f, cy, arrowSize, 90);  // RIGHT
-        drawArrow(canvas, cx, cy + radius * 0.65f, arrowSize, 180); // DOWN
-        drawArrow(canvas, cx - radius * 0.65f, cy, arrowSize, 270); // LEFT
+        float arrowSize = radius * 0.18f;
+        drawArrow(canvas, cx, cy - radius * 0.56f, arrowSize, 0, moving && currentY < 0f);   // UP
+        drawArrow(canvas, cx + radius * 0.56f, cy, arrowSize, 90, moving && currentX > 0f);  // RIGHT
+        drawArrow(canvas, cx, cy + radius * 0.56f, arrowSize, 180, moving && currentY > 0f); // DOWN
+        drawArrow(canvas, cx - radius * 0.56f, cy, arrowSize, 270, moving && currentX < 0f); // LEFT
+
+        // Subtle center wooden cap
+        canvas.drawCircle(cx, cy, radius * 0.14f, borderPaint);
+        canvas.drawCircle(cx, cy, radius * 0.10f, centerCapPaint);
     }
 
-    private void drawArrow(Canvas canvas, float cx, float cy, float size, float angleDeg) {
+    private void drawArrow(Canvas canvas, float cx, float cy, float size, float angleDeg, boolean active) {
         canvas.save();
         canvas.rotate(angleDeg, cx, cy);
 
@@ -94,7 +130,7 @@ public class DPadView extends View {
         path.lineTo(cx + size * 0.7f, cy + size * 0.5f);
         path.close();
 
-        canvas.drawPath(path, arrowPaint);
+        canvas.drawPath(path, active ? activeArrowPaint : arrowPaint);
         canvas.restore();
     }
 

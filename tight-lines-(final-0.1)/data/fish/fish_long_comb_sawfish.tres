@@ -10,8 +10,9 @@ description = "A magnificent and rare marine dweller distinguished by its long, 
 Local Name: Lagaring Pating"
 size_class = "large"
 base_price = 150
-speed = 1.5
-pull_strength = 10.0
+speed = 6.0
+pull_strength = 15.0
+stamina = 75.0
 min_size = 100.0
 avg_size = 250.0
 max_size = 400.0

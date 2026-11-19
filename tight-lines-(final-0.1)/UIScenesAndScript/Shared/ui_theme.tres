@@ -1,0 +1,160 @@
+[gd_resource type="Theme" format=3]
+
+[ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="1_body"]
+
+[sub_resource type="FontVariation" id="FontVariation_body_bold"]
+base_font = ExtResource("1_body")
+variation_embolden = 0.65
+
+[sub_resource type="FontVariation" id="FontVariation_body_italic"]
+base_font = ExtResource("1_body")
+variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
+
+[sub_resource type="FontVariation" id="FontVariation_body_bold_italic"]
+base_font = ExtResource("1_body")
+variation_embolden = 0.65
+variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(0.55, 0.35, 0.22, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.28, 0.16, 0.09, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(0.68, 0.44, 0.27, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.82, 0.48, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(0.42, 0.26, 0.16, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.82, 0.48, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_focus"]
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.88, 0.45, 0.95)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_disabled"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(0.32, 0.26, 0.22, 0.65)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.22, 0.18, 0.15, 0.65)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[resource]
+default_font = ExtResource("1_body")
+default_font_size = 18
+Button/colors/font_color = Color(1, 0.98, 0.94, 1)
+Button/colors/font_disabled_color = Color(0.72, 0.7, 0.66, 0.65)
+Button/colors/font_focus_color = Color(1, 0.95, 0.72, 1)
+Button/colors/font_hover_color = Color(1, 0.93, 0.64, 1)
+Button/colors/font_hover_pressed_color = Color(1, 0.9, 0.6, 1)
+Button/colors/font_outline_color = Color(0.12, 0.08, 0.05, 0.95)
+Button/colors/font_pressed_color = Color(0.94, 0.84, 0.56, 1)
+Button/constants/outline_size = 3
+Button/font_sizes/font_size = 20
+Button/fonts/font = ExtResource("1_body")
+Button/styles/disabled = SubResource("StyleBoxFlat_btn_disabled")
+Button/styles/focus = SubResource("StyleBoxFlat_btn_focus")
+Button/styles/hover = SubResource("StyleBoxFlat_btn_hover")
+Button/styles/normal = SubResource("StyleBoxFlat_btn_normal")
+Button/styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+Label/colors/font_color = Color(0.98, 0.96, 0.92, 1)
+Label/colors/font_outline_color = Color(0.1, 0.07, 0.05, 0.9)
+Label/colors/font_shadow_color = Color(0, 0, 0, 0.45)
+Label/constants/outline_size = 0
+Label/constants/shadow_offset_x = 1
+Label/constants/shadow_offset_y = 2
+Label/font_sizes/font_size = 18
+Label/fonts/font = ExtResource("1_body")
+LineEdit/colors/font_color = Color(1, 0.98, 0.94, 1)
+LineEdit/colors/font_placeholder_color = Color(0.75, 0.72, 0.68, 0.7)
+LineEdit/font_sizes/font_size = 20
+LineEdit/fonts/font = ExtResource("1_body")
+ProgressBar/font_sizes/font_size = 16
+ProgressBar/fonts/font = ExtResource("1_body")
+RichTextLabel/colors/default_color = Color(0.97, 0.96, 0.93, 1)
+RichTextLabel/colors/font_shadow_color = Color(0, 0, 0, 0.4)
+RichTextLabel/constants/outline_size = 0
+RichTextLabel/constants/shadow_offset_x = 1
+RichTextLabel/constants/shadow_offset_y = 1
+RichTextLabel/font_sizes/bold_font_size = 18
+RichTextLabel/font_sizes/bold_italics_font_size = 18
+RichTextLabel/font_sizes/italics_font_size = 18
+RichTextLabel/font_sizes/mono_font_size = 18
+RichTextLabel/font_sizes/normal_font_size = 18
+RichTextLabel/fonts/bold_font = SubResource("FontVariation_body_bold")
+RichTextLabel/fonts/bold_italics_font = SubResource("FontVariation_body_bold_italic")
+RichTextLabel/fonts/italics_font = SubResource("FontVariation_body_italic")
+RichTextLabel/fonts/mono_font = ExtResource("1_body")
+RichTextLabel/fonts/normal_font = ExtResource("1_body")
+TabBar/colors/font_disabled_color = Color(0.6, 0.58, 0.54, 0.6)
+TabBar/colors/font_hovered_color = Color(1, 0.98, 0.92, 1)
+TabBar/colors/font_outline_color = Color(0.1, 0.07, 0.05, 0.9)
+TabBar/colors/font_selected_color = Color(1, 0.93, 0.62, 1)
+TabBar/colors/font_unselected_color = Color(0.84, 0.82, 0.78, 1)
+TabBar/constants/outline_size = 2
+TabBar/font_sizes/font_size = 18
+TabBar/fonts/font = ExtResource("1_body")
+TooltipLabel/colors/font_color = Color(0.98, 0.97, 0.94, 1)
+TooltipLabel/font_sizes/font_size = 15
+TooltipLabel/fonts/font = ExtResource("1_body")
+Tree/colors/font_color = Color(0.95, 0.94, 0.9, 1)
+Tree/colors/font_hovered_color = Color(1, 0.98, 0.92, 1)
+Tree/colors/font_outline_color = Color(0.1, 0.07, 0.05, 0.85)
+Tree/colors/font_selected_color = Color(1, 0.93, 0.62, 1)
+Tree/constants/outline_size = 1
+Tree/font_sizes/font_size = 17
+Tree/font_sizes/title_button_font_size = 18
+Tree/fonts/font = ExtResource("1_body")
+Tree/fonts/title_button_font = ExtResource("1_body")
