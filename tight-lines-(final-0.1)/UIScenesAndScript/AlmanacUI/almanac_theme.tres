@@ -1,31 +1,14 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" format=3 uid="uid://i84v6oqs2bu1"]
 
 [ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="1_body"]
 
-[sub_resource type="FontVariation" id="FontVariation_bold"]
-base_font = ExtResource("1_body")
-variation_embolden = 0.7
-
-[sub_resource type="FontVariation" id="FontVariation_italic"]
-base_font = ExtResource("1_body")
-variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
-
-[sub_resource type="FontVariation" id="FontVariation_bold_italic"]
-base_font = ExtResource("1_body")
-variation_embolden = 0.7
-variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
-content_margin_left = 8.0
-content_margin_top = 6.0
-content_margin_right = 8.0
-content_margin_bottom = 6.0
-bg_color = Color(1, 0.79607844, 0.6, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.55, 0.36, 0.2, 0.85)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_focus"]
+draw_center = false
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.6, 0.32, 0.1, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -47,6 +30,22 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+content_margin_left = 8.0
+content_margin_top = 6.0
+content_margin_right = 8.0
+content_margin_bottom = 6.0
+bg_color = Color(1, 0.79607844, 0.6, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.36, 0.2, 0.85)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
 content_margin_left = 8.0
 content_margin_top = 6.0
@@ -63,17 +62,18 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_focus"]
-draw_center = false
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.6, 0.32, 0.1, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+[sub_resource type="FontVariation" id="FontVariation_bold"]
+base_font = ExtResource("1_body")
+variation_embolden = 0.7
+
+[sub_resource type="FontVariation" id="FontVariation_bold_italic"]
+base_font = ExtResource("1_body")
+variation_embolden = 0.7
+variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
+
+[sub_resource type="FontVariation" id="FontVariation_italic"]
+base_font = ExtResource("1_body")
+variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
 
 [resource]
 default_font = ExtResource("1_body")

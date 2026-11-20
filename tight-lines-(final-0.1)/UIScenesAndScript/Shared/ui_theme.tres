@@ -1,31 +1,30 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" format=3 uid="uid://cc043mp1yfy3k"]
 
 [ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="1_body"]
 
-[sub_resource type="FontVariation" id="FontVariation_body_bold"]
-base_font = ExtResource("1_body")
-variation_embolden = 0.65
-
-[sub_resource type="FontVariation" id="FontVariation_body_italic"]
-base_font = ExtResource("1_body")
-variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
-
-[sub_resource type="FontVariation" id="FontVariation_body_bold_italic"]
-base_font = ExtResource("1_body")
-variation_embolden = 0.65
-variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_disabled"]
 content_margin_left = 14.0
 content_margin_top = 6.0
 content_margin_right = 14.0
 content_margin_bottom = 6.0
-bg_color = Color(0.55, 0.35, 0.22, 0.95)
+bg_color = Color(0.32, 0.26, 0.22, 0.65)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.28, 0.16, 0.09, 1)
+border_color = Color(0.22, 0.18, 0.15, 0.65)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_focus"]
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.88, 0.45, 0.95)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -47,6 +46,22 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(0.55, 0.35, 0.22, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.28, 0.16, 0.09, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
 content_margin_left = 14.0
 content_margin_top = 6.0
@@ -63,33 +78,18 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_focus"]
-draw_center = false
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.88, 0.45, 0.95)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="FontVariation" id="FontVariation_body_bold"]
+base_font = ExtResource("1_body")
+variation_embolden = 0.65
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_disabled"]
-content_margin_left = 14.0
-content_margin_top = 6.0
-content_margin_right = 14.0
-content_margin_bottom = 6.0
-bg_color = Color(0.32, 0.26, 0.22, 0.65)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.22, 0.18, 0.15, 0.65)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="FontVariation" id="FontVariation_body_bold_italic"]
+base_font = ExtResource("1_body")
+variation_embolden = 0.65
+variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
+
+[sub_resource type="FontVariation" id="FontVariation_body_italic"]
+base_font = ExtResource("1_body")
+variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
 
 [resource]
 default_font = ExtResource("1_body")
