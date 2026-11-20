@@ -15,6 +15,8 @@ signal close_requested
 			_apply_button_visibility()
 
 @onready var _music_slider: HSlider = %MusicSlider
+@onready var _sfx_slider: HSlider = %SfxSlider
+@onready var _difficulty_button: Button = %DifficultyButton
 @onready var _sensitivity_slider: HSlider = %SensitivitySlider
 @onready var _sensitivity_input: LineEdit = %SensitivityInput
 @onready var _save_button: Button = %SaveButton
@@ -28,6 +30,11 @@ func _ready() -> void:
 
 	_music_slider.value_changed.connect(_on_music_slider_changed)
 	_music_slider.drag_ended.connect(_on_slider_drag_ended)
+
+	_sfx_slider.value_changed.connect(_on_sfx_slider_changed)
+	_sfx_slider.drag_ended.connect(_on_slider_drag_ended)
+
+	_difficulty_button.pressed.connect(_on_difficulty_button_pressed)
 
 	_sensitivity_slider.value_changed.connect(_on_sensitivity_slider_changed)
 	_sensitivity_slider.drag_ended.connect(_on_slider_drag_ended)
@@ -72,6 +79,11 @@ func _apply_button_visibility() -> void:
 
 func _sync_values() -> void:
 	_music_slider.set_value_no_signal(GameManager.get_bus_volume(GameManager.BUS_MUSIC))
+	_sfx_slider.set_value_no_signal(GameManager.get_bus_volume(GameManager.BUS_SFX))
+
+	var sm := get_node_or_null("/root/SaveManager")
+	var diff := String(sm.call(&"get_difficulty")) if (sm != null and sm.has_method(&"get_difficulty")) else "casual"
+	_difficulty_button.text = "Angler" if diff.to_lower() == "angler" else "Casual"
 
 	var im := get_node_or_null("/root/InputManager")
 	var sens: float = float(im.get("cast_sensitivity")) if im != null else 0.5
@@ -82,6 +94,23 @@ func _sync_values() -> void:
 
 func _on_music_slider_changed(value: float) -> void:
 	GameManager.set_bus_volume(GameManager.BUS_MUSIC, value)
+
+
+func _on_sfx_slider_changed(value: float) -> void:
+	GameManager.set_bus_volume(GameManager.BUS_SFX, value)
+
+
+func _on_difficulty_button_pressed() -> void:
+	var sm := get_node_or_null("/root/SaveManager")
+	var cur := String(sm.call(&"get_difficulty")) if (sm != null and sm.has_method(&"get_difficulty")) else "casual"
+	var next := "angler" if cur.to_lower() == "casual" else "casual"
+	if sm != null and sm.has_method(&"set_difficulty"):
+		sm.call(&"set_difficulty", next)
+	_difficulty_button.text = "Angler" if next == "angler" else "Casual"
+	if get_tree() != null and get_tree().current_scene != null:
+		var fm := get_tree().current_scene.find_child("FishingManager", true, false)
+		if fm != null and fm.has_method(&"set_difficulty_string"):
+			fm.call(&"set_difficulty_string", next)
 
 
 func _on_sensitivity_slider_changed(value: float) -> void:

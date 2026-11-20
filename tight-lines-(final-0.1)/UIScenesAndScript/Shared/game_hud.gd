@@ -7,6 +7,7 @@ const PHONE_MENU_NAMES := {
 	"fish_box": "fish_box",
 	"almanac": "almanac",
 	"equipment": "equipment",
+	"quests": "quests",
 }
 
 @export var show_return_button: bool = false:
@@ -56,6 +57,11 @@ const PHONE_MENU_NAMES := {
 
 var _overlays: Dictionary = {}
 var _active_menu_id: String = ""
+var _toast_panel: PanelContainer = null
+var _toast_label: Label = null
+var _toast_queue: Array[String] = []
+var _toast_showing := false
+var _toast_tween: Tween = null
 
 
 func _ready() -> void:
@@ -97,6 +103,14 @@ func _ready() -> void:
 	var cm := get_node_or_null("/root/ConnectionManager")
 	if cm != null and cm.has_signal(&"player_connected"):
 		cm.connect(&"player_connected", _on_phone_connected)
+
+	_build_toast_banner()
+	var qm := get_node_or_null("/root/QuestManager")
+	if qm != null and qm.has_signal(&"quest_completed"):
+		qm.connect(&"quest_completed", _on_quest_completed)
+	var sm := get_node_or_null("/root/SaveManager")
+	if sm != null and sm.has_signal(&"unlock_flag_added"):
+		sm.connect(&"unlock_flag_added", _on_unlock_flag_added)
 
 	_apply_configuration()
 	close_all_menus()
@@ -220,3 +234,90 @@ func _sync_active_menu_to_phone() -> void:
 	var cm := get_node_or_null("/root/ConnectionManager")
 	if cm != null and cm.has_method(&"send_to_all"):
 		cm.call(&"send_to_all", {"active_menu": _get_active_phone_menu_name()})
+
+
+func show_toast(message: String) -> void:
+	if message.strip_edges() == "":
+		return
+	_toast_queue.append(message)
+	if not _toast_showing:
+		_pop_next_toast()
+
+
+func get_active_toast_text() -> String:
+	return _toast_label.text if (_toast_label != null and _toast_panel != null and _toast_panel.visible) else ""
+
+
+func _build_toast_banner() -> void:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.16, 0.24, 0.18, 0.92)
+	style.border_color = Color(1.0, 0.86, 0.36, 0.95)
+	style.set_border_width_all(3)
+	style.set_corner_radius_all(12)
+	style.content_margin_left = 20
+	style.content_margin_right = 20
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
+
+	_toast_panel = PanelContainer.new()
+	_toast_panel.name = "ToastBanner"
+	_toast_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_toast_panel.add_theme_stylebox_override("panel", style)
+	_toast_panel.anchor_left = 0.5
+	_toast_panel.anchor_right = 0.5
+	_toast_panel.anchor_top = 0.0
+	_toast_panel.anchor_bottom = 0.0
+	_toast_panel.offset_left = -260.0
+	_toast_panel.offset_right = 260.0
+	_toast_panel.offset_top = 72.0
+	_toast_panel.offset_bottom = 128.0
+	_toast_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_toast_panel.visible = false
+	add_child(_toast_panel)
+
+	_toast_label = Label.new()
+	_toast_label.name = "ToastLabel"
+	_toast_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_toast_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_toast_label.add_theme_font_size_override("font_size", 22)
+	_toast_label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82, 1.0))
+	_toast_label.add_theme_color_override("font_outline_color", Color(0.08, 0.06, 0.04, 1.0))
+	_toast_label.add_theme_constant_override("outline_size", 4)
+	_toast_panel.add_child(_toast_label)
+
+
+func _pop_next_toast() -> void:
+	if _toast_queue.is_empty() or _toast_panel == null or _toast_label == null:
+		_toast_showing = false
+		if _toast_panel != null:
+			_toast_panel.visible = false
+		return
+	_toast_showing = true
+	_toast_label.text = _toast_queue.pop_front()
+	_toast_panel.modulate.a = 0.0
+	_toast_panel.visible = true
+	if _toast_tween != null and _toast_tween.is_valid():
+		_toast_tween.kill()
+	_toast_tween = create_tween()
+	_toast_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_toast_tween.tween_property(_toast_panel, "modulate:a", 1.0, 0.25)
+	_toast_tween.tween_interval(2.6)
+	_toast_tween.tween_property(_toast_panel, "modulate:a", 0.0, 0.35)
+	_toast_tween.tween_callback(_pop_next_toast)
+
+
+func _on_quest_completed(quest_id: String) -> void:
+	var qm := get_node_or_null("/root/QuestManager")
+	var title := quest_id
+	if qm != null and qm.has_method(&"get_quest_info"):
+		var info: Dictionary = qm.call(&"get_quest_info", quest_id)
+		if info.has("title"):
+			title = String(info["title"])
+	show_toast("Quest Complete: %s!" % title)
+
+
+func _on_unlock_flag_added(flag: String) -> void:
+	if flag.begins_with("seen_"):
+		return
+	var pretty := flag.trim_prefix("unlock_").replace("_", " ").capitalize()
+	show_toast("Unlocked: %s!" % pretty)

@@ -7,7 +7,7 @@
     android:background="@drawable/bg_header_bar"
     android:orientation="horizontal"
     android:padding="6dp"
-    android:weightSum="3">
+    android:weightSum="4">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnFishBox"
@@ -84,6 +84,27 @@
         app:iconPadding="4dp"
         app:iconSize="18dp"
         app:iconTint="@null"
+        app:strokeColor="#C89B6E"
+        app:strokeWidth="1dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnQuests"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="4dp"
+        android:layout_weight="1"
+        android:backgroundTint="#6C4527"
+        android:ellipsize="end"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:maxLines="1"
+        android:paddingHorizontal="6dp"
+        android:text="Quests"
+        android:textAllCaps="false"
+        android:textColor="@color/parchment"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        app:cornerRadius="10dp"
         app:strokeColor="#C89B6E"
         app:strokeWidth="1dp" />
 </LinearLayout>

@@ -167,6 +167,7 @@ const KEY_BINDINGS := {
 	&"tl_pause": [KEY_ESCAPE],
 	&"tl_cast": [KEY_SPACE, KEY_ENTER],
 	&"tl_reel": [KEY_R, KEY_DOWN],
+	&"tl_release": [KEY_F, KEY_UP],
 	&"tl_look_left": [KEY_A, KEY_LEFT],
 	&"tl_look_right": [KEY_D, KEY_RIGHT],
 	# Debug Player 2 (IJKL scheme)
@@ -174,6 +175,7 @@ const KEY_BINDINGS := {
 	&"tl_p2_look_right": [KEY_L],
 	&"tl_p2_cast": [KEY_U],
 	&"tl_p2_reel": [KEY_K],
+	&"tl_p2_release": [KEY_O],
 	&"tl_p2_interact": [KEY_I],
 }
 
@@ -357,6 +359,8 @@ func get_release_strength(player_id: int = KEYBOARD_PLAYER_ID) -> float:
 	if context != InputContext.FISHING:
 		return 0.0
 	if player_id == KEYBOARD_PLAYER_ID and is_keyboard_enabled() and InputMap.has_action(&"tl_release") and Input.is_action_pressed(&"tl_release"):
+		return 1.0
+	if player_id == DEBUG_PLAYER2_ID and _debug_p2_active() and InputMap.has_action(&"tl_p2_release") and Input.is_action_pressed(&"tl_p2_release"):
 		return 1.0
 	if _now() < _get_state(player_id).get("release_until", 0.0):
 		return 1.0

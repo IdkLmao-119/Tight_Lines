@@ -91,6 +91,16 @@ enum Difficulty { CASUAL, ANGLER }
 @export var fish_music_fade_out := 0.8           # Seconds to fade out when the fish is caught or escapes. | Raise for a softer ending.
 @export var fish_music_volume_db := 0.0          # Track volume. | Lower if it drowns out the scene music.
 
+@export_group("3D Presentation & Juice")
+@export var enable_fishing_line := true          # Draw a 3D fishing line from the rod tip to the bobber.
+@export var line_segments := 14                  # Curve segments along the fishing line.
+@export var rod_tip_fallback_offset := Vector3(0.0, 2.2, -0.35) # Local offset on rod holder if no LineTip Marker3D exists.
+@export var enable_rod_flex := true              # Bend/pitch the rod holder smoothly with line tension.
+@export var rod_flex_max_pitch_deg := 22.0       # Max forward pitch (degrees) at full tension.
+@export var rod_flex_max_yaw_deg := 10.0         # Max sideways flex (degrees) following fish sweep.
+@export var enable_water_splashes := true        # Spawn 3D splash particle bursts on cast landing, bite, and surges.
+@export var enable_sfx := true                   # Play procedural fishing SFX on the SFX bus.
+
 @export_group("HUD / UI")
 @export var show_tension_bar := true            # On-screen tension bar while reeling. | Turn off if your own HUD draws it.
 @export var node_to_hide_on_bite: CanvasLayer    # CanvasLayer to set invisible on bite, and visible again after reeling. | Assign your UI layer here.
@@ -125,6 +135,7 @@ var season := ""
 # These only matter until the record has its own value. | Tweak only to change the "default" rod/fish.
 const UI_THEME: Theme = preload("res://UIScenesAndScript/Shared/ui_theme.tres")
 const UI_FONT: FontFile = preload("res://Assets/2D/ShortStack-Regular.ttf")
+const FISHING_SFX_SCRIPT := preload("res://AutoloadFolders/FishingManager/fishing_sfx.gd")
 const TEMP_ROD_LINE_STRENGTH := 10.0     # Default line strength; the tension bar is measured against it. | Raise for a sturdier default rod.
 const TEMP_ROD_MAX_CAST_DISTANCE := 20.0 # Default max cast distance (metres). | Match your water size.
 const TEMP_ROD_CONTROL := 1.0            # Default control; multiplies the snap grace time. | Raise to forgive longer overloads.
@@ -138,9 +149,9 @@ const TEMP_ROD_REEL_SPEED := 1.0         # Default reel speed; how fast reeling 
 const REEL_PROGRESS_RATE := 0.22         # Line won per second at full reeling (progress 0..1). | Lower = longer fights, higher = quicker catches.
 const TENSION_RISE_RATE := 1             # How fast tension builds (line-strength units/sec; /line_strength = bar fraction/sec). Used for the fish surge AND for reeling. | Lower if the bar fills too fast, raise if the fight is too safe.
 const TENSION_FALL_RATE := 3.0           # How fast RELEASING the reel lowers tension (same units, at full release). | Raise if releasing is too slow to save the line, lower to make it riskier.
-const FISH_SHARE_MAX := 0.6              # Fish's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to make the fish matter more than your reeling.
-const REEL_SHARE_MAX := 1.0              # Reeling's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to punish heavy reeling more.
-const RELEASE_LINE_LOSS_RATE := 0.0      # Progress the fish takes back per second at full release. | Raise so releasing costs more distance, lower to make it cheap.
+const FISH_SHARE_MAX := 0.5              # Fish's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to make the fish matter more than your reeling.
+const REEL_SHARE_MAX := 0.5              # Reeling's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to punish heavy reeling more.
+const RELEASE_LINE_LOSS_RATE := 0.04     # Progress the fish takes back per second at full release. | Raise so releasing costs more distance, lower to make it cheap.
 const FISH_DRAG_RATE := 0.008            # Line the fish takes back per second (scaled by its pull). | Raise if fish never fight back enough, lower if they win too much.
 const START_PROGRESS := 0.35             # Fight starts this far toward landed (0..1). | Raise for an easier start, lower for a harder one.
 const SNAP_GRACE_SEC := 0.5              # Seconds the bar may stay in the danger zone before the line snaps (x rod control, x2.5 in Casual). | Raise to forgive, lower to be strict.
@@ -181,6 +192,13 @@ class FishingSession extends RefCounted:
 	var rod: Dictionary = {}
 	var rod_model: Node3D = null
 	var line_tip: Node3D = null
+	var holder_base_rotation := Vector3.ZERO
+	var line_mesh_node: MeshInstance3D = null
+	var line_im: ImmediateMesh = null
+	var line_mat: StandardMaterial3D = null
+	var reel_sfx_timer := 0.0
+	var surge_splash_timer := 0.0
+	var telemetry_timer := 0.0
 
 	var bobber: Node3D = null
 	var fish: Dictionary = {}
@@ -231,6 +249,7 @@ var _fish_music_tween: Tween = null
 var _scene_music_suppressed := false
 var _context: Dictionary = {}
 var _multiplayer := false
+var _win_mode := "total_weight"
 var _elapsed := 0.0
 var _time_up := false
 var _finished := false
@@ -244,6 +263,8 @@ var _msg_layer: CanvasLayer = null
 var _msg_labels: Dictionary = {}
 var _tension_layer: CanvasLayer = null
 var _tension_bars: Dictionary = {}
+var _sfx: Node = null
+var _splash_count := 0
 
 
 func _ready() -> void:
@@ -254,6 +275,11 @@ func _ready() -> void:
 	_inventory = get_node_or_null("/root/InventoryManager")
 	_connection = get_node_or_null("/root/ConnectionManager")
 	_quest = get_node_or_null("/root/QuestManager")
+
+	if enable_sfx:
+		_sfx = FISHING_SFX_SCRIPT.new()
+		_sfx.name = "FishingSFX"
+		add_child(_sfx)
 
 	if _input == null:
 		push_error("FishingManager: InputManager autoload not found - no input will work.")
@@ -282,6 +308,9 @@ func _ready() -> void:
 			set_difficulty(save_diff)
 
 	_multiplayer = bool(_context.get("multiplayer", false)) or debug_multiplayer
+	_win_mode = String(_context.get("win_mode", "total_weight")).strip_edges().to_lower()
+	if not ["total_weight", "biggest_fish", "most_fish"].has(_win_mode):
+		_win_mode = "total_weight"
 	if _multiplayer and time_limit_sec <= 0.0:
 		push_warning("FishingManager: multiplayer round has no time_limit_sec - Cancel is disabled in multiplayer.")
 
@@ -315,6 +344,8 @@ func _exit_tree() -> void:
 		_input.interact_pressed.disconnect(_on_interact)
 	if _input.cancel_pressed.is_connected(_on_cancel):
 		_input.cancel_pressed.disconnect(_on_cancel)
+	if _input.has_signal("menu_action") and _input.menu_action.is_connected(_on_menu_action):
+		_input.menu_action.disconnect(_on_menu_action)
 
 
 # ----------------------------------------------------------------------------
@@ -347,6 +378,7 @@ func get_difficulty_string() -> String:
 func start_session(player_ids: Array[int]) -> void:
 	for s in _sessions.values():
 		_remove_bobber(s)
+		_remove_fishing_line(s)
 		_remove_rod_model(s)
 	_sessions.clear()
 	_order.clear()
@@ -374,6 +406,7 @@ func start_session(player_ids: Array[int]) -> void:
 		s.player_id = pid
 		s.anchor = _anchor_for_index(i)
 		s.holder = _holder_for_index(i)
+		s.holder_base_rotation = s.holder.rotation if s.holder != null else Vector3.ZERO
 		s.base_yaw = s.anchor.rotation.y if s.anchor != null else 0.0
 		s.rod_id = rod_id
 		s.bait_id = bait_id
@@ -423,13 +456,15 @@ func get_session_info(player_id: int) -> Dictionary:
 		"progress": s.progress,
 		"stamina_ratio": s.stamina / maxf(s.max_stamina, 0.001),
 		"surging": s.surging,
-		"cast_charge": _input.get_cast_charge() if _input != null else 0.0,
+		"cast_charge": _input.get_cast_charge(player_id) if _input != null else 0.0,
 		"catch_count": s.catches.size(),
 		"total_weight": s.total_weight,
 		"rod_id": s.rod_id,
 		"bait_id": s.bait_id,
 		"look_degrees": rad_to_deg(s.look_offset),
 		"difficulty": difficulty,
+		"fish_name": String(s.fish.get("display_name", "")),
+		"release_active": _get_release(player_id) > 0.0,
 	}
 
 
@@ -492,7 +527,8 @@ func finish_session() -> void:
 
 	var payload := {"results": results}
 	if _multiplayer:
-		payload["winner"] = _winner_id(results)
+		payload["winner"] = compute_winner_id(results, _win_mode)
+		payload["win_mode"] = _win_mode
 		payload["player_names"] = names_snapshot
 		payload["player_order"] = _order.duplicate()
 		payload["time_limit_sec"] = time_limit_sec
@@ -507,16 +543,32 @@ func finish_session() -> void:
 
 
 func _winner_id(results: Dictionary) -> int:
+	return compute_winner_id(results, _win_mode)
+
+
+static func compute_winner_id(results: Dictionary, mode: String = "total_weight") -> int:
 	var best := -1
-	var best_w := -1.0
+	var best_score := -1.0
 	var tie := false
 	for pid in results:
-		var w := float(results[pid]["total_weight"])
-		if w > best_w + 0.0001:
-			best_w = w
+		var entry: Dictionary = results[pid]
+		var score := 0.0
+		match mode:
+			"most_fish":
+				var catches: Array = entry.get("catches", [])
+				score = float(catches.size())
+			"biggest_fish":
+				var catches: Array = entry.get("catches", [])
+				for fish in catches:
+					if fish is Dictionary:
+						score = maxf(score, float(fish.get("weight", 0.0)))
+			_:
+				score = float(entry.get("total_weight", 0.0))
+		if score > best_score + 0.0001:
+			best_score = score
 			best = int(pid)
 			tie = false
-		elif absf(w - best_w) <= 0.0001:
+		elif absf(score - best_score) <= 0.0001:
 			tie = true
 	return -1 if tie else best
 
@@ -565,6 +617,9 @@ func _update_session(s: FishingSession, delta: float) -> void:
 				_remove_bobber(s)
 				_set_state(s, State.IDLE)
 
+	_update_fishing_line(s)
+	_update_rod_flex(s, delta)
+
 
 # --- CASTING ---
 func _update_casting(s: FishingSession, delta: float) -> void:
@@ -577,6 +632,8 @@ func _update_casting(s: FishingSession, delta: float) -> void:
 	if t >= 1.0:
 		s.bite_timer = _roll_bite_delay()
 		_set_state(s, State.WAITING)
+		_spawn_water_splash(s.cast_target, 1.0)
+		_play_sfx("splash", -5.0, randf_range(0.92, 1.08))
 		bobber_landed.emit(s.player_id, s.cast_target)
 
 
@@ -626,6 +683,9 @@ func _try_bite(s: FishingSession) -> void:
 	s.pan_cam = 0.0
 
 	_set_state(s, State.REELING)
+	if s.bobber != null:
+		_spawn_water_splash(s.bobber.global_position, 1.35)
+	_play_sfx("bite", -3.0, 1.0)
 	fish_bit.emit(s.player_id)
 	on_bite(s)
 	_play_fish_music(String(fish["id"]))
@@ -953,6 +1013,21 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 		if s.surge_vibrate_timer <= 0.0:
 			s.surge_vibrate_timer = surge_vibrate_interval
 			_notify_phone(s.player_id, {"type": "vibrate", "reason": "surge"})
+		s.surge_splash_timer -= delta
+		if s.surge_splash_timer <= 0.0:
+			s.surge_splash_timer = 0.55
+			if s.bobber != null:
+				_spawn_water_splash(s.bobber.global_position, 0.85)
+			_play_sfx("surge_splash", -9.0, randf_range(0.9, 1.15))
+
+	if reeling > 0.0:
+		s.reel_sfx_timer -= delta
+		if s.reel_sfx_timer <= 0.0:
+			s.reel_sfx_timer = 0.14
+			var tension_pitch := lerpf(0.95, 1.35, clampf(s.tension / maxf(line_strength, 0.001), 0.0, 1.0))
+			_play_sfx("reel_tick", -10.0, tension_pitch)
+	else:
+		s.reel_sfx_timer = 0.0
 
 	var stamina_ratio := s.stamina / s.max_stamina
 	var pull_mult := SURGE_PULL_MULT if s.surging else CALM_PULL_MULT
@@ -1023,6 +1098,18 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 			s.anchor.rotation.y = move_toward(s.anchor.rotation.y, base_yaw, delta * 5.0)
 
 	_update_tension_ui(s)
+
+	# Stream live tension/surge telemetry to connected phone (~10 Hz)
+	s.telemetry_timer -= delta
+	if s.telemetry_timer <= 0.0:
+		s.telemetry_timer = 0.1
+		var t_ratio := clampf(s.tension / maxf(line_strength, 0.001), 0.0, 1.0)
+		_notify_phone(s.player_id, {
+			"type": "telemetry",
+			"tension": snappedf(t_ratio, 0.01),
+			"progress": snappedf(s.progress, 0.01),
+			"surging": s.surging,
+		})
 
 	if s.bobber != null:
 		var origin := _anchor_water_pos(s)
@@ -1095,7 +1182,10 @@ func _fish_won(s: FishingSession) -> void:
 	var kept := true
 	if store_catches_in_inventory and not _multiplayer:
 		kept = _store_fish(fish)
-		_record_caught_fish(String(fish["id"]))
+		var rec_info := _record_caught_fish(String(fish["id"]), float(fish["size_cm"]), float(fish["weight"]))
+		fish["is_new_species"] = bool(rec_info.get("is_new_species", false))
+		fish["is_new_record"] = bool(rec_info.get("is_new_record", false))
+		fish["trophy_tier"] = String(rec_info.get("trophy_tier", ""))
 		_report_catch(String(fish["id"]), float(fish["size_cm"]), String(_context.get("spot_id", "")))
 
 	if kept:
@@ -1103,6 +1193,9 @@ func _fish_won(s: FishingSession) -> void:
 		s.total_weight += float(fish["weight"])
 
 	_set_state(s, State.CAUGHT)
+	if s.bobber != null:
+		_spawn_water_splash(s.bobber.global_position, 1.4)
+	_play_sfx("catch", -3.0, 1.0)
 	on_fight_won(s)
 	if kept:
 		fish_caught.emit(s.player_id, fish)
@@ -1111,13 +1204,19 @@ func _fish_won(s: FishingSession) -> void:
 	_show_catch_popup(s.player_id, fish, kept)
 
 
-func _record_caught_fish(fish_id: String) -> void:
-	if _save == null or not _save.has_method("record_caught_fish"):
-		_warn_once("record_caught_fish", "SaveManager.record_caught_fish() not found - Bestiary will not unlock.")
-		return
-	var is_new := bool(_save.record_caught_fish(fish_id))   # Almanac + "first time" quests
-	if is_new and debug_log:
-		print("[FishingManager] New Bestiary entry unlocked: '%s'" % fish_id)
+func _record_caught_fish(fish_id: String, size_cm: float = 0.0, weight_kg: float = -1.0) -> Dictionary:
+	if _save == null:
+		_warn_once("record_caught_fish", "SaveManager not found - Bestiary will not unlock.")
+		return {}
+	if _save.has_method("record_fish_catch"):
+		var info: Dictionary = _save.record_fish_catch(fish_id, size_cm, weight_kg)
+		if bool(info.get("is_new_species", false)) and debug_log:
+			print("[FishingManager] New Bestiary entry unlocked: '%s'" % fish_id)
+		return info
+	if _save.has_method("record_caught_fish"):
+		var is_new := bool(_save.record_caught_fish(fish_id))
+		return {"is_new_species": is_new, "is_new_record": false, "trophy_tier": ""}
+	return {}
 
 
 # --- Fish music ---
@@ -1201,6 +1300,16 @@ func _show_catch_popup(player_id: int, fish: Dictionary, kept: bool) -> void:
 	var text := ""
 	if _multiplayer:
 		text += "%s caught\n" % get_player_name(player_id)
+	var badge := ""
+	if bool(fish.get("is_new_species", false)):
+		badge = "NEW SPECIES! "
+	elif bool(fish.get("is_new_record", false)):
+		badge = "NEW RECORD! "
+	var tier := String(fish.get("trophy_tier", ""))
+	if tier != "":
+		badge += "[%s] " % tier
+	if badge != "":
+		text += badge.strip_edges() + "\n"
 	text += "%s\n%.1f cm   %.2f kg" % [String(fish["display_name"]), float(fish["size_cm"]), float(fish["weight"])]
 	if not kept:
 		text += "\nFish Box full: released"
@@ -1304,6 +1413,10 @@ func _show_catch_picture(fish: Dictionary) -> void:
 
 func _fish_escapes(s: FishingSession, reason: String) -> void:
 	_set_state(s, State.ESCAPED)
+	if reason == "line_snapped":
+		_play_sfx("snap", -2.0, 1.0)
+	else:
+		_play_sfx("splash", -6.0, 0.85)
 	fish_escaped.emit(s.player_id, s.fish.duplicate(true), reason)
 	on_escape(s)
 
@@ -1313,6 +1426,37 @@ func _connect_input() -> void:
 	_input.cast_triggered.connect(_on_cast)
 	_input.interact_pressed.connect(_on_interact)
 	_input.cancel_pressed.connect(_on_cancel)
+	if _input.has_signal("menu_action"):
+		_input.menu_action.connect(_on_menu_action)
+
+
+func _on_menu_action(player_id: int, action: String) -> void:
+	if action == "cycle_bait":
+		cycle_bait(player_id)
+
+
+func cycle_bait(player_id: int) -> String:
+	var s := _sessions.get(player_id) as FishingSession
+	if s == null or s.state != State.IDLE or _multiplayer or _db == null or not _db.is_loaded:
+		return ""
+	var available: Array[String] = []
+	for bait in _db.get_all_bait():
+		var bid := String(bait.id)
+		if bid.contains("debug") or bid.begins_with("bait_d"):
+			continue
+		if bool(bait.unlimited) or (_inventory != null and _inventory.has_method("count_of") and int(_inventory.call("count_of", bid)) > 0):
+			available.append(bid)
+	if available.is_empty():
+		return ""
+	var idx := available.find(s.bait_id)
+	var next_id := available[(idx + 1) % available.size()]
+	if set_bait(player_id, next_id):
+		if _save != null and _save.has_method("set_equipped_bait"):
+			_save.call("set_equipped_bait", next_id)
+		var bname := String(_db.get_bait(next_id).display_name)
+		_show_message(player_id, "Bait: %s" % bname, 1.5)
+		return next_id
+	return ""
 
 
 func _on_cast(player_id: int, power: float) -> void:
@@ -1355,6 +1499,7 @@ func _on_cast(player_id: int, power: float) -> void:
 
 	_spawn_bobber(s)
 	_set_state(s, State.CASTING)
+	_play_sfx("cast", -4.0, lerpf(0.88, 1.18, power))
 	cast_started.emit(player_id, power, s.cast_target)
 
 
@@ -1582,6 +1727,199 @@ func _remove_bobber(s: FishingSession) -> void:
 	if s.bobber != null and is_instance_valid(s.bobber):
 		s.bobber.queue_free()
 	s.bobber = null
+	_remove_fishing_line(s)
+
+
+# --- 3D Fishing Line, Rod Flex, Water Splashes & SFX ---
+
+static func compute_line_sag(state: int, tension_ratio: float) -> float:
+	match state:
+		State.CASTING:
+			return 0.25
+		State.WAITING:
+			return 0.55
+		State.REELING:
+			return lerpf(0.35, 0.02, clampf(tension_ratio, 0.0, 1.0))
+		_:
+			return 0.15
+
+
+static func compute_line_color(tension_ratio: float) -> Color:
+	var t := clampf(tension_ratio, 0.0, 1.0)
+	if t >= 0.85:
+		return Color(1.0, 0.28, 0.22, 0.95)
+	if t >= 0.6:
+		return Color(1.0, 0.85, 0.35, 0.92)
+	return Color(0.92, 0.96, 1.0, 0.85)
+
+
+static func compute_rod_flex_angles(tension_ratio: float, pan_pos: float, surging: bool,
+		max_pitch_deg: float = 22.0, max_yaw_deg: float = 10.0) -> Vector2:
+	var t := clampf(tension_ratio, 0.0, 1.2)
+	var surge_boost := 1.15 if surging else 1.0
+	var pitch_rad := deg_to_rad(max_pitch_deg * minf(t * surge_boost, 1.25))
+	var yaw_rad := deg_to_rad(max_yaw_deg * clampf(pan_pos, -1.0, 1.0) * minf(t + 0.25, 1.0))
+	return Vector2(pitch_rad, yaw_rad)
+
+
+func _get_line_tip_position(s: FishingSession) -> Vector3:
+	if s.line_tip != null and is_instance_valid(s.line_tip):
+		return s.line_tip.global_position
+	if s.holder != null and is_instance_valid(s.holder):
+		# Auto-detect the highest point of any MeshInstance3D inside the rod holder
+		# so the line attaches to the real rod tip regardless of FBX axis/scale.
+		var best_pos := Vector3.ZERO
+		var found_mesh := false
+		for child in s.holder.find_children("*", "MeshInstance3D", true, false):
+			var mi := child as MeshInstance3D
+			if mi == null or mi.mesh == null:
+				continue
+			var aabb := mi.get_aabb()
+			for cx in [aabb.position.x, aabb.end.x]:
+				for cy in [aabb.position.y, aabb.end.y]:
+					for cz in [aabb.position.z, aabb.end.z]:
+						var wp := mi.to_global(Vector3(cx, cy, cz))
+						if not found_mesh or wp.y > best_pos.y:
+							best_pos = wp
+							found_mesh = true
+		if found_mesh and best_pos.y > water_level + 0.25:
+			return best_pos
+		var fallback := s.holder.to_global(rod_tip_fallback_offset)
+		fallback.y = maxf(fallback.y, water_level + 0.5)
+		return fallback
+	if s.anchor != null and is_instance_valid(s.anchor):
+		return s.anchor.global_position + Vector3(0.4, 1.1, 0.0)
+	return global_position + Vector3.UP
+
+
+func _ensure_fishing_line(s: FishingSession) -> void:
+	if s.line_mesh_node != null and is_instance_valid(s.line_mesh_node):
+		return
+	var im := ImmediateMesh.new()
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+	mat.no_depth_test = false
+	mat.render_priority = 12
+	mat.albedo_color = Color(0.92, 0.96, 1.0, 0.9)
+
+	var mi := MeshInstance3D.new()
+	mi.name = "FishingLine_P%d" % s.player_id
+	mi.top_level = true
+	mi.mesh = im
+	mi.material_override = mat
+	mi.sorting_offset = 100.0
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(mi)
+
+	s.line_mesh_node = mi
+	s.line_im = im
+	s.line_mat = mat
+
+
+func _remove_fishing_line(s: FishingSession) -> void:
+	if s.line_mesh_node != null and is_instance_valid(s.line_mesh_node):
+		s.line_mesh_node.queue_free()
+	s.line_mesh_node = null
+	s.line_im = null
+	s.line_mat = null
+
+
+func _update_fishing_line(s: FishingSession) -> void:
+	if not enable_fishing_line or s.bobber == null or not is_instance_valid(s.bobber):
+		if s.line_mesh_node != null:
+			_remove_fishing_line(s)
+		return
+	_ensure_fishing_line(s)
+	var start_pos := _get_line_tip_position(s)
+	start_pos.y = maxf(start_pos.y, water_level + 0.35)
+	var end_pos := s.bobber.global_position
+	end_pos.y = maxf(end_pos.y, water_level + 0.04)
+	var line_strength := maxf(float(s.rod.get("line_strength", TEMP_ROD_LINE_STRENGTH)), 0.001)
+	var tension_ratio := s.tension / line_strength if s.state == State.REELING else 0.0
+	var sag := compute_line_sag(s.state, tension_ratio)
+	var segs := maxi(line_segments, 2)
+
+	if s.line_mat != null:
+		s.line_mat.albedo_color = compute_line_color(tension_ratio)
+
+	s.line_im.clear_surfaces()
+	s.line_im.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
+	for i in range(segs + 1):
+		var u := float(i) / float(segs)
+		var p := start_pos.lerp(end_pos, u)
+		# Parabolic sag peaking at u = 0.5, clamped above the water plane so it never clips under water.
+		p.y -= sag * 4.0 * u * (1.0 - u)
+		p.y = maxf(p.y, water_level + 0.04)
+		s.line_im.surface_add_vertex(p)
+	s.line_im.surface_end()
+
+
+func _update_rod_flex(s: FishingSession, delta: float) -> void:
+	if not enable_rod_flex or s.holder == null or not is_instance_valid(s.holder):
+		return
+	var target_rot := s.holder_base_rotation
+	if s.state == State.REELING:
+		var line_strength := maxf(float(s.rod.get("line_strength", TEMP_ROD_LINE_STRENGTH)), 0.001)
+		var tension_ratio := s.tension / line_strength
+		var flex := compute_rod_flex_angles(
+			tension_ratio, s.pan_pos, s.surging,
+			rod_flex_max_pitch_deg, rod_flex_max_yaw_deg)
+		target_rot.x += flex.x
+		target_rot.y += flex.y
+	elif s.state == State.CASTING:
+		target_rot.x -= deg_to_rad(14.0) * sin(clampf(s.cast_time / maxf(s.cast_duration, 0.01), 0.0, 1.0) * PI)
+	s.holder.rotation = s.holder.rotation.lerp(target_rot, 1.0 - exp(-10.0 * delta))
+
+
+func _spawn_water_splash(pos: Vector3, intensity: float = 1.0) -> void:
+	if not enable_water_splashes or not is_inside_tree():
+		return
+	_splash_count += 1
+	var p := CPUParticles3D.new()
+	p.name = "WaterSplash_%d" % _splash_count
+	p.top_level = true
+	p.one_shot = true
+	p.explosiveness = 0.92
+	p.amount = clampi(int(18 * intensity), 8, 40)
+	p.lifetime = 0.55
+	p.direction = Vector3(0.0, 1.0, 0.0)
+	p.spread = 48.0
+	p.initial_velocity_min = 1.8 * intensity
+	p.initial_velocity_max = 4.2 * intensity
+	p.gravity = Vector3(0.0, -9.8, 0.0)
+	p.scale_amount_min = 0.04
+	p.scale_amount_max = 0.11 * intensity
+
+	var drop := SphereMesh.new()
+	drop.radius = 0.5
+	drop.height = 1.0
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.render_priority = 11
+	mat.albedo_color = Color(0.82, 0.95, 1.0, 0.85)
+	drop.material = mat
+	p.mesh = drop
+	p.sorting_offset = 50.0
+
+	add_child(p)
+	p.global_position = Vector3(pos.x, water_level + 0.05, pos.z)
+	p.emitting = true
+	get_tree().create_timer(p.lifetime + 0.25).timeout.connect(func() -> void:
+		if is_instance_valid(p):
+			p.queue_free())
+
+
+func _play_sfx(clip_name: String, volume_db: float = -4.0, pitch_scale: float = 1.0) -> void:
+	if not enable_sfx or _sfx == null:
+		return
+	_sfx.play(clip_name, volume_db, pitch_scale)
+
+
+func get_splash_spawn_count() -> int:
+	return _splash_count
 
 
 func _warn_once(key: String, message: String) -> void:

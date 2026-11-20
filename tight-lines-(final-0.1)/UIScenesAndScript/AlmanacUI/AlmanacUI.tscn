@@ -4,15 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://1w3ooxvm15dy" path="res://Assets/Example.png" id="2_kkthf"]
 [ext_resource type="Theme" path="res://UIScenesAndScript/AlmanacUI/almanac_theme.tres" id="3_theme"]
 [ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="4_body"]
-[ext_resource type="Script" path="res://UIScenesAndScript/Shared/mobile_cursor_highlight.gd" id="5_cursor"]
-
-[sub_resource type="FontVariation" id="FontVariation_title_bold"]
-base_font = ExtResource("4_body")
-variation_embolden = 0.7
-
-[sub_resource type="FontVariation" id="FontVariation_sci_italic"]
-base_font = ExtResource("4_body")
-variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
+[ext_resource type="Script" uid="uid://2chvs05xvoei" path="res://UIScenesAndScript/Shared/mobile_cursor_highlight.gd" id="5_cursor"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_parchment"]
 content_margin_left = 24.0
@@ -27,6 +19,14 @@ texture_margin_bottom = 16.0
 axis_stretch_horizontal = 1
 axis_stretch_vertical = 1
 
+[sub_resource type="FontVariation" id="FontVariation_title_bold"]
+base_font = ExtResource("4_body")
+variation_embolden = 0.7
+
+[sub_resource type="FontVariation" id="FontVariation_sci_italic"]
+base_font = ExtResource("4_body")
+variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
+
 [node name="AlmanacUi" type="Control" unique_id=479802253]
 layout_mode = 3
 anchors_preset = 15
@@ -37,7 +37,7 @@ grow_vertical = 2
 theme = ExtResource("3_theme")
 script = ExtResource("1_dyt5v")
 
-[node name="DimOverlay" type="ColorRect" parent="."]
+[node name="DimOverlay" type="ColorRect" parent="." unique_id=1822836505]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -46,7 +46,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.5)
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=539367997]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -58,7 +58,7 @@ theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 24
 
-[node name="MainHBox" type="HBoxContainer" parent="MarginContainer"]
+[node name="MainHBox" type="HBoxContainer" parent="MarginContainer" unique_id=620611016]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -111,16 +111,16 @@ size_flags_vertical = 3
 text = "Fortune
 Island"
 
-[node name="BookPanel" type="PanelContainer" parent="MarginContainer/MainHBox"]
+[node name="BookPanel" type="PanelContainer" parent="MarginContainer/MainHBox" unique_id=1868387191]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxTexture_parchment")
 
-[node name="BookVBox" type="VBoxContainer" parent="MarginContainer/MainHBox/BookPanel"]
+[node name="BookVBox" type="VBoxContainer" parent="MarginContainer/MainHBox/BookPanel" unique_id=543582279]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="PagesHBox" type="HBoxContainer" parent="MarginContainer/MainHBox/BookPanel/BookVBox"]
+[node name="PagesHBox" type="HBoxContainer" parent="MarginContainer/MainHBox/BookPanel/BookVBox" unique_id=1693379463]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 24
@@ -177,7 +177,7 @@ layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
 
-[node name="FooterBar" type="HBoxContainer" parent="MarginContainer/MainHBox/BookPanel/BookVBox"]
+[node name="FooterBar" type="HBoxContainer" parent="MarginContainer/MainHBox/BookPanel/BookVBox" unique_id=1684694866]
 layout_mode = 2
 alignment = 1
 
@@ -188,7 +188,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 26
 text = "Back"
 
-[node name="CursorHighlight" type="Panel" parent="."]
+[node name="CursorHighlight" type="Panel" parent="." unique_id=436936958]
 unique_name_in_owner = true
 visible = false
 layout_mode = 0

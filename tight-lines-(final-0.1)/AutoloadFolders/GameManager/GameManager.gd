@@ -31,6 +31,7 @@ signal load_progress(ratio: float)            # 0.0 - 1.0 while loading
 signal paused_changed(is_paused: bool)
 signal inventory_overlay_changed(is_open: bool)
 signal volume_changed(bus_name: String, linear: float)
+signal world_time_changed(state: Dictionary)
 
 # ============================================================================
 # SCENE REGISTRY  -  edit this block to add scenes / change music
@@ -60,14 +61,6 @@ const SCENES: Dictionary = {
 	},
 	"multiplayer_lobby": {
 		"path": "res://UIScenesAndScript/MultiplayerLobby/MultiplayerLobby.tscn",
-		"input": "menu",
-		"music": "res://Assets/Audio/Reluctance.mp3",
-		"pausable": false,
-	},
-
-	#WTF is this
-	"cutscene": {
-		"path": "res://cutscenes/Cutscene.tscn",
 		"input": "menu",
 		"music": "res://Assets/Audio/Reluctance.mp3",
 		"pausable": false,
@@ -265,6 +258,18 @@ var pending_context: Dictionary = {}     # read it with consume_context()
 var is_changing_scene := false
 var is_multiplayer := false              # set from the context's "multiplayer"
 var scene_memory: Dictionary = {}        # { scene_id: Dictionary of saved state }
+
+# --- Persistent World Clock & Weather (shared across Overworld & 3D Fishing) ---
+const PHASE_HOURS := {
+	"dawn": 5.5,
+	"day": 9.0,
+	"dusk": 17.5,
+	"night": 21.0,
+}
+var world_game_minutes: float = 480.0    # 08:00 default
+var world_day_count: int = 1
+var world_weather: String = "clear"
+var world_time_of_day: String = "day"
 
 # --- Internals -------------------------------------------------------------
 var _current_input_name: String = ""     # input context of the live scene
@@ -477,6 +482,87 @@ func remember(scene_id: String, data: Dictionary) -> void:
 
 func recall(scene_id: String) -> Dictionary:
 	return scene_memory.get(scene_id, {})
+
+
+# --- Persistent World Time & Weather API ---
+func get_world_time_state() -> Dictionary:
+	return {
+		"game_minutes": world_game_minutes,
+		"day_count": world_day_count,
+		"weather": world_weather,
+		"time_of_day": world_time_of_day,
+	}
+
+
+func set_world_time_state(state: Dictionary) -> void:
+	if state.has("game_minutes"):
+		world_game_minutes = fposmod(float(state["game_minutes"]), 1440.0)
+	if state.has("day_count"):
+		world_day_count = maxi(int(state["day_count"]), 1)
+	if state.has("weather") and String(state["weather"]).strip_edges() != "":
+		world_weather = String(state["weather"]).strip_edges().to_lower()
+	world_time_of_day = _world_phase_for_hour(world_game_minutes / 60.0)
+	world_time_changed.emit(get_world_time_state())
+
+
+func reset_world_time() -> void:
+	world_game_minutes = 480.0
+	world_day_count = 1
+	world_weather = "clear"
+	world_time_of_day = "day"
+	world_time_changed.emit(get_world_time_state())
+
+
+func rest_to_phase(target_phase: String, new_weather: String = "") -> Dictionary:
+	var key := target_phase.strip_edges().to_lower()
+	if not PHASE_HOURS.has(key):
+		return get_world_time_state()
+	var target_minutes := float(PHASE_HOURS[key]) * 60.0
+	if target_minutes <= world_game_minutes:
+		world_day_count += 1
+	world_game_minutes = target_minutes
+	world_time_of_day = key
+	if new_weather != "":
+		world_weather = new_weather.strip_edges().to_lower()
+	else:
+		var pool := PackedStringArray(["clear", "cloudy", "rain", "fog"])
+		var db := get_node_or_null("/root/GameDB")
+		if db != null and db.has_method("get_condition_values"):
+			var db_pool: PackedStringArray = db.call("get_condition_values", "weather")
+			if not db_pool.is_empty():
+				pool = db_pool
+		world_weather = pool[randi() % pool.size()]
+	var ws := get_tree().get_first_node_in_group("weather_system") if get_tree() != null else null
+	if ws != null and ws.has_method("sync_from_world_state"):
+		ws.call("sync_from_world_state", get_world_time_state())
+	world_time_changed.emit(get_world_time_state())
+	return get_world_time_state()
+
+
+func get_world_clock_text() -> String:
+	var hh := int(world_game_minutes / 60.0) % 24
+	var mm := int(world_game_minutes) % 60
+	return "Day %d  •  %02d:%02d (%s)  •  %s" % [
+		world_day_count, hh, mm, world_time_of_day.capitalize(), world_weather.capitalize()
+	]
+
+
+func get_scene_display_name(scene_id: String) -> String:
+	if SCENES.has(scene_id):
+		var dn := String(SCENES[scene_id].get("display_name", ""))
+		if dn != "":
+			return dn
+	return scene_id.trim_prefix("overworld_").replace("_", " ").capitalize()
+
+
+func _world_phase_for_hour(h: float) -> String:
+	if h >= 5.0 and h < 8.0:
+		return "dawn"
+	if h >= 8.0 and h < 17.0:
+		return "day"
+	if h >= 17.0 and h < 20.0:
+		return "dusk"
+	return "night"
 
 
 func _save_leaving_scene_state() -> void:

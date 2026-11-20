@@ -246,12 +246,24 @@ func _show_fish(index: int) -> void:
 		_fish_picture.modulate = Color.WHITE
 		_fish_name.text = fish.display_name
 		_fish_scientific_name.text = fish.scientific_name
-		_fish_description.text = "%s\n\n[b]Size Class:[/b] %s\n[b]Avg Size:[/b] %.1f cm\n[b]Avg Weight:[/b] %.2f kg\n[b]Base Value:[/b] %d G" % [
+		var rec: Dictionary = SaveManager.get_fish_record(fish.id) if SaveManager.has_method(&"get_fish_record") else {}
+		var caught_count := int(rec.get("count", 1))
+		var best_size := float(rec.get("best_size_cm", 0.0))
+		var best_weight := float(rec.get("best_weight_kg", 0.0))
+		var tier := String(SaveManager.get_trophy_tier(fish.id, best_size)) if (best_size > 0.0 and SaveManager.has_method(&"get_trophy_tier")) else ""
+		var record_line := ""
+		if best_size > 0.0:
+			var tier_tag := " (%s Trophy)" % tier if tier != "" else ""
+			record_line = "\n[b]Caught:[/b] %d  |  [b]Best:[/b] %.1f cm / %.2f kg%s" % [caught_count, best_size, best_weight, tier_tag]
+		else:
+			record_line = "\n[b]Caught:[/b] %d" % caught_count
+		_fish_description.text = "%s\n\n[b]Size Class:[/b] %s\n[b]Avg Size:[/b] %.1f cm\n[b]Avg Weight:[/b] %.2f kg\n[b]Base Value:[/b] ₱%d%s" % [
 			fish.description,
 			fish.size_class.capitalize(),
 			fish.avg_size,
 			fish.avg_weight,
 			fish.base_price,
+			record_line,
 		]
 	else:
 		_fish_picture.modulate = Color(0.15, 0.15, 0.15, 1.0)

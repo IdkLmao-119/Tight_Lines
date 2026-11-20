@@ -269,6 +269,100 @@ func get_fish_sell_price(uid: int) -> int:
 	return int(db.call("get_sell_price", item["item_id"], size_cm))
 
 
+func is_item_locked(uid: int) -> bool:
+	if not _items.has(uid):
+		return false
+	return bool(_items[uid]["meta"].get("locked", false))
+
+
+func set_item_locked(uid: int, locked: bool) -> bool:
+	if not _items.has(uid):
+		return false
+	var item: Dictionary = _items[uid]
+	if locked:
+		item["meta"]["locked"] = true
+	else:
+		item["meta"].erase("locked")
+	inventory_changed.emit(String(item["container"]))
+	return true
+
+
+func toggle_item_locked(uid: int) -> bool:
+	if not _items.has(uid):
+		return false
+	var next := not is_item_locked(uid)
+	set_item_locked(uid, next)
+	return next
+
+
+# Turns an unlocked fish in the FISH_BOX into weighted bait using BaitData.compost_weight.
+# Returns { ok, reason, bait_id, bait_name, count, leftover }.
+func compost_fish(uid: int) -> Dictionary:
+	if not _items.has(uid):
+		return {"ok": false, "reason": "missing"}
+	var item: Dictionary = _items[uid]
+	if String(item["container"]) != FISH_BOX:
+		return {"ok": false, "reason": "not_fish"}
+	if is_item_locked(uid):
+		return {"ok": false, "reason": "locked"}
+
+	var db := _game_db()
+	if db == null or not bool(db.get("is_loaded")):
+		return {"ok": false, "reason": "no_db"}
+
+	var candidates: Array = []
+	var total_weight := 0.0
+	for bait in db.call("get_all_bait"):
+		var w := float(bait.get("compost_weight"))
+		if w > 0.0:
+			candidates.append({"bait": bait, "weight": w})
+			total_weight += w
+	# Fallback: if no bait has compost_weight > 0, pick from non-debug baits equally.
+	if candidates.is_empty():
+		for bait in db.call("get_all_bait"):
+			var bid := String(bait.get("id"))
+			if not bid.contains("debug") and not bid.begins_with("bait_d"):
+				candidates.append({"bait": bait, "weight": 1.0})
+				total_weight += 1.0
+	if candidates.is_empty() or total_weight <= 0.0:
+		return {"ok": false, "reason": "no_compost_bait"}
+
+	var roll := randf() * total_weight
+	var acc := 0.0
+	var picked: Object = candidates[candidates.size() - 1]["bait"]
+	for c in candidates:
+		acc += float(c["weight"])
+		if roll <= acc:
+			picked = c["bait"]
+			break
+
+	var bait_id := String(picked.get("id"))
+	var bait_name := String(picked.get("display_name"))
+	var yield_count := 1
+	var fish_id := String(item["item_id"])
+	if bool(db.call("has_fish", fish_id)):
+		var fish_rec: Object = db.call("get_fish", fish_id)
+		match String(fish_rec.get("size_class")):
+			"medium":
+				yield_count = 2
+			"large":
+				yield_count = 3
+
+	if not can_add(bait_id, yield_count):
+		return {"ok": false, "reason": "tackle_box_full", "bait_id": bait_id, "bait_name": bait_name, "count": yield_count}
+
+	remove_item(uid)
+	var leftover := add_item(bait_id, yield_count)
+	return {
+		"ok": true,
+		"reason": "",
+		"bait_id": bait_id,
+		"bait_name": bait_name,
+		"count": yield_count - leftover,
+		"leftover": leftover,
+	}
+
+
 # ============================================================================
 # REORDERING / SPLITTING / ARRANGING
 # ============================================================================
