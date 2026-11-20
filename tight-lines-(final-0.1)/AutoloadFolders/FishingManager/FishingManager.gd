@@ -1766,7 +1766,27 @@ func _get_line_tip_position(s: FishingSession) -> Vector3:
 	if s.line_tip != null and is_instance_valid(s.line_tip):
 		return s.line_tip.global_position
 	if s.holder != null and is_instance_valid(s.holder):
-		return s.holder.to_global(rod_tip_fallback_offset)
+		# Auto-detect the highest point of any MeshInstance3D inside the rod holder
+		# so the line attaches to the real rod tip regardless of FBX axis/scale.
+		var best_pos := Vector3.ZERO
+		var found_mesh := false
+		for child in s.holder.find_children("*", "MeshInstance3D", true, false):
+			var mi := child as MeshInstance3D
+			if mi == null or mi.mesh == null:
+				continue
+			var aabb := mi.get_aabb()
+			for cx in [aabb.position.x, aabb.end.x]:
+				for cy in [aabb.position.y, aabb.end.y]:
+					for cz in [aabb.position.z, aabb.end.z]:
+						var wp := mi.to_global(Vector3(cx, cy, cz))
+						if not found_mesh or wp.y > best_pos.y:
+							best_pos = wp
+							found_mesh = true
+		if found_mesh and best_pos.y > water_level + 0.25:
+			return best_pos
+		var fallback := s.holder.to_global(rod_tip_fallback_offset)
+		fallback.y = maxf(fallback.y, water_level + 0.5)
+		return fallback
 	if s.anchor != null and is_instance_valid(s.anchor):
 		return s.anchor.global_position + Vector3(0.4, 1.1, 0.0)
 	return global_position + Vector3.UP
@@ -1779,14 +1799,17 @@ func _ensure_fishing_line(s: FishingSession) -> void:
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
 	mat.no_depth_test = false
-	mat.albedo_color = Color(0.92, 0.96, 1.0, 0.85)
+	mat.render_priority = 12
+	mat.albedo_color = Color(0.92, 0.96, 1.0, 0.9)
 
 	var mi := MeshInstance3D.new()
 	mi.name = "FishingLine_P%d" % s.player_id
 	mi.top_level = true
 	mi.mesh = im
 	mi.material_override = mat
+	mi.sorting_offset = 100.0
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(mi)
 
@@ -1810,7 +1833,9 @@ func _update_fishing_line(s: FishingSession) -> void:
 		return
 	_ensure_fishing_line(s)
 	var start_pos := _get_line_tip_position(s)
+	start_pos.y = maxf(start_pos.y, water_level + 0.35)
 	var end_pos := s.bobber.global_position
+	end_pos.y = maxf(end_pos.y, water_level + 0.04)
 	var line_strength := maxf(float(s.rod.get("line_strength", TEMP_ROD_LINE_STRENGTH)), 0.001)
 	var tension_ratio := s.tension / line_strength if s.state == State.REELING else 0.0
 	var sag := compute_line_sag(s.state, tension_ratio)
@@ -1824,8 +1849,9 @@ func _update_fishing_line(s: FishingSession) -> void:
 	for i in range(segs + 1):
 		var u := float(i) / float(segs)
 		var p := start_pos.lerp(end_pos, u)
-		# Parabolic sag peaking at u = 0.5
+		# Parabolic sag peaking at u = 0.5, clamped above the water plane so it never clips under water.
 		p.y -= sag * 4.0 * u * (1.0 - u)
+		p.y = maxf(p.y, water_level + 0.04)
 		s.line_im.surface_add_vertex(p)
 	s.line_im.surface_end()
 
@@ -1872,9 +1898,11 @@ func _spawn_water_splash(pos: Vector3, intensity: float = 1.0) -> void:
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.render_priority = 11
 	mat.albedo_color = Color(0.82, 0.95, 1.0, 0.85)
 	drop.material = mat
 	p.mesh = drop
+	p.sorting_offset = 50.0
 
 	add_child(p)
 	p.global_position = Vector3(pos.x, water_level + 0.05, pos.z)

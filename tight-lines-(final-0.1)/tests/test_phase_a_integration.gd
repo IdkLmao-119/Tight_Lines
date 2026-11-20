@@ -63,8 +63,12 @@ func _run() -> void:
 	await process_frame
 
 	_check(int(fm.call("get_state", 1)) == 1, "State transitioned to CASTING (1)")
-	var line_node := fm.find_child("FishingLine_P1", true, false)
+	var line_node := fm.find_child("FishingLine_P1", true, false) as MeshInstance3D
 	_check(line_node != null, "3D FishingLine_P1 node created during cast")
+	if line_node != null and line_node.material_override is StandardMaterial3D:
+		var line_mat := line_node.material_override as StandardMaterial3D
+		_check(line_mat.render_priority >= 10 and line_node.sorting_offset > 0.0,
+			"3D FishingLine_P1 renders above water plane (render_priority=%d, sorting_offset=%.1f)" % [line_mat.render_priority, line_node.sorting_offset])
 
 	# 4. Advance casting to WAITING -> verify bobber_landed splash
 	var s = fm._sessions[1]
