@@ -62,6 +62,7 @@ func _build_default_clips() -> void:
 	_clips["reel_tick"] = _gen_reel_tick()
 	_clips["snap"] = _gen_line_snap()
 	_clips["catch"] = _gen_catch_fanfare()
+	_clips["knot_tied"] = _gen_knot_tied()
 
 
 static func _make_wav(samples: PackedFloat32Array) -> AudioStreamWAV:
@@ -177,4 +178,26 @@ static func _gen_catch_fanfare() -> AudioStreamWAV:
 		var decay := 5.0 if idx == notes.size() - 1 else 10.0
 		var env := minf(local_t * 80.0, 1.0) * exp(-local_t * decay)
 		out[i] = (sin(TAU * f * t) * 0.7 + sin(TAU * f * 1.5 * t) * 0.2) * env * 0.55
+	return _make_wav(out)
+
+
+static func _gen_knot_tied() -> AudioStreamWAV:
+	# Short rope cinch zip followed by a crisp two-note confirmation chime
+	var dur := 0.34
+	var n := int(SAMPLE_RATE * dur)
+	var out := PackedFloat32Array()
+	out.resize(n)
+	for i in n:
+		var t := float(i) / float(SAMPLE_RATE)
+		if t < 0.10:
+			var u := t / 0.10
+			var f := lerpf(320.0, 740.0, u)
+			var env := sin(u * PI)
+			out[i] = sin(TAU * f * t) * env * 0.40
+		else:
+			var lt := t - 0.10
+			var f := 659.25 if lt < 0.09 else 987.77 # E5 -> B5
+			var note_t := lt if lt < 0.09 else (lt - 0.09)
+			var env := minf(note_t * 90.0, 1.0) * exp(-note_t * 12.0)
+			out[i] = (sin(TAU * f * t) * 0.7 + sin(TAU * f * 2.0 * t) * 0.18) * env * 0.55
 	return _make_wav(out)

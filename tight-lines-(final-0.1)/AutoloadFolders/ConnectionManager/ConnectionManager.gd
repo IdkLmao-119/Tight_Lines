@@ -51,6 +51,10 @@ signal menu_action_input(player_id, action)
 # interact - direct interact button press
 signal interact_input(player_id)
 
+# knotting - mobile tracing minigame progress and completion
+signal knot_progress_input(player_id, progress)
+signal knot_complete_input(player_id, knot_name, accuracy)
+
 const PORT := 9080
 
 # When true, every gameplay message received from a phone is printed to the
@@ -438,6 +442,17 @@ func _handle_message(player_id: int, message: String):
 		"interact":
 			emit_signal("interact_input", player_id)
 
+		"knot_progress":
+			emit_signal("knot_progress_input", player_id, clampf(float(data.get("progress", 0.0)), 0.0, 1.0))
+
+		"knot_complete":
+			emit_signal(
+				"knot_complete_input",
+				player_id,
+				String(data.get("knot_name", "")),
+				clampf(float(data.get("accuracy", 1.0)), 0.0, 1.0)
+			)
+
 
 # Sends a message to EVERY connected player at once.
 func send_to_all(data: Dictionary):
@@ -470,7 +485,7 @@ func _track_outgoing_screen(player_id: int, data: Dictionary) -> void:
 		if state != "":
 			_player_base_screens[player_id] = state
 			var cur := String(_player_screens.get(player_id, ""))
-			if not cur.begins_with("menu") or state == "reeling":
+			if not cur.begins_with("menu") or state == "reeling" or state == "knotting":
 				_set_player_screen(player_id, state)
 	if data.has("active_menu"):
 		var menu := String(data.get("active_menu", "")).strip_edges().to_lower()
@@ -514,6 +529,8 @@ func get_player_screen_display(player_id: int) -> String:
 			return "Casting"
 		"reeling":
 			return "Reeling"
+		"knotting":
+			return "Tying Knot"
 		"connection":
 			return "Connecting"
 		"menu":

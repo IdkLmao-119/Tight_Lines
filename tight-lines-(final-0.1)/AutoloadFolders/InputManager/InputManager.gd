@@ -71,6 +71,8 @@ signal device_changed(player_id, device)
 signal cast_triggered(player_id, power)
 signal reel(player_id, strength)
 signal reel_crank(player_id, delta_degrees)   # signed: + clockwise (reel in), - counter-clockwise
+signal knot_progress(player_id, progress)
+signal knot_completed(player_id, knot_name, accuracy)
 
 # --- General ----------------------------------------------------------------
 signal interact_pressed(player_id)
@@ -259,6 +261,10 @@ func _connect_connection_manager() -> void:
 		_connection_manager.connect("interact_input", _on_phone_interact)
 	if _connection_manager.has_signal("cancel_input"):
 		_connection_manager.connect("cancel_input", _on_phone_cancel)
+	if _connection_manager.has_signal("knot_progress_input"):
+		_connection_manager.connect("knot_progress_input", _on_phone_knot_progress)
+	if _connection_manager.has_signal("knot_complete_input"):
+		_connection_manager.connect("knot_complete_input", _on_phone_knot_complete)
 
 	# Pick up phones that connected before we finished starting.
 	for pid in _connection_manager.get_connected_players():
@@ -553,6 +559,24 @@ func _on_phone_cancel(phone_id: int) -> void:
 	if pid < 0:
 		return
 	cancel_pressed.emit(pid)
+
+func _on_phone_knot_progress(phone_id: int, progress: float) -> void:
+	if context != InputContext.FISHING:
+		return
+	var pid := _accept_phone_input(phone_id)
+	if pid < 0:
+		return
+	knot_progress.emit(pid, clampf(progress, 0.0, 1.0))
+
+func _on_phone_knot_complete(phone_id: int, knot_name: String, accuracy: float) -> void:
+	if context != InputContext.FISHING:
+		return
+	var pid := _accept_phone_input(phone_id)
+	if pid < 0:
+		return
+	if debug_log:
+		print("[InputManager] player %d completed knot '%s' (accuracy %.2f)" % [pid, knot_name, accuracy])
+	knot_completed.emit(pid, knot_name, clampf(accuracy, 0.0, 1.0))
 # ----------------------------------------------------------------------------
 # Helpers
 # ----------------------------------------------------------------------------

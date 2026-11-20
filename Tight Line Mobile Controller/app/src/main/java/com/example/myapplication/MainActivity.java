@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private String deviceId;
 
-    private enum AppState { CONNECTION, OVERWORLD, CASTING, REELING, MENU }
+    private enum AppState { CONNECTION, OVERWORLD, CASTING, REELING, KNOTTING, MENU }
     private AppState currentState = null;
     private AppState underlyingGameState = AppState.OVERWORLD;
     private String activeMenu = "none";
@@ -183,6 +183,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 case REELING:
                     layoutResId = R.layout.view_reeling;
                     break;
+                case KNOTTING:
+                    layoutResId = R.layout.view_knotting;
+                    break;
                 case MENU:
                     layoutResId = R.layout.view_menu;
                     break;
@@ -245,12 +248,104 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             sendMessage(msg);
                         });
                     }
+                } else if (newState == AppState.KNOTTING) {
+                    setupKnottingUI();
                 } else if (newState == AppState.MENU) {
                     setupMenuControlsUI();
                 }
 
                 updatePlayerIdentityBadge();
                 sendScreenState();
+            }
+        });
+    }
+
+    private void setupKnottingUI() {
+        KnotTraceView knotView = findViewById(R.id.knotTraceView);
+        TextView knotNameText = findViewById(R.id.knotNameText);
+        ProgressBar knotProgressBar = findViewById(R.id.knotProgressBar);
+        TextView knottingBadge = findViewById(R.id.knottingBadge);
+        TextView hintTitle = findViewById(R.id.knotHintTitle);
+        TextView hintSubtitle = findViewById(R.id.knotHintSubtitle);
+
+        if (knotView == null) return;
+
+        knotView.pickRandomKnot();
+        if (knotNameText != null) {
+            knotNameText.setText(knotView.getKnotName());
+        }
+        if (knotProgressBar != null) {
+            knotProgressBar.setProgress(0);
+        }
+
+        knotView.setOnKnotListener(new KnotTraceView.OnKnotListener() {
+            @Override
+            public void onProgress(float progress) {
+                if (knotProgressBar != null) {
+                    knotProgressBar.setProgress(Math.round(progress * 100f));
+                }
+                if (progress > 0.02f && progress < 1.0f) {
+                    if (hintTitle != null) {
+                        hintTitle.setText("Keep tracing... " + Math.round(progress * 100f) + "%");
+                        hintTitle.setTextColor(Color.parseColor("#F4C95D"));
+                    }
+                    if (hintSubtitle != null) {
+                        hintSubtitle.setText("Stay on the line until END");
+                    }
+                }
+                JSONObject msg = new JSONObject();
+                try {
+                    msg.put("type", "knot_progress");
+                    msg.put("progress", progress);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                sendMessage(msg);
+            }
+
+            @Override
+            public void onFailedAttempt(String reason) {
+                vibrateOnce(35);
+                if (hintTitle != null) {
+                    if ("start_missed".equals(reason)) {
+                        hintTitle.setText("Touch the green START circle!");
+                    } else if ("lifted".equals(reason)) {
+                        hintTitle.setText("Don't lift your finger!");
+                    } else {
+                        hintTitle.setText("Strayed off the line!");
+                    }
+                    hintTitle.setTextColor(Color.parseColor("#FF6B6B"));
+                }
+                if (hintSubtitle != null) {
+                    hintSubtitle.setText("Trace from START to END in one smooth stroke");
+                }
+            }
+
+            @Override
+            public void onKnotCompleted(String knotName, float accuracy) {
+                vibratePattern(new long[]{0, 50, 50, 120});
+                if (knottingBadge != null) {
+                    knottingBadge.setText("KNOT TIED!");
+                    knottingBadge.setTextColor(Color.parseColor("#2A9D8F"));
+                }
+                if (hintTitle != null) {
+                    hintTitle.setText(knotName + " secured!");
+                    hintTitle.setTextColor(Color.parseColor("#52E5A8"));
+                }
+                if (hintSubtitle != null) {
+                    hintSubtitle.setText("Line repaired — ready to cast");
+                }
+                handler.postDelayed(() -> {
+                    JSONObject msg = new JSONObject();
+                    try {
+                        msg.put("type", "knot_complete");
+                        msg.put("knot_name", knotName);
+                        msg.put("accuracy", accuracy);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    sendMessage(msg);
+                }, 360L);
             }
         });
     }
@@ -494,6 +589,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             case OVERWORLD: return "overworld";
             case CASTING: return "casting";
             case REELING: return "reeling";
+            case KNOTTING: return "knotting";
             case MENU: return "menu";
             case CONNECTION:
             default:
@@ -534,6 +630,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (currentState == AppState.KNOTTING) return true;
         if (gestureDetector != null) gestureDetector.onTouchEvent(event);
         return true;
     }
@@ -608,8 +705,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     JSONObject json = new JSONObject(text);
 
                     if ("vibrate".equals(json.optString("type"))) {
-                        if ("bite".equals(json.optString("reason"))) {
+                        String reason = json.optString("reason");
+                        if ("bite".equals(reason)) {
                             vibrateOnce(300);
+                        } else if ("line_snapped".equals(reason)) {
+                            vibratePattern(new long[]{0, 70, 45, 200});
                         } else {
                             vibratePattern(new long[]{0, 120, 80, 120});
                         }
@@ -652,8 +752,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 underlyingGameState = AppState.REELING;
                                 activeMenu = "none";
                                 break;
+                            case "knotting":
+                                underlyingGameState = AppState.KNOTTING;
+                                activeMenu = "none";
+                                break;
                         }
-                        if (underlyingGameState == AppState.REELING || "none".equals(activeMenu)) {
+                        if (underlyingGameState == AppState.REELING
+                                || underlyingGameState == AppState.KNOTTING
+                                || "none".equals(activeMenu)) {
                             switchToState(underlyingGameState);
                         }
                     }
@@ -933,6 +1039,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             return;
         }
         if (sensorType != Sensor.TYPE_GYROSCOPE) return;
+        if (currentState == AppState.KNOTTING) return;
 
         float x = event.values[0];
         float y = event.values[1];
@@ -1003,7 +1110,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 screenRight = gravity[0];
                 break;
         }
-        if (currentState == AppState.REELING) return;
+        if (currentState == AppState.REELING || currentState == AppState.KNOTTING) return;
 
         float maxSin = (float) Math.sin(Math.toRadians(TILT_FULL_ANGLE_DEG));
         double ratio = -screenRight / (SensorManager.GRAVITY_EARTH * maxSin);

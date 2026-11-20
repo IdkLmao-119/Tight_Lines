@@ -35,13 +35,15 @@ signal fish_bit(player_id: int)
 signal fish_caught(player_id: int, fish: Dictionary)
 signal fish_released(player_id: int, fish: Dictionary, reason: String)
 signal fish_escaped(player_id: int, fish: Dictionary, reason: String)
+signal knotting_started(player_id: int)
+signal knotting_completed(player_id: int, knot_name: String, accuracy: float)
 signal cast_rejected(player_id: int, reason: String)
 signal rod_changed(player_id: int, rod_id: String)
 signal bait_changed(player_id: int, bait_id: String)
 signal difficulty_changed(difficulty: int)
 signal session_finished(results: Dictionary)
 
-enum State { IDLE, CASTING, WAITING, REELING, CAUGHT, ESCAPED }
+enum State { IDLE, CASTING, WAITING, REELING, CAUGHT, ESCAPED, KNOTTING }
 enum Difficulty { CASUAL, ANGLER }
 
 # --- Scene setup ---
@@ -117,6 +119,7 @@ enum Difficulty { CASUAL, ANGLER }
 @export var time_limit_sec := 0.0                # Round length in seconds, 0 = no limit. | MUST be set for multiplayer, or nothing ends the round.
 @export var require_bait := false                # true = a cast needs bait and spends it (D10 says always true). | Your value kept (false) for testing; set true for the real game.
 @export var store_catches_in_inventory := true   # Put kept fish in the Fish Box (single player only, D7). | Turn off to test without InventoryManager.
+@export var enable_knotting_minigame := true     # Require the mobile knotting tracing minigame after a tension line snap. | Turn off to skip straight back to IDLE.
 
 @export_group("Debug / standalone testing")
 @export var debug_spot_id := ""                  # Spot used when no GameManager context is passed. | Fill in for F6 testing.
@@ -170,6 +173,10 @@ const CATCH_STOP_DISTANCE := 2.0         # How close the bobber gets to the play
 const MSG_BITE := "There's a bite"       # Text shown on a bite. | Change wording / language.
 const MSG_REEL := "Reel now"             # Text shown after the bite message. | Change wording / language.
 const MSG_ESCAPE := "Fish escaped"       # Text shown when the fish gets away. | Change wording / language.
+const MSG_LINE_SNAPPED := "Line snapped!" # Text shown when the line snaps due to tension.
+const MSG_KNOT_PHONE := "Tie a knot on your phone!"
+const MSG_KNOT_KEYBOARD := "Line snapped!\nTie a knot on your phone (or press E)"
+const MSG_KNOT_TIED := "Knot tied! Ready to cast"
 
 const CATCH_POPUP_SECONDS := 5.0         # How long the catch popup and picture stay up. | Lower to move on faster.
 const FISH_IMAGE_PROPERTIES := ["jpg", "image", "icon", "texture"]   # FishData property names tried for the fish picture. | Add the name your FishData uses.
@@ -221,6 +228,9 @@ class FishingSession extends RefCounted:
 	var surge_timer := 0.0
 	var surge_vibrate_timer := 0.0
 	var snap_timer := 0.0
+	var needs_knot := false
+	var knot_progress := 0.0
+	var escape_reason := ""
 
 	var msg_token := 0
 	var shake_time := 0.0
@@ -346,6 +356,10 @@ func _exit_tree() -> void:
 		_input.cancel_pressed.disconnect(_on_cancel)
 	if _input.has_signal("menu_action") and _input.menu_action.is_connected(_on_menu_action):
 		_input.menu_action.disconnect(_on_menu_action)
+	if _input.has_signal("knot_progress") and _input.knot_progress.is_connected(_on_knot_progress):
+		_input.knot_progress.disconnect(_on_knot_progress)
+	if _input.has_signal("knot_completed") and _input.knot_completed.is_connected(_on_knot_completed):
+		_input.knot_completed.disconnect(_on_knot_completed)
 
 
 # ----------------------------------------------------------------------------
@@ -465,6 +479,8 @@ func get_session_info(player_id: int) -> Dictionary:
 		"difficulty": difficulty,
 		"fish_name": String(s.fish.get("display_name", "")),
 		"release_active": _get_release(player_id) > 0.0,
+		"needs_knot": s.needs_knot,
+		"knot_progress": s.knot_progress,
 	}
 
 
@@ -613,8 +629,19 @@ func _update_session(s: FishingSession, delta: float) -> void:
 		State.REELING:
 			_update_reeling(s, delta)
 		State.CAUGHT, State.ESCAPED:
-			if s.state_time >= result_display_time:
+			var wait_sec := minf(result_display_time, 1.4) if (s.state == State.ESCAPED and s.needs_knot) else result_display_time
+			if s.state_time >= wait_sec:
 				_remove_bobber(s)
+				if s.state == State.ESCAPED and s.needs_knot and not _time_up:
+					_start_knotting(s)
+				else:
+					s.needs_knot = false
+					_set_state(s, State.IDLE)
+		State.KNOTTING:
+			if _time_up:
+				s.needs_knot = false
+				s.knot_progress = 0.0
+				_hide_message(s.player_id)
 				_set_state(s, State.IDLE)
 
 	_update_fishing_line(s)
@@ -710,10 +737,12 @@ func on_reeling(s: FishingSession) -> void:
 	_show_message(s.player_id, MSG_REEL, 0.0)
 
 
-func on_escape(s: FishingSession) -> void:
+func on_escape(s: FishingSession, reason: String = "") -> void:
 	s.msg_token += 1
-	_notify_phone(s.player_id, {"type": "vibrate", "reason": "escape"})
-	_show_message(s.player_id, MSG_ESCAPE, result_display_time)
+	var is_snap := (reason == "line_snapped")
+	_notify_phone(s.player_id, {"type": "vibrate", "reason": "line_snapped" if is_snap else "escape"})
+	var display_sec := minf(result_display_time, 1.4) if (is_snap and enable_knotting_minigame) else result_display_time
+	_show_message(s.player_id, MSG_LINE_SNAPPED if is_snap else MSG_ESCAPE, display_sec)
 
 
 func on_fight_won(s: FishingSession) -> void:
@@ -1412,13 +1441,66 @@ func _show_catch_picture(fish: Dictionary) -> void:
 
 
 func _fish_escapes(s: FishingSession, reason: String) -> void:
+	s.escape_reason = reason
+	s.needs_knot = (reason == "line_snapped" and enable_knotting_minigame)
+	s.knot_progress = 0.0
 	_set_state(s, State.ESCAPED)
 	if reason == "line_snapped":
 		_play_sfx("snap", -2.0, 1.0)
 	else:
 		_play_sfx("splash", -6.0, 0.85)
 	fish_escaped.emit(s.player_id, s.fish.duplicate(true), reason)
-	on_escape(s)
+	on_escape(s, reason)
+
+
+# --- Knotting minigame (triggered on tension line snap) ---
+func _start_knotting(s: FishingSession) -> void:
+	s.knot_progress = 0.0
+	_set_state(s, State.KNOTTING)
+	_show_knotting_prompt(s)
+	knotting_started.emit(s.player_id)
+
+
+func _show_knotting_prompt(s: FishingSession) -> void:
+	s.msg_token += 1
+	var has_phone := _has_phone_for_player(s.player_id)
+	var pct := int(roundf(clampf(s.knot_progress, 0.0, 1.0) * 100.0))
+	var text := MSG_KNOT_PHONE if has_phone else MSG_KNOT_KEYBOARD
+	if pct > 0:
+		text += "\n(%d%%)" % pct
+	_show_message(s.player_id, text, 0.0)
+
+
+func _has_phone_for_player(player_id: int) -> bool:
+	if _connection != null and _connection.has_method("is_player_connected"):
+		if _multiplayer:
+			return bool(_connection.is_player_connected(player_id))
+		return not _connection.get_connected_players().is_empty()
+	if _input != null and _input.has_method("is_mobile_controller_connected"):
+		return bool(_input.is_mobile_controller_connected())
+	return false
+
+
+func _on_knot_progress(player_id: int, progress: float) -> void:
+	var s := _sessions.get(player_id) as FishingSession
+	if s == null or s.state != State.KNOTTING:
+		return
+	s.knot_progress = clampf(progress, 0.0, 1.0)
+	_show_knotting_prompt(s)
+
+
+func _on_knot_completed(player_id: int, knot_name: String, accuracy: float) -> void:
+	var s := _sessions.get(player_id) as FishingSession
+	if s == null or s.state != State.KNOTTING:
+		return
+	s.needs_knot = false
+	s.knot_progress = 1.0
+	s.msg_token += 1
+	_play_sfx("knot_tied", -3.0, 1.0)
+	var msg := MSG_KNOT_TIED if knot_name.strip_edges() == "" else "%s tied!\nReady to cast" % knot_name
+	_show_message(s.player_id, msg, 1.6)
+	knotting_completed.emit(s.player_id, knot_name, clampf(accuracy, 0.0, 1.0))
+	_set_state(s, State.IDLE)
 
 
 # --- Input handlers ---
@@ -1428,6 +1510,10 @@ func _connect_input() -> void:
 	_input.cancel_pressed.connect(_on_cancel)
 	if _input.has_signal("menu_action"):
 		_input.menu_action.connect(_on_menu_action)
+	if _input.has_signal("knot_progress"):
+		_input.knot_progress.connect(_on_knot_progress)
+	if _input.has_signal("knot_completed"):
+		_input.knot_completed.connect(_on_knot_completed)
 
 
 func _on_menu_action(player_id: int, action: String) -> void:
@@ -1505,9 +1591,14 @@ func _on_cast(player_id: int, power: float) -> void:
 
 func _on_interact(player_id: int) -> void:
 	var s := _sessions.get(player_id) as FishingSession
-	if s != null and s.state == State.WAITING:
+	if s == null:
+		return
+	if s.state == State.WAITING:
 		_remove_bobber(s)
 		_set_state(s, State.IDLE)
+	elif s.state == State.KNOTTING and not _has_phone_for_player(player_id):
+		# Keyboard-only fallback so PC testing without a mobile controller never soft-locks.
+		_on_knot_completed(player_id, "Quick Knot", 1.0)
 
 
 func _on_cancel(player_id: int) -> void:
@@ -1620,7 +1711,7 @@ func _set_state(s: FishingSession, new_state: int) -> void:
 	s.state = new_state
 	s.state_time = 0.0
 
-	if new_state == State.REELING:
+	if new_state == State.REELING or new_state == State.KNOTTING:
 		if node_to_hide_on_bite != null:
 			node_to_hide_on_bite.visible = false
 
@@ -1631,7 +1722,10 @@ func _set_state(s: FishingSession, new_state: int) -> void:
 			s.anchor.rotation.y = s.base_yaw + s.look_offset
 		# Fix: the tension bar used to stay on screen after a catch or escape.
 		_update_tension_ui(s)
-		if node_to_hide_on_bite != null:
+		if node_to_hide_on_bite != null and new_state != State.KNOTTING:
+			node_to_hide_on_bite.visible = true
+	elif old == State.KNOTTING:
+		if node_to_hide_on_bite != null and new_state != State.REELING:
 			node_to_hide_on_bite.visible = true
 
 	if debug_log:
@@ -1643,7 +1737,13 @@ func _set_state(s: FishingSession, new_state: int) -> void:
 
 
 func _phone_screen_for(state: int) -> String:
-	return "reeling" if state == State.REELING else "casting"
+	match state:
+		State.REELING:
+			return "reeling"
+		State.KNOTTING:
+			return "knotting"
+		_:
+			return "casting"
 
 
 func _on_phone_connected(phone_id: int) -> void:
@@ -1654,6 +1754,8 @@ func _on_phone_connected(phone_id: int) -> void:
 			continue
 		var s: FishingSession = _sessions[pid]
 		_send_game_state(pid, _phone_screen_for(s.state))
+		if s.state == State.KNOTTING:
+			_show_knotting_prompt(s)
 
 
 func _anchor_water_pos(s: FishingSession) -> Vector3:
