@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://bhs2scmr06sgv" path="res://Assets/2D/TileSets/Pixel Art Top Down - Basic v1.2.3/Texture/TX Tileset Wall.png" id="6_s22e3"]
 [ext_resource type="Texture2D" uid="uid://14vphwhphxxi" path="res://Assets/2D/TileSets/Marikina River Scenery Sprites.png" id="7_o1gbw"]
 [ext_resource type="Texture2D" uid="uid://ce6lutatuy55n" path="res://Assets/2D/TileSets/Pixel Art Top Down - Basic v1.2.3/Texture/TX Plant.png" id="8_s22e3"]
+[ext_resource type="Texture2D" uid="uid://blotfo5gs25cx" path="res://Assets/2D/RedJeep.png" id="10_h7il0"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_saxhw"]
 texture = ExtResource("2_d4sol")
@@ -3400,6 +3401,14 @@ texture = ExtResource("3_ji4s8")
 [sub_resource type="TileSet" id="TileSet_ovpmp"]
 sources/0 = SubResource("TileSetAtlasSource_spqvk")
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ovpmp"]
+texture = ExtResource("10_h7il0")
+0:0/size_in_atlas = Vector2i(2, 4)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_v8imv"]
+sources/0 = SubResource("TileSetAtlasSource_ovpmp")
+
 [node name="RiverPark" type="Node2D" unique_id=1860606683]
 script = ExtResource("1_ji4s8")
 
@@ -3463,6 +3472,11 @@ layer_0/tile_data = PackedInt32Array(65573, 393216, 6, -65506, 655360, 4, -65514
 tile_set = SubResource("TileSet_ovpmp")
 format = 2
 layer_0/tile_data = PackedInt32Array(2293884, 2752512, 8, 2424933, 2359296, 6, 2424948, 1966080, 6, 2424908, 2359296, 6, 2424899, 1966080, 6, 2424890, 2752512, 8, 1769576, 1441792, 18, 1769574, 1179648, 18, 2359383, 2359296, 16)
+
+[node name="TileMap4" type="TileMap" parent="." unique_id=2042395672]
+tile_set = SubResource("TileSet_v8imv")
+format = 2
+layer_0/tile_data = PackedInt32Array(917551, 0, 0, 1769565, 0, 0)
 
 [connection signal="body_entered" from="RiverParkToSpawn/RiverParkToSpawn" to="Player" method="_on_river_park_to_spawn_body_entered"]
 [connection signal="body_entered" from="RiverParkToRiverParkFishingSpot/RiverParkToRiverParkFishingSpot" to="Player" method="_on_river_park_to_river_park_fishing_spot_body_entered"]
