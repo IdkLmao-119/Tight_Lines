@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+[gd_resource type="Theme" format=3 uid="uid://cc043mp1yfy3k"]
+=======
 [gd_resource type="Theme" format=3 uid="uid://s4nphjww8gl6"]
+>>>>>>> bcff537b5e4528a297326797ea57f9539a854f18
 
 [ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="1_body"]
 
