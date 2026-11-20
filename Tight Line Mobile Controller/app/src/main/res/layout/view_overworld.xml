@@ -4,16 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_screen_water"
-    android:fitsSystemWindows="true"
-    android:padding="16dp">
+    android:paddingHorizontal="24dp"
+    android:paddingVertical="48dp">
 
+    <!-- Top Menu Header Bar safely inset from notification bar -->
     <include
         android:id="@+id/menuHeaderBar"
         layout="@layout/include_menu_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="16dp" />
 
     <TextView
         android:id="@+id/modeTitle"
@@ -21,10 +22,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/menuHeaderBar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="12dp"
         android:background="@drawable/bg_pill_badge"
         android:paddingHorizontal="20dp"
-        android:paddingVertical="7dp"
+        android:paddingVertical="6dp"
         android:text="OVERWORLD"
         android:textColor="@color/gold_highlight"
         android:textSize="14sp"
@@ -46,29 +47,35 @@
         android:textStyle="bold"
         android:visibility="gone" />
 
-    <com.example.myapplication.DPadView
-        android:id="@+id/dpadView"
-        android:layout_width="260dp"
-        android:layout_height="260dp"
-        android:layout_centerInParent="true" />
+    <!-- D-Pad and Interact centered in the middle away from system bars -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnInteract"
-        android:layout_width="200dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/coral_primary"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="INTERACT"
-        android:textAllCaps="false"
-        android:textColor="@color/text_light"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        app:cornerRadius="16dp"
-        app:strokeColor="@color/parchment"
-        app:strokeWidth="2dp" />
+        <com.example.myapplication.DPadView
+            android:id="@+id/dpadView"
+            android:layout_width="230dp"
+            android:layout_height="230dp"
+            android:layout_marginBottom="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnInteract"
+            android:layout_width="180dp"
+            android:layout_height="54dp"
+            android:backgroundTint="@color/coral_primary"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="INTERACT"
+            android:textAllCaps="false"
+            android:textColor="@color/text_light"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="16dp"
+            app:strokeColor="@color/parchment"
+            app:strokeWidth="2dp" />
+    </LinearLayout>
 
 </RelativeLayout>

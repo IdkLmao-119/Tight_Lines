@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_screen_reeling"
-    android:fitsSystemWindows="true"
-    android:padding="16dp">
+    android:paddingHorizontal="24dp"
+    android:paddingVertical="48dp">
 
     <TextView
         android:id="@+id/reelingBadge"
@@ -14,11 +14,11 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_pill_badge"
-        android:paddingHorizontal="22dp"
-        android:paddingVertical="8dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="7dp"
         android:text="FISH ON! REEL IT IN"
         android:textColor="@color/gold_highlight"
-        android:textSize="15sp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <TextView
@@ -41,29 +41,30 @@
         android:id="@+id/reelingTensionBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="18dp"
+        android:layout_height="16dp"
         android:layout_below="@id/playerIdentityBadge"
-        android:layout_marginHorizontal="28dp"
+        android:layout_marginHorizontal="32dp"
         android:layout_marginTop="10dp"
         android:max="100"
         android:progress="0" />
 
     <com.example.myapplication.FishingReelView
         android:id="@+id/fishingReelView"
-        android:layout_width="280dp"
-        android:layout_height="280dp"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:layout_centerInParent="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
         android:background="@drawable/bg_wood_card"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingHorizontal="18dp"
-        android:paddingVertical="14dp">
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp">
 
         <TextView
             android:id="@+id/a"
@@ -72,17 +73,17 @@
             android:gravity="center"
             android:text="Spin Clockwise to Reel"
             android:textColor="@color/gold_highlight"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="3dp"
             android:gravity="center"
             android:text="Spin Counter-Clockwise to Release Line"
             android:textColor="@color/text_muted"
-            android:textSize="13sp" />
+            android:textSize="12sp" />
     </LinearLayout>
 
 </RelativeLayout>

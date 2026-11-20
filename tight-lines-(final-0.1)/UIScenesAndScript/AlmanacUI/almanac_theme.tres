@@ -2,6 +2,22 @@
 
 [ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="1_body"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_disabled"]
+content_margin_left = 8.0
+content_margin_top = 6.0
+content_margin_right = 8.0
+content_margin_bottom = 6.0
+bg_color = Color(0.04, 0.04, 0.04, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.12, 0.12, 0.12, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_focus"]
 draw_center = false
 border_width_left = 3
@@ -79,7 +95,7 @@ variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
 default_font = ExtResource("1_body")
 default_font_size = 20
 Button/colors/font_color = Color(0.16, 0.1, 0.06, 1)
-Button/colors/font_disabled_color = Color(0.35, 0.28, 0.22, 0.6)
+Button/colors/font_disabled_color = Color(0.32, 0.32, 0.32, 0.9)
 Button/colors/font_focus_color = Color(0.08, 0.04, 0.02, 1)
 Button/colors/font_hover_color = Color(0.08, 0.04, 0.02, 1)
 Button/colors/font_hover_pressed_color = Color(0.08, 0.04, 0.02, 1)
@@ -87,6 +103,7 @@ Button/colors/font_pressed_color = Color(0.08, 0.04, 0.02, 1)
 Button/constants/outline_size = 0
 Button/font_sizes/font_size = 22
 Button/fonts/font = ExtResource("1_body")
+Button/styles/disabled = SubResource("StyleBoxFlat_btn_disabled")
 Button/styles/focus = SubResource("StyleBoxFlat_btn_focus")
 Button/styles/hover = SubResource("StyleBoxFlat_btn_hover")
 Button/styles/normal = SubResource("StyleBoxFlat_btn_normal")

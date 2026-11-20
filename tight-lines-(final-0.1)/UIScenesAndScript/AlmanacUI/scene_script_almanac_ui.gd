@@ -15,6 +15,16 @@ const LOCATION_IDS: Array[String] = [
 	"location_fortune_island",
 ]
 
+const LOCATION_UNLOCK_FLAGS: Dictionary = {
+	"location_marikina": "",
+	"location_kawit": "unlock_kawit",
+	"location_imus": "unlock_imus",
+	"location_fish_pens": "unlock_fish_pens",
+	"location_salt_farm": "unlock_salt_farm",
+	"location_calatagan": "unlock_calatagan",
+	"location_fortune_island": "unlock_fortune_island",
+}
+
 enum FocusArea { LOCATIONS, FISH_GRID }
 
 @onready var _location_list: VBoxContainer = %LocationList
@@ -28,6 +38,7 @@ enum FocusArea { LOCATIONS, FISH_GRID }
 @onready var _cursor_highlight: MobileCursorHighlight = %CursorHighlight
 
 var _location_buttons: Array[Button] = []
+var _location_labels: Array[String] = []
 var _fish_buttons: Array[TextureButton] = []
 var _current_location_fish: Array[FishData] = []
 var _current_location_id: String = ""
@@ -41,14 +52,28 @@ func _ready() -> void:
 	_connect_location_buttons()
 	_back_button.pressed.connect(close)
 	visibility_changed.connect(_on_visibility_changed)
+	var sm := get_node_or_null("/root/SaveManager")
+	if sm != null and sm.has_signal(&"unlock_flag_added"):
+		sm.connect(&"unlock_flag_added", _on_unlock_flag_added)
 	_clear_entry_display()
+	_refresh_location_buttons()
 
-	if not LOCATION_IDS.is_empty():
-		_select_location(LOCATION_IDS[0])
+	var first_idx := _get_first_unlocked_location_index()
+	if first_idx >= 0:
+		_focused_location_idx = first_idx
+		_select_location(LOCATION_IDS[first_idx])
 
 
 func open() -> void:
 	visible = true
+	_refresh_location_buttons()
+	if _current_location_id == "" or not _is_location_unlocked(_current_location_id):
+		var first_idx := _get_first_unlocked_location_index()
+		if first_idx >= 0:
+			_focused_location_idx = first_idx
+			_current_location_id = LOCATION_IDS[first_idx]
+		else:
+			_current_location_id = ""
 	if _current_location_id != "":
 		_select_location(_current_location_id)
 	_highlight_focused.call_deferred()
@@ -90,6 +115,7 @@ func handle_mobile_action(action: String) -> void:
 
 func _connect_location_buttons() -> void:
 	_location_buttons.clear()
+	_location_labels.clear()
 	var idx := 0
 	for child in _location_list.get_children():
 		if child is Button and idx < LOCATION_IDS.size():
@@ -97,16 +123,60 @@ func _connect_location_buttons() -> void:
 			var loc_id := LOCATION_IDS[idx]
 			btn.pressed.connect(_on_location_button_pressed.bind(idx, loc_id))
 			_location_buttons.append(btn)
+			_location_labels.append(btn.text)
 			idx += 1
 
 
+func _is_location_unlocked(location_id: String) -> bool:
+	var sm := get_node_or_null("/root/SaveManager")
+	var unlocked_flags: Array = sm.call(&"get_unlock_flags") if (sm != null and sm.has_method(&"get_unlock_flags")) else []
+	var req_flag := String(LOCATION_UNLOCK_FLAGS.get(location_id, ""))
+	if req_flag != "" and not unlocked_flags.has(req_flag):
+		return false
+	var db := get_node_or_null("/root/GameDB")
+	if db != null and bool(db.get("is_loaded")) and db.has_method(&"is_location_available"):
+		return bool(db.call(&"is_location_available", location_id, {"unlocked": unlocked_flags}))
+	return true
+
+
+func _get_first_unlocked_location_index() -> int:
+	for i in mini(_location_buttons.size(), LOCATION_IDS.size()):
+		if _is_location_unlocked(LOCATION_IDS[i]):
+			return i
+	return -1
+
+
+func _refresh_location_buttons() -> void:
+	for i in mini(_location_buttons.size(), LOCATION_IDS.size()):
+		var btn := _location_buttons[i]
+		var loc_id := LOCATION_IDS[i]
+		var unlocked := _is_location_unlocked(loc_id)
+		btn.disabled = not unlocked
+		btn.focus_mode = Control.FOCUS_ALL if unlocked else Control.FOCUS_NONE
+		btn.text = _location_labels[i] if unlocked else "???"
+
+
+func _on_unlock_flag_added(_flag: String) -> void:
+	_refresh_location_buttons()
+
+
 func _on_location_button_pressed(idx: int, loc_id: String) -> void:
+	if not _is_location_unlocked(loc_id):
+		return
 	_focused_location_idx = idx
 	_select_location(loc_id)
 
 
 func _on_visibility_changed() -> void:
 	if visible:
+		_refresh_location_buttons()
+		if _current_location_id == "" or not _is_location_unlocked(_current_location_id):
+			var first_idx := _get_first_unlocked_location_index()
+			if first_idx >= 0:
+				_focused_location_idx = first_idx
+				_current_location_id = LOCATION_IDS[first_idx]
+			else:
+				_current_location_id = ""
 		if _current_location_id != "":
 			_select_location(_current_location_id)
 		_highlight_focused.call_deferred()
@@ -131,30 +201,44 @@ func _highlight_focused() -> void:
 
 
 func _cycle_location(delta: int) -> void:
-	if _location_buttons.is_empty():
+	var count := mini(_location_buttons.size(), LOCATION_IDS.size())
+	if count == 0:
 		return
-	_focused_location_idx = posmod(_focused_location_idx + delta, _location_buttons.size())
-	_activate_focused_location()
-	if not _current_location_fish.is_empty():
-		_focus_area = FocusArea.FISH_GRID
-	_highlight_focused.call_deferred()
+	var candidate := _focused_location_idx
+	for _step in count:
+		candidate = posmod(candidate + delta, count)
+		if _is_location_unlocked(LOCATION_IDS[candidate]):
+			_focused_location_idx = candidate
+			_activate_focused_location()
+			if not _current_location_fish.is_empty():
+				_focus_area = FocusArea.FISH_GRID
+			_highlight_focused.call_deferred()
+			return
 
 
 func _activate_focused_location() -> void:
 	if _focused_location_idx >= 0 and _focused_location_idx < LOCATION_IDS.size():
-		_select_location(LOCATION_IDS[_focused_location_idx])
+		if _is_location_unlocked(LOCATION_IDS[_focused_location_idx]):
+			_select_location(LOCATION_IDS[_focused_location_idx])
 
 
 func _handle_location_nav(action: String) -> void:
-	if _location_buttons.is_empty():
+	var count := mini(_location_buttons.size(), LOCATION_IDS.size())
+	if count == 0:
 		return
 	match action:
 		"up":
-			_focused_location_idx = maxi(0, _focused_location_idx - 1)
-			_activate_focused_location()
+			for i in range(_focused_location_idx - 1, -1, -1):
+				if _is_location_unlocked(LOCATION_IDS[i]):
+					_focused_location_idx = i
+					_activate_focused_location()
+					break
 		"down":
-			_focused_location_idx = mini(_location_buttons.size() - 1, _focused_location_idx + 1)
-			_activate_focused_location()
+			for i in range(_focused_location_idx + 1, count):
+				if _is_location_unlocked(LOCATION_IDS[i]):
+					_focused_location_idx = i
+					_activate_focused_location()
+					break
 		"right":
 			if not _current_location_fish.is_empty():
 				_focus_area = FocusArea.FISH_GRID
@@ -193,6 +277,8 @@ func _handle_grid_nav(action: String) -> void:
 
 
 func _select_location(location_id: String) -> void:
+	if not _is_location_unlocked(location_id):
+		return
 	var changed := (location_id != _current_location_id)
 	_current_location_id = location_id
 	_current_location_fish.clear()

@@ -1099,7 +1099,6 @@ layer_2/tile_data = PackedInt32Array(655449, 393216, 16, 589913, 393216, 16, 589
 polygon = PackedVector2Array(1318, 131, 1318, 232, 1318, 249, 1130, 251, 1128, 278, 1130, 351, 1935, 348, 1934, 400, 1249, 405, 1078, 404, 1080, 269, 1080, 254, 1015, 254, 1017, 126, 1303, 125, 1169, 37, 864, 64, 863, 340, 1181, 527, 1677, 540, 2158, 488, 2058, 154, 1412, -60, 1248, 95)
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_i7p7j")]
-visible = false
 position = Vector2(1289, 444)
 
 [node name="Node2D" type="Node2D" parent="." unique_id=1844142663]

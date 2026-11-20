@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_screen_water"
-    android:fitsSystemWindows="true"
-    android:padding="16dp">
+    android:paddingHorizontal="24dp"
+    android:paddingVertical="48dp">
 
     <include
         android:id="@+id/menuHeaderBar"
@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="16dp" />
 
     <TextView
         android:id="@+id/castingModeTitle"
@@ -20,10 +20,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/menuHeaderBar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="12dp"
         android:background="@drawable/bg_pill_badge"
         android:paddingHorizontal="20dp"
-        android:paddingVertical="7dp"
+        android:paddingVertical="6dp"
         android:text="CASTING MODE"
         android:textColor="@color/gold_highlight"
         android:textSize="14sp"
@@ -57,9 +57,9 @@
         android:paddingVertical="28dp">
 
         <ImageView
-            android:layout_width="76dp"
-            android:layout_height="76dp"
-            android:layout_marginBottom="14dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="12dp"
             android:contentDescription="Fishing Rod"
             android:src="@drawable/ic_rod" />
 
@@ -69,15 +69,15 @@
             android:gravity="center"
             android:text="FLICK TO CAST!"
             android:textColor="@color/gold_highlight"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="Tilt phone to aim  •  Tap screen to cancel"
+            android:text="Tilt phone to aim  •  Tap screen to cast"
             android:textColor="@color/parchment"
             android:textSize="13sp" />
     </LinearLayout>
@@ -85,16 +85,16 @@
     <Button
         android:id="@+id/btnCycleBait"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="44dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="16dp"
         android:backgroundTint="#6C4527"
         android:paddingHorizontal="24dp"
         android:text="Swap Bait"
         android:textAllCaps="false"
         android:textColor="@color/gold_highlight"
-        android:textSize="15sp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
 </RelativeLayout>

@@ -72,7 +72,7 @@ Okay. Okay, Lolo.
 I'll fill these pages. As many as I can.
 
 And then I'll make my own Almanac.
-!flag met_lolo_diary
+!flag saw_lolo_diary
 !objective Find a place to fish.
 
 
@@ -81,7 +81,7 @@ And then I'll make my own Almanac.
 Okay... where do I even start?
 I'll start here at Marikina River. I remember there are fishing areas nearby.
 
-!objective Explore the nearby fishing areas.
+!objective use the map.
 !open_ui map
 Cavite and Batangas... Lolo's Almanac is waiting.
 !tutorial Open the map to travel.
