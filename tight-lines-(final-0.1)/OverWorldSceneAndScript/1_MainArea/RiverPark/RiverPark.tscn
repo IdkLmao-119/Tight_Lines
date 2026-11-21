@@ -10,6 +10,9 @@
 [ext_resource type="Texture2D" uid="uid://14vphwhphxxi" path="res://Assets/2D/TileSets/Marikina River Scenery Sprites.png" id="7_o1gbw"]
 [ext_resource type="Texture2D" uid="uid://ce6lutatuy55n" path="res://Assets/2D/TileSets/Pixel Art Top Down - Basic v1.2.3/Texture/TX Plant.png" id="8_s22e3"]
 [ext_resource type="Texture2D" uid="uid://blotfo5gs25cx" path="res://Assets/2D/RedJeep.png" id="10_h7il0"]
+[ext_resource type="Texture2D" uid="uid://b462lv35vhhmu" path="res://Assets/2D/TileSets/ElectricPoles.png" id="11_aip7y"]
+[ext_resource type="Texture2D" uid="uid://dmeo60jhec02i" path="res://Assets/2D/BulletinBoard.png" id="12_jm5et"]
+[ext_resource type="Texture2D" uid="uid://oyqmtc5o67st" path="res://Assets/2D/TileSets/PlaceSignage.png" id="12_tssdi"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_saxhw"]
 texture = ExtResource("2_d4sol")
@@ -3406,8 +3409,28 @@ texture = ExtResource("10_h7il0")
 0:0/size_in_atlas = Vector2i(2, 4)
 0:0/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_v8imv"]
+texture = ExtResource("11_aip7y")
+4:0/size_in_atlas = Vector2i(2, 6)
+4:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_n0nod"]
+texture = ExtResource("12_jm5et")
+0:0/size_in_atlas = Vector2i(4, 4)
+0:0/0 = 0
+
 [sub_resource type="TileSet" id="TileSet_v8imv"]
 sources/0 = SubResource("TileSetAtlasSource_ovpmp")
+sources/1 = SubResource("TileSetAtlasSource_v8imv")
+sources/2 = SubResource("TileSetAtlasSource_n0nod")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_q1sxk"]
+texture = ExtResource("12_tssdi")
+3:6/size_in_atlas = Vector2i(3, 4)
+3:6/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_n0nod"]
+sources/0 = SubResource("TileSetAtlasSource_q1sxk")
 
 [node name="RiverPark" type="Node2D" unique_id=1860606683]
 script = ExtResource("1_ji4s8")
@@ -3476,7 +3499,13 @@ layer_0/tile_data = PackedInt32Array(2293884, 2752512, 8, 2424933, 2359296, 6, 2
 [node name="TileMap4" type="TileMap" parent="." unique_id=2042395672]
 tile_set = SubResource("TileSet_v8imv")
 format = 2
-layer_0/tile_data = PackedInt32Array(917551, 0, 0, 1769565, 0, 0)
+layer_0/tile_data = PackedInt32Array(917551, 0, 0, 1769565, 0, 0, 2097260, 262145, 0, 1572983, 262145, 0, 1638528, 262145, 0, 2162769, 262145, 0, 2162759, 262145, 0, 2162751, 262145, 0, 2162739, 262145, 0, 1638478, 2, 0)
+
+[node name="TileMap5" type="TileMap" parent="." unique_id=1521346053]
+scale = Vector2(2, 2)
+tile_set = SubResource("TileSet_n0nod")
+format = 2
+layer_0/tile_data = PackedInt32Array(720952, 196608, 6)
 
 [connection signal="body_entered" from="RiverParkToSpawn/RiverParkToSpawn" to="Player" method="_on_river_park_to_spawn_body_entered"]
 [connection signal="body_entered" from="RiverParkToRiverParkFishingSpot/RiverParkToRiverParkFishingSpot" to="Player" method="_on_river_park_to_river_park_fishing_spot_body_entered"]

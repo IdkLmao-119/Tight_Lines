@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://dhe1aayjlfn5g"]
+
+[node name="FishTank" type="Control" unique_id=451500958]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="." unique_id=1948603435]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -470.0
+offset_top = -288.75
+offset_right = 470.0
+offset_bottom = 288.75
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel" unique_id=892597316]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -191.0
+offset_top = -64.75
+offset_right = 191.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Button" type="Button" parent="Panel/HBoxContainer" unique_id=1747628624]
+layout_mode = 2
+text = "Add FiSh"
+
+[node name="Button2" type="Button" parent="Panel/HBoxContainer" unique_id=918756582]
+layout_mode = 2
+text = "Remove Fish"
+
+[node name="Button3" type="Button" parent="Panel/HBoxContainer" unique_id=1490816840]
+layout_mode = 2
+text = "Back
+"
+
+[node name="TextureRect" type="TextureRect" parent="Panel" unique_id=96962208]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -434.0
+offset_right = 434.0
+offset_bottom = 500.75
+grow_horizontal = 2

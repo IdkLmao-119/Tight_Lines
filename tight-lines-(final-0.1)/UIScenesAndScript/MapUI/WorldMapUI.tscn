@@ -1,0 +1,190 @@
+[gd_scene format=3 uid="uid://d3glve5uh02dg"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_he66t"]
+
+[node name="WorldMapUi" type="Control" unique_id=516759592]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="." unique_id=673948182]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -377.25
+offset_top = -282.0
+offset_right = 377.25
+offset_bottom = 282.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Panel" unique_id=1901200045]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -35.75
+offset_right = 35.75
+offset_bottom = 42.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 30
+text = "Map"
+
+[node name="TextureRect" type="TextureRect" parent="Panel" unique_id=590739754]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -564.25
+offset_top = -177.0
+offset_bottom = 282.0
+grow_horizontal = 0
+grow_vertical = 2
+texture = SubResource("ImageTexture_he66t")
+
+[node name="BackButton" type="Button" parent="Panel" unique_id=1304884000]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.841
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -365.0
+offset_top = -461.324
+offset_right = -263.25
+offset_bottom = -505.096
+grow_horizontal = 2
+grow_vertical = 0
+text = "Back
+"
+
+[node name="SpawnButton" type="Button" parent="Panel" unique_id=1161948843]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.40600002
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -265.07703
+offset_top = -461.0
+offset_right = -233.0
+offset_bottom = -399.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Spawn
+
+"
+
+[node name="RiverButton" type="Button" parent="Panel" unique_id=355961224]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.40600002
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -277.07703
+offset_top = -397.0
+offset_right = -216.091
+offset_bottom = -335.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Marikina 
+River
+
+"
+
+[node name="RicefieldButton" type="Button" parent="Panel" unique_id=1622045272]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.40600002
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -286.07703
+offset_top = -330.0
+offset_right = -210.091
+offset_bottom = -268.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Imus 
+RiceFields
+"
+
+[node name="SeasideParkButton" type="Button" parent="Panel" unique_id=56415808]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.40600002
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -277.07703
+offset_top = -263.0
+offset_right = -215.0
+offset_bottom = -201.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Kawit
+Park
+
+"
+
+[node name="FishpenButton" type="Button" parent="Panel" unique_id=1538393008]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.40600002
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -276.07703
+offset_top = -198.0
+offset_right = -219.0
+offset_bottom = -136.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Noveleta
+Fishpens
+"
+
+[node name="SaltfarmButton" type="Button" parent="Panel" unique_id=1165691637]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.40600002
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -287.07703
+offset_top = -134.0
+offset_right = -211.09103
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Noveleta
+Saltfarm
+
+"
+
+[node name="MangroveButton" type="Button" parent="Panel" unique_id=1723557514]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.40600002
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -286.07703
+offset_top = -69.0
+offset_right = -209.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Calatagan 
+Mangrove
+
+"
