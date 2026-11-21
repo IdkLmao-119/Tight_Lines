@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen_water"
+    android:fitsSystemWindows="true"
+    android:padding="16dp">
+
+    <include
+        android:id="@+id/menuHeaderBar"
+        layout="@layout/include_menu_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="8dp" />
+
+    <!-- Wooden Menu Header Card -->
+    <LinearLayout
+        android:id="@+id/menuBannerCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/menuHeaderBar"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/bg_wood_card"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp">
+
+        <TextView
+            android:id="@+id/menuTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MENU"
+            android:textColor="@color/gold_highlight"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/menuHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:text="Use D-Pad to browse and Select to interact"
+            android:textColor="@color/parchment"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Tab / Section Switcher -->
+    <LinearLayout
+        android:id="@+id/menuTabBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/menuBannerCard"
+        android:layout_marginTop="14dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTabPrev"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="#6C4527"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="&lt; Prev Area"
+            android:textAllCaps="false"
+            android:textColor="@color/parchment"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:strokeColor="#C89B6E"
+            app:strokeWidth="2dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTabNext"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="#6C4527"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Next Area &gt;"
+            android:textAllCaps="false"
+            android:textColor="@color/parchment"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:strokeColor="#C89B6E"
+            app:strokeWidth="2dp" />
+    </LinearLayout>
+
+    <!-- 4-Way Discrete D-Pad for Menu Navigation -->
+    <RelativeLayout
+        android:id="@+id/menuDpad"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:layout_centerInParent="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNavUp"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:backgroundTint="@color/wood_mid"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="▲"
+            android:textColor="@color/parchment"
+            android:textSize="22sp"
+            app:cornerRadius="18dp"
+            app:strokeColor="@color/wood_border"
+            app:strokeWidth="3dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNavDown"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:backgroundTint="@color/wood_mid"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="▼"
+            android:textColor="@color/parchment"
+            android:textSize="22sp"
+            app:cornerRadius="18dp"
+            app:strokeColor="@color/wood_border"
+            app:strokeWidth="3dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNavLeft"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:backgroundTint="@color/wood_mid"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="◀"
+            android:textColor="@color/parchment"
+            android:textSize="22sp"
+            app:cornerRadius="18dp"
+            app:strokeColor="@color/wood_border"
+            app:strokeWidth="3dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNavRight"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:backgroundTint="@color/wood_mid"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="▶"
+            android:textColor="@color/parchment"
+            android:textSize="22sp"
+            app:cornerRadius="18dp"
+            app:strokeColor="@color/wood_border"
+            app:strokeWidth="3dp" />
+    </RelativeLayout>
+
+    <!-- Bottom Action Buttons -->
+    <LinearLayout
+        android:id="@+id/menuActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMenuBack"
+            android:layout_width="0dp"
+            android:layout_height="58dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="#D95D48"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="CLOSE"
+            android:textAllCaps="false"
+            android:textColor="@color/text_light"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="14dp"
+            app:strokeColor="@color/parchment"
+            app:strokeWidth="2dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMenuSelect"
+            android:layout_width="0dp"
+            android:layout_height="58dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/teal_accent"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="SELECT"
+            android:textAllCaps="false"
+            android:textColor="@color/text_light"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="14dp"
+            app:strokeColor="@color/parchment"
+            app:strokeWidth="2dp" />
+    </LinearLayout>
+
+</RelativeLayout>

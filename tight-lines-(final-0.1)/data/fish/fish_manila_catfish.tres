@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="FishData" format=3 uid="uid://dylhldsnt88cc"]
+
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="1_bs6c8"]
+[ext_resource type="Texture2D" uid="uid://c3janhv0i7kll" path="res://Assets/2D/fish_sprites/Manila Catfish.png" id="1_g6hdk"]
+
+[resource]
+script = ExtResource("1_bs6c8")
+scientific_name = "Silurus asotus"
+description = "A secretive nocturnal predator that lurks in muddy riverbeds waiting for unsuspecting prey.
+Local Name: Kanduli"
+size_class = "medium"
+base_price = 38
+speed = 4.5
+pull_strength = 12.0
+stamina = 60.0
+min_size = 20.0
+avg_size = 40.0
+max_size = 70.0
+avg_weight = 2.1
+icon = ExtResource("1_g6hdk")
+grid_width = 2
+id = "fish_manila_catfish"
+display_name = "Manila Catfish"

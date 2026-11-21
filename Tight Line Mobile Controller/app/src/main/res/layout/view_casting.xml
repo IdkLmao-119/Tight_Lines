@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen_water"
+    android:paddingHorizontal="24dp"
+    android:paddingVertical="48dp">
+
+    <include
+        android:id="@+id/menuHeaderBar"
+        layout="@layout/include_menu_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/castingModeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/menuHeaderBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_pill_badge"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="6dp"
+        android:text="CASTING MODE"
+        android:textColor="@color/gold_highlight"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/playerIdentityBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/castingModeTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_pill_badge"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="5dp"
+        android:text=""
+        android:textColor="@color/text_light"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="16dp"
+        android:background="@drawable/bg_wood_card"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="28dp">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="12dp"
+            android:contentDescription="Fishing Rod"
+            android:src="@drawable/ic_rod" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="FLICK TO CAST!"
+            android:textColor="@color/gold_highlight"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Tilt phone to aim  •  Tap screen to cast"
+            android:textColor="@color/parchment"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnCycleBait"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#6C4527"
+        android:paddingHorizontal="24dp"
+        android:text="Swap Bait"
+        android:textAllCaps="false"
+        android:textColor="@color/gold_highlight"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

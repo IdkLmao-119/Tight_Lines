@@ -1,0 +1,60 @@
+# ============================================================
+# Area 2 - Imus (Rice Field)
+# ============================================================
+
+=== imus_arrival | scene: overworld_rice_field | requires: unlock_imus
+@john:happy
+(takes a deep breath) Smells like wet grass and mud. I love it.
+
+There's water in every direction. The paddies, the canals, even the ditches by the road.
+If I were a fish, I'd live here too.
+
+!open_ui almanac
+Whoa, that's a lot of blanks. I have no idea what's hiding out here.
+
+This is the part Lolo must have loved.
+Not knowing what's on the line until it's already in your hands.
+
+Easy, John. You're allowed to be excited, but you still have to cast properly.
+!tutorial Walk to a canal or paddy edge. Press [E] / A near the water to cast.
+!objective Find out what lives in the Imus rice field.
+
+
+=== imus_first_bite | side
+!shake 6 0.3
+@john:shocked
+There! Something grabbed it!
+
+
+=== imus_first_catch | side
+@john:happy
+Got you! Let's take a look...
+Our first Imus fish. Lolo, this one's for you.
+
+
+=== imus_first_fail | side
+@john:sad
+It slipped off the hook! Fine, I'll be ready next time.
+
+
+=== imus_complete | requires: quest_paddy_page
+!banner Imus Complete
+@john:happy
+That's the last one.
+Mudfish, catfish, all of them. Every blank is a name now.
+
+Funny. A few days ago I couldn't name a single fish in the Philippines.
+Hmm? This page has a wave on it.
+
+Wait. All these canals are flowing the same way.
+If I follow the water, it leads to the sea.
+
+Kawit! The Aguinaldo Shrine is right by the coast.
+We went there on a school trip once, and I spent the whole time staring at the bay.
+
+Back then I was bored. Now I'm thinking about what's swimming out there.
+!open_ui map
+!objective Travel to the seaside in Kawit.
+
+Rice fields were freshwater. The sea is a whole different game.
+Thanks, Imus. You were kinder than I expected.

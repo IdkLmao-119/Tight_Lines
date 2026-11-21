@@ -1,0 +1,195 @@
+[gd_scene format=3 uid="uid://tbpjuosbsm8e"]
+
+[ext_resource type="Script" uid="uid://cxb2dk18i1fmg" path="res://UIScenesAndScript/AlmanacUI/scene_script_almanac_ui.gd" id="1_dyt5v"]
+[ext_resource type="Texture2D" uid="uid://1w3ooxvm15dy" path="res://Assets/Example.png" id="2_kkthf"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/AlmanacUI/almanac_theme.tres" id="3_theme"]
+[ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="4_body"]
+[ext_resource type="Script" uid="uid://2chvs05xvoei" path="res://UIScenesAndScript/Shared/mobile_cursor_highlight.gd" id="5_cursor"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_parchment"]
+content_margin_left = 24.0
+content_margin_top = 24.0
+content_margin_right = 24.0
+content_margin_bottom = 24.0
+texture = ExtResource("2_kkthf")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[sub_resource type="FontVariation" id="FontVariation_title_bold"]
+base_font = ExtResource("4_body")
+variation_embolden = 0.7
+
+[sub_resource type="FontVariation" id="FontVariation_sci_italic"]
+base_font = ExtResource("4_body")
+variation_transform = Transform2D(1, 0.22, 0, 1, 0, 0)
+
+[node name="AlmanacUi" type="Control" unique_id=479802253]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3_theme")
+script = ExtResource("1_dyt5v")
+
+[node name="DimOverlay" type="ColorRect" parent="." unique_id=1822836505]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5)
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=539367997]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="MainHBox" type="HBoxContainer" parent="MarginContainer" unique_id=620611016]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="LocationList" type="VBoxContainer" parent="MarginContainer/MainHBox" unique_id=1260378184]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(185, 0)
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="MarikinaButton" type="Button" parent="MarginContainer/MainHBox/LocationList" unique_id=1845185481]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Marikina
+River"
+
+[node name="KawitButton" type="Button" parent="MarginContainer/MainHBox/LocationList" unique_id=375971686]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Kawit
+Seaside"
+
+[node name="ImusButton" type="Button" parent="MarginContainer/MainHBox/LocationList" unique_id=655322677]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Imus
+Fields"
+
+[node name="FishPensButton" type="Button" parent="MarginContainer/MainHBox/LocationList" unique_id=1405573883]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Noveleta
+Fish Pens"
+
+[node name="SaltFarmButton" type="Button" parent="MarginContainer/MainHBox/LocationList" unique_id=1301968133]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Noveleta
+Salt Farm"
+
+[node name="CalataganButton" type="Button" parent="MarginContainer/MainHBox/LocationList" unique_id=60122491]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Calatagan
+Mangrove
+Forest"
+
+[node name="FortuneIslandButton" type="Button" parent="MarginContainer/MainHBox/LocationList" unique_id=1161043096]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Fortune
+Island"
+
+[node name="BookPanel" type="PanelContainer" parent="MarginContainer/MainHBox" unique_id=1868387191]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_parchment")
+
+[node name="BookVBox" type="VBoxContainer" parent="MarginContainer/MainHBox/BookPanel" unique_id=543582279]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PagesHBox" type="HBoxContainer" parent="MarginContainer/MainHBox/BookPanel/BookVBox" unique_id=1693379463]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="FishScroll" type="ScrollContainer" parent="MarginContainer/MainHBox/BookPanel/BookVBox/PagesHBox" unique_id=820592388]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+follow_focus = true
+
+[node name="FishGrid" type="GridContainer" parent="MarginContainer/MainHBox/BookPanel/BookVBox/PagesHBox/FishScroll" unique_id=1377922578]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 4
+
+[node name="EntryDetails" type="VBoxContainer" parent="MarginContainer/MainHBox/BookPanel/BookVBox/PagesHBox" unique_id=579454448]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="FishPicture" type="TextureRect" parent="MarginContainer/MainHBox/BookPanel/BookVBox/PagesHBox/EntryDetails" unique_id=1622833742]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 140)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FishName" type="Label" parent="MarginContainer/MainHBox/BookPanel/BookVBox/PagesHBox/EntryDetails" unique_id=928797803]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.14, 0.09, 0.05, 1)
+theme_override_fonts/font = SubResource("FontVariation_title_bold")
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="FishScientificName" type="Label" parent="MarginContainer/MainHBox/BookPanel/BookVBox/PagesHBox/EntryDetails" unique_id=764669347]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.32, 0.22, 0.14, 1)
+theme_override_fonts/font = SubResource("FontVariation_sci_italic")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="FishDescription" type="RichTextLabel" parent="MarginContainer/MainHBox/BookPanel/BookVBox/PagesHBox/EntryDetails" unique_id=2112996837]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+
+[node name="FooterBar" type="HBoxContainer" parent="MarginContainer/MainHBox/BookPanel/BookVBox" unique_id=1684694866]
+layout_mode = 2
+alignment = 1
+
+[node name="BackButton" type="Button" parent="MarginContainer/MainHBox/BookPanel/BookVBox/FooterBar" unique_id=1679295783]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Back"
+
+[node name="CursorHighlight" type="Panel" parent="." unique_id=436936958]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+script = ExtResource("5_cursor")

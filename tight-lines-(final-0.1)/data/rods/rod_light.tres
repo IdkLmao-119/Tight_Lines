@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RodData" format=3 uid="uid://cx55e6a2j7urf"]
+
+[ext_resource type="Script" uid="uid://dgqkh62vpaosc" path="res://data/item_class_templates/rod_data.gd" id="1_1bm4i"]
+[ext_resource type="Texture2D" uid="uid://dy2xk4ubjv640" path="res://Assets/2D/Rod_Sprites_Standing/Ultralight_Rod.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_1bm4i")
+icon = ExtResource("2_icon")
+line_strength = 6.0
+max_cast_distance = 15.0
+id = "rod_light"
+display_name = "Ultralight Rod"

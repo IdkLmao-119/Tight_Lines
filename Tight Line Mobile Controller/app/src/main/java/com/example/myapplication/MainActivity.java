@@ -3,21 +3,39 @@ package com.example.myapplication;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.VibrationEffect;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.os.Vibrator;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,52 +55,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
-
-// ============================================================================
-// CONNECTION MANAGER (ANDROID SIDE)  — module 1 of 3
-// ============================================================================
-// This Activity IS the phone's connection manager: it owns the WebSocket
-// connection to the PC, detects the three input types this project uses
-// (swipe, tap, swing), and reports simple connection/ping status.
-//
-// The PC's address is NOT hardcoded — the player either types it in
-// manually, or taps "Auto-Discover" to find it automatically via a UDP
-// broadcast on the local network (see performDiscovery() below). This is
-// what makes the app safe to distribute to other people's devices, since
-// every player's PC will have a different IP address.
-//
-//   SWIPE — dragging a finger across the screen (GestureDetector.onFling)
-//   TAP   — a quick press on the screen (GestureDetector.onSingleTapUp)
-//   SWING — physically moving/swinging the phone (gyroscope spike detection)
-//
-// Requires, in app/build.gradle:
-//     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-// And in AndroidManifest.xml, inside <manifest>, above <application>:
-//     <uses-permission android:name="android.permission.INTERNET" />
-//     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-//
-// ALSO REQUIRED (this was missing before): the connection uses plain ws://
-// (not wss://), and Android 9+ blocks cleartext traffic by default. Add this
-// attribute to the <application> tag in AndroidManifest.xml:
-//     android:usesCleartextTraffic="true"
-// Without it, connecting fails with "CLEARTEXT communication ... not permitted".
-//
-// TIP: if your Wi-Fi network has no internet (e.g. a PC-hosted hotspot),
-// Android may route app traffic over mobile data, which cannot reach the
-// PC's 192.168.x.x address. Turn mobile data off while testing.
-// ============================================================================
+import okio.ByteString;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    // --- Networking ---
-    // IMPORTANT: readTimeout/writeTimeout are explicitly disabled (set to
-    // 0 = no timeout) here. OkHttp's default 10-second read timeout is
-    // meant for regular one-off HTTP requests, NOT a persistent WebSocket
-    // connection that's supposed to sit open and wait indefinitely for the
-    // next message. Leaving the default active can cause the connection to
-    // be killed as "timed out" during any quiet gap longer than 10 seconds
-    // (e.g. the player just isn't moving the phone right now). pingInterval
-    // is what actually keeps the connection alive/monitored instead.
     private final OkHttpClient client = new OkHttpClient.Builder()
             .pingInterval(15, TimeUnit.SECONDS)
             .readTimeout(0, TimeUnit.MILLISECONDS)
@@ -91,61 +67,67 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private WebSocket webSocket;
 
-    // No hardcoded server address anymore — this is filled in at runtime,
-    // either by the player typing it into serverIpInput, or automatically
-    // by performDiscovery() below.
+    private static final long RECONNECT_DELAY_MS = 2000L;
+    private static final long AUTO_DISCOVER_INTERVAL_MS = 3500L;
+    private static final String PREF_LAST_IP = "last_pc_ip";
+    private static final String PREF_PLAYER_NAME = "player_name";
+    private static final int MAX_PLAYER_NAME_LENGTH = 18;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable reconnectRunnable;
+    private Runnable autoDiscoverRunnable;
+    private String lastIp = null;
+    private boolean wantConnected = false;
+    private int connectionAttempt = 0;
+    private volatile boolean isDiscovering = false;
+    private boolean triedSavedIpThisCycle = false;
+    private int reconnectFailureCount = 0;
+
     private String serverUrl = null;
-
-    // The port your ConnectionManager.gd listens on — this stays constant
-    // even though the IP address varies per PC.
     private static final int SERVER_PORT = 9080;
-
-    // --- Auto-discovery settings ---
-    // A separate, fixed port used ONLY for the discovery broadcast/response
-    // — kept different from SERVER_PORT so discovery traffic and game
-    // traffic never get confused with each other.
     private static final int DISCOVERY_PORT = 9081;
-
-    // The exact text the phone broadcasts, and that ConnectionManager.gd
-    // listens for. Both sides must agree on this exact string.
     private static final String DISCOVERY_MESSAGE = "DISCOVER_FISHING_SERVER";
-
-    // How long to wait for a PC to respond before giving up.
     private static final int DISCOVERY_TIMEOUT_MS = 3000;
 
-    // --- Connection / ping status ---
-    // Tracks whether the WebSocket connection is currently open.
     private boolean isConnected = false;
-
-    // Stores the most recently measured round-trip ping time, in milliseconds.
-    // NOTE: this is only ever set if you wire up an actual ping/pong
-    // round-trip (see the note at the bottom of this file) — as written,
-    // it stays at -1 (unknown) since no round-trip measurement exists yet.
     private long latencyMs = -1;
 
-    // --- Sensors ---
     private SensorManager sensorManager;
     private Sensor gyroSensor;
+    private Sensor accelSensor;
 
-    // --- Swing detection tuning ---
-    // A swing is detected as a spike in rotation speed. SWING_THRESHOLD is
-    // how fast (in radians/second) the phone must be rotating to count as
-    // an intentional swing rather than normal handling/jitter.
-    private static final float SWING_THRESHOLD = 4.0f;
+    private static final long TILT_SEND_INTERVAL_MS = 50L;
+    private static final float TILT_FULL_ANGLE_DEG = 20f;
+    // Dynamic sensitivity: TILT_FILTER_ALPHA range 0.70f (high sens / fast) to 0.95f (low sens / heavy smooth)
+    private float tiltFilterAlpha = 0.8f;
+    private static final long TILT_HOLD_AFTER_SWING_MS = 100L; // Reduced so tilt recovers quickly after a cast
 
-    // After detecting a swing, we wait this long before allowing another
-    // one to be detected — this "cooldown" stops one physical swing motion
-    // from being counted as many separate swings in a row.
+    private final float[] gravity = new float[3];
+    private boolean gravityInitialized = false;
+    private long lastTiltSentMs = 0L;
+
+    // Dynamic sensitivity: SWING_THRESHOLD range 12.0f (high sens / easier) to 16.0f (low sens / harder)
+    private float swingThreshold = 12.0f;
     private static final long SWING_COOLDOWN_MS = 500L;
     private long lastSwingTimeMs = 0L;
 
-    // A permanent, unique ID for THIS phone, generated once and saved
-    // forever afterward — this is how the PC recognizes "this is the same
-    // device as before" even if its IP address changes between sessions.
+    private static final long SWING_PEAK_WINDOW_MS = 120L;
+    private boolean swingWindowOpen = false;
+    private long swingWindowStartMs = 0L;
+    private double swingPeak = 0.0;
+
     private String deviceId;
 
-    // --- UI ---
+    private enum AppState { CONNECTION, OVERWORLD, CASTING, REELING, KNOTTING, MENU }
+    private AppState currentState = null;
+    private AppState underlyingGameState = AppState.OVERWORLD;
+    private String activeMenu = "none";
+    private String assignedPlayerName = "";
+    private String assignedScreenSide = "";
+
     private TextView statusText;
+    private TextView connectionSubtext;
+    private ProgressBar connectingSpinner;
+    private EditText playerNameInput;
     private EditText serverIpInput;
     private Button connectButton;
     private Button discoverButton;
@@ -156,98 +138,165 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        statusText = findViewById(R.id.statusText);
-        serverIpInput = findViewById(R.id.serverIpInput);
-        connectButton = findViewById(R.id.connectButton);
-        discoverButton = findViewById(R.id.discoverButton);
-
         deviceId = getOrCreateDeviceId();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        // Manual entry: player types an IP and taps Connect.
-        connectButton.setOnClickListener(v -> {
-            String ip = serverIpInput.getText().toString().trim();
-            if (ip.isEmpty()) {
-                Toast.makeText(this, "Enter an IP address first", Toast.LENGTH_SHORT).show();
-                return;
+        reconnectRunnable = () -> {
+            if (wantConnected && !isConnected && lastIp != null) {
+                connectToServer(lastIp);
             }
-            connectToServer(ip);
-        });
+        };
 
-        // Auto-discover: finds the PC's IP automatically, no typing needed.
-        discoverButton.setOnClickListener(v -> performDiscovery());
+        autoDiscoverRunnable = () -> {
+            if (currentState == AppState.CONNECTION && !isConnected) {
+                startAutoDiscovery(false);
+            }
+        };
 
-        // GestureDetector is Android's built-in helper for recognizing
-        // common touch patterns (taps, swipes/flings, etc.) so we don't have
-        // to manually track finger movement math ourselves.
         gestureDetector = new GestureDetector(this, new GestureListener());
-
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        accelSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        // NOTE: connectToServer() is no longer called automatically here —
-        // we wait for the player to either type an IP or use Auto-Discover,
-        // since we no longer have any address to connect to by default.
+        switchToState(AppState.CONNECTION);
     }
 
-    // Forwards all touch events on the whole screen to the GestureDetector,
-    // which figures out whether they form a tap, swipe, etc.
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        gestureDetector.onTouchEvent(event);
-        return true;
+    private void switchToState(AppState newState) {
+        if (currentState == newState) return;
+        currentState = newState;
+
+        runOnUiThread(() -> {
+            FrameLayout rootContainer = findViewById(R.id.rootContainer);
+            rootContainer.removeAllViews();
+
+            int layoutResId;
+            switch (newState) {
+                case CONNECTION:
+                    layoutResId = R.layout.view_connection;
+                    break;
+                case OVERWORLD:
+                    layoutResId = R.layout.view_overworld;
+                    break;
+                case CASTING:
+                    layoutResId = R.layout.view_casting;
+                    break;
+                case REELING:
+                    layoutResId = R.layout.view_reeling;
+                    break;
+                case KNOTTING:
+                    layoutResId = R.layout.view_knotting;
+                    break;
+                case MENU:
+                    layoutResId = R.layout.view_menu;
+                    break;
+                default:
+                    layoutResId = R.layout.view_connection;
+                    break;
+            }
+
+            getLayoutInflater().inflate(layoutResId, rootContainer, true);
+
+            if (newState == AppState.CONNECTION) {
+                setupConnectionUI();
+            } else {
+                setupMenuHeaderButtons();
+
+                if (newState == AppState.OVERWORLD) {
+                    DPadView dpadView = findViewById(R.id.dpadView);
+                    if (dpadView != null) {
+                        dpadView.setOnMoveListener((x, y) -> {
+                            JSONObject msg = new JSONObject();
+                            try {
+                                msg.put("type", "move");
+                                msg.put("x", x);
+                                msg.put("y", y);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            sendMessage(msg);
+                        });
+                    }
+
+                    Button btnInteract = findViewById(R.id.btnInteract);
+                    if (btnInteract != null) {
+                        btnInteract.setOnClickListener(v -> {
+                            JSONObject msg = new JSONObject();
+                            try {
+                                msg.put("type", "interact");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            sendMessage(msg);
+                        });
+                    }
+                } else if (newState == AppState.CASTING) {
+                    Button btnCycleBait = findViewById(R.id.btnCycleBait);
+                    if (btnCycleBait != null) {
+                        btnCycleBait.setOnClickListener(v -> sendMenuAction("cycle_bait"));
+                    }
+                } else if (newState == AppState.REELING) {
+                    FishingReelView reelView = findViewById(R.id.fishingReelView);
+                    if (reelView != null) {
+                        reelView.setOnReelListener(deltaDegrees -> {
+                            JSONObject msg = new JSONObject();
+                            try {
+                                msg.put("type", "reel");
+                                msg.put("delta", deltaDegrees);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            sendMessage(msg);
+                        });
+                    }
+                } else if (newState == AppState.KNOTTING) {
+                    setupKnottingUI();
+                } else if (newState == AppState.MENU) {
+                    setupMenuControlsUI();
+                }
+
+                updatePlayerIdentityBadge();
+                sendScreenState();
+            }
+        });
     }
 
-    // ------------------------------------------------------------------------
-    // PERSISTENT DEVICE ID
-    // ------------------------------------------------------------------------
-    // SharedPreferences is Android's built-in simple key-value storage that
-    // survives app restarts (and even phone restarts) — it only goes away
-    // if the app is uninstalled. We use it to store one random ID, created
-    // the very first time the app runs, and reused every time after that.
-    private String getOrCreateDeviceId() {
-        SharedPreferences prefs = getSharedPreferences("controller_prefs", MODE_PRIVATE);
-        String existingId = prefs.getString("device_id", null);
+    private void setupKnottingUI() {
+        KnotTraceView knotView = findViewById(R.id.knotTraceView);
+        TextView knotNameText = findViewById(R.id.knotNameText);
+        ProgressBar knotProgressBar = findViewById(R.id.knotProgressBar);
+        TextView knottingBadge = findViewById(R.id.knottingBadge);
+        TextView hintTitle = findViewById(R.id.knotHintTitle);
+        TextView hintSubtitle = findViewById(R.id.knotHintSubtitle);
 
-        if (existingId != null) {
-            return existingId; // already had one — reuse it
+        if (knotView == null) return;
+
+        knotView.pickRandomKnot();
+        if (knotNameText != null) {
+            knotNameText.setText(knotView.getKnotName());
+        }
+        if (knotProgressBar != null) {
+            knotProgressBar.setProgress(0);
         }
 
-        // First launch ever — generate a new random unique ID and save it
-        // permanently so every future launch finds it above instead.
-        String newId = UUID.randomUUID().toString();
-        prefs.edit().putString("device_id", newId).apply();
-        return newId;
-    }
-
-    // ------------------------------------------------------------------------
-    // CONNECTION MANAGEMENT
-    // ------------------------------------------------------------------------
-    private void connectToServer(String ip) {
-        // FIX: close any previous connection first, so tapping Connect (or
-        // Auto-Discover) more than once doesn't leave stale sockets open,
-        // which the PC would see as duplicate connections.
-        if (webSocket != null) {
-            webSocket.close(1000, "Reconnecting");
-            webSocket = null;
-        }
-        isConnected = false;
-
-        serverUrl = "ws://" + ip + ":" + SERVER_PORT;
-        Request request = new Request.Builder().url(serverUrl).build();
-
-        runOnUiThread(() -> statusText.setText("Connecting to " + ip + "..."));
-
-        webSocket = client.newWebSocket(request, new WebSocketListener() {
+        knotView.setOnKnotListener(new KnotTraceView.OnKnotListener() {
             @Override
-            public void onOpen(WebSocket ws, Response response) {
-                isConnected = true;
-                runOnUiThread(() -> statusText.setText(getConnectionStatus()));
-
+            public void onProgress(float progress) {
+                if (knotProgressBar != null) {
+                    knotProgressBar.setProgress(Math.round(progress * 100f));
+                }
+                if (progress > 0.02f && progress < 1.0f) {
+                    if (hintTitle != null) {
+                        hintTitle.setText("Keep tracing... " + Math.round(progress * 100f) + "%");
+                        hintTitle.setTextColor(Color.parseColor("#F4C95D"));
+                    }
+                    if (hintSubtitle != null) {
+                        hintSubtitle.setText("Stay on the line until END");
+                    }
+                }
                 JSONObject msg = new JSONObject();
                 try {
-                    msg.put("type", "connected");
-                    msg.put("device_id", deviceId);
+                    msg.put("type", "knot_progress");
+                    msg.put("progress", progress);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -255,52 +304,521 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
 
             @Override
-            public void onFailure(WebSocket ws, Throwable t, Response response) {
-                isConnected = false;
-                String reason = t.getMessage();
-                if (t.getCause() != null) reason += " / " + t.getCause().getMessage();
-                final String shown = reason;
-                runOnUiThread(() -> statusText.setText("Connection failed: " + shown));
+            public void onFailedAttempt(String reason) {
+                vibrateOnce(35);
+                if (hintTitle != null) {
+                    if ("start_missed".equals(reason)) {
+                        hintTitle.setText("Touch the green START circle!");
+                    } else if ("lifted".equals(reason)) {
+                        hintTitle.setText("Don't lift your finger!");
+                    } else {
+                        hintTitle.setText("Strayed off the line!");
+                    }
+                    hintTitle.setTextColor(Color.parseColor("#FF6B6B"));
+                }
+                if (hintSubtitle != null) {
+                    hintSubtitle.setText("Trace from START to END in one smooth stroke");
+                }
             }
 
             @Override
-            public void onClosed(WebSocket ws, int code, String reason) {
-                isConnected = false;
-                runOnUiThread(() -> statusText.setText(getConnectionStatus()));
+            public void onKnotCompleted(String knotName, float accuracy) {
+                vibratePattern(new long[]{0, 50, 50, 120});
+                if (knottingBadge != null) {
+                    knottingBadge.setText("KNOT TIED!");
+                    knottingBadge.setTextColor(Color.parseColor("#2A9D8F"));
+                }
+                if (hintTitle != null) {
+                    hintTitle.setText(knotName + " secured!");
+                    hintTitle.setTextColor(Color.parseColor("#52E5A8"));
+                }
+                if (hintSubtitle != null) {
+                    hintSubtitle.setText("Line repaired — ready to cast");
+                }
+                handler.postDelayed(() -> {
+                    JSONObject msg = new JSONObject();
+                    try {
+                        msg.put("type", "knot_complete");
+                        msg.put("knot_name", knotName);
+                        msg.put("accuracy", accuracy);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    sendMessage(msg);
+                }, 360L);
             }
         });
     }
 
-    // ------------------------------------------------------------------------
-    // AUTO-DISCOVERY
-    // ------------------------------------------------------------------------
-    // Computes this phone's ACTUAL subnet broadcast address (e.g.
-    // 192.168.137.255 for a typical /24 hotspot network), rather than
-    // relying only on the generic 255.255.255.255 address. This matters
-    // because 255.255.255.255 is known to be unreliable on Android — some
-    // devices/Wi-Fi stacks don't route it out onto the Wi-Fi interface
-    // correctly, whereas a network's own specific directed broadcast
-    // address is delivered far more consistently.
-    //
-    // Requires android.permission.ACCESS_WIFI_STATE in AndroidManifest.xml.
+    private void setupMenuHeaderButtons() {
+        Button btnFishBox = findViewById(R.id.btnFishBox);
+        Button btnAlmanac = findViewById(R.id.btnAlmanac);
+        Button btnEquipment = findViewById(R.id.btnEquipment);
+        Button btnQuests = findViewById(R.id.btnQuests);
+
+        if (btnFishBox != null) btnFishBox.setOnClickListener(v -> sendMenuAction("fish_box"));
+        if (btnAlmanac != null) btnAlmanac.setOnClickListener(v -> sendMenuAction("almanac"));
+        if (btnEquipment != null) btnEquipment.setOnClickListener(v -> sendMenuAction("equipment"));
+        if (btnQuests != null) btnQuests.setOnClickListener(v -> sendMenuAction("quests"));
+
+        styleMenuHeaderButtons();
+    }
+
+    private void styleMenuHeaderButtons() {
+        MaterialButton btnFishBox = findViewById(R.id.btnFishBox);
+        MaterialButton btnAlmanac = findViewById(R.id.btnAlmanac);
+        MaterialButton btnEquipment = findViewById(R.id.btnEquipment);
+        MaterialButton btnQuests = findViewById(R.id.btnQuests);
+
+        applyHeaderButtonStyle(btnFishBox, "fish_box".equals(activeMenu), "#D95D48", "#FFF9EE");
+        applyHeaderButtonStyle(btnAlmanac, "almanac".equals(activeMenu), "#2A9D8F", "#FFF9EE");
+        applyHeaderButtonStyle(btnEquipment, "equipment".equals(activeMenu), "#F4C95D", "#3B2312");
+        applyHeaderButtonStyle(btnQuests, "quests".equals(activeMenu), "#7D5BA6", "#FFF9EE");
+    }
+
+    private void applyHeaderButtonStyle(MaterialButton btn, boolean isActive, String activeHex, String activeTextHex) {
+        if (btn == null) return;
+        if (isActive) {
+            btn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(activeHex)));
+            btn.setTextColor(Color.parseColor(activeTextHex));
+            btn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#FFF9EE")));
+            btn.setStrokeWidth(5);
+        } else {
+            btn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#6C4527")));
+            btn.setTextColor(Color.parseColor("#FFF3DC"));
+            btn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#C89B6E")));
+            btn.setStrokeWidth(2);
+        }
+    }
+
+    private void setupMenuControlsUI() {
+        Button btnUp = findViewById(R.id.btnNavUp);
+        Button btnDown = findViewById(R.id.btnNavDown);
+        Button btnLeft = findViewById(R.id.btnNavLeft);
+        Button btnRight = findViewById(R.id.btnNavRight);
+        Button btnSelect = findViewById(R.id.btnMenuSelect);
+        Button btnBack = findViewById(R.id.btnMenuBack);
+        Button btnTabPrev = findViewById(R.id.btnTabPrev);
+        Button btnTabNext = findViewById(R.id.btnTabNext);
+
+        if (btnUp != null) btnUp.setOnClickListener(v -> sendMenuAction("up"));
+        if (btnDown != null) btnDown.setOnClickListener(v -> sendMenuAction("down"));
+        if (btnLeft != null) btnLeft.setOnClickListener(v -> sendMenuAction("left"));
+        if (btnRight != null) btnRight.setOnClickListener(v -> sendMenuAction("right"));
+        if (btnSelect != null) btnSelect.setOnClickListener(v -> sendMenuAction("select"));
+        if (btnBack != null) btnBack.setOnClickListener(v -> sendMenuAction("back"));
+        if (btnTabPrev != null) btnTabPrev.setOnClickListener(v -> sendMenuAction("tab_prev"));
+        if (btnTabNext != null) btnTabNext.setOnClickListener(v -> sendMenuAction("tab_next"));
+
+        refreshMenuUI();
+    }
+
+    private void refreshMenuUI() {
+        styleMenuHeaderButtons();
+        if (currentState != AppState.MENU) return;
+
+        TextView menuTitle = findViewById(R.id.menuTitle);
+        TextView menuHint = findViewById(R.id.menuHint);
+        LinearLayout menuTabBar = findViewById(R.id.menuTabBar);
+        Button btnTabPrev = findViewById(R.id.btnTabPrev);
+        Button btnTabNext = findViewById(R.id.btnTabNext);
+        Button btnSelect = findViewById(R.id.btnMenuSelect);
+
+        if (menuTitle == null || menuHint == null) return;
+
+        switch (activeMenu) {
+            case "almanac":
+                menuTitle.setText("ALMANAC");
+                menuHint.setText("D-Pad: Browse Fish  •  View: Open Entry");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.VISIBLE);
+                if (btnTabPrev != null) btnTabPrev.setText("< Prev Area");
+                if (btnTabNext != null) btnTabNext.setText("Next Area >");
+                if (btnSelect != null) btnSelect.setText("VIEW");
+                break;
+            case "fish_box":
+                menuTitle.setText("FISH BOX");
+                menuHint.setText("D-Pad: Browse Slots  •  Inspect: Check Fish");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.GONE);
+                if (btnSelect != null) btnSelect.setText("INSPECT");
+                break;
+            case "equipment":
+                menuTitle.setText("INVENTORY");
+                menuHint.setText("D-Pad: Browse Rods & Bait  •  Equip: Set Active");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.VISIBLE);
+                if (btnTabPrev != null) btnTabPrev.setText("Rods");
+                if (btnTabNext != null) btnTabNext.setText("Bait");
+                if (btnSelect != null) btnSelect.setText("EQUIP");
+                break;
+            case "quests":
+                menuTitle.setText("QUESTS");
+                menuHint.setText("D-Pad: Browse Quests  •  Tabs: Active / Completed");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.VISIBLE);
+                if (btnTabPrev != null) btnTabPrev.setText("Active");
+                if (btnTabNext != null) btnTabNext.setText("Completed");
+                if (btnSelect != null) btnSelect.setText("VIEW");
+                break;
+            default:
+                menuTitle.setText("MENU");
+                menuHint.setText("D-Pad: Navigate  •  Select: Confirm");
+                if (menuTabBar != null) menuTabBar.setVisibility(View.GONE);
+                if (btnSelect != null) btnSelect.setText("SELECT");
+                break;
+        }
+    }
+
+    private void sendMenuAction(String action) {
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("type", "menu");
+            msg.put("action", action);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessage(msg);
+    }
+
+    private void setupConnectionUI() {
+        statusText = findViewById(R.id.statusText);
+        connectionSubtext = findViewById(R.id.connectionSubtext);
+        connectingSpinner = findViewById(R.id.connectingSpinner);
+        playerNameInput = findViewById(R.id.playerNameInput);
+        serverIpInput = findViewById(R.id.serverIpInput);
+        connectButton = findViewById(R.id.connectButton);
+        discoverButton = findViewById(R.id.discoverButton);
+        Button btnToggleManual = findViewById(R.id.btnToggleManual);
+        LinearLayout manualConnectSection = findViewById(R.id.manualConnectSection);
+
+        if (playerNameInput != null) {
+            playerNameInput.setText(getSavedPlayerName());
+            playerNameInput.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    savePlayerName(s != null ? s.toString() : "");
+                }
+            });
+        }
+
+        String savedIp = getSavedIp();
+        if (serverIpInput != null && savedIp != null && !savedIp.isEmpty()) {
+            serverIpInput.setText(savedIp);
+        }
+
+        if (btnToggleManual != null && manualConnectSection != null) {
+            btnToggleManual.setOnClickListener(v -> {
+                boolean show = manualConnectSection.getVisibility() != View.VISIBLE;
+                manualConnectSection.setVisibility(show ? View.VISIBLE : View.GONE);
+                btnToggleManual.setText(show ? "Hide Manual Setup ▴" : "Manual IP Setup ▾");
+            });
+        }
+
+        if (connectButton != null) {
+            connectButton.setOnClickListener(v -> {
+                String ip = serverIpInput != null ? serverIpInput.getText().toString().trim() : "";
+                if (ip.isEmpty()) {
+                    Toast.makeText(this, "Enter an IP address first", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                handler.removeCallbacks(autoDiscoverRunnable);
+                reconnectFailureCount = 0;
+                connectToServer(ip);
+            });
+        }
+
+        if (discoverButton != null) {
+            discoverButton.setOnClickListener(v -> {
+                triedSavedIpThisCycle = false;
+                reconnectFailureCount = 0;
+                startAutoDiscovery(true);
+            });
+        }
+
+        if (wantConnected && lastIp != null && reconnectFailureCount <= 1) {
+            setConnectionStatusUI("Reconnecting to " + lastIp + "...", "Hold tight — restoring link", true);
+        } else if (isDiscovering) {
+            setConnectionStatusUI("Searching for Tight Lines PC...", "Auto-connecting on the same Wi-Fi or Hotspot", true);
+        } else {
+            startAutoDiscovery(false);
+        }
+    }
+
+    private void setConnectionStatusUI(String status, String subtext, boolean busy) {
+        if (statusText != null) statusText.setText(status);
+        if (connectionSubtext != null && subtext != null) connectionSubtext.setText(subtext);
+        if (connectingSpinner != null) {
+            connectingSpinner.setVisibility(busy ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    private String getSavedIp() {
+        return getSharedPreferences("controller_prefs", MODE_PRIVATE).getString(PREF_LAST_IP, null);
+    }
+
+    private void saveLastIp(String ip) {
+        if (ip == null || ip.isEmpty()) return;
+        getSharedPreferences("controller_prefs", MODE_PRIVATE)
+                .edit()
+                .putString(PREF_LAST_IP, ip)
+                .apply();
+    }
+
+    private String getSavedPlayerName() {
+        String saved = getSharedPreferences("controller_prefs", MODE_PRIVATE).getString(PREF_PLAYER_NAME, "");
+        return saved == null ? "" : saved.trim();
+    }
+
+    private void savePlayerName(String name) {
+        String clean = name == null ? "" : name.trim();
+        if (clean.length() > MAX_PLAYER_NAME_LENGTH) {
+            clean = clean.substring(0, MAX_PLAYER_NAME_LENGTH);
+        }
+        getSharedPreferences("controller_prefs", MODE_PRIVATE)
+                .edit()
+                .putString(PREF_PLAYER_NAME, clean)
+                .apply();
+    }
+
+    private String getCurrentScreenName() {
+        if (currentState == null) return "connection";
+        switch (currentState) {
+            case OVERWORLD: return "overworld";
+            case CASTING: return "casting";
+            case REELING: return "reeling";
+            case KNOTTING: return "knotting";
+            case MENU: return "menu";
+            case CONNECTION:
+            default:
+                return "connection";
+        }
+    }
+
+    private void sendScreenState() {
+        if (!isConnected) return;
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("type", "screen_state");
+            msg.put("screen", getCurrentScreenName());
+            msg.put("active_menu", activeMenu);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessage(msg);
+    }
+
+    private void updatePlayerIdentityBadge() {
+        TextView badge = findViewById(R.id.playerIdentityBadge);
+        if (badge == null) return;
+        String name = assignedPlayerName == null ? "" : assignedPlayerName.trim();
+        if ("left".equals(assignedScreenSide)) {
+            badge.setVisibility(View.VISIBLE);
+            badge.setText(name.isEmpty() ? "◀ LEFT SCREEN" : "◀ LEFT SCREEN  •  " + name);
+            badge.setTextColor(Color.parseColor("#7CE8FF"));
+        } else if ("right".equals(assignedScreenSide)) {
+            badge.setVisibility(View.VISIBLE);
+            badge.setText(name.isEmpty() ? "RIGHT SCREEN ▶" : name + "  •  RIGHT SCREEN ▶");
+            badge.setTextColor(Color.parseColor("#FFB28A"));
+        } else {
+            badge.setVisibility(View.GONE);
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (currentState == AppState.KNOTTING) return true;
+        if (gestureDetector != null) gestureDetector.onTouchEvent(event);
+        return true;
+    }
+
+    private String getOrCreateDeviceId() {
+        SharedPreferences prefs = getSharedPreferences("controller_prefs", MODE_PRIVATE);
+        String existingId = prefs.getString("device_id", null);
+        if (existingId != null) return existingId;
+
+        String newId = UUID.randomUUID().toString();
+        prefs.edit().putString("device_id", newId).apply();
+        return newId;
+    }
+
+    private void connectToServer(String ip) {
+        if (webSocket != null) {
+            webSocket.close(1000, "Reconnecting");
+            webSocket = null;
+        }
+        isConnected = false;
+        lastIp = ip;
+        wantConnected = true;
+        handler.removeCallbacks(reconnectRunnable);
+        handler.removeCallbacks(autoDiscoverRunnable);
+        final int attempt = ++connectionAttempt;
+
+        serverUrl = "ws://" + ip + ":" + SERVER_PORT;
+        Request request = new Request.Builder().url(serverUrl).build();
+
+        runOnUiThread(() -> setConnectionStatusUI(
+                "Connecting to " + ip + "...",
+                "Handshaking with Tight Lines PC",
+                true
+        ));
+
+        webSocket = client.newWebSocket(request, new WebSocketListener() {
+            @Override
+            public void onOpen(WebSocket ws, Response response) {
+                if (attempt != connectionAttempt) return;
+                isConnected = true;
+                reconnectFailureCount = 0;
+                triedSavedIpThisCycle = false;
+                saveLastIp(ip);
+                handler.removeCallbacks(autoDiscoverRunnable);
+                handler.removeCallbacks(reconnectRunnable);
+
+                JSONObject msg = new JSONObject();
+                try {
+                    msg.put("type", "connected");
+                    msg.put("device_id", deviceId);
+                    msg.put("screen", "overworld");
+                    String savedName = getSavedPlayerName();
+                    if (!savedName.isEmpty()) {
+                        msg.put("player_name", savedName);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                sendMessage(msg);
+                switchToState(AppState.OVERWORLD);
+            }
+
+            @Override
+            public void onMessage(WebSocket ws, ByteString bytes) {
+                onMessage(ws, bytes.utf8());
+            }
+
+            @Override
+            public void onMessage(WebSocket ws, String text) {
+                if (attempt != connectionAttempt) return;
+                try {
+                    JSONObject json = new JSONObject(text);
+
+                    if ("vibrate".equals(json.optString("type"))) {
+                        String reason = json.optString("reason");
+                        if ("bite".equals(reason)) {
+                            vibrateOnce(300);
+                        } else if ("line_snapped".equals(reason)) {
+                            vibratePattern(new long[]{0, 70, 45, 200});
+                        } else {
+                            vibratePattern(new long[]{0, 120, 80, 120});
+                        }
+                    }
+
+                    if ("player_info".equals(json.optString("type"))) {
+                        assignedPlayerName = json.optString("player_name", "").trim();
+                        assignedScreenSide = json.optString("screen_side", "").trim().toLowerCase();
+                        runOnUiThread(MainActivity.this::updatePlayerIdentityBadge);
+                    }
+
+                    if ("telemetry".equals(json.optString("type"))) {
+                        final float tension = (float) json.optDouble("tension", 0.0);
+                        final boolean surging = json.optBoolean("surging", false);
+                        runOnUiThread(() -> updateReelingTelemetryUI(tension, surging));
+                    }
+
+                    if ("config".equals(json.optString("type")) || json.has("sensitivity") || json.has("swing_threshold") || json.has("tilt_filter_alpha")) {
+                        if (json.has("sensitivity")) {
+                            applySensitivity((float) json.getDouble("sensitivity"));
+                        }
+                        if (json.has("swing_threshold")) {
+                            swingThreshold = (float) json.getDouble("swing_threshold");
+                        }
+                        if (json.has("tilt_filter_alpha")) {
+                            tiltFilterAlpha = (float) json.getDouble("tilt_filter_alpha");
+                        }
+                    }
+
+                    if (json.has("game_state")) {
+                        String stateStr = json.getString("game_state");
+                        switch (stateStr) {
+                            case "overworld":
+                                underlyingGameState = AppState.OVERWORLD;
+                                break;
+                            case "casting":
+                                underlyingGameState = AppState.CASTING;
+                                break;
+                            case "reeling":
+                                underlyingGameState = AppState.REELING;
+                                activeMenu = "none";
+                                break;
+                            case "knotting":
+                                underlyingGameState = AppState.KNOTTING;
+                                activeMenu = "none";
+                                break;
+                        }
+                        if (underlyingGameState == AppState.REELING
+                                || underlyingGameState == AppState.KNOTTING
+                                || "none".equals(activeMenu)) {
+                            switchToState(underlyingGameState);
+                        }
+                    }
+
+                    if (json.has("active_menu")) {
+                        activeMenu = json.optString("active_menu", "none");
+                        if ("none".equals(activeMenu)) {
+                            switchToState(underlyingGameState);
+                        } else if (currentState != AppState.MENU) {
+                            switchToState(AppState.MENU);
+                        } else {
+                            runOnUiThread(MainActivity.this::refreshMenuUI);
+                            sendScreenState();
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(WebSocket ws, Throwable t, Response response) {
+                if (attempt != connectionAttempt) return;
+                handleConnectionLost();
+            }
+
+            @Override
+            public void onClosed(WebSocket ws, int code, String reason) {
+                if (attempt != connectionAttempt) return;
+                handleConnectionLost();
+            }
+        });
+    }
+
+    private void handleConnectionLost() {
+        isConnected = false;
+        activeMenu = "none";
+        assignedScreenSide = "";
+        reconnectFailureCount++;
+        switchToState(AppState.CONNECTION);
+        if (wantConnected && lastIp != null && reconnectFailureCount <= 1) {
+            scheduleReconnect();
+        } else {
+            wantConnected = false;
+            runOnUiThread(() -> {
+                if (currentState == AppState.CONNECTION && !isConnected) {
+                    startAutoDiscovery(false);
+                }
+            });
+        }
+    }
+
     private List<InetAddress> getBroadcastAddresses() {
         List<InetAddress> addresses = new ArrayList<>();
-
         try {
-            WifiManager wifiManager =
-                    (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             DhcpInfo dhcp = wifiManager.getDhcpInfo();
-
             if (dhcp != null && dhcp.ipAddress != 0 && dhcp.netmask != 0) {
-                // Standard bitwise trick: (ip AND netmask) gives the network
-                // address, then OR-ing with the INVERSE of the netmask fills
-                // in the "host" bits with 1s, producing the broadcast address.
                 int broadcastInt = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
-
-                // Android stores these ints in little-endian byte order,
-                // opposite of standard network byte order, so we extract
-                // each byte manually with bit-shifting rather than using
-                // a direct int-to-bytes conversion.
                 byte[] quads = new byte[4];
                 for (int k = 0; k < 4; k++) {
                     quads[k] = (byte) ((broadcastInt >> (k * 8)) & 0xFF);
@@ -308,34 +826,33 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 addresses.add(InetAddress.getByAddress(quads));
             }
         } catch (Exception e) {
-            // If anything goes wrong computing the specific address, we
-            // still have the generic fallback added below.
             e.printStackTrace();
         }
 
-        // Always include the generic broadcast address too, as a fallback
-        // — harmless to try both, and covers networks/devices where the
-        // specific address computation above doesn't apply cleanly.
         try {
             addresses.add(InetAddress.getByName("255.255.255.255"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return addresses;
     }
 
-    // Sends a UDP broadcast onto the local network asking "is there a game
-    // server here?" and listens briefly for a reply containing the PC's IP.
-    // This works for BOTH connectivity modes (PC-hosted hotspot or shared
-    // LAN) since in either case, phone and PC share the same local network
-    // segment, and UDP broadcasts reach every device on that segment.
-    //
-    // This must run on a background thread — Android does not allow network
-    // operations (even simple ones like this) on the main/UI thread, since
-    // they could block the app from responding and freeze the interface.
-    private void performDiscovery() {
-        runOnUiThread(() -> statusText.setText("Searching for PC..."));
+    private void startAutoDiscovery(boolean userInitiated) {
+        if (isConnected) return;
+        handler.removeCallbacks(autoDiscoverRunnable);
+        if (isDiscovering) return;
+        performDiscovery(userInitiated);
+    }
+
+    private void performDiscovery(boolean userInitiated) {
+        if (isDiscovering || isConnected) return;
+        isDiscovering = true;
+
+        runOnUiThread(() -> setConnectionStatusUI(
+                "Searching for Tight Lines PC...",
+                "Auto-connecting on the same Wi-Fi or Hotspot",
+                true
+        ));
 
         new Thread(() -> {
             try (DatagramSocket socket = new DatagramSocket()) {
@@ -343,115 +860,139 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 socket.setSoTimeout(DISCOVERY_TIMEOUT_MS);
 
                 byte[] sendData = DISCOVERY_MESSAGE.getBytes();
-
-                // Send to every candidate broadcast address (the computed
-                // subnet-specific one AND the generic 255.255.255.255) —
-                // only one needs to actually reach the PC.
-                // FIX: each send is wrapped individually. Before, if ONE
-                // address failed (255.255.255.255 often throws on some
-                // devices), the whole discovery aborted even though the
-                // other broadcast had already been sent successfully.
                 boolean anySent = false;
                 IOException lastSendError = null;
+
                 for (InetAddress addr : getBroadcastAddresses()) {
                     try {
-                        DatagramPacket sendPacket = new DatagramPacket(
-                                sendData, sendData.length, addr, DISCOVERY_PORT
-                        );
+                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, addr, DISCOVERY_PORT);
                         socket.send(sendPacket);
                         anySent = true;
                     } catch (IOException sendError) {
                         lastSendError = sendError;
                     }
                 }
-                if (!anySent && lastSendError != null) {
-                    throw lastSendError;
-                }
+                if (!anySent && lastSendError != null) throw lastSendError;
 
-                // Wait for a reply. ConnectionManager.gd sends back a plain
-                // text string like "192.168.137.1" when it hears our request.
                 byte[] receiveBuffer = new byte[256];
                 DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-                socket.receive(receivePacket); // blocks until a reply arrives, or times out
+                socket.receive(receivePacket);
 
-                // FIX: use the reply packet's SOURCE address as the PC's IP.
-                // That is, by definition, an address the phone just
-                // successfully received traffic from, so it is far more
-                // reliable than trusting the PC's own guess in the text.
-                // The text payload is only used as a fallback.
                 String discoveredIp = receivePacket.getAddress().getHostAddress();
                 if (discoveredIp == null || discoveredIp.isEmpty()) {
-                    discoveredIp = new String(
-                            receivePacket.getData(), 0, receivePacket.getLength()
-                    ).trim();
+                    discoveredIp = new String(receivePacket.getData(), 0, receivePacket.getLength()).trim();
                 }
                 final String foundIp = discoveredIp;
+                isDiscovering = false;
 
                 runOnUiThread(() -> {
-                    serverIpInput.setText(foundIp);
-                    statusText.setText("Found PC at " + foundIp);
+                    if (serverIpInput != null) serverIpInput.setText(foundIp);
+                    setConnectionStatusUI("Found PC at " + foundIp, "Connecting automatically...", true);
                     connectToServer(foundIp);
                 });
 
             } catch (SocketTimeoutException e) {
-                runOnUiThread(() -> {
-                    statusText.setText("No PC found — try entering the IP manually");
-                    Toast.makeText(this, "Discovery timed out", Toast.LENGTH_SHORT).show();
-                });
+                isDiscovering = false;
+                runOnUiThread(() -> onDiscoveryMissed(userInitiated, "Make sure Tight Lines is running on your PC"));
             } catch (IOException e) {
-                runOnUiThread(() -> statusText.setText("Discovery error: " + e.getMessage()));
+                isDiscovering = false;
+                runOnUiThread(() -> onDiscoveryMissed(userInitiated, "Check Wi-Fi or Hotspot connection"));
             }
         }).start();
     }
 
-    private void sendMessage(JSONObject json) {
-        if (webSocket != null) {
-            webSocket.send(json.toString());
+    private void onDiscoveryMissed(boolean userInitiated, String hint) {
+        if (isConnected || currentState != AppState.CONNECTION) return;
+
+        String savedIp = getSavedIp();
+        if (!triedSavedIpThisCycle && savedIp != null && !savedIp.isEmpty()) {
+            triedSavedIpThisCycle = true;
+            setConnectionStatusUI("Trying last PC (" + savedIp + ")...", hint, true);
+            connectToServer(savedIp);
+            return;
+        }
+
+        triedSavedIpThisCycle = false;
+        setConnectionStatusUI("Searching for Tight Lines PC...", hint + " • Retrying automatically", true);
+        if (userInitiated) {
+            Toast.makeText(this, "No PC found yet — still scanning", Toast.LENGTH_SHORT).show();
+        }
+        handler.removeCallbacks(autoDiscoverRunnable);
+        handler.postDelayed(autoDiscoverRunnable, AUTO_DISCOVER_INTERVAL_MS);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void vibrateOnce(long ms) {
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (v == null || !v.hasVibrator()) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            v.vibrate(ms);
         }
     }
 
-    // Returns a simple human-readable string describing connection status.
+    @SuppressWarnings("deprecation")
+    private void vibratePattern(long[] pattern) {
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (v == null || !v.hasVibrator()) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createWaveform(pattern, -1));
+        } else {
+            v.vibrate(pattern, -1);
+        }
+    }
+
+    private void scheduleReconnect() {
+        if (!wantConnected || lastIp == null) return;
+        handler.removeCallbacks(reconnectRunnable);
+        handler.postDelayed(reconnectRunnable, RECONNECT_DELAY_MS);
+    }
+
+    private void sendMessage(JSONObject json) {
+        if (webSocket != null) webSocket.send(json.toString());
+    }
+
+    private void updateReelingTelemetryUI(float tension, boolean surging) {
+        if (currentState != AppState.REELING) return;
+        ProgressBar bar = findViewById(R.id.reelingTensionBar);
+        TextView badge = findViewById(R.id.reelingBadge);
+        float clamped = Math.max(0.0f, Math.min(1.0f, tension));
+        if (bar != null) {
+            bar.setProgress(Math.round(clamped * 100f));
+            int tint = (clamped >= 0.80f || surging) ? Color.parseColor("#FF4B3E")
+                    : (clamped >= 0.55f ? Color.parseColor("#F4C95D") : Color.parseColor("#48CAE4"));
+            bar.setProgressTintList(ColorStateList.valueOf(tint));
+        }
+        if (badge != null) {
+            if (surging || clamped >= 0.85f) {
+                badge.setText("SURGE! SPIN CCW TO RELEASE");
+                badge.setTextColor(Color.parseColor("#FF6B6B"));
+            } else if (clamped >= 0.60f) {
+                badge.setText("TENSION HIGH — CAREFUL!");
+                badge.setTextColor(Color.parseColor("#FFD166"));
+            } else {
+                badge.setText("FISH ON! REEL IT IN");
+                badge.setTextColor(Color.parseColor("#F4C95D"));
+            }
+        }
+    }
+
     public String getConnectionStatus() {
         return isConnected ? "Connected" : "Not connected";
     }
 
-    // Returns a simple human-readable string describing the last known ping.
-    // See the NOTE at the bottom of this file — latencyMs is only populated
-    // once an actual ping/pong round trip is implemented.
-    public String getPingStatus() {
-        if (latencyMs < 0) {
-            return "Ping: unknown";
-        } else {
-            return "Ping: " + latencyMs + "ms";
-        }
-    }
-
-    // ------------------------------------------------------------------------
-    // TOUCH INPUT: tap and swipe, handled via GestureDetector callbacks
-    // ------------------------------------------------------------------------
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        // Required override — must return true for other gesture callbacks
-        // (like onFling) to actually fire.
         @Override
         public boolean onDown(MotionEvent e) {
             return true;
         }
 
-        // Fires on a quick, precise press-and-release: a TAP.
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            // Normalize the tap position to a 0.0–1.0 range based on screen
-            // size, so the PC doesn't need to know this phone's specific
-            // screen resolution to make sense of the coordinates.
-            float normalizedX = e.getX() / getResources().getDisplayMetrics().widthPixels;
-            float normalizedY = e.getY() / getResources().getDisplayMetrics().heightPixels;
-
             JSONObject msg = new JSONObject();
             try {
-                msg.put("type", "tap");
-                msg.put("x", normalizedX);
-                msg.put("y", normalizedY);
+                msg.put("type", "cancel");
             } catch (JSONException ex) {
                 ex.printStackTrace();
             }
@@ -459,9 +1000,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             return true;
         }
 
-        // Fires when a finger drags across the screen and lifts off with
-        // some speed: a SWIPE. (A slow drag that just stops doesn't count
-        // as a "fling" — that's intentional, it filters out accidental drags.)
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             if (e1 == null) return false;
@@ -469,14 +1007,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float dx = e2.getX() - e1.getX();
             float dy = e2.getY() - e1.getY();
 
-            // Figure out the dominant direction by comparing how far the
-            // swipe moved horizontally vs vertically.
-            String direction;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                direction = (dx > 0) ? "right" : "left";
-            } else {
-                direction = (dy > 0) ? "down" : "up";
-            }
+            String direction = (Math.abs(dx) > Math.abs(dy)) ? ((dx > 0) ? "right" : "left") : ((dy > 0) ? "down" : "up");
 
             JSONObject msg = new JSONObject();
             try {
@@ -492,32 +1023,50 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    // ------------------------------------------------------------------------
-    // GYROSCOPE INPUT: swing detection
-    // ------------------------------------------------------------------------
-    // Unlike tap/swipe (single discrete events from Android's gesture
-    // system), the gyroscope streams continuous data many times per second.
-    // We watch that stream ourselves and decide when it looks like an
-    // intentional "swing" happened.
+    public void applySensitivity(float sens) {
+        float clamped = Math.max(0.0f, Math.min(1.0f, sens));
+        // High sensitivity (1.0) -> swingThreshold 12.0f, tiltFilterAlpha 0.70f (more responsive)
+        // Low sensitivity (0.0) -> swingThreshold 16.0f, tiltFilterAlpha 0.95f (heavy smoothing, harder swing)
+        swingThreshold = 16.0f - clamped * (16.0f - 12.0f);
+        tiltFilterAlpha = 0.95f - clamped * (0.95f - 0.70f);
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() != Sensor.TYPE_GYROSCOPE) return;
+        int sensorType = event.sensor.getType();
+        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
+            handleAccelerometer(event);
+            return;
+        }
+        if (sensorType != Sensor.TYPE_GYROSCOPE) return;
+        if (currentState == AppState.KNOTTING) return;
 
-        // Combine rotation speed on all 3 axes into one overall "how fast
-        // is this phone rotating right now" number, using the standard
-        // 3D magnitude formula: sqrt(x² + y² + z²).
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
         double magnitude = Math.sqrt(x * x + y * y + z * z);
 
-        if (magnitude < SWING_THRESHOLD) return; // too gentle — ignore
-
         long now = System.currentTimeMillis();
-        if (now - lastSwingTimeMs < SWING_COOLDOWN_MS) return; // still cooling down
 
-        lastSwingTimeMs = now;
+        if (swingWindowOpen) {
+            if (magnitude > swingPeak) swingPeak = magnitude;
+            if (now - swingWindowStartMs >= SWING_PEAK_WINDOW_MS) {
+                swingWindowOpen = false;
+                lastSwingTimeMs = now;
+                sendSwing(swingPeak);
+            }
+            return;
+        }
 
+        if (magnitude < swingThreshold) return;
+        if (now - lastSwingTimeMs < SWING_COOLDOWN_MS) return;
+
+        swingWindowOpen = true;
+        swingWindowStartMs = now;
+        swingPeak = magnitude;
+    }
+
+    private void sendSwing(double magnitude) {
         JSONObject msg = new JSONObject();
         try {
             msg.put("type", "swing");
@@ -528,17 +1077,65 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sendMessage(msg);
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Not needed for this use case.
+    @SuppressWarnings("deprecation")
+    private void handleAccelerometer(SensorEvent event) {
+        long nowMs = System.currentTimeMillis();
+        boolean swingBusy = swingWindowOpen || (nowMs - lastSwingTimeMs < TILT_HOLD_AFTER_SWING_MS);
+
+        if (!gravityInitialized) {
+            System.arraycopy(event.values, 0, gravity, 0, 3);
+            gravityInitialized = true;
+        } else if (!swingBusy) {
+            for (int i = 0; i < 3; i++) {
+                gravity[i] = tiltFilterAlpha * gravity[i] + (1f - tiltFilterAlpha) * event.values[i];
+            }
+        }
+
+        long now = System.currentTimeMillis();
+        if (!isConnected || now - lastTiltSentMs < TILT_SEND_INTERVAL_MS) return;
+        lastTiltSentMs = now;
+
+        float screenRight;
+        switch (getWindowManager().getDefaultDisplay().getRotation()) {
+            case Surface.ROTATION_90:
+                screenRight = -gravity[1];
+                break;
+            case Surface.ROTATION_180:
+                screenRight = -gravity[0];
+                break;
+            case Surface.ROTATION_270:
+                screenRight = gravity[1];
+                break;
+            default:
+                screenRight = gravity[0];
+                break;
+        }
+        if (currentState == AppState.REELING || currentState == AppState.KNOTTING) return;
+
+        float maxSin = (float) Math.sin(Math.toRadians(TILT_FULL_ANGLE_DEG));
+        double ratio = -screenRight / (SensorManager.GRAVITY_EARTH * maxSin);
+        double value = Math.max(-1.0, Math.min(1.0, ratio));
+
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("type", "tilt");
+            msg.put("value", value);
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        sendMessage(msg);
     }
 
-    // --- Lifecycle ---
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
     @Override
     protected void onResume() {
         super.onResume();
-        if (gyroSensor != null) {
-            sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
+        if (gyroSensor != null) sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
+        if (accelSensor != null) sensorManager.registerListener(this, accelSensor, SensorManager.SENSOR_DELAY_GAME);
+        if (currentState == AppState.CONNECTION && !isConnected) {
+            startAutoDiscovery(false);
         }
     }
 
@@ -546,27 +1143,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        swingWindowOpen = false;
+        handler.removeCallbacks(autoDiscoverRunnable);
+        handler.removeCallbacks(reconnectRunnable);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (webSocket != null) {
-            webSocket.close(1000, "App closed");
-        }
+        wantConnected = false;
+        handler.removeCallbacks(autoDiscoverRunnable);
+        handler.removeCallbacks(reconnectRunnable);
+        if (webSocket != null) webSocket.close(1000, "App closed");
     }
-
-    // ============================================================================
-    // NOTE ON PING MEASUREMENT
-    // ============================================================================
-    // latencyMs is currently never set to a real value. To measure actual
-    // round-trip ping:
-    //   1. Record System.currentTimeMillis() right before sending a small
-    //      {"type": "ping"} message.
-    //   2. Have the PC-side ConnectionManager.gd echo back a matching
-    //      {"type": "pong"} message immediately upon receiving "ping".
-    //   3. When that "pong" arrives (in a message-received callback), take
-    //      a new System.currentTimeMillis() and subtract the timestamp from
-    //      step 1 — the result is your round-trip latencyMs.
-    // ============================================================================
 }

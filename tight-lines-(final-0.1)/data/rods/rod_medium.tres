@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="RodData" format=3 uid="uid://b58gqxwekcp74"]
+
+[ext_resource type="Script" uid="uid://dgqkh62vpaosc" path="res://data/item_class_templates/rod_data.gd" id="1_ajxdd"]
+[ext_resource type="Texture2D" uid="uid://b7dxlfulce1yb" path="res://Assets/2D/Rod_Sprites_Standing/Medium_Rod.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_ajxdd")
+icon = ExtResource("2_icon")
+rod_price = 150
+chance_small = 0.5
+chance_medium = 0.5
+chance_large = 0.0
+line_strength = 10.0
+reel_speed = 1.0
+max_cast_distance = 22.0
+control = 1.0
+id = "rod_medium"
+display_name = "Medium Rod"

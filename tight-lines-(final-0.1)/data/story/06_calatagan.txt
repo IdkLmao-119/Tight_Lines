@@ -1,0 +1,50 @@
+# ============================================================
+# Area 6 - Batangas Mangrove Forest (Calatagan)
+# ============================================================
+
+=== mangrove_arrival | scene: overworld_mangrove | requires: unlock_calatagan
+@john
+Okay. This one feels different from the rest.
+Roots in the water, branches overhead. It's like fishing inside a maze.
+
+I can't see the bottom at all. Anything could be in there.
+!open_ui almanac
+Cavite's done. This is the next chapter.
+
+Quiet water, tight spaces. I'll have to be careful with my casts.
+!tutorial Walk to the water's edge. Press [E] / A to cast.
+!objective Catch every fish in the Batangas mangrove forest.
+
+
+=== mangrove_first_bite | side
+@john:shocked
+It's heading for the roots! Don't let it tangle me!
+
+
+=== mangrove_first_catch | side
+@john:happy
+Got it out! Let's see what you are.
+First Batangas fish. Lolo, we're off to a good start.
+
+
+=== mangrove_first_fail | side
+@john:sad
+It dove into the roots! Gone. Okay, I'll aim better.
+
+
+=== mangrove_complete | requires: quest_roots
+!banner Mangrove Forest Complete
+@john:happy
+That's the last one.
+Every fish here hides in the roots. I had to learn where to cast to get them out.
+
+A few days ago I wouldn't have found a single one.
+Hm. That's the open sea.
+
+Is that an island?
+!open_ui map
+Fortune Island. I've seen it on posts before. Old ruins, clear water, cliffs.
+
+I never thought I'd actually go.
+Okay, Lolo. Time to leave the mangroves and head out to sea.
+!objective Travel to Fortune Island.

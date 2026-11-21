@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen_reeling"
+    android:fitsSystemWindows="true"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/knottingBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_pill_badge"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="8dp"
+        android:text="LINE SNAPPED! TIE A KNOT"
+        android:textColor="@color/coral_primary"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/playerIdentityBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/knottingBadge"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/bg_pill_badge"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="5dp"
+        android:text=""
+        android:textColor="@color/text_light"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/knotNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/playerIdentityBadge"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="Figure-Eight Knot"
+        android:textColor="@color/gold_highlight"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/knotProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="14dp"
+        android:layout_below="@id/knotNameText"
+        android:layout_marginHorizontal="28dp"
+        android:layout_marginTop="6dp"
+        android:max="100"
+        android:progress="0"
+        android:progressTint="@color/teal_accent" />
+
+    <LinearLayout
+        android:id="@+id/knotBottomCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_wood_card"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="12dp">
+
+        <TextView
+            android:id="@+id/knotHintTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Trace from START to END"
+            android:textColor="@color/gold_highlight"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/knotHintSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:text="Follow the arrows in one smooth stroke"
+            android:textColor="@color/text_muted"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <com.example.myapplication.KnotTraceView
+        android:id="@+id/knotTraceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/knotBottomCard"
+        android:layout_below="@id/knotProgressBar"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginVertical="12dp" />
+
+</RelativeLayout>

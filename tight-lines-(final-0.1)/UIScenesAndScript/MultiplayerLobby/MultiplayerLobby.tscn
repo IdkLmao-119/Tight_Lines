@@ -1,0 +1,782 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://UIScenesAndScript/MultiplayerLobby/scene_script_multiplayer_lobby.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://db1up6ssl3kie" path="res://UIScenesAndScript/MainMenu/background_layer.gd" id="2_bg_layer"]
+[ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="3_water_bg"]
+[ext_resource type="Texture2D" uid="uid://btduj7rj47w40" path="res://Assets/2D/Bubble.png" id="4_bubble"]
+[ext_resource type="Texture2D" uid="uid://5b3gsqgca5tc" path="res://Assets/2D/SignBoard.png" id="5_signboard"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="6_theme"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bg"]
+texture = ExtResource("3_water_bg")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_signboard"]
+texture = ExtResource("5_signboard")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_signboard_hover"]
+texture = ExtResource("5_signboard")
+modulate_color = Color(1.12, 1.08, 0.96, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_signboard_pressed"]
+texture = ExtResource("5_signboard")
+modulate_color = Color(0.88, 0.82, 0.72, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_signboard_disabled"]
+texture = ExtResource("5_signboard")
+modulate_color = Color(0.55, 0.55, 0.55, 0.72)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_signboard_focus"]
+draw_center = false
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.88, 0.45, 0.95)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wood_panel"]
+bg_color = Color(0.32, 0.2, 0.1, 0.9)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.2, 0.12, 0.06, 0.95)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_status_box"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.18, 0.11, 0.06, 0.78)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.42, 0.28, 0.16, 0.85)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pill"]
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 14.0
+content_margin_bottom = 8.0
+bg_color = Color(0.14, 0.24, 0.34, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.82, 0.94, 0.85)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_left_badge"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.16, 0.52, 0.64, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.68, 0.92, 1, 0.9)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_right_badge"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.76, 0.38, 0.26, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.82, 0.68, 0.9)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_input_normal"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.18, 0.11, 0.06, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.62, 0.44, 0.28, 0.9)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_input_focus"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.22, 0.14, 0.08, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.96, 0.82, 0.38, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_preset_pressed"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.18, 0.58, 0.54, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.98, 0.86, 0.45, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="MultiplayerLobby" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("6_theme")
+script = ExtResource("1_script")
+
+[node name="BackgroundPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_bg")
+
+[node name="BackgroundLayer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_bg_layer")
+vertical_texture = ExtResource("4_bubble")
+horizontal_spawn_interval = 10.0
+vertical_spawn_interval = 2.0
+vertical_scale = 2.0
+horizontal_min_speed = 50.0
+horizontal_max_speed = 80.0
+vertical_min_speed = 150.0
+vertical_max_speed = 250.0
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 18
+
+[node name="RootVBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TopBar" type="HBoxContainer" parent="MarginContainer/RootVBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="BackButton" type="Button" parent="MarginContainer/RootVBox/TopBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_signboard_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_signboard_hover")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_signboard_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_signboard_focus")
+text = "Back"
+
+[node name="TitleBox" type="VBoxContainer" parent="MarginContainer/RootVBox/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/RootVBox/TopBar/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.07, 0.04, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 34
+text = "Multiplayer Lobby"
+horizontal_alignment = 1
+
+[node name="ServerInfoLabel" type="Label" parent="MarginContainer/RootVBox/TopBar/TitleBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.84, 0.94, 1, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.08, 0.12, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 15
+text = "PC Server: ws://192.168.137.1:9080"
+horizontal_alignment = 1
+
+[node name="ConnectionCountPanel" type="PanelContainer" parent="MarginContainer/RootVBox/TopBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 46)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_pill")
+
+[node name="ConnectionCountLabel" type="Label" parent="MarginContainer/RootVBox/TopBar/ConnectionCountPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.96, 0.9, 1)
+theme_override_font_sizes/font_size = 18
+text = "0 / 2 Connected"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayersRow" type="HBoxContainer" parent="MarginContainer/RootVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 14
+
+[node name="LeftPlayerCard" type="PanelContainer" parent="MarginContainer/RootVBox/PlayersRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_wood_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SideBadge" type="PanelContainer" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_left_badge")
+
+[node name="SideLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox/SideBadge"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.06, 0.16, 0.22, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 20
+text = "<  LEFT SCREEN"
+horizontal_alignment = 1
+
+[node name="LeftSlotTagLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.88, 0.72, 1)
+theme_override_font_sizes/font_size = 16
+text = "Controller Slot #1"
+horizontal_alignment = 1
+
+[node name="StatusBox" type="PanelContainer" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_status_box")
+
+[node name="StatusVBox" type="VBoxContainer" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox/StatusBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="LeftConnStatusLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox/StatusBox/StatusVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.72, 0.45, 1)
+theme_override_font_sizes/font_size = 20
+text = "Waiting for Phone..."
+horizontal_alignment = 1
+
+[node name="LeftPhoneScreenLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox/StatusBox/StatusVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.9, 0.98, 1)
+theme_override_font_sizes/font_size = 16
+text = "Phone Screen: Disconnected"
+horizontal_alignment = 1
+
+[node name="NameSection" type="VBoxContainer" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="NamePromptLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox/NameSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.94, 0.8, 1)
+theme_override_font_sizes/font_size = 15
+text = "Multiplayer Name"
+
+[node name="LeftNameInput" type="LineEdit" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox/NameSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_input_normal")
+theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
+placeholder_text = "Player 1"
+max_length = 18
+
+[node name="Spacer" type="Control" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ActionRow" type="HBoxContainer" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LeftPingButton" type="Button" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox/ActionRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Ping Phone"
+
+[node name="LeftActivityLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/LeftPlayerCard/MarginContainer/VBox/ActionRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.84, 0.82, 0.78, 1)
+theme_override_font_sizes/font_size = 14
+text = "Connect phone to test"
+horizontal_alignment = 2
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="CenterColumn" type="VBoxContainer" parent="MarginContainer/RootVBox/PlayersRow"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="VsLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/CenterColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.82, 0.38, 1)
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 32
+text = "VS"
+horizontal_alignment = 1
+
+[node name="SwapSidesButton" type="Button" parent="MarginContainer/RootVBox/PlayersRow/CenterColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(108, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Swap
+Sides"
+
+[node name="RightPlayerCard" type="PanelContainer" parent="MarginContainer/RootVBox/PlayersRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_wood_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SideBadge" type="PanelContainer" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_right_badge")
+
+[node name="SideLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox/SideBadge"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.24, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 20
+text = "RIGHT SCREEN  >"
+horizontal_alignment = 1
+
+[node name="RightSlotTagLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.88, 0.72, 1)
+theme_override_font_sizes/font_size = 16
+text = "Controller Slot #2"
+horizontal_alignment = 1
+
+[node name="StatusBox" type="PanelContainer" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_status_box")
+
+[node name="StatusVBox" type="VBoxContainer" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox/StatusBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="RightConnStatusLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox/StatusBox/StatusVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.72, 0.45, 1)
+theme_override_font_sizes/font_size = 20
+text = "Waiting for Phone..."
+horizontal_alignment = 1
+
+[node name="RightPhoneScreenLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox/StatusBox/StatusVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.9, 0.98, 1)
+theme_override_font_sizes/font_size = 16
+text = "Phone Screen: Disconnected"
+horizontal_alignment = 1
+
+[node name="NameSection" type="VBoxContainer" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="NamePromptLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox/NameSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.94, 0.8, 1)
+theme_override_font_sizes/font_size = 15
+text = "Multiplayer Name"
+
+[node name="RightNameInput" type="LineEdit" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox/NameSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_input_normal")
+theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
+placeholder_text = "Player 2"
+max_length = 18
+
+[node name="Spacer" type="Control" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ActionRow" type="HBoxContainer" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RightPingButton" type="Button" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox/ActionRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Ping Phone"
+
+[node name="RightActivityLabel" type="Label" parent="MarginContainer/RootVBox/PlayersRow/RightPlayerCard/MarginContainer/VBox/ActionRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.84, 0.82, 0.78, 1)
+theme_override_font_sizes/font_size = 14
+text = "Connect phone to test"
+horizontal_alignment = 2
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="DurationPanel" type="PanelContainer" parent="MarginContainer/RootVBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wood_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/RootVBox/DurationPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 10
+
+[node name="DurationRow" type="HBoxContainer" parent="MarginContainer/RootVBox/DurationPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="DurationTitle" type="Label" parent="MarginContainer/RootVBox/DurationPanel/MarginContainer/DurationRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.82, 1)
+theme_override_font_sizes/font_size = 20
+text = "Round Duration:"
+
+[node name="Duration60Button" type="Button" parent="MarginContainer/RootVBox/DurationPanel/MarginContainer/DurationRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(86, 42)
+layout_mode = 2
+toggle_mode = true
+theme_override_font_sizes/font_size = 18
+theme_override_styles/pressed = SubResource("StyleBoxFlat_preset_pressed")
+text = "1 Min"
+
+[node name="Duration120Button" type="Button" parent="MarginContainer/RootVBox/DurationPanel/MarginContainer/DurationRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(86, 42)
+layout_mode = 2
+toggle_mode = true
+button_pressed = true
+theme_override_font_sizes/font_size = 18
+theme_override_styles/pressed = SubResource("StyleBoxFlat_preset_pressed")
+text = "2 Min"
+
+[node name="Duration180Button" type="Button" parent="MarginContainer/RootVBox/DurationPanel/MarginContainer/DurationRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(86, 42)
+layout_mode = 2
+toggle_mode = true
+theme_override_font_sizes/font_size = 18
+theme_override_styles/pressed = SubResource("StyleBoxFlat_preset_pressed")
+text = "3 Min"
+
+[node name="Duration300Button" type="Button" parent="MarginContainer/RootVBox/DurationPanel/MarginContainer/DurationRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(86, 42)
+layout_mode = 2
+toggle_mode = true
+theme_override_font_sizes/font_size = 18
+theme_override_styles/pressed = SubResource("StyleBoxFlat_preset_pressed")
+text = "5 Min"
+
+[node name="DurationSpacer" type="Control" parent="MarginContainer/RootVBox/DurationPanel/MarginContainer/DurationRow"]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="DurationMinusButton" type="Button" parent="MarginContainer/RootVBox/DurationPanel/MarginContainer/DurationRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(68, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "-30s"
+
+[node name="DurationValueLabel" type="Label" parent="MarginContainer/RootVBox/DurationPanel/MarginContainer/DurationRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(92, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.85, 0.42, 1)
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 26
+text = "02:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DurationPlusButton" type="Button" parent="MarginContainer/RootVBox/DurationPanel/MarginContainer/DurationRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(68, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "+30s"
+
+[node name="BottomBar" type="VBoxContainer" parent="MarginContainer/RootVBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ReadinessLabel" type="Label" parent="MarginContainer/RootVBox/BottomBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.82, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.06, 0.04, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 16
+text = "Connect both phones to begin"
+horizontal_alignment = 1
+
+[node name="StartCenter" type="HBoxContainer" parent="MarginContainer/RootVBox/BottomBar"]
+layout_mode = 2
+alignment = 1
+
+[node name="StartMatchButton" type="Button" parent="MarginContainer/RootVBox/BottomBar/StartCenter"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxTexture_signboard")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_signboard_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_signboard_hover")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_signboard_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_signboard_focus")
+text = "Start Fishing!"
+
+[node name="ResultsOverlay" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DimRect" type="ColorRect" parent="ResultsOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.62)
+
+[node name="CenterContainer" type="CenterContainer" parent="ResultsOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="ResultsOverlay/CenterContainer"]
+custom_minimum_size = Vector2(740, 440)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wood_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="ResultsOverlay/CenterContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 26
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 26
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ResultsTitle" type="Label" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.07, 0.04, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 34
+text = "Round Complete!"
+horizontal_alignment = 1
+
+[node name="ResultsWinnerLabel" type="Label" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.85, 0.38, 1)
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 26
+text = "Winner!"
+horizontal_alignment = 1
+
+[node name="SummaryRow" type="HBoxContainer" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 18
+
+[node name="LeftSummary" type="PanelContainer" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox/SummaryRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_status_box")
+
+[node name="VBox" type="VBoxContainer" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox/SummaryRow/LeftSummary"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ResultsLeftTitle" type="Label" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox/SummaryRow/LeftSummary/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.58, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "Player 1"
+horizontal_alignment = 1
+
+[node name="ResultsLeftStats" type="Label" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox/SummaryRow/LeftSummary/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 18
+text = "Catches: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="RightSummary" type="PanelContainer" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox/SummaryRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_status_box")
+
+[node name="VBox" type="VBoxContainer" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox/SummaryRow/RightSummary"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ResultsRightTitle" type="Label" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox/SummaryRow/RightSummary/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.72, 0.56, 1)
+theme_override_font_sizes/font_size = 22
+text = "Player 2"
+horizontal_alignment = 1
+
+[node name="ResultsRightStats" type="Label" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox/SummaryRow/RightSummary/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 18
+text = "Catches: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="ButtonsRow" type="HBoxContainer" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="ResultsCloseButton" type="Button" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox/ButtonsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Back to Lobby"
+
+[node name="ResultsRematchButton" type="Button" parent="ResultsOverlay/CenterContainer/PanelContainer/MarginContainer/VBox/ButtonsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Rematch"

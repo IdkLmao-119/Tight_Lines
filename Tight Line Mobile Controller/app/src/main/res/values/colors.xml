@@ -2,4 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="ocean_deep">#FF062B66</color>
+    <color name="ocean_mid">#FF0E4D92</color>
+    <color name="wood_dark">#FF4E311A</color>
+    <color name="wood_mid">#FF7A4E2D</color>
+    <color name="wood_border">#FF3B2312</color>
+    <color name="parchment">#FFFFF3DC</color>
+    <color name="coral_primary">#FFE07A5F</color>
+    <color name="teal_accent">#FF2A9D8F</color>
+    <color name="gold_highlight">#FFF4C95D</color>
+    <color name="text_light">#FFFFF9EE</color>
+    <color name="text_muted">#FFCFE6FF</color>
+    <color name="text_dark">#FF3B2312</color>
 </resources>

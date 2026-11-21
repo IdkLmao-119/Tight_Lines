@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="RodData" format=3]
+
+[ext_resource type="Script" uid="uid://dgqkh62vpaosc" path="res://data/item_class_templates/rod_data.gd" id="1_1bm4i"]
+[ext_resource type="Texture2D" uid="uid://bl0hnm65tanjx" path="res://Assets/2D/Rod_Sprites_Standing/Medium_Heavy_Rod.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_1bm4i")
+icon = ExtResource("2_icon")
+rod_price = 300
+chance_small = 0.3
+chance_medium = 0.45
+chance_large = 0.25
+line_strength = 14.0
+reel_speed = 1.2
+max_cast_distance = 28.0
+control = 1.25
+id = "rod_medium_heavy"
+display_name = "Medium Heavy Rod"

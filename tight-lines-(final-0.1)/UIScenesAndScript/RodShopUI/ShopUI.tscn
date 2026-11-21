@@ -1,0 +1,144 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://bn3sq8bpubi85" path="res://UIScenesAndScript/RodShopUI/scene_script_shop_ui.gd" id="1_shopui"]
+[ext_resource type="PackedScene" uid="uid://cajdmvamqsccc" path="res://UIScenesAndScript/RodShopUI/RodShop.tscn" id="2_rodshop"]
+[ext_resource type="PackedScene" uid="uid://cagdljje3yryi" path="res://UIScenesAndScript/RodShopUI/BaitShop.tscn" id="3_baitshop"]
+[ext_resource type="PackedScene" uid="uid://c67j2bnervxgj" path="res://UIScenesAndScript/FishBox/inventory_ui.tscn" id="4_fishbox"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="5_theme"]
+
+[node name="ShopUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+script = ExtResource("1_shopui")
+
+[node name="RootVBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="TopBar" type="PanelContainer" parent="RootVBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="RootVBox/TopBar"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 6
+
+[node name="HBoxContainer" type="HBoxContainer" parent="RootVBox/TopBar/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="MoneyLabel" type="Label" parent="RootVBox/TopBar/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.48, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.07, 0.04, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 24
+text = "Money: 0 G"
+vertical_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="RootVBox/TopBar/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.96, 0.95, 0.9, 1)
+theme_override_font_sizes/font_size = 18
+text = "Welcome! Would you like to sell fish or buy gear?"
+horizontal_alignment = 2
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="ContentArea" type="Control" parent="RootVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ChoiceCenter" type="CenterContainer" parent="RootVBox/ContentArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ChoicePanel" type="PanelContainer" parent="RootVBox/ContentArea/ChoiceCenter"]
+custom_minimum_size = Vector2(400, 300)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="RootVBox/ContentArea/ChoiceCenter/ChoicePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RootVBox/ContentArea/ChoiceCenter/ChoicePanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="RootVBox/ContentArea/ChoiceCenter/ChoicePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.07, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 30
+text = "Tackle & Fish Shop"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SellFishButton" type="Button" parent="RootVBox/ContentArea/ChoiceCenter/ChoicePanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 46)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 24
+text = "Sell Fish"
+
+[node name="BuyButton" type="Button" parent="RootVBox/ContentArea/ChoiceCenter/ChoicePanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 46)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 24
+text = "Buy"
+
+[node name="CloseButton" type="Button" parent="RootVBox/ContentArea/ChoiceCenter/ChoicePanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 42)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 22
+text = "Leave"
+
+[node name="RodShop" parent="RootVBox/ContentArea" instance=ExtResource("2_rodshop")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="BaitShop" parent="RootVBox/ContentArea" instance=ExtResource("3_baitshop")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="SellFishUI" parent="RootVBox/ContentArea" instance=ExtResource("4_fishbox")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+sell_mode = true

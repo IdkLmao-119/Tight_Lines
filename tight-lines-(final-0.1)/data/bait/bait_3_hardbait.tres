@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="BaitData" format=3 uid="uid://dcwtnx4epgtir"]
+
+[ext_resource type="Script" uid="uid://h6ubxbaaibcr" path="res://data/item_class_templates/bait_boost.gd" id="1_ya7il"]
+[ext_resource type="Script" uid="uid://bdqslwnxrtks4" path="res://data/item_class_templates/fish_data.gd" id="2_oxr0f"]
+[ext_resource type="Resource" uid="uid://c4sjmrakl18ea" path="res://data/fish/fish_barramundi.tres" id="3_hhj85"]
+[ext_resource type="Texture2D" uid="uid://dreonnrtnn7ej" path="res://Assets/2D/bait_sprites/Hardbait lure-c4e0.png" id="4_adyjf"]
+[ext_resource type="Resource" uid="uid://df8yk6ead683c" path="res://data/fish/fish_ladyfish.tres" id="4_beway"]
+[ext_resource type="Resource" uid="uid://c23jtlvkpo8v2" path="res://data/fish/fish_silverperch.tres" id="5_bajyx"]
+[ext_resource type="Script" uid="uid://bx3sigi1jlqjn" path="res://data/item_class_templates/bait_data.gd" id="5_hhj85"]
+[ext_resource type="Resource" uid="uid://deme8b0f3v6sm" path="res://data/fish/fish_tarpon.tres" id="6_ic2qu"]
+
+[ext_resource type="Resource" uid="uid://d1f1j07f2csqx" path="res://data/fish/fish_juvenile_trevally.tres" id="7_juvenile"]
+[ext_resource type="Resource" uid="uid://bxl2qb0mavthd" path="res://data/fish/fish_juvenile_queenfish.tres" id="8_juvenile"]
+[ext_resource type="Resource" uid="uid://cn7csry751ab8" path="res://data/fish/fish_queenfish.tres" id="9_queenfis"]
+[ext_resource type="Resource" uid="uid://dktprl74ex106" path="res://data/fish/fish_cobia.tres" id="10_cobia"]
+[ext_resource type="Resource" uid="uid://dwkjdo1ytjou6" path="res://data/fish/fish_yellowfin_tuna.tres" id="11_yellowfi"]
+[ext_resource type="Resource" uid="uid://dx274uaslvgy5" path="res://data/fish/fish_malabar_grouper.tres" id="12_malabar_"]
+[ext_resource type="Resource" uid="uid://b6lpqqaujjbex" path="res://data/fish/fish_coral_grouper.tres" id="13_coral_gr"]
+[ext_resource type="Resource" uid="uid://lxtme6ovnaec" path="res://data/fish/fish_amberjack.tres" id="14_amberjac"]
+[ext_resource type="Resource" uid="uid://kl5o4umhdp0f" path="res://data/fish/fish_marlin.tres" id="15_marlin"]
+[ext_resource type="Resource" uid="uid://dhjadm4ynf6dy" path="res://data/fish/fish_juvenile_grouper.tres" id="16_jvgrp"]
+
+[resource]
+script = ExtResource("5_hhj85")
+enables_fish = Array[ExtResource("2_oxr0f")]([ExtResource("3_hhj85"), ExtResource("4_beway"), ExtResource("5_bajyx"), ExtResource("6_ic2qu"), ExtResource("7_juvenile"), ExtResource("8_juvenile"), ExtResource("9_queenfis"), ExtResource("10_cobia"), ExtResource("11_yellowfi"), ExtResource("12_malabar_"), ExtResource("13_coral_gr"), ExtResource("14_amberjac"), ExtResource("15_marlin"), ExtResource("16_jvgrp")])
+unlimited = true
+icon = ExtResource("4_adyjf")
+max_stack = 99
+id = "bait_3"
+display_name = "Hard Bait"

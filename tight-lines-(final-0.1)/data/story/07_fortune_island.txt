@@ -1,0 +1,55 @@
+# ============================================================
+# Area 7 - Fortune Island
+# ============================================================
+
+=== island_arrival | scene: overworld_island | requires: unlock_fortune_island
+@john
+It's so deep out here. The color changes from green to dark blue.
+Rice fields, a pen, a salt farm, the mangroves... and now open sea.
+
+Whoa.
+Those pillars look like they came from another country.
+
+I can see the fish from here. And they're big.
+!open_ui almanac
+Bigger fish, deeper water. I think this is the kind of place Lolo would have chosen.
+
+Okay. Let's see if I'm ready for it.
+!tutorial Walk to the water's edge. Press [E] / A to cast. Deep water fish may need stronger gear from the Store.
+!objective Complete 100% of the Philippine Fish Almanac.
+
+
+=== island_first_bite | side
+!shake 10 0.5
+@john:shocked
+Whoa, whoa! This one's huge!
+
+
+=== island_first_catch | side
+@john:happy
+I got it! My arms are shaking!
+This is the biggest fish I've caught so far.
+
+Lolo, I think I finally understand why you smiled in that photo.
+
+
+=== island_first_fail | side
+@john:sad
+It snapped the line! Okay... that one was way stronger than me.
+
+
+=== island_complete | requires: quest_deep_giants
+!banner Fortune Island Complete
+@john:happy
+That's every fish on this island.
+Look at how far the Almanac has come.
+
+Marikina River had nothing. Now Cavite is finished, and Batangas is finished too.
+Lolo, you never got to fish like this. I'm doing it for both of us.
+
+Huh? Another page unlocked?
+!open_ui map
+There's another spot out there. I don't know where, but I'll find it.
+
+But it can wait. The sea's still right here, and I'm not done with it.
+!objective Travel to the next area when you're ready.

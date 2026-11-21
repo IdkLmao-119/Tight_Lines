@@ -1,0 +1,41 @@
+# ============================================================
+# Area 4 - Noveleta Fishing Pen
+# ============================================================
+
+=== pen_arrival | scene: overworld_fishing_pens | requires: unlock_fish_pens
+@john
+A pen full of fish, right out in the open water.
+They can't even go anywhere. This should be easy.
+
+...Okay, that's the kind of thing that never turns out to be true.
+!open_ui almanac
+Let's find out.
+!tutorial Walk to the water's edge. Press [E] / A to cast.
+!objective Catch every small and medium fish in the Noveleta fishing pen.
+
+
+=== pen_first_bite | side
+@john:shocked
+That was fast. Too fast.
+
+
+=== pen_first_catch | side
+@john:happy
+Got it. Let's see what you are.
+Noveleta, page one.
+
+
+=== pen_first_fail | side
+@john:sad
+It got away. Of course it did.
+
+
+=== pen_complete | requires: quest_fenced_in
+!banner Fishing Pen Complete
+@john
+That's every fish in the pen.
+Fish stuck in a pen, and it still took this long to catch them all.
+
+Salty. And something white is shining way over there.
+That's the salt farm. Let's go.
+!objective Travel to the Noveleta salt farm.

@@ -1,0 +1,9 @@
+.godot/
+*.translation
+export_presets.cfg
+*.tmp
+Godot_v*.exe/
+# Godot Android builds and exports
+**/android/build/
+*.apk
+*.aar

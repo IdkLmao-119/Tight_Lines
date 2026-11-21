@@ -1,0 +1,183 @@
+[gd_scene format=3 uid="uid://c67j2bnervxgj"]
+
+[ext_resource type="Script" uid="uid://ddb7po8ibpai0" path="res://UIScenesAndScript/FishBox/UI_scene_script_inventory_ui.gd" id="1_gf3dx"]
+[ext_resource type="Texture2D" uid="uid://d232l72u3sb3b" path="res://Assets/2D/Inside Cooler.png" id="2_dsksw"]
+[ext_resource type="Script" path="res://UIScenesAndScript/Shared/mobile_cursor_highlight.gd" id="4_cursor"]
+[ext_resource type="Theme" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="5_theme"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back"]
+bg_color = Color(0.8400871, 0.49817115, 0.360044, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_hover"]
+bg_color = Color(0.92, 0.58, 0.42, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_pressed"]
+bg_color = Color(0.72, 0.4, 0.28, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sell_normal"]
+bg_color = Color(0.28, 0.62, 0.34, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sell_hover"]
+bg_color = Color(0.34, 0.72, 0.4, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sell_pressed"]
+bg_color = Color(0.22, 0.5, 0.27, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.45882353)
+shadow_size = 5
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sell_disabled"]
+bg_color = Color(0.28, 0.34, 0.29, 0.6)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 3
+shadow_offset = Vector2(0, 2)
+
+[node name="InventoryUi" type="Control" unique_id=306256089]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+script = ExtResource("1_gf3dx")
+
+[node name="DimOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.58431375)
+
+[node name="CoolerBackground" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_dsksw")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 32
+
+[node name="RootVBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="HeaderBar" type="HBoxContainer" parent="MarginContainer/RootVBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="InfoLabel" type="Label" parent="MarginContainer/RootVBox/HeaderBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.06, 0.04, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 2
+
+[node name="SellAllButton" type="Button" parent="MarginContainer/RootVBox/HeaderBar"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(220, 56)
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0.08, 0.06, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_sell_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_sell_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_sell_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_sell_disabled")
+text = "Sell All"
+
+[node name="BackButton" type="Button" parent="MarginContainer/RootVBox/HeaderBar" unique_id=149723377]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(126, 56)
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0.12, 0.08, 0.05, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_back")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_back_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_back_hover")
+text = "Back"
+
+[node name="FishScroll" type="ScrollContainer" parent="MarginContainer/RootVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+
+[node name="FishGrid" type="GridContainer" parent="MarginContainer/RootVBox/FishScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 6
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+columns = 7
+
+[node name="CursorHighlight" type="Panel" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+script = ExtResource("4_cursor")

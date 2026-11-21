@@ -1,0 +1,530 @@
+[gd_scene format=3 uid="uid://coymma2doce4r"]
+
+[ext_resource type="Script" uid="uid://f34ws4nq7q07" path="res://3DFishingScene/MultiplayerFishingScene/scene_script_3d_fishing_multiplayer.gd" id="1_56q14"]
+[ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="2_532by"]
+[ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="4_tchfx"]
+[ext_resource type="PackedScene" path="res://UIScenesAndScript/Shared/GameHUD.tscn" id="5_hud"]
+[ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="6_a5w1c"]
+[ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="7_o14e8"]
+[ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="8_rl387"]
+[ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="9_7ac3p"]
+[ext_resource type="Theme" uid="uid://cc043mp1yfy3k" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="10_theme"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qfde3"]
+transparency = 1
+albedo_texture = ExtResource("2_532by")
+metallic_specular = 0.0
+roughness = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_goktk"]
+size = Vector2(10, 10)
+
+[sub_resource type="Shader" id="Shader_k1q4s"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.6.2.stable's StandardMaterial3D.
+
+shader_type spatial;
+render_mode blend_mix, depth_draw_always, cull_back, diffuse_burley, specular_schlick_ggx;
+
+uniform vec4 albedo : source_color;
+uniform sampler2D texture_albedo : source_color, filter_linear_mipmap, repeat_enable;
+uniform ivec2 albedo_texture_size;
+uniform float point_size : hint_range(0.1, 128.0, 0.1);
+
+uniform float roughness : hint_range(0.0, 1.0);
+uniform sampler2D texture_metallic : hint_default_white, filter_linear_mipmap, repeat_enable;
+uniform vec4 metallic_texture_channel;
+uniform sampler2D texture_roughness : hint_roughness_r, filter_linear_mipmap, repeat_enable;
+
+uniform float specular : hint_range(0.0, 1.0, 0.01);
+uniform float metallic : hint_range(0.0, 1.0, 0.01);
+
+uniform sampler2D texture_refraction : filter_linear_mipmap, repeat_enable;
+uniform float refraction : hint_range(-1.0, 1.0, 0.001);
+uniform vec4 refraction_texture_channel;
+uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_linear_mipmap;
+uniform sampler2D depth_texture : hint_depth_texture, repeat_disable, filter_nearest;
+
+uniform sampler2D texture_normal : hint_roughness_normal, filter_linear_mipmap, repeat_enable;
+uniform float normal_scale : hint_range(-16.0, 16.0);
+varying vec3 uv1_triplanar_pos;
+
+uniform float uv1_blend_sharpness : hint_range(0.0, 150.0, 0.001);
+varying vec3 uv1_power_normal;
+
+uniform vec3 uv1_scale;
+uniform vec3 uv1_offset;
+uniform vec3 uv2_scale;
+uniform vec3 uv2_offset;
+
+void vertex() {
+	vec3 normal = NORMAL;
+
+	TANGENT = vec3(0.0, 0.0, -1.0) * abs(normal.x);
+	TANGENT += vec3(1.0, 0.0, 0.0) * abs(normal.y);
+	TANGENT += vec3(1.0, 0.0, 0.0) * abs(normal.z);
+	TANGENT = normalize(TANGENT);
+
+	BINORMAL = vec3(0.0, 1.0, 0.0) * abs(normal.x);
+	BINORMAL += vec3(0.0, 0.0, -1.0) * abs(normal.y);
+	BINORMAL += vec3(0.0, 1.0, 0.0) * abs(normal.z);
+	BINORMAL = normalize(BINORMAL);
+
+	// UV1 Triplanar: Enabled
+	uv1_power_normal = pow(abs(NORMAL), vec3(uv1_blend_sharpness));
+	uv1_triplanar_pos = VERTEX * uv1_scale + uv1_offset + (TIME*0.0078125);
+	uv1_power_normal /= dot(uv1_power_normal, vec3(1.0));
+	uv1_triplanar_pos *= vec3(1.0, -1.0, 1.0);
+}
+
+vec4 triplanar_texture(sampler2D p_sampler, vec3 p_weights, vec3 p_triplanar_pos) {
+	vec4 samp = vec4(0.0);
+	samp += texture(p_sampler, p_triplanar_pos.xy) * p_weights.z;
+	samp += texture(p_sampler, p_triplanar_pos.xz) * p_weights.y;
+	samp += texture(p_sampler, p_triplanar_pos.zy * vec2(-1.0, 1.0)) * p_weights.x;
+	return samp;
+}
+
+void fragment() {
+	vec4 albedo_tex = triplanar_texture(texture_albedo, uv1_power_normal, uv1_triplanar_pos);
+	ALBEDO = albedo.rgb * albedo_tex.rgb;
+
+	float metallic_tex = dot(triplanar_texture(texture_metallic, uv1_power_normal, uv1_triplanar_pos), metallic_texture_channel);
+	METALLIC = metallic_tex * metallic;
+	SPECULAR = specular;
+
+	vec4 roughness_texture_channel = vec4(1.0, 0.0, 0.0, 0.0);
+	float roughness_tex = dot(triplanar_texture(texture_roughness, uv1_power_normal, uv1_triplanar_pos), roughness_texture_channel);
+	ROUGHNESS = roughness_tex * roughness;
+
+	// Normal Map: Enabled
+	NORMAL_MAP = triplanar_texture(texture_normal, uv1_power_normal, uv1_triplanar_pos).rgb;
+	NORMAL_MAP_DEPTH = normal_scale;
+
+	// Refraction: Enabled (with normal map texture)
+	vec3 unpacked_normal = NORMAL_MAP;
+	unpacked_normal.xy = unpacked_normal.xy * 2.0 - 1.0;
+	unpacked_normal.z = sqrt(max(0.0, 1.0 - dot(unpacked_normal.xy, unpacked_normal.xy)));
+	vec3 ref_normal = normalize(mix(
+			NORMAL,
+			TANGENT * unpacked_normal.x + BINORMAL * unpacked_normal.y + NORMAL * unpacked_normal.z,
+			NORMAL_MAP_DEPTH));
+	vec2 ref_ofs = SCREEN_UV - ref_normal.xy * dot(triplanar_texture(texture_refraction, uv1_power_normal, uv1_triplanar_pos), refraction_texture_channel) * refraction;
+
+	float ref_amount = 1.0 - albedo.a * albedo_tex.a;
+
+	float refraction_depth_tex = textureLod(depth_texture, ref_ofs, 0.0).r;
+	vec4 ndc = OUTPUT_IS_SRGB ? vec4(vec3(SCREEN_UV, refraction_depth_tex) * 2.0 - 1.0, 1.0) : vec4(SCREEN_UV * 2.0 - 1.0, refraction_depth_tex, 1.0);
+	vec4 refraction_view_pos = INV_PROJECTION_MATRIX * ndc;
+	refraction_view_pos.xyz /= refraction_view_pos.w;
+
+	// If the depth buffer is lower then the model's Z position, use the refracted UV, otherwise use the normal screen UV.
+	// At low depth differences, decrease refraction intensity to avoid sudden discontinuities.
+	EMISSION += textureLod(screen_texture, mix(SCREEN_UV, ref_ofs, smoothstep(0.0, 1.0, VERTEX.z - refraction_view_pos.z)), ROUGHNESS * 8.0).rgb * ref_amount * EXPOSURE;
+	ALBEDO *= 1.0 - ref_amount;
+	// Force transparency on the material (required for refraction).
+	ALPHA = 1.0;
+}
+"
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_k1q4s"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1bgt8"]
+noise = SubResource("FastNoiseLite_k1q4s")
+seamless = true
+as_normal_map = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_56q14"]
+render_priority = 0
+shader = SubResource("Shader_k1q4s")
+shader_parameter/albedo = Color(0, 0.40392157, 0.63529414, 0.72156864)
+shader_parameter/albedo_texture_size = Vector2i(0, 0)
+shader_parameter/point_size = 0.10000000149012
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_refraction = SubResource("NoiseTexture2D_1bgt8")
+shader_parameter/refraction = 1.0
+shader_parameter/refraction_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_normal = SubResource("NoiseTexture2D_1bgt8")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_blend_sharpness = 1.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_y1byi"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ncjx7"]
+albedo_texture = ExtResource("2_532by")
+
+[sub_resource type="BoxMesh" id="BoxMesh_8navb"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mhxq0"]
+cull_mode = 1
+albedo_texture = ExtResource("4_tchfx")
+emission_enabled = true
+emission = Color(0.012617188, 0.012617188, 0.012617188, 1)
+emission_energy_multiplier = 4.57
+uv1_scale = Vector3(2, 2.055, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_mhxq0"]
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="Environment" id="Environment_i1y24"]
+background_mode = 1
+background_color = Color(0.54509807, 0.73333335, 0.79607844, 1)
+background_energy_multiplier = 1.45
+ambient_light_source = 3
+ambient_light_color = Color(0.94509804, 0.94509804, 0.94509804, 1)
+ambient_light_sky_contribution = 0.0
+ambient_light_energy = 0.81
+reflected_light_source = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_left_hud"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.18, 0.12, 0.08, 0.84)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.82, 0.96, 0.92)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_timer_hud"]
+content_margin_left = 10.0
+content_margin_top = 6.0
+content_margin_right = 10.0
+content_margin_bottom = 6.0
+bg_color = Color(0.24, 0.15, 0.08, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.98, 0.84, 0.38, 0.95)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_right_hud"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.18, 0.12, 0.08, 0.84)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.56, 0.42, 0.92)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u4n2x"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ud65s"]
+
+[node name="3dFishingMultiplayer" type="Node3D" unique_id=836610391]
+script = ExtResource("1_56q14")
+
+[node name="Land" type="Node3D" parent="." unique_id=225201374]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.3714695, 5)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Land" unique_id=870294090]
+transform = Transform3D(50, 0, 0, 0, 50.000004, 0, 0, 0, 50.000004, 0, -1, 0)
+
+[node name="SeaFloorCollisionShape3D" type="CollisionShape3D" parent="Land/StaticBody3D" unique_id=881990315]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, -1, 0)
+shape = SubResource("BoxShape3D_cawde")
+
+[node name="SeaFloorColor" type="MeshInstance3D" parent="Land/StaticBody3D" unique_id=1676985478]
+transform = Transform3D(0.99999976, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+material_overlay = SubResource("StandardMaterial3D_qfde3")
+mesh = SubResource("PlaneMesh_goktk")
+
+[node name="WaterColor" type="MeshInstance3D" parent="." unique_id=1089644210]
+transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, 0, 0, 0)
+sorting_use_aabb_center = false
+material_overlay = SubResource("ShaderMaterial_56q14")
+ignore_occlusion_culling = true
+visibility_range_fade_mode = 1
+mesh = SubResource("PlaneMesh_goktk")
+
+[node name="Pier" type="Node3D" parent="." unique_id=61710964]
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, -2.1451278)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Pier" unique_id=113582520]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pier/StaticBody3D" unique_id=1260455851]
+shape = SubResource("BoxShape3D_y1byi")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Pier/StaticBody3D" unique_id=2003962759]
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 0, 0.39070585)
+material_overlay = SubResource("StandardMaterial3D_ncjx7")
+mesh = SubResource("BoxMesh_8navb")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=2042256277]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 131.48366, 23.190296)
+light_energy = 16.0
+light_size = 1.0
+light_specular = 16.0
+
+[node name="Background" type="Node3D" parent="." unique_id=336146113]
+transform = Transform3D(-2.6226833e-05, 0, 600, 0, 120, 0, -600, 0, -2.6226833e-05, 0, 73.4481, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Background" unique_id=1420362856]
+transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 1.0000001, 0, 0.18371171, 0)
+material_overlay = SubResource("StandardMaterial3D_mhxq0")
+mesh = SubResource("CylinderMesh_mhxq0")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2126582781]
+environment = SubResource("Environment_i1y24")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
+
+[node name="MultiplayerHUD" type="Control" parent="CanvasLayer" unique_id=1392484030]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("10_theme")
+
+[node name="CenterDivider" type="ColorRect" parent="CanvasLayer/MultiplayerHUD" unique_id=335187225]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_right = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.95, 0.88, 0.72, 0.5)
+
+[node name="LeftPlayerPanel" type="PanelContainer" parent="CanvasLayer/MultiplayerHUD" unique_id=1108859151]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.5
+offset_left = 142.0
+offset_top = 14.0
+offset_right = -90.0
+offset_bottom = 82.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_left_hud")
+
+[node name="VBox" type="VBoxContainer" parent="CanvasLayer/MultiplayerHUD/LeftPlayerPanel" unique_id=224881497]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="LeftHudNameLabel" type="Label" parent="CanvasLayer/MultiplayerHUD/LeftPlayerPanel/VBox" unique_id=208637362]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.92, 1, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.08, 0.1, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 20
+text = "Player 1"
+horizontal_alignment = 1
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="LeftHudScoreLabel" type="Label" parent="CanvasLayer/MultiplayerHUD/LeftPlayerPanel/VBox" unique_id=1854000529]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.95, 0.86, 1)
+theme_override_font_sizes/font_size = 15
+text = "0 fish  •  0.00 kg"
+horizontal_alignment = 1
+
+[node name="TimerPanel" type="PanelContainer" parent="CanvasLayer/MultiplayerHUD" unique_id=1616607950]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -78.0
+offset_top = 12.0
+offset_right = 78.0
+offset_bottom = 82.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_timer_hud")
+
+[node name="VBox" type="VBoxContainer" parent="CanvasLayer/MultiplayerHUD/TimerPanel" unique_id=1735754411]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="TimerTitleLabel" type="Label" parent="CanvasLayer/MultiplayerHUD/TimerPanel/VBox" unique_id=239799865]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.88, 0.68, 1)
+theme_override_font_sizes/font_size = 12
+text = "TIME LEFT"
+horizontal_alignment = 1
+
+[node name="TimerValueLabel" type="Label" parent="CanvasLayer/MultiplayerHUD/TimerPanel/VBox" unique_id=962751253]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.98, 0.94, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.07, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 26
+text = "02:00"
+horizontal_alignment = 1
+
+[node name="RightPlayerPanel" type="PanelContainer" parent="CanvasLayer/MultiplayerHUD" unique_id=725489737]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 1.0
+offset_left = 90.0
+offset_top = 14.0
+offset_right = -228.0
+offset_bottom = 82.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_right_hud")
+
+[node name="VBox" type="VBoxContainer" parent="CanvasLayer/MultiplayerHUD/RightPlayerPanel" unique_id=405830253]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="RightHudNameLabel" type="Label" parent="CanvasLayer/MultiplayerHUD/RightPlayerPanel/VBox" unique_id=402410832]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.74, 0.58, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.07, 0.04, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 20
+text = "Player 2"
+horizontal_alignment = 1
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="RightHudScoreLabel" type="Label" parent="CanvasLayer/MultiplayerHUD/RightPlayerPanel/VBox" unique_id=252169966]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.95, 0.86, 1)
+theme_override_font_sizes/font_size = 15
+text = "0 fish  •  0.00 kg"
+horizontal_alignment = 1
+
+[node name="GameHUD" parent="CanvasLayer" unique_id=1628659695 instance=ExtResource("5_hud")]
+show_return_button = true
+return_button_text = "Lobby"
+show_menu_buttons = false
+
+[node name="FishLayout" type="TextureRect" parent="CanvasLayer" unique_id=729170580]
+visible = false
+custom_minimum_size = Vector2(300, 300)
+offset_left = 485.0
+offset_top = 125.99999
+offset_right = 785.0
+offset_bottom = 426.0
+rotation = 0.43633232
+texture = SubResource("CompressedTexture2D_b03px")
+
+[node name="WeatherSystem" type="Node3D" parent="." unique_id=826944014]
+script = ExtResource("6_a5w1c")
+weather_change_game_minutes = 100.0
+avoid_repeat = false
+
+[node name="GridContainer" type="GridContainer" parent="." unique_id=625257281]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="GridContainer" unique_id=1554059241]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="GridContainer/SubViewportContainer" unique_id=880277151]
+handle_input_locally = false
+size = Vector2i(574, 648)
+render_target_update_mode = 4
+
+[node name="PlayerFishing" type="Node3D" parent="GridContainer/SubViewportContainer/SubViewport" unique_id=502106798]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 5.0081625)
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="GridContainer/SubViewportContainer/SubViewport/PlayerFishing" unique_id=731221113]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GridContainer/SubViewportContainer/SubViewport/PlayerFishing/CharacterBody3D" unique_id=1201982006]
+shape = SubResource("CapsuleShape3D_u4n2x")
+
+[node name="FishingRod_Lvl3" parent="GridContainer/SubViewportContainer/SubViewport/PlayerFishing/CharacterBody3D" unique_id=1393842549 instance=ExtResource("7_o14e8")]
+transform = Transform3D(0.5, 0, 0, 0, 0.41933528, 0.27231953, 0, -0.27231953, 0.41933528, 0.57474726, 0, -0.16362166)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GridContainer/SubViewportContainer/SubViewport/PlayerFishing" unique_id=1698578042]
+mesh = SubResource("CapsuleMesh_ud65s")
+
+[node name="PlayerCamera" type="Camera3D" parent="GridContainer/SubViewportContainer/SubViewport/PlayerFishing" unique_id=958916476]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+current = true
+
+[node name="SubViewportContainer2" type="SubViewportContainer" parent="GridContainer" unique_id=1218064333]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="GridContainer/SubViewportContainer2" unique_id=2037076363]
+handle_input_locally = false
+size = Vector2i(574, 648)
+render_target_update_mode = 4
+
+[node name="PlayerFishing2" type="Node3D" parent="GridContainer/SubViewportContainer2/SubViewport" unique_id=484533126]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3307042, -1.1187874)
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2" unique_id=1727319788]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2/CharacterBody3D" unique_id=1994246240]
+shape = SubResource("CapsuleShape3D_u4n2x")
+
+[node name="FishingRod_Lvl3" parent="GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2/CharacterBody3D" unique_id=1181176740 instance=ExtResource("7_o14e8")]
+transform = Transform3D(0.5, 0, 0, 0, 0.41933528, 0.27231953, 0, -0.27231953, 0.41933528, 0.57474726, 0, -0.16362166)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2" unique_id=755325511]
+mesh = SubResource("CapsuleMesh_ud65s")
+
+[node name="PlayerCamera" type="Camera3D" parent="GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2" unique_id=104450017]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+current = true
+
+[node name="FishingManager" type="Node3D" parent="." unique_id=1166121472 node_paths=PackedStringArray("player_anchors", "rod_holders")]
+script = ExtResource("8_rl387")
+player_anchors = [NodePath("../GridContainer/SubViewportContainer/SubViewport/PlayerFishing"), NodePath("../GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2")]
+rod_holders = [NodePath("../GridContainer/SubViewportContainer/SubViewport/PlayerFishing/CharacterBody3D"), NodePath("../GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2/CharacterBody3D")]
+bobber_scene = ExtResource("9_7ac3p")
+max_players = 3
+debug_spot_id = "location_imus"
+debug_rod_id = "rod_light"
+debug_bait_id = "bait_1"
+debug_multiplayer = true
