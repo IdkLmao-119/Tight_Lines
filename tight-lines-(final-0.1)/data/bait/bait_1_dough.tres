@@ -18,10 +18,11 @@
 [ext_resource type="Resource" uid="uid://bgyoggwi4xlcu" path="res://data/fish/fish_milkfish.tres" id="14_j7b8d"]
 [ext_resource type="Resource" uid="uid://4xlwygyaq14r" path="res://data/fish/fish_mozambique_tilapia.tres" id="15_3o4ti"]
 [ext_resource type="Resource" uid="uid://b5eo5qr5hu2qq" path="res://data/fish/fish_mayan_cichlid.tres" id="16_kpq2d"]
+[ext_resource type="Resource" uid="uid://fnlddxoudhw1" path="res://data/fish/fish_scatophagus_argus.tres" id="17_scatf"]
 
 [resource]
 script = ExtResource("5_l0et3")
-enables_fish = Array[ExtResource("2_xif8t")]([ExtResource("3_ny8ln"), ExtResource("4_bku8c"), ExtResource("5_g4lvd"), ExtResource("6_okxus"), ExtResource("7_nsyjv"), ExtResource("8_jibt0"), ExtResource("9_cuxyg"), ExtResource("10_8w22e"), ExtResource("11_28qcd"), ExtResource("12_ybfsq"), ExtResource("13_5f5vd"), ExtResource("14_j7b8d"), ExtResource("15_3o4ti"), ExtResource("16_kpq2d")])
+enables_fish = Array[ExtResource("2_xif8t")]([ExtResource("3_ny8ln"), ExtResource("4_bku8c"), ExtResource("5_g4lvd"), ExtResource("6_okxus"), ExtResource("7_nsyjv"), ExtResource("8_jibt0"), ExtResource("9_cuxyg"), ExtResource("10_8w22e"), ExtResource("11_28qcd"), ExtResource("12_ybfsq"), ExtResource("13_5f5vd"), ExtResource("14_j7b8d"), ExtResource("15_3o4ti"), ExtResource("16_kpq2d"), ExtResource("17_scatf")])
 unlimited = true
 icon = ExtResource("4_dimte")
 max_stack = 99

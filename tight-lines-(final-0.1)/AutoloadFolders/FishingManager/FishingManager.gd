@@ -177,6 +177,7 @@ const MSG_LINE_SNAPPED := "Line snapped!" # Text shown when the line snaps due t
 const MSG_KNOT_PHONE := "Tie a knot on your phone!"
 const MSG_KNOT_KEYBOARD := "Line snapped!\nTie a knot on your phone (or press E)"
 const MSG_KNOT_TIED := "Knot tied! Ready to cast"
+const MSG_NO_CATCH_ODDS := "hm. seems like I need to change up my gear"
 
 const CATCH_POPUP_SECONDS := 5.0         # How long the catch popup and picture stay up. | Lower to move on faster.
 const FISH_IMAGE_PROPERTIES := ["jpg", "image", "icon", "texture"]   # FishData property names tried for the fish picture. | Add the name your FishData uses.
@@ -816,6 +817,7 @@ func _get_message_label(player_id: int) -> Label:
 	var label := Label.new()
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.theme = UI_THEME
 	label.add_theme_font_override("font", UI_FONT)
@@ -918,10 +920,15 @@ func _roll_fish(s: FishingSession) -> Dictionary:
 	var odds: Dictionary = _db.get_catch_odds(spot_id, s.bait_id, s.rod_id, _build_odds_context())
 	if odds.is_empty():
 		_warn_once("empty_odds", "get_catch_odds() returned nothing for spot '%s', bait '%s', rod '%s'." % [spot_id, s.bait_id, s.rod_id])
+		s.msg_token += 1
+		_show_message(s.player_id, MSG_NO_CATCH_ODDS, 3.5)
 		return {}
 
 	var fish_id := _pick_weighted(odds)
 	if fish_id == "" or not _db.has_fish(fish_id):
+		if fish_id == "":
+			s.msg_token += 1
+			_show_message(s.player_id, MSG_NO_CATCH_ODDS, 3.5)
 		return {}
 
 	var record: FishData = _db.get_fish(fish_id)

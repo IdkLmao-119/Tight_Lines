@@ -25,6 +25,23 @@ const LOCATION_UNLOCK_FLAGS: Dictionary = {
 	"location_fortune_island": "unlock_fortune_island",
 }
 
+const REGULAR_ROD_IDS: Array[String] = [
+	"rod_light",
+	"rod_medium_light",
+	"rod_medium",
+	"rod_medium_heavy",
+	"rod_heavy",
+]
+
+const REGULAR_BAIT_IDS: Array[String] = [
+	"bait_1",
+	"bait_2",
+	"bait_3",
+	"bait_4",
+	"bait_5",
+	"bait_6",
+]
+
 enum FocusArea { LOCATIONS, FISH_GRID }
 
 @onready var _location_list: VBoxContainer = %LocationList
@@ -327,6 +344,9 @@ func _show_fish(index: int) -> void:
 	var caught := SaveManager.has_caught_fish(fish.id)
 	var tex: Texture2D = fish.icon_3d if fish.icon_3d != null else fish.icon
 
+	var rec_rod := _get_recommended_rod_text(fish)
+	var rec_bait := _get_recommended_baits_text(fish)
+
 	_fish_picture.texture = tex
 	if caught:
 		_fish_picture.modulate = Color.WHITE
@@ -343,19 +363,61 @@ func _show_fish(index: int) -> void:
 			record_line = "\n[b]Caught:[/b] %d  |  [b]Best:[/b] %.1f cm / %.2f kg%s" % [caught_count, best_size, best_weight, tier_tag]
 		else:
 			record_line = "\n[b]Caught:[/b] %d" % caught_count
-		_fish_description.text = "%s\n\n[b]Size Class:[/b] %s\n[b]Avg Size:[/b] %.1f cm\n[b]Avg Weight:[/b] %.2f kg\n[b]Base Value:[/b] ₱%d%s" % [
+		_fish_description.text = "%s\n\n[b]Size Class:[/b] %s\n[b]Avg Size:[/b] %.1f cm\n[b]Avg Weight:[/b] %.2f kg\n[b]Base Value:[/b] ₱%d\n[b]Recommended Rod:[/b] %s\n[b]Recommended Bait:[/b] %s%s" % [
 			fish.description,
 			fish.size_class.capitalize(),
 			fish.avg_size,
 			fish.avg_weight,
 			fish.base_price,
+			rec_rod,
+			rec_bait,
 			record_line,
 		]
 	else:
 		_fish_picture.modulate = Color(0.15, 0.15, 0.15, 1.0)
 		_fish_name.text = "???"
 		_fish_scientific_name.text = "Unknown Species"
-		_fish_description.text = "Catch this fish to unlock its Almanac entry."
+		_fish_description.text = "Catch this fish to unlock its Almanac entry.\n\n[b]Recommended Rod:[/b] %s\n[b]Recommended Bait:[/b] %s" % [
+			rec_rod,
+			rec_bait,
+		]
+
+
+func _get_recommended_rod_text(fish: FishData) -> String:
+	var best_strong: RodData = null
+	var best_strong_chance := -1.0
+	var fallback_rod: RodData = null
+	var fallback_strength := -1.0
+	var fallback_chance := -1.0
+
+	for rod_id in REGULAR_ROD_IDS:
+		var rod: RodData = GameDB.get_rod(rod_id)
+		if rod == null:
+			continue
+		var chance := rod.get_chance(fish.size_class)
+		if chance <= 0.0:
+			continue
+		if rod.line_strength >= fish.pull_strength:
+			if chance > best_strong_chance:
+				best_strong_chance = chance
+				best_strong = rod
+		if rod.line_strength > fallback_strength or (is_equal_approx(rod.line_strength, fallback_strength) and chance > fallback_chance):
+			fallback_strength = rod.line_strength
+			fallback_chance = chance
+			fallback_rod = rod
+
+	var chosen := best_strong if best_strong != null else fallback_rod
+	return chosen.display_name if chosen != null else "Any Rod"
+
+
+func _get_recommended_baits_text(fish: FishData) -> String:
+	var names: PackedStringArray = []
+	for bait_id in REGULAR_BAIT_IDS:
+		if GameDB.bait_enables_fish(bait_id, fish.id):
+			var bait: BaitData = GameDB.get_bait(bait_id)
+			if bait != null:
+				names.append(bait.display_name)
+	return ", ".join(names) if not names.is_empty() else "None"
 
 
 func _clear_entry_display() -> void:

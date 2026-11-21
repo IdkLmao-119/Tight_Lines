@@ -17,6 +17,7 @@
 [ext_resource type="Resource" uid="uid://sojjs2r500xc" path="res://data/fish/fish_mosquito_fish.tres" id="14_2m3vs"]
 [ext_resource type="Resource" uid="uid://dsfum6wqo4u6i" path="res://data/fish/fish_shad_fish.tres" id="15_3f88x"]
 [ext_resource type="Resource" uid="uid://c23jtlvkpo8v2" path="res://data/fish/fish_silverperch.tres" id="16_r73o8"]
+[ext_resource type="Resource" uid="uid://fnlddxoudhw1" path="res://data/fish/fish_scatophagus_argus.tres" id="17_scatf"]
 
 [sub_resource type="Resource" id="Resource_15ppc"]
 script = ExtResource("1_feb4a")
@@ -88,9 +89,14 @@ script = ExtResource("1_feb4a")
 fish = ExtResource("16_r73o8")
 metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
 
+[sub_resource type="Resource" id="Resource_scatf"]
+script = ExtResource("1_feb4a")
+fish = ExtResource("17_scatf")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
 [resource]
 script = ExtResource("2_mc6ek")
-fish_pool = Array[ExtResource("1_feb4a")]([SubResource("Resource_15ppc"), SubResource("Resource_1vgu8"), SubResource("Resource_gwx68"), SubResource("Resource_rceeu"), SubResource("Resource_fnwne"), SubResource("Resource_ufd0n"), SubResource("Resource_phbyu"), SubResource("Resource_g7qt2"), SubResource("Resource_njhvd"), SubResource("Resource_sugrk"), SubResource("Resource_vc2bt"), SubResource("Resource_b0lvt"), SubResource("Resource_whml2"), SubResource("Resource_l8prq")])
+fish_pool = Array[ExtResource("1_feb4a")]([SubResource("Resource_15ppc"), SubResource("Resource_1vgu8"), SubResource("Resource_gwx68"), SubResource("Resource_rceeu"), SubResource("Resource_fnwne"), SubResource("Resource_ufd0n"), SubResource("Resource_phbyu"), SubResource("Resource_g7qt2"), SubResource("Resource_njhvd"), SubResource("Resource_sugrk"), SubResource("Resource_vc2bt"), SubResource("Resource_b0lvt"), SubResource("Resource_whml2"), SubResource("Resource_l8prq"), SubResource("Resource_scatf")])
 id = "location_salt_farm"
 display_name = "Noveleta Salt Farm"
 metadata/_custom_type_script = "uid://bbts02hgiiwr"

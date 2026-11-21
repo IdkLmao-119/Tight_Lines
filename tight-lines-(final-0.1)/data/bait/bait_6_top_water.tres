@@ -7,9 +7,11 @@
 [ext_resource type="Texture2D" uid="uid://cnjd2m0sx1qeb" path="res://Assets/2D/bait_sprites/Top water lure-c64d.png" id="4_w834w"]
 [ext_resource type="Script" uid="uid://bx3sigi1jlqjn" path="res://data/item_class_templates/bait_data.gd" id="5_w8dhe"]
 
+[ext_resource type="Resource" uid="uid://dhr5np5avrdmn" path="res://data/fish/fish_mangrove_red_snapper.tres" id="6_mangrove"]
+
 [resource]
 script = ExtResource("5_w8dhe")
-enables_fish = Array[ExtResource("2_bm5ju")]([ExtResource("3_bm5ju"), ExtResource("4_w8dhe")])
+enables_fish = Array[ExtResource("2_bm5ju")]([ExtResource("3_bm5ju"), ExtResource("4_w8dhe"), ExtResource("6_mangrove")])
 unlimited = true
 icon = ExtResource("4_w834w")
 max_stack = 99

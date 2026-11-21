@@ -13,5 +13,5 @@ speed = 3.0
 pull_strength = 8.0
 icon = ExtResource("1_qmfex")
 id = "fish_scatophagus_argus"
-display_name = "Scatophagus Argus"
+display_name = "Scat Fish"
 stamina = 45.0

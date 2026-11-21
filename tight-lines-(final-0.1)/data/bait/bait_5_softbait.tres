@@ -11,9 +11,16 @@
 [ext_resource type="Resource" uid="uid://dsfum6wqo4u6i" path="res://data/fish/fish_shad_fish.tres" id="7_07y4w"]
 [ext_resource type="Resource" uid="uid://c23jtlvkpo8v2" path="res://data/fish/fish_silverperch.tres" id="8_apa0t"]
 
+[ext_resource type="Resource" uid="uid://deme8b0f3v6sm" path="res://data/fish/fish_tarpon.tres" id="9_tarpon"]
+[ext_resource type="Resource" uid="uid://dhr5np5avrdmn" path="res://data/fish/fish_mangrove_red_snapper.tres" id="10_mangrove"]
+[ext_resource type="Resource" uid="uid://d1f1j07f2csqx" path="res://data/fish/fish_juvenile_trevally.tres" id="11_juvenile"]
+[ext_resource type="Resource" uid="uid://bxl2qb0mavthd" path="res://data/fish/fish_juvenile_queenfish.tres" id="12_juvenile"]
+[ext_resource type="Resource" uid="uid://c6fr5eawb8h8m" path="res://data/fish/fish_needle_fish.tres" id="13_needle_f"]
+[ext_resource type="Resource" uid="uid://dhjadm4ynf6dy" path="res://data/fish/fish_juvenile_grouper.tres" id="14_jvgrp"]
+
 [resource]
 script = ExtResource("5_k6x75")
-enables_fish = Array[ExtResource("2_d8mme")]([ExtResource("3_sjnby"), ExtResource("4_dug18"), ExtResource("5_6u1dw"), ExtResource("6_uhdih"), ExtResource("7_07y4w"), ExtResource("8_apa0t")])
+enables_fish = Array[ExtResource("2_d8mme")]([ExtResource("3_sjnby"), ExtResource("4_dug18"), ExtResource("5_6u1dw"), ExtResource("6_uhdih"), ExtResource("7_07y4w"), ExtResource("8_apa0t"), ExtResource("9_tarpon"), ExtResource("10_mangrove"), ExtResource("11_juvenile"), ExtResource("12_juvenile"), ExtResource("13_needle_f"), ExtResource("14_jvgrp")])
 unlimited = true
 icon = ExtResource("4_ldklj")
 max_stack = 99

@@ -1,0 +1,481 @@
+{
+ "version": 1,
+ "timestamp": "2026-11-21T10:04:51",
+ "scene": "overworld_island",
+ "difficulty": "casual",
+ "money": 12000,
+ "unlock_flags": [
+  "met_lolo_diary",
+  "saw_lolo_diary",
+  "unlock_imus",
+  "unlock_kawit",
+  "unlock_fish_pens",
+  "unlock_salt_farm",
+  "unlock_cavite_complete",
+  "unlock_calatagan",
+  "unlock_fortune_island",
+  "unlock_ending_home",
+  "seen_marikina_room",
+  "seen_marikina_desk",
+  "seen_marikina_hallway",
+  "seen_marikina_street",
+  "seen_marikina_phone_store",
+  "seen_marikina_duplicate_fish",
+  "seen_marikina_complete",
+  "seen_imus_arrival",
+  "seen_imus_first_bite",
+  "seen_imus_first_catch",
+  "seen_imus_first_fail",
+  "seen_imus_complete",
+  "seen_kawit_arrival",
+  "seen_kawit_first_bite",
+  "seen_kawit_first_catch",
+  "seen_kawit_first_fail",
+  "seen_kawit_complete",
+  "seen_pen_arrival",
+  "seen_pen_first_bite",
+  "seen_pen_first_catch",
+  "seen_pen_first_fail",
+  "seen_pen_complete",
+  "seen_salt_arrival",
+  "seen_salt_first_bite",
+  "seen_salt_first_catch",
+  "seen_salt_first_fail",
+  "seen_salt_complete",
+  "seen_mangrove_arrival",
+  "seen_mangrove_first_bite",
+  "seen_mangrove_first_catch",
+  "seen_mangrove_first_fail",
+  "seen_mangrove_complete",
+  "seen_island_arrival",
+  "seen_island_first_bite",
+  "seen_island_first_catch",
+  "seen_island_first_fail",
+  "seen_island_complete"
+ ],
+ "owned_rods": [
+  "rod_light",
+  "rod_medium_light",
+  "rod_medium",
+  "rod_medium_heavy",
+  "rod_heavy"
+ ],
+ "caught_fish": [
+  "fish_african_catfish",
+  "fish_amberjack",
+  "fish_archerfish",
+  "fish_armored_catfish",
+  "fish_barramundi",
+  "fish_bighead_carp",
+  "fish_black_chin_tilapia",
+  "fish_climbing_perch",
+  "fish_clown_knife_fish",
+  "fish_cobia",
+  "fish_common_carp",
+  "fish_coral_grouper",
+  "fish_crescent_grunter",
+  "fish_giant_snakehead",
+  "fish_green_spotted_goby",
+  "fish_juvenile_grouper",
+  "fish_juvenile_queenfish",
+  "fish_juvenile_trevally",
+  "fish_ladyfish",
+  "fish_long_comb_sawfish",
+  "fish_malabar_grouper",
+  "fish_mangrove_red_snapper",
+  "fish_manila_catfish",
+  "fish_marlin",
+  "fish_mayan_cichlid",
+  "fish_milkfish",
+  "fish_moray_eel",
+  "fish_mosquito_fish",
+  "fish_mozambique_tilapia",
+  "fish_mud_crab",
+  "fish_mullet",
+  "fish_needle_fish",
+  "fish_nile_tilapia",
+  "fish_pangasius_catfish",
+  "fish_queenfish",
+  "fish_rohu_carp",
+  "fish_scatophagus_argus",
+  "fish_sea_bream",
+  "fish_shad_fish",
+  "fish_silverperch",
+  "fish_snubnose_halfbeak",
+  "fish_striped_pufferfish",
+  "fish_striped_snakehead",
+  "fish_tank_goby",
+  "fish_tarpon",
+  "fish_three_spot_gourami",
+  "fish_tiger_gourami",
+  "fish_titan_triggerfish",
+  "fish_walking_catfish",
+  "fish_yellowfin_tuna"
+ ],
+ "fish_records": {
+  "fish_african_catfish": {
+   "count": 1,
+   "best_size_cm": 89.2,
+   "best_weight_kg": 5.73
+  },
+  "fish_amberjack": {
+   "count": 9,
+   "best_size_cm": 184.0,
+   "best_weight_kg": 94.97
+  },
+  "fish_archerfish": {
+   "count": 5,
+   "best_size_cm": 20.6,
+   "best_weight_kg": 0.34
+  },
+  "fish_armored_catfish": {
+   "count": 2,
+   "best_size_cm": 45.8,
+   "best_weight_kg": 1.53
+  },
+  "fish_barramundi": {
+   "count": 2,
+   "best_size_cm": 113.9,
+   "best_weight_kg": 7.9
+  },
+  "fish_bighead_carp": {
+   "count": 2,
+   "best_size_cm": 130.1,
+   "best_weight_kg": 9.76
+  },
+  "fish_black_chin_tilapia": {
+   "count": 1,
+   "best_size_cm": 27.3,
+   "best_weight_kg": 0.55
+  },
+  "fish_climbing_perch": {
+   "count": 6,
+   "best_size_cm": 22.5,
+   "best_weight_kg": 0.3
+  },
+  "fish_clown_knife_fish": {
+   "count": 5,
+   "best_size_cm": 67.4,
+   "best_weight_kg": 3.37
+  },
+  "fish_cobia": {
+   "count": 4,
+   "best_size_cm": 115.9,
+   "best_weight_kg": 37.79
+  },
+  "fish_common_carp": {
+   "count": 3,
+   "best_size_cm": 53.5,
+   "best_weight_kg": 3.0
+  },
+  "fish_coral_grouper": {
+   "count": 7,
+   "best_size_cm": 217.1,
+   "best_weight_kg": 127.71
+  },
+  "fish_crescent_grunter": {
+   "count": 1,
+   "best_size_cm": 30.1,
+   "best_weight_kg": 0.56
+  },
+  "fish_giant_snakehead": {
+   "count": 3,
+   "best_size_cm": 82.6,
+   "best_weight_kg": 8.26
+  },
+  "fish_green_spotted_goby": {
+   "count": 2,
+   "best_size_cm": 21.3,
+   "best_weight_kg": 0.33
+  },
+  "fish_juvenile_grouper": {
+   "count": 5,
+   "best_size_cm": 98.6,
+   "best_weight_kg": 8.22
+  },
+  "fish_juvenile_queenfish": {
+   "count": 8,
+   "best_size_cm": 60.0,
+   "best_weight_kg": 2.67
+  },
+  "fish_juvenile_trevally": {
+   "count": 8,
+   "best_size_cm": 39.5,
+   "best_weight_kg": 1.32
+  },
+  "fish_ladyfish": {
+   "count": 8,
+   "best_size_cm": 43.5,
+   "best_weight_kg": 1.74
+  },
+  "fish_long_comb_sawfish": {
+   "count": 7,
+   "best_size_cm": 230.4,
+   "best_weight_kg": 41.47
+  },
+  "fish_malabar_grouper": {
+   "count": 3,
+   "best_size_cm": 125.2,
+   "best_weight_kg": 93.9
+  },
+  "fish_mangrove_red_snapper": {
+   "count": 8,
+   "best_size_cm": 73.4,
+   "best_weight_kg": 2.45
+  },
+  "fish_manila_catfish": {
+   "count": 9,
+   "best_size_cm": 59.3,
+   "best_weight_kg": 3.11
+  },
+  "fish_marlin": {
+   "count": 9,
+   "best_size_cm": 346.0,
+   "best_weight_kg": 413.13
+  },
+  "fish_mayan_cichlid": {
+   "count": 5,
+   "best_size_cm": 33.0,
+   "best_weight_kg": 0.67
+  },
+  "fish_milkfish": {
+   "count": 2,
+   "best_size_cm": 53.1,
+   "best_weight_kg": 2.9
+  },
+  "fish_moray_eel": {
+   "count": 2,
+   "best_size_cm": 292.8,
+   "best_weight_kg": 43.92
+  },
+  "fish_mosquito_fish": {
+   "count": 1,
+   "best_size_cm": 5.6,
+   "best_weight_kg": 0.06
+  },
+  "fish_mozambique_tilapia": {
+   "count": 8,
+   "best_size_cm": 22.6,
+   "best_weight_kg": 0.83
+  },
+  "fish_mud_crab": {
+   "count": 5,
+   "best_size_cm": 27.5,
+   "best_weight_kg": 2.06
+  },
+  "fish_mullet": {
+   "count": 1,
+   "best_size_cm": 48.6,
+   "best_weight_kg": 1.79
+  },
+  "fish_needle_fish": {
+   "count": 2,
+   "best_size_cm": 52.3,
+   "best_weight_kg": 2.61
+  },
+  "fish_nile_tilapia": {
+   "count": 8,
+   "best_size_cm": 44.0,
+   "best_weight_kg": 1.65
+  },
+  "fish_pangasius_catfish": {
+   "count": 8,
+   "best_size_cm": 87.5,
+   "best_weight_kg": 6.42
+  },
+  "fish_queenfish": {
+   "count": 7,
+   "best_size_cm": 110.3,
+   "best_weight_kg": 18.38
+  },
+  "fish_rohu_carp": {
+   "count": 6,
+   "best_size_cm": 51.9,
+   "best_weight_kg": 2.65
+  },
+  "fish_scatophagus_argus": {
+   "count": 9,
+   "best_size_cm": 23.5,
+   "best_weight_kg": 0.59
+  },
+  "fish_sea_bream": {
+   "count": 9,
+   "best_size_cm": 47.8,
+   "best_weight_kg": 3.52
+  },
+  "fish_shad_fish": {
+   "count": 1,
+   "best_size_cm": 44.0,
+   "best_weight_kg": 1.63
+  },
+  "fish_silverperch": {
+   "count": 1,
+   "best_size_cm": 40.1,
+   "best_weight_kg": 1.5
+  },
+  "fish_snubnose_halfbeak": {
+   "count": 6,
+   "best_size_cm": 29.7,
+   "best_weight_kg": 0.27
+  },
+  "fish_striped_pufferfish": {
+   "count": 9,
+   "best_size_cm": 24.8,
+   "best_weight_kg": 0.79
+  },
+  "fish_striped_snakehead": {
+   "count": 3,
+   "best_size_cm": 61.4,
+   "best_weight_kg": 3.38
+  },
+  "fish_tank_goby": {
+   "count": 8,
+   "best_size_cm": 24.8,
+   "best_weight_kg": 0.48
+  },
+  "fish_tarpon": {
+   "count": 7,
+   "best_size_cm": 146.6,
+   "best_weight_kg": 19.99
+  },
+  "fish_three_spot_gourami": {
+   "count": 5,
+   "best_size_cm": 9.1,
+   "best_weight_kg": 0.11
+  },
+  "fish_tiger_gourami": {
+   "count": 9,
+   "best_size_cm": 19.0,
+   "best_weight_kg": 0.32
+  },
+  "fish_titan_triggerfish": {
+   "count": 3,
+   "best_size_cm": 64.9,
+   "best_weight_kg": 0.56
+  },
+  "fish_walking_catfish": {
+   "count": 2,
+   "best_size_cm": 33.3,
+   "best_weight_kg": 0.74
+  },
+  "fish_yellowfin_tuna": {
+   "count": 5,
+   "best_size_cm": 223.3,
+   "best_weight_kg": 0.67
+  }
+ },
+ "equipped_rod": "rod_heavy",
+ "equipped_bait": "bait_3",
+ "inventory": {
+  "version": 2,
+  "next_uid": 11,
+  "items": [
+   {
+    "uid": 1,
+    "item_id": "bait_1",
+    "container": "tackle_box",
+    "count": 99,
+    "meta": {}
+   },
+   {
+    "uid": 2,
+    "item_id": "bait_2",
+    "container": "tackle_box",
+    "count": 99,
+    "meta": {}
+   },
+   {
+    "uid": 3,
+    "item_id": "bait_3",
+    "container": "tackle_box",
+    "count": 99,
+    "meta": {}
+   },
+   {
+    "uid": 4,
+    "item_id": "bait_4",
+    "container": "tackle_box",
+    "count": 99,
+    "meta": {}
+   },
+   {
+    "uid": 5,
+    "item_id": "bait_5",
+    "container": "tackle_box",
+    "count": 99,
+    "meta": {}
+   },
+   {
+    "uid": 6,
+    "item_id": "bait_6",
+    "container": "tackle_box",
+    "count": 99,
+    "meta": {}
+   },
+   {
+    "uid": 7,
+    "item_id": "fish_marlin",
+    "container": "fish_box",
+    "count": 1,
+    "meta": {
+     "size_cm": 289.0
+    }
+   },
+   {
+    "uid": 8,
+    "item_id": "fish_yellowfin_tuna",
+    "container": "fish_box",
+    "count": 1,
+    "meta": {
+     "size_cm": 169.1
+    }
+   },
+   {
+    "uid": 9,
+    "item_id": "fish_coral_grouper",
+    "container": "fish_box",
+    "count": 1,
+    "meta": {
+     "size_cm": 164.1
+    }
+   },
+   {
+    "uid": 10,
+    "item_id": "fish_tarpon",
+    "container": "fish_box",
+    "count": 1,
+    "meta": {
+     "size_cm": 100.6
+    }
+   }
+  ]
+ },
+ "quests": {
+  "version": 1,
+  "states": {
+   "quest_gear_up": "completed",
+   "quest_paddy_page": "completed",
+   "quest_salt_and_sea": "completed",
+   "quest_fenced_in": "completed",
+   "quest_bright_water": "completed",
+   "quest_roots": "completed",
+   "quest_deep_giants": "completed",
+   "quest_pocket_change": "completed",
+   "quest_bait_tester": "completed",
+   "quest_big_sea_catch": "completed",
+   "quest_steady_hands": "completed",
+   "quest_all_day_angler": "completed",
+   "quest_rainy_catch": "completed",
+   "quest_night_fisher": "completed"
+  },
+  "progress": {},
+  "pending_bait": {},
+  "pending_money": 0
+ },
+ "world_time": {
+  "day_count": 30,
+  "game_minutes": 1050.0,
+  "time_of_day": "dusk",
+  "weather": "clear"
+ }
+}

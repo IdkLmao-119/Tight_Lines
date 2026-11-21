@@ -13,9 +13,18 @@
 [ext_resource type="Resource" uid="uid://cmxagj8lvihtk" path="res://data/fish/fish_snubnose_halfbeak.tres" id="9_e5e7u"]
 [ext_resource type="Resource" uid="uid://b086ovljwx3kh" path="res://data/fish/fish_mud_crab.tres" id="10_2gkxx"]
 
+[ext_resource type="Resource" uid="uid://c3u882aui0x3x" path="res://data/fish/fish_archerfish.tres" id="11_archerfi"]
+[ext_resource type="Resource" uid="uid://chy8g0s0n88wh" path="res://data/fish/fish_green_spotted_goby.tres" id="12_green_sp"]
+[ext_resource type="Resource" uid="uid://b30aitipy8aow" path="res://data/fish/fish_crescent_grunter.tres" id="13_crescent"]
+[ext_resource type="Resource" uid="uid://ijthjsfai2kv" path="res://data/fish/fish_striped_pufferfish.tres" id="14_striped_"]
+[ext_resource type="Resource" uid="uid://nm2l33ialms6" path="res://data/fish/fish_moray_eel.tres" id="15_moray_ee"]
+[ext_resource type="Resource" uid="uid://c3snu27uwln0q" path="res://data/fish/fish_titan_triggerfish.tres" id="16_titan_tr"]
+[ext_resource type="Resource" uid="uid://0ge21e7b8yf5" path="res://data/fish/fish_sea_bream.tres" id="17_sea_brea"]
+[ext_resource type="Resource" uid="uid://bl2r31ww2hogd" path="res://data/fish/fish_long_comb_sawfish.tres" id="18_sawfish"]
+
 [resource]
 script = ExtResource("5_fos1t")
-enables_fish = Array[ExtResource("2_xx04s")]([ExtResource("3_60122"), ExtResource("4_xw8w6"), ExtResource("5_bvvor"), ExtResource("6_rpk0b"), ExtResource("7_7ns2f"), ExtResource("8_dq73s"), ExtResource("9_e5e7u"), ExtResource("10_2gkxx")])
+enables_fish = Array[ExtResource("2_xx04s")]([ExtResource("3_60122"), ExtResource("4_xw8w6"), ExtResource("5_bvvor"), ExtResource("6_rpk0b"), ExtResource("7_7ns2f"), ExtResource("8_dq73s"), ExtResource("9_e5e7u"), ExtResource("10_2gkxx"), ExtResource("11_archerfi"), ExtResource("12_green_sp"), ExtResource("13_crescent"), ExtResource("14_striped_"), ExtResource("15_moray_ee"), ExtResource("16_titan_tr"), ExtResource("17_sea_brea"), ExtResource("18_sawfish")])
 unlimited = true
 icon = ExtResource("4_wfhup")
 max_stack = 99

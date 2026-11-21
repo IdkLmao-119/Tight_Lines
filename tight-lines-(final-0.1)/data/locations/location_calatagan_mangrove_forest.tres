@@ -17,6 +17,7 @@
 [ext_resource type="Resource" uid="uid://b086ovljwx3kh" path="res://data/fish/fish_mud_crab.tres" id="15_w5yrx"]
 [ext_resource type="Resource" uid="uid://dybklgmye57vh" path="res://data/fish/fish_mullet.tres" id="16_lyuoo"]
 [ext_resource type="Script" uid="uid://bbts02hgiiwr" path="res://data/item_class_templates/location_data.gd" id="17_ae0it"]
+[ext_resource type="Resource" uid="uid://dhjadm4ynf6dy" path="res://data/fish/fish_juvenile_grouper.tres" id="18_jvgrp"]
 
 [sub_resource type="Resource" id="Resource_evpwh"]
 script = ExtResource("1_gilvd")
@@ -88,9 +89,14 @@ script = ExtResource("1_gilvd")
 fish = ExtResource("16_lyuoo")
 metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
 
+[sub_resource type="Resource" id="Resource_jvgrp"]
+script = ExtResource("1_gilvd")
+fish = ExtResource("18_jvgrp")
+metadata/_custom_type_script = "uid://dx1akc0mc2hlt"
+
 [resource]
 script = ExtResource("17_ae0it")
-fish_pool = Array[ExtResource("1_gilvd")]([SubResource("Resource_evpwh"), SubResource("Resource_vm21d"), SubResource("Resource_ny4ye"), SubResource("Resource_7pi5j"), SubResource("Resource_8huf2"), SubResource("Resource_knyp3"), SubResource("Resource_qvn37"), SubResource("Resource_udi5w"), SubResource("Resource_r2vth"), SubResource("Resource_8qn1d"), SubResource("Resource_p4qy3"), SubResource("Resource_ly3il"), SubResource("Resource_kj4go"), SubResource("Resource_8eo0o")])
+fish_pool = Array[ExtResource("1_gilvd")]([SubResource("Resource_evpwh"), SubResource("Resource_vm21d"), SubResource("Resource_ny4ye"), SubResource("Resource_7pi5j"), SubResource("Resource_8huf2"), SubResource("Resource_knyp3"), SubResource("Resource_qvn37"), SubResource("Resource_udi5w"), SubResource("Resource_r2vth"), SubResource("Resource_8qn1d"), SubResource("Resource_p4qy3"), SubResource("Resource_ly3il"), SubResource("Resource_kj4go"), SubResource("Resource_8eo0o"), SubResource("Resource_jvgrp")])
 id = "location_calatagan"
 display_name = "Calatagan Mangrove Forest"
 metadata/_custom_type_script = "uid://bbts02hgiiwr"
