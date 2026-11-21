@@ -3565,6 +3565,9 @@ texture = ExtResource("11_xwrj3")
 sources/0 = SubResource("TileSetAtlasSource_jqt58")
 sources/1 = SubResource("TileSetAtlasSource_q1g7w")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_22fkp"]
+size = Vector2(65, 44)
+
 [node name="Island" type="Node2D" unique_id=263984631]
 script = ExtResource("1_5hinp")
 
@@ -3632,5 +3635,14 @@ tile_set = SubResource("TileSet_hek7o")
 format = 2
 layer_0/tile_data = PackedInt32Array(196659, 655360, 38, 131135, 655360, 38, 458810, 655360, 38, 2097183, 1, 0)
 
+[node name="IslandtoMangrove" type="Node2D" parent="." unique_id=1757967351]
+
+[node name="IslandtoMangrove" type="Area2D" parent="IslandtoMangrove" unique_id=1739581728]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="IslandtoMangrove/IslandtoMangrove" unique_id=218859993]
+position = Vector2(361, 827)
+shape = SubResource("RectangleShape2D_22fkp")
+
 [connection signal="body_entered" from="Node2D/Island3DScene" to="Player" method="_on_area_2d_body_entered"]
 [connection signal="body_entered" from="Node2D/Island3DScene" to="Player" method="_on_island_3d_scene_body_entered"]
+[connection signal="body_entered" from="IslandtoMangrove/IslandtoMangrove" to="Player" method="_on_island_to_mangrove_body_entered"]
