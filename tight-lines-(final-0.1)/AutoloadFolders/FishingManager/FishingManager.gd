@@ -149,11 +149,11 @@ const TEMP_ROD_REEL_SPEED := 1.0         # Default reel speed; how fast reeling 
 # --- Reel fight tuning ---
 # TENSION BAR = fish half + reel half, each capped (FISH_SHARE_MAX / REEL_SHARE_MAX).
 # Tension only goes UP by itself and only goes DOWN when the player releases the reel.
-const REEL_PROGRESS_RATE := 0.22         # Line won per second at full reeling (progress 0..1). | Lower = longer fights, higher = quicker catches.
+const REEL_PROGRESS_RATE := 0.20         # Line won per second at full reeling (progress 0..1). | Lower = longer fights, higher = quicker catches.
 const TENSION_RISE_RATE := 1             # How fast tension builds (line-strength units/sec; /line_strength = bar fraction/sec). Used for the fish surge AND for reeling. | Lower if the bar fills too fast, raise if the fight is too safe.
 const TENSION_FALL_RATE := 3.0           # How fast RELEASING the reel lowers tension (same units, at full release). | Raise if releasing is too slow to save the line, lower to make it riskier.
-const FISH_SHARE_MAX := 0.5              # Fish's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to make the fish matter more than your reeling.
-const REEL_SHARE_MAX := 0.5              # Reeling's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to punish heavy reeling more.
+const FISH_SHARE_MAX := 0.7              # Fish's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to make the fish matter more than your reeling.
+const REEL_SHARE_MAX := 0.7              # Reeling's part of the bar (0..1). Keep FISH + REEL = 1.0. | Raise to punish heavy reeling more.
 const RELEASE_LINE_LOSS_RATE := 0.04     # Progress the fish takes back per second at full release. | Raise so releasing costs more distance, lower to make it cheap.
 const FISH_DRAG_RATE := 0.008            # Line the fish takes back per second (scaled by its pull). | Raise if fish never fight back enough, lower if they win too much.
 const START_PROGRESS := 0.35             # Fight starts this far toward landed (0..1). | Raise for an easier start, lower for a harder one.

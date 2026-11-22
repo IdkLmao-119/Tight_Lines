@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dhe1aayjlfn5g"]
 
 [ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="1_1oilw"]
-[ext_resource type="Script" path="res://UIScenesAndScript/FishTankUI/fish_tank.gd" id="2_fish_tank"]
+[ext_resource type="Script" uid="uid://n6v5svu6yftj" path="res://UIScenesAndScript/FishTankUI/fish_tank.gd" id="2_fish_tank"]
 
 [node name="FishTank" type="Control" unique_id=451500958]
 layout_mode = 3
