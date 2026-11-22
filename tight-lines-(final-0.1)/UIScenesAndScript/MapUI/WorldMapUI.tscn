@@ -137,6 +137,24 @@ Park
 
 "
 
+[node name="MangroveButton" type="Button" parent="Panel/SeasideParkButton" unique_id=1723557514]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.40600002
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -62.998
+offset_top = 132.0
+offset_right = 72.5
+offset_bottom = 194.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Calatagan 
+Mangrove
+
+"
+
 [node name="FishpenButton" type="Button" parent="Panel" unique_id=1538393008]
 layout_mode = 1
 anchors_preset = -1
@@ -169,23 +187,5 @@ grow_horizontal = 2
 grow_vertical = 0
 text = "Noveleta
 Saltfarm
-
-"
-
-[node name="MangroveButton" type="Button" parent="Panel" unique_id=1723557514]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.40600002
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -286.07703
-offset_top = -69.0
-offset_right = -209.0
-offset_bottom = -7.0
-grow_horizontal = 2
-grow_vertical = 0
-text = "Calatagan 
-Mangrove
 
 "

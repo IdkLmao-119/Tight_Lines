@@ -12,6 +12,7 @@ size_class = "large"
 base_price = 50
 pull_strength = 15.0
 stamina = 75.0
+fight_length_multiplier = 3.0
 min_size = 40.0
 avg_size = 75.0
 max_size = 130.0

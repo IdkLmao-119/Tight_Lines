@@ -124,6 +124,7 @@ var load_warnings := PackedStringArray()
 # kind -> { id -> record }. Dictionaries keep insertion order, so get_all*() / get_ids() return
 # records in the order they were loaded (file-path order when loaded from disk).
 var _tables: Dictionary = {}
+var _fish_music: Dictionary = {}
 
 # instance id of every record that failed validation or lost a duplicate-id race. A reference to such
 # a record is already explained by the record's own error, so it is not reported a second time
@@ -245,6 +246,11 @@ func has_bait(id: String) -> bool: return has_record("bait", id)
 func has_rod(id: String) -> bool: return has_record("rod", id)
 ## True if a location with [param id] exists.
 func has_location(id: String) -> bool: return has_record("location", id)
+
+
+## Fish battle music assigned to [param fish_id] via any [FishMusicEntry] under data/, or null.
+func get_fish_music(fish_id: String) -> FishMusicEntry:
+	return _fish_music.get(fish_id, null)
 
 
 ## Every fish, in load order.
@@ -531,6 +537,7 @@ func _reset() -> void:
 	_rejected = {}
 	_fatal = false
 	_tables = {}
+	_fish_music = {}
 	for kind in KINDS:
 		_tables[kind] = {}
 
@@ -605,7 +612,12 @@ func _process_records(records: Array) -> void:
 			continue
 		var kind := _kind_of(record)
 		if kind.is_empty():
-			if record is BaitBoost or record is FishMusicEntry:
+			if record is BaitBoost:
+				continue
+			if record is FishMusicEntry:
+				var fme := record as FishMusicEntry
+				if fme.fish != null and not fme.fish.id.is_empty() and fme.music != null:
+					_fish_music[fme.fish.id] = fme
 				continue
 			_warn("%s: not a database record (FishData, BaitData, RodData or LocationData); ignored" % record.resource_path)
 			continue

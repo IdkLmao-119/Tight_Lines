@@ -1306,9 +1306,11 @@ func _play_fish_music(fish_id: String) -> void:
 		if e != null and e.fish != null and e.fish.id == fish_id and e.music != null:
 			entry = e
 			break
-	if entry == null:
+	if entry == null and _db != null and _db.has_method("get_fish_music"):
+		entry = _db.get_fish_music(fish_id)
+	if entry == null or entry.music == null:
 		if debug_log:
-			print("[FishingManager] no fish music for '%s' (%d rows in Fish Music; each row needs BOTH a Fish and a Music assigned)" % [fish_id, fish_music.size()])
+			print("[FishingManager] no fish music for '%s' (%d local rows + GameDB; each row needs BOTH a Fish and a Music assigned)" % [fish_id, fish_music.size()])
 		return
 	if _fish_music_player == null or not is_instance_valid(_fish_music_player):
 		_fish_music_player = AudioStreamPlayer.new()
@@ -1318,6 +1320,10 @@ func _play_fish_music(fish_id: String) -> void:
 		add_child(_fish_music_player)
 	if _fish_music_tween != null and _fish_music_tween.is_valid():
 		_fish_music_tween.kill()
+	if entry.music is AudioStreamOggVorbis or entry.music is AudioStreamMP3:
+		entry.music.loop = true
+	elif entry.music is AudioStreamWAV:
+		entry.music.loop_mode = AudioStreamWAV.LOOP_FORWARD
 	_fish_music_player.stream = entry.music
 	_fish_music_player.volume_db = -60.0
 	_fish_music_player.play()

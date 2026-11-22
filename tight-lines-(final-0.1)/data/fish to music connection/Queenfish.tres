@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="FishMusicEntry" format=3]
+
+[ext_resource type="Resource" uid="uid://cn7csry751ab8" path="res://data/fish/fish_queenfish.tres" id="1_fish"]
+[ext_resource type="AudioStream" uid="uid://c01iuasfxiq7k" path="res://Assets/Audio/DragonForce - Through The Fire And Flames (instrumental) - Nick OXID Music.mp3" id="2_music"]
+[ext_resource type="Script" uid="uid://6pqlg1cq306c" path="res://data/item_class_templates/fish_music_entry.gd" id="3_script"]
+
+[resource]
+script = ExtResource("3_script")
+fish = ExtResource("1_fish")
+music = ExtResource("2_music")

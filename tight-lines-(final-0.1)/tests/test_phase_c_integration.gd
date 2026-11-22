@@ -96,6 +96,35 @@ func _run() -> void:
 	var snap2: Dictionary = map_overlay.call("get_destination_snapshot")
 	_check(not bool(snap2["overworld_mangrove"]["disabled"]), "Calatagan unlocked on WorldMap after flag granted")
 	_check(bool(snap2["overworld_island"]["disabled"]), "Fortune Island fast travel via WorldMap stays disabled (boat via Calatagan only)")
+
+	# Verify rest and destination buttons have uniform sizes
+	await process_frame
+	await process_frame
+	var rest_names := ["Rest_dawn", "Rest_day", "Rest_dusk", "Rest_night"]
+	var rest_btns: Array[Button] = []
+	for rname in rest_names:
+		var rb := map_overlay.find_child(rname, true, false) as Button
+		if rb != null:
+			rest_btns.append(rb)
+	_check(rest_btns.size() == 4, "All 4 Rest buttons found on WorldMapOverlay")
+	if rest_btns.size() == 4:
+		var ref_rest_size: Vector2 = rest_btns[0].size
+		for rb in rest_btns:
+			var diff := (rb.size - ref_rest_size).abs()
+			_check(diff.x <= 1.0 and diff.y <= 1.0,
+				"%s size %s matches %s size %s" % [rb.name, rb.size, rest_btns[0].name, ref_rest_size])
+
+	var dest_btns: Array = map_overlay.get("_dest_button_list")
+	_check(dest_btns.size() == 8, "All 8 Dest buttons found on WorldMapOverlay")
+	if dest_btns.size() == 8:
+		var ref_dest: Button = dest_btns[0] as Button
+		var ref_dest_size: Vector2 = ref_dest.size
+		for db_item in dest_btns:
+			var db_btn := db_item as Button
+			var diff := (db_btn.size - ref_dest_size).abs()
+			_check(diff.x <= 1.0 and diff.y <= 1.0,
+				"%s size %s matches %s size %s" % [db_btn.name, db_btn.size, ref_dest.name, ref_dest_size])
+
 	ow_ui.queue_free()
 	await process_frame
 

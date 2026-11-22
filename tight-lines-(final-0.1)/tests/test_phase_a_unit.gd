@@ -57,8 +57,8 @@ func _run() -> void:
 			"fish_marlin has fight_length_multiplier == 5.0")
 		_check(tuna != null and is_equal_approx(tuna.fight_length_multiplier, 5.0),
 			"fish_yellowfin_tuna has fight_length_multiplier == 5.0")
-		_check(amberjack != null and is_equal_approx(amberjack.fight_length_multiplier, 1.0),
-			"Other fish (fish_amberjack) default to fight_length_multiplier == 1.0")
+		_check(amberjack != null and is_equal_approx(amberjack.fight_length_multiplier, 3.0),
+			"Large fish (fish_amberjack) have fight_length_multiplier == 3.0")
 
 	var fm: Node = FishingManagerScript.new()
 	fm.show_tension_bar = false

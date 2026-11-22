@@ -1,5 +1,8 @@
 [gd_scene format=3 uid="uid://dhe1aayjlfn5g"]
 
+[ext_resource type="Texture2D" uid="uid://dr5wsqv4d4um0" path="res://Assets/2D/Water background.png" id="1_1oilw"]
+[ext_resource type="Script" path="res://UIScenesAndScript/FishTankUI/fish_tank.gd" id="2_fish_tank"]
+
 [node name="FishTank" type="Control" unique_id=451500958]
 layout_mode = 3
 anchors_preset = 15
@@ -7,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("2_fish_tank")
 
 [node name="Panel" type="Panel" parent="." unique_id=1948603435]
 layout_mode = 1
@@ -37,7 +41,7 @@ grow_vertical = 0
 
 [node name="Button" type="Button" parent="Panel/HBoxContainer" unique_id=1747628624]
 layout_mode = 2
-text = "Add FiSh"
+text = "Add Fish"
 
 [node name="Button2" type="Button" parent="Panel/HBoxContainer" unique_id=918756582]
 layout_mode = 2
@@ -49,6 +53,7 @@ text = "Back
 "
 
 [node name="TextureRect" type="TextureRect" parent="Panel" unique_id=96962208]
+clip_contents = true
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -57,3 +62,4 @@ offset_left = -434.0
 offset_right = 434.0
 offset_bottom = 500.75
 grow_horizontal = 2
+texture = ExtResource("1_1oilw")

@@ -139,6 +139,55 @@ func _run() -> void:
 				diff_btn.pressed.emit()
 		opt.queue_free()
 
+	# 8. Verify FishMusicEntry auto-loading & playback fallback via GameDB
+	var db := root.get_node_or_null("GameDB")
+	var gm := root.get_node_or_null("GameManager")
+	_check(db != null, "GameDB autoload found for fish music check")
+	if db != null:
+		var marlin_entry: FishMusicEntry = db.call("get_fish_music", "fish_marlin")
+		var tuna_entry: FishMusicEntry = db.call("get_fish_music", "fish_yellowfin_tuna")
+		_check(marlin_entry != null and marlin_entry.fish != null and marlin_entry.fish.id == "fish_marlin" and marlin_entry.music != null,
+			"GameDB indexed Marlin.tres for fish_marlin")
+		_check(tuna_entry != null and tuna_entry.fish != null and tuna_entry.fish.id == "fish_yellowfin_tuna" and tuna_entry.music != null,
+			"GameDB indexed YellowFinTuna.tres for fish_yellowfin_tuna")
+		var large_fish_count := 0
+		var large_music_ok := true
+		var large_fight_mult_ok := true
+		for f_item in db.call("get_all", "fish"):
+			var f := f_item as FishData
+			if f != null and f.size_class == "large":
+				large_fish_count += 1
+				var fme: FishMusicEntry = db.call("get_fish_music", f.id)
+				if fme == null or fme.fish == null or fme.fish.id != f.id or fme.music == null or not fme.music.resource_path.contains("Through The Fire And Flames"):
+					large_music_ok = false
+					print("[FAIL] Missing or mismatched FishMusicEntry for large fish: ", f.id)
+				var expected_mult := 5.0 if f.id in ["fish_marlin", "fish_yellowfin_tuna"] else 3.0
+				if not is_equal_approx(f.fight_length_multiplier, expected_mult):
+					large_fight_mult_ok = false
+					print("[FAIL] %s fight_length_multiplier=%.2f expected=%.2f" % [f.id, f.fight_length_multiplier, expected_mult])
+		_check(large_fish_count == 15 and large_music_ok,
+			"All %d large fish have Through The Fire And Flames FishMusicEntry in GameDB" % large_fish_count)
+		_check(large_fish_count == 15 and large_fight_mult_ok,
+			"All %d large fish have expected fight_length_multiplier (5.0 bosses, 3.0 others)" % large_fish_count)
+
+	fm.call("_play_fish_music", "fish_yellowfin_tuna")
+	await process_frame
+	var fmp := fm.find_child("FishMusicPlayer", true, false) as AudioStreamPlayer
+	_check(fmp != null and fmp.playing, "FishingManager plays fish_yellowfin_tuna via GameDB fallback")
+	if fmp != null and fmp.stream is AudioStreamMP3:
+		_check((fmp.stream as AudioStreamMP3).loop, "Fish music MP3 stream has loop enabled")
+	if gm != null:
+		_check(bool(gm.get("_music_suppressed")), "GameManager scene music suppressed while fish music plays")
+
+	fm.call("_play_fish_music", "fish_marlin")
+	await process_frame
+	_check(fmp != null and fmp.playing, "FishingManager plays fish_marlin music")
+
+	fm.call("_stop_fish_music")
+	await process_frame
+	if gm != null:
+		_check(not bool(gm.get("_music_suppressed")), "GameManager scene music restored after _stop_fish_music")
+
 	scene.queue_free()
 	await process_frame
 	print("=== Phase A Integration Tests Summary: %d passed, %d failed ===" % [_passed, _failed])

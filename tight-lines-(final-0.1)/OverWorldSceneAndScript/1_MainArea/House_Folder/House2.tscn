@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://hxm03sjg6x1u" path="res://OverWorldSceneAndScript/1_MainArea/House_Folder/tiles and items.png" id="2_6pvbn"]
 [ext_resource type="PackedScene" uid="uid://ci251yh0hs7xa" path="res://OverWorldSceneAndScript/Character_Avatar/Player.tscn" id="3_6pvbn"]
 [ext_resource type="Texture2D" uid="uid://dijybmbte323q" path="res://Assets/2D/TileSets/Interiors and Fishpens.png" id="5_qmnps"]
+[ext_resource type="PackedScene" uid="uid://dhe1aayjlfn5g" path="res://UIScenesAndScript/FishTankUI/FishTank.tscn" id="6_4hloe"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_332vo"]
 texture = ExtResource("1_id4lf")
@@ -262,6 +263,9 @@ texture = ExtResource("5_qmnps")
 [sub_resource type="TileSet" id="TileSet_3qwl2"]
 sources/0 = SubResource("TileSetAtlasSource_4hloe")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3qwl2"]
+size = Vector2(89.5, 20)
+
 [node name="House2" type="Node2D" unique_id=546978203]
 script = ExtResource("1_ut7pq")
 
@@ -280,6 +284,10 @@ polygon = PackedVector2Array(205, 465, 205, 576, 672, 576, 670, 473, 206, 473, 1
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("3_6pvbn")]
 position = Vector2(263, 515)
 
+[node name="FishTankUI" parent="Player/CanvasLayer/2DSceneUI/GameHUD/Overlays" parent_id_path=PackedInt32Array(394178850, 1628659695, 1268247505, 1955864332) index="5" unique_id=451500958 instance=ExtResource("6_4hloe")]
+visible = false
+layout_mode = 1
+
 [node name="House2ToHouse1" type="Node2D" parent="." unique_id=1494793175]
 position = Vector2(263, 564)
 scale = Vector2(2, 1)
@@ -295,4 +303,20 @@ tile_set = SubResource("TileSet_3qwl2")
 format = 2
 layer_0/tile_data = PackedInt32Array(524296, 0, 3)
 
+[node name="FishTank" type="Node2D" parent="." unique_id=1518463790]
+position = Vector2(263, 564)
+scale = Vector2(2, 1)
+
+[node name="FishTank" type="Area2D" parent="FishTank" unique_id=1268910390]
+position = Vector2(37.5, -82)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FishTank/FishTank" unique_id=597052737]
+position = Vector2(35.5, -1)
+shape = SubResource("RectangleShape2D_3qwl2")
+
 [connection signal="body_entered" from="House2ToHouse1/House2ToHouse1" to="Player" method="_on_house_2_to_house_1_body_entered"]
+[connection signal="body_entered" from="FishTank/FishTank" to="." method="_on_fish_tank_body_entered"]
+
+[editable path="Player"]
+[editable path="Player/CanvasLayer/2DSceneUI"]
+[editable path="Player/CanvasLayer/2DSceneUI/GameHUD"]

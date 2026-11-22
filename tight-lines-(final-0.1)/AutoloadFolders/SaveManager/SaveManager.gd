@@ -32,6 +32,7 @@ signal equipment_changed   # owned rods, equipped rod or equipped bait changed
 signal difficulty_changed(difficulty: String)
 signal fish_caught(fish_id: String)
 signal fish_record_broken(fish_id: String, size_cm: float, weight_kg: float)
+signal fish_tank_changed
 signal money_changed(amount: int)
 
 const SAVE_DIR := "user://saves/"
@@ -57,6 +58,7 @@ var _unlock_flags: Array = []      # Array of String
 var _owned_rods: Array = []        # Array of String (rod ids)
 var _caught_fish: Array = []       # Array of String (fish ids)
 var _fish_records: Dictionary = {} # { fish_id: { count, best_size_cm, best_weight_kg } }
+var _fish_tank: Array = []         # Array of { item_id: String, meta: Dictionary }
 var _equipped_rod := ""
 var _equipped_bait := ""
 var _difficulty := NEW_GAME_DIFFICULTY
@@ -162,6 +164,7 @@ func build_save_data() -> Dictionary:
 		"owned_rods": _owned_rods.duplicate(),
 		"caught_fish": _caught_fish.duplicate(),
 		"fish_records": _fish_records.duplicate(true),
+		"fish_tank": _fish_tank.duplicate(true),
 		"equipped_rod": _equipped_rod,
 		"equipped_bait": _equipped_bait,
 	}
@@ -223,6 +226,8 @@ func apply_save_data(data: Dictionary) -> void:
 		for fid in _fish_records.keys():
 			if not _caught_fish.has(fid):
 				_caught_fish.append(fid)
+	if data.has("fish_tank"):
+		_fish_tank = _clean_fish_tank(data["fish_tank"])
 
 	# Rods.
 	if data.has("owned_rods"):
@@ -272,6 +277,7 @@ func apply_save_data(data: Dictionary) -> void:
 	equipment_changed.emit()
 	difficulty_changed.emit(_difficulty)
 	money_changed.emit(_money)
+	fish_tank_changed.emit()
 
 
 func save_slot(slot: int) -> bool:
@@ -438,6 +444,35 @@ func get_trophy_tier(fish_id: String, size_cm: float) -> String:
 
 
 # ============================================================================
+# FISH TANK
+# ============================================================================
+
+func get_fish_tank() -> Array:
+	return _fish_tank.duplicate(true)
+
+
+func add_tank_fish(fish_id: String, meta: Dictionary = {}) -> bool:
+	if not _db_knows("has_fish", fish_id):
+		push_warning("SaveManager: unknown fish id '%s'." % fish_id)
+		return false
+	_fish_tank.append({
+		"item_id": fish_id,
+		"meta": meta.duplicate(true),
+	})
+	fish_tank_changed.emit()
+	return true
+
+
+func remove_tank_fish(index: int) -> Dictionary:
+	if index < 0 or index >= _fish_tank.size():
+		return {}
+	var entry: Dictionary = (_fish_tank[index] as Dictionary).duplicate(true)
+	_fish_tank.remove_at(index)
+	fish_tank_changed.emit()
+	return entry
+
+
+# ============================================================================
 # RODS AND BAIT
 # ============================================================================
 
@@ -586,6 +621,7 @@ func _reset_player_state() -> void:
 	_owned_rods = NEW_GAME_OWNED_ROD_IDS.duplicate()
 	_caught_fish = []
 	_fish_records = {}
+	_fish_tank = []
 	_equipped_rod = NEW_GAME_EQUIPPED_ROD
 	_equipped_bait = NEW_GAME_EQUIPPED_BAIT
 	_difficulty = NEW_GAME_DIFFICULTY
@@ -660,6 +696,28 @@ func _clean_fish_records(raw: Variant) -> Dictionary:
 			"best_size_cm": maxf(float(entry.get("best_size_cm", 0.0)), 0.0),
 			"best_weight_kg": maxf(float(entry.get("best_weight_kg", 0.0)), 0.0),
 		}
+	return result
+
+
+func _clean_fish_tank(raw: Variant) -> Array:
+	var result: Array = []
+	if not (raw is Array):
+		push_warning("SaveManager: fish_tank is not a list; ignored.")
+		return result
+	for entry in raw:
+		if not (entry is Dictionary):
+			continue
+		var fid := String(entry.get("item_id", ""))
+		if fid == "" or not _db_knows("has_fish", fid):
+			push_warning("SaveManager: dropped unknown tank fish '%s'." % fid)
+			continue
+		var meta: Dictionary = (entry["meta"] as Dictionary).duplicate(true) if entry.get("meta") is Dictionary else {}
+		if meta.has("size_cm"):
+			meta["size_cm"] = maxf(float(meta["size_cm"]), 0.0)
+		result.append({
+			"item_id": fid,
+			"meta": meta,
+		})
 	return result
 
 

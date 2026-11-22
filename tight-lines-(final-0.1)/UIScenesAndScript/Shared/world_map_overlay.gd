@@ -169,7 +169,7 @@ func refresh() -> void:
 					caught += 1
 			progress_txt = "%d / %d Species" % [caught, total] if is_open else "Locked"
 		if is_open and not can_fast_travel:
-			progress_txt += " (Boat via Calatagan)"
+			progress_txt += "\n(Boat via Calatagan)"
 
 		btn.disabled = (not is_open) or (not can_fast_travel)
 		btn.text = "%s\n%s  •  %s" % [dest["name"], dest["region"], progress_txt]
@@ -227,7 +227,7 @@ func _build_ui() -> void:
 	add_child(center)
 
 	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(780, 520)
+	panel.custom_minimum_size = Vector2(820, 576)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.24, 0.17, 0.10, 0.95)
 	style.border_color = Color(0.88, 0.74, 0.46, 1.0)
@@ -293,7 +293,8 @@ func _build_ui() -> void:
 		var btn := Button.new()
 		btn.name = "Rest_%s" % entry["phase"]
 		btn.text = entry["label"]
-		btn.custom_minimum_size = Vector2(138, 40)
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.custom_minimum_size = Vector2(154, 40)
 		btn.add_theme_font_size_override("font_size", 16)
 		btn.pressed.connect(_on_rest_pressed.bind(entry["phase"]))
 		rest_row.add_child(btn)
@@ -312,7 +313,9 @@ func _build_ui() -> void:
 		var btn := Button.new()
 		btn.name = "Dest_%s" % sid
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn.custom_minimum_size = Vector2(320, 68)
+		btn.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		btn.custom_minimum_size = Vector2(360, 86)
 		btn.add_theme_font_size_override("font_size", 17)
 		btn.pressed.connect(_on_destination_pressed.bind(sid))
 		_dest_grid.add_child(btn)
