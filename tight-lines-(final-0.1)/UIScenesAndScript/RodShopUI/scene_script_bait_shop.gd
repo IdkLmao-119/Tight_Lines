@@ -85,10 +85,16 @@ func refresh_ui() -> void:
 
 		var display_name: String = entry["fallback_name"]
 		var tex: Texture2D = null
+		var is_unlimited: bool = (bait_id == "bait_1")
 		if GameDB.has_bait(bait_id):
 			var record: BaitData = GameDB.get_bait(bait_id)
 			display_name = record.display_name
 			tex = record.icon
+			is_unlimited = record.unlimited
+
+		if is_unlimited:
+			card.configure(bait_id, "%s (∞)" % display_name, tex, "Owned (∞)", true)
+			continue
 
 		var owned_count := InventoryManager.count_of(bait_id)
 		var title := "%s (x%d)" % [display_name, owned_count]
@@ -103,6 +109,10 @@ func _buy_bait(bait_id: String) -> void:
 	if entry.is_empty():
 		return
 
+	if (GameDB.has_bait(bait_id) and GameDB.get_bait(bait_id).unlimited) or bait_id == "bait_1":
+		refresh_ui()
+		return
+
 	var price: int = entry["price"]
 	var pack_count: int = entry["pack_count"]
 	var display_name: String = GameDB.get_bait(bait_id).display_name if GameDB.has_bait(bait_id) else String(entry["fallback_name"])
@@ -113,7 +123,7 @@ func _buy_bait(bait_id: String) -> void:
 		return
 
 	if not SaveManager.spend_money(price):
-		purchase_failed.emit("Not enough money for %s (%d G needed)." % [display_name, price])
+		purchase_failed.emit("Not enough money for %s (₱%d needed)." % [display_name, price])
 		refresh_ui()
 		return
 

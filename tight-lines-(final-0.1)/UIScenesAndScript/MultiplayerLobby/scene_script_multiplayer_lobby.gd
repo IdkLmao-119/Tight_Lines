@@ -181,9 +181,21 @@ func _restore_lobby_memory() -> void:
 
 
 func _build_match_options_bar() -> void:
-	var parent_box := _duration_value_label.get_parent().get_parent()
-	if parent_box == null:
+	var duration_row := _duration_value_label.get_parent() as Control
+	if duration_row == null:
 		return
+	var margin_box := duration_row.get_parent()
+	if margin_box == null:
+		return
+	var vbox := margin_box as VBoxContainer
+	if vbox == null:
+		vbox = VBoxContainer.new()
+		vbox.name = "DurationVBox"
+		vbox.add_theme_constant_override("separation", 8)
+		margin_box.remove_child(duration_row)
+		margin_box.add_child(vbox)
+		vbox.add_child(duration_row)
+
 	var row := HBoxContainer.new()
 	row.name = "MatchOptionsRow"
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -203,7 +215,7 @@ func _build_match_options_bar() -> void:
 	_arena_button.pressed.connect(_cycle_arena)
 	row.add_child(_arena_button)
 
-	parent_box.add_child(row)
+	vbox.add_child(row)
 	_refresh_match_options_ui()
 
 
@@ -394,7 +406,7 @@ func _refresh_readiness_ui() -> void:
 	_connection_count_label.text = "%d / 2 Connected" % connected_count
 
 	var im := get_node_or_null("/root/InputManager")
-	var debug_kb_allowed := OS.is_debug_build() and im != null and bool(im.get("debug_keyboard_p2"))
+	var debug_kb_allowed := im != null and bool(im.get("debug_keyboard_p2"))
 
 	if connected_count == 2:
 		_start_match_button.disabled = false

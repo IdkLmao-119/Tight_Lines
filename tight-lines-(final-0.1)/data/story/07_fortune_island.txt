@@ -47,9 +47,8 @@ Look at how far the Almanac has come.
 Marikina River had nothing. Now Cavite is finished, and Batangas is finished too.
 Lolo, you never got to fish like this. I'm doing it for both of us.
 
-Huh? Another page unlocked?
-!open_ui map
-There's another spot out there. I don't know where, but I'll find it.
+!open_ui almanac
+Every page is full. Every single fish in Lolo's Philippine Almanac... it's finally complete.
 
-But it can wait. The sea's still right here, and I'm not done with it.
-!objective Travel to the next area when you're ready.
+Time to take this back where it all started.
+!objective Return home to Marikina City.

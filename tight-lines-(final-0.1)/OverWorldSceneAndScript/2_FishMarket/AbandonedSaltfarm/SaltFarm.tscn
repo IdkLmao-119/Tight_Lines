@@ -1173,7 +1173,7 @@ layer_2/tile_data = PackedInt32Array(655449, 393216, 16, 589913, 393216, 16, 589
 polygon = PackedVector2Array(1318, 131, 1318, 232, 1318, 249, 1130, 251, 1128, 278, 1130, 351, 1935, 348, 1934, 400, 1249, 405, 1078, 404, 1080, 269, 1080, 254, 1015, 254, 1017, 126, 1303, 125, 1169, 37, 864, 64, 863, 340, 1181, 527, 1677, 540, 2158, 488, 2058, 154, 1412, -60, 1248, 95)
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_i7p7j")]
-position = Vector2(1289, 444)
+position = Vector2(1275, 190)
 
 [node name="Node2D" type="Node2D" parent="." unique_id=1844142663]
 
@@ -1189,4 +1189,29 @@ tile_set = SubResource("TileSet_wkc13")
 format = 2
 layer_0/tile_data = PackedInt32Array(131114, 196608, 2)
 
+[node name="Jeep" type="Node2D" parent="." unique_id=1739409685]
+
+[node name="Jeep" type="Area2D" parent="Jeep" unique_id=554587955]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Jeep/Jeep" unique_id=2046524502]
+position = Vector2(1224, 168)
+scale = Vector2(0.3, 1)
+shape = SubResource("RectangleShape2D_8hiio")
+
+[node name="SaltFarmToFishPen" type="Node2D" parent="." unique_id=1739409686]
+
+[node name="SaltFarmToFishPen" type="Area2D" parent="SaltFarmToFishPen" unique_id=554587956]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SaltFarmToFishPen/SaltFarmToFishPen" unique_id=2046524503]
+position = Vector2(1040, 190)
+scale = Vector2(0.35, 1)
+shape = SubResource("RectangleShape2D_8hiio")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="SaltFarmToFishPen/SaltFarmToFishPen" unique_id=2046524504]
+position = Vector2(1095, 380)
+scale = Vector2(0.25, 0.8)
+shape = SubResource("RectangleShape2D_8hiio")
+
 [connection signal="body_entered" from="Node2D/SaltFarm3DScene" to="Player" method="_on_salt_farm_3d_scene_body_entered"]
+[connection signal="body_entered" from="Jeep/Jeep" to="Player" method="_on_jeep_body_entered"]
+[connection signal="body_entered" from="SaltFarmToFishPen/SaltFarmToFishPen" to="Player" method="_on_salt_farm_to_fish_pen_body_entered"]

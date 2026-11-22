@@ -9,7 +9,6 @@ scientific_name = "Gambusia affinis"
 description = "A tiny, swift surface-feeder renowned for consuming vast quantities of mosquito larvae.
 Local Name:  Kataba"
 base_price = 10
-speed = 3.0
 pull_strength = 8.0
 stamina = 45.0
 min_size = 3.0

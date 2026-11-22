@@ -34,6 +34,9 @@ extends ItemData
 ## as weight 1). Must not be below 0. A bait the pit makes should not be unlimited (a test checks it).
 @export_range(0.0, 100.0, 0.5, "or_greater") var compost_weight: float = 0.0
 
+## Shop price in currency (0 = free / not sold).
+@export_range(0, 100000, 1, "or_greater") var price: int = 0
+
 
 func get_id_prefix() -> String:
 	return "bait_"

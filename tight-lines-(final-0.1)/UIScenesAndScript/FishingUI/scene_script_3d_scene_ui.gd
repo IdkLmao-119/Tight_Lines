@@ -23,6 +23,7 @@ var _pulse_time := 0.0
 func _ready() -> void:
 	hud.return_requested.connect(_on_return_requested)
 	_build_fishing_hud()
+	move_child(hud, -1)
 
 
 func _process(delta: float) -> void:

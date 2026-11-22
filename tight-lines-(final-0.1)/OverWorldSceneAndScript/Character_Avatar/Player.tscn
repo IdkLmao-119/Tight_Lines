@@ -227,7 +227,6 @@ script = ExtResource("1_schp4")
 position = Vector2(0, 2.5)
 scale = Vector2(1.5, 1.5)
 shape = SubResource("RectangleShape2D_schp4")
-one_way_collision = true
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=729536495]
 zoom = Vector2(3, 3)

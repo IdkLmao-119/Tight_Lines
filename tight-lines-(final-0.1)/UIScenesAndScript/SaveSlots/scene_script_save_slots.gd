@@ -45,9 +45,11 @@ func _ready() -> void:
 
 
 func open() -> void:
+	var was_visible := visible
 	visible = true
-	refresh_slot_labels()
-	_update_action_buttons()
+	if was_visible:
+		refresh_slot_labels()
+		_update_action_buttons()
 	if not _slot_buttons.is_empty():
 		_slot_buttons[0].grab_focus()
 

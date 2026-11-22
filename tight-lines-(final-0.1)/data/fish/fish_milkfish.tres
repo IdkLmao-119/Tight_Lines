@@ -10,7 +10,6 @@ description = "A sleek, powerful swimmer with a forked tail that travels in scho
 Local Name: Bangus"
 size_class = "medium"
 base_price = 42
-speed = 4.5
 pull_strength = 12.0
 stamina = 60.0
 min_size = 30.0
@@ -18,6 +17,5 @@ avg_size = 55.0
 max_size = 90.0
 avg_weight = 3.0
 icon = ExtResource("1_nf3s0")
-grid_width = 2
 id = "fish_milkfish"
 display_name = "Milkfish"

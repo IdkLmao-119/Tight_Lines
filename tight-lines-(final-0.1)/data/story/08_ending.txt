@@ -15,7 +15,56 @@ Now I know exactly what could be in there.
 === ending_hallway | scene: overworld_house_1 | requires: ending_street
 @john
 Home.
-!tutorial Press [E] / A to interact with Lolo's photo.
+
+!open_ui photo_lolo
+@john
+Hi, Lolo.
+I used to walk past you every day and never stop.
+
+!box parchment
+@john:sad
+(quietly) Lolo...
+I did it. I filled the pages.
+
+Not all of them, and not the whole world. But the Philippines.
+Marikina River, Imus, Kawit, Noveleta, the mangroves, and Fortune Island.
+
+I caught fish you never got to see. I wish you could have been there.
+
+When I found your diary, I was stressed and tired, and I just wanted to get away from my desk.
+I didn't know it would change everything.
+
+You wrote that you regretted not fishing here.
+I read that and I couldn't stop thinking about it.
+
+So I went.
+
+I understand now why you smiled so much in this photo.
+It's not about the size of the fish.
+
+It's the waiting, and the not knowing,
+and the moment when the line pulls and everything else goes quiet.
+
+You gave me that, even without meaning to.
+
+You said maybe someone else would pick up the rod one day.
+I did, Lolo. I picked it up.
+
+And I'm not going to put it down.
+Thank you for the dream. I'll keep it going.
+
+I love you, Lolo.
+
+!wait 0.8
+@diary
+"Well done, apo. Now keep fishing."
+
+@john:happy
+(softly) I will.
+
+!box normal
+!flag story_completed
+!open_ui credits
 
 
 === ending_message_to_lolo

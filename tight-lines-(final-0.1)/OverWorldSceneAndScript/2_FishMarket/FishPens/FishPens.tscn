@@ -1225,6 +1225,19 @@ visible = false
 position = Vector2(418.5, 825)
 shape = SubResource("RectangleShape2D_ptis5")
 
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="FishPenToSaltFarm/FishPenToSaltFarm" unique_id=1561296254]
+position = Vector2(1365, 451)
+shape = SubResource("RectangleShape2D_ptis5")
+
+[node name="Jeep" type="Node2D" parent="." unique_id=1739409684]
+
+[node name="Jeep" type="Area2D" parent="Jeep" unique_id=554587954]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Jeep/Jeep" unique_id=2046524501]
+position = Vector2(472, 360)
+scale = Vector2(0.75, 1)
+shape = SubResource("RectangleShape2D_ptis5")
+
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("4_0o1kc")]
 position = Vector2(512, 362)
 
@@ -1237,4 +1250,5 @@ position = Vector2(1129.5, 864.5)
 shape = SubResource("RectangleShape2D_jsx4f")
 
 [connection signal="body_entered" from="FishPenToSaltFarm/FishPenToSaltFarm" to="Player" method="_on_fish_pen_to_salt_farm_body_entered"]
+[connection signal="body_entered" from="Jeep/Jeep" to="Player" method="_on_jeep_body_entered"]
 [connection signal="body_entered" from="Node2D/FishPen3DScene" to="Player" method="_on_fish_pen_3d_scene_body_entered"]

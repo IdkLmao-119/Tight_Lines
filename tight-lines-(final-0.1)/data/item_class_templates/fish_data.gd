@@ -35,10 +35,6 @@ extends ItemData
 
 @export_group("Fishing")
 
-## How hard the fish is to catch: 1.0 = baseline, higher = harder. Scales the reel-bar drift and the
-## tension rise in the minigame. It does NOT change the bite window.
-@export_range(1.0, 100.0, 0.05, "or_greater") var speed: float = 1.0
-
 ## How hard the fish pulls on the line (compared with the rod's line_strength). Suggested range
 ## 2 to 8; must be above 0. TEMPORARY range, to be tuned with FishingManager.
 @export_range(0.1, 100.0, 0.1, "or_greater") var pull_strength: float = 4.0
@@ -46,6 +42,9 @@ extends ItemData
 ## How long the fish can fight before it tires, in seconds. Suggested range 10 to 30; must be above 0.
 ## TEMPORARY range, to be tuned with FishingManager.
 @export_range(1.0, 600.0, 0.5, "or_greater", "suffix:s") var stamina: float = 20.0
+
+## Multiplies how long the reel fight lasts for this species (1.0 = normal, 5.0 = 5x longer). Must be above 0.
+@export_range(0.1, 20.0, 0.1, "or_greater", "suffix:x") var fight_length_multiplier: float = 1.0
 
 @export_group("Size and weight")
 

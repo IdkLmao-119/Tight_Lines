@@ -28,6 +28,7 @@ signal dialogue_hidden
 signal box_style_changed(style: String)
 signal command_emitted(command: String, args: PackedStringArray)
 signal notice_requested(text: String)
+signal jeep_reached
 
 signal _advanced
 signal _chosen(index: int)
@@ -79,8 +80,9 @@ var _cutscenes: Dictionary = {}        # { id: {id, file, options, ops, labels} 
 var _order: Array = []                 # cutscene ids in story order
 var _running_id := ""
 var _skipping := false
+var _stopping := false
 var _scene_after := ""
-var _queued_cutscene := ""             # e.g. quest completion waiting for overworld
+var _queued_cutscenes: Array[String] = [] # e.g. quest completions waiting for overworld
 var _prev_input_context := -1
 var _warned_speakers: Dictionary = {}
 var _slug := RegEx.new()
@@ -129,12 +131,17 @@ func play(cutscene_id: String) -> void:
 		return
 	_running_id = cutscene_id
 	_skipping = false
+	_stopping = false
 	_scene_after = ""
 	_lock_input()
 	box_style_changed.emit("normal")
 	cutscene_started.emit(cutscene_id)
 
 	await _run(_cutscenes[cutscene_id])
+
+	if _stopping:
+		_stopping = false
+		return
 
 	dialogue_hidden.emit()
 	box_style_changed.emit("normal")
@@ -148,6 +155,27 @@ func play(cutscene_id: String) -> void:
 		var gm := _autoload("GameManager")
 		if gm != null:
 			gm.call("change_scene", _scene_after)
+
+
+func stop() -> void:
+	if not is_playing():
+		return
+	var stopped_id := _running_id
+	_stopping = true
+	_skipping = true
+	_scene_after = ""
+	_running_id = ""
+	dialogue_hidden.emit()
+	box_style_changed.emit("normal")
+	_stop_shake()
+	_unlock_input()
+	_advanced.emit()
+	_chosen.emit(0)
+	cutscene_finished.emit(stopped_id)
+
+
+func clear_queued_cutscenes() -> void:
+	_queued_cutscenes.clear()
 
 
 func is_playing() -> bool:
@@ -184,6 +212,17 @@ func show_notice(text: String) -> void:
 	notice_requested.emit(text)
 
 
+func notify_jeep_reached() -> void:
+	jeep_reached.emit()
+
+
+func get_current_objective() -> String:
+	var dlg := get_node_or_null("DialogueBox")
+	if dlg != null and dlg.has_method("get_objective"):
+		return String(dlg.call("get_objective"))
+	return ""
+
+
 func has_cutscene(cutscene_id: String) -> bool:
 	return _cutscenes.has(cutscene_id)
 
@@ -212,6 +251,8 @@ func check_condition(cond: String) -> bool:
 
 
 func requirements_met(cutscene_id: String) -> bool:
+	if not _cutscenes.has(cutscene_id):
+		return false
 	for cond in _cutscenes[cutscene_id]["options"]["requires"]:
 		if not check_condition(String(cond)):
 			return false
@@ -472,6 +513,8 @@ func _run(cs: Dictionary) -> void:
 	var pc := 0
 	var steps := 0
 	while pc < ops.size():
+		if _stopping:
+			return
 		steps += 1
 		if steps > MAX_STEPS_WITHOUT_INPUT:
 			push_error("StoryManager: '%s' loops without waiting for the player; stopped." % cs["id"])
@@ -487,6 +530,8 @@ func _run(cs: Dictionary) -> void:
 				var has_choices: bool = pc < ops.size() and ops[pc]["op"] == "choice"
 				if not has_choices:
 					await _advanced
+					if _stopping:
+						return
 			"choice":
 				steps = 0
 				if _skipping:
@@ -497,6 +542,8 @@ func _run(cs: Dictionary) -> void:
 					texts.append(_substitute(String(option["text"])))
 				choices_shown.emit(texts)
 				var index: int = await _chosen
+				if _stopping:
+					return
 				index = clampi(index, 0, texts.size() - 1)
 				pc = labels[op["options"][index]["label"]]
 			"jump":
@@ -505,8 +552,8 @@ func _run(cs: Dictionary) -> void:
 				if check_condition(String(op["cond"])):
 					pc = labels[op["label"]]
 			"cmd":
-				var stop: bool = await _run_command(op)
-				if stop:
+				var stop_cmd: bool = await _run_command(op)
+				if stop_cmd or _stopping:
 					return
 
 
@@ -579,14 +626,14 @@ func _check_initial_scene() -> void:
 
 
 func _on_scene_changed(scene_id: String) -> void:
-	if is_playing():
-		return
-	if _queued_cutscene != "" and scene_id.begins_with("overworld_"):
-		var qid := _queued_cutscene
-		_queued_cutscene = ""
-		if not has_seen(qid):
-			play(qid)
-			return
+	if _running_id != "":
+		stop()
+	if not _queued_cutscenes.is_empty() and scene_id.begins_with("overworld_"):
+		while not _queued_cutscenes.is_empty():
+			var qid: String = _queued_cutscenes.pop_front()
+			if not has_seen(qid):
+				play(qid)
+				return
 	var id := find_cutscene_for_scene(scene_id)
 	if id != "":
 		play(id)
@@ -602,8 +649,8 @@ func _on_quest_completed(quest_id: String) -> void:
 	var current_scene := String(gm.get("current_scene_id")) if gm != null else ""
 	if current_scene.begins_with("overworld_") and not is_playing():
 		play(cutscene_id)
-	else:
-		_queued_cutscene = cutscene_id
+	elif not _queued_cutscenes.has(cutscene_id):
+		_queued_cutscenes.append(cutscene_id)
 
 
 func _mark_seen(cutscene_id: String) -> void:

@@ -13,7 +13,6 @@ Locations"
 icon_3d = ExtResource("1_mbknm")
 size_class = "large"
 base_price = 45
-speed = 6.0
 pull_strength = 15.0
 stamina = 75.0
 min_size = 40.0
@@ -21,6 +20,5 @@ avg_size = 70.0
 max_size = 140.0
 avg_weight = 4.5
 icon = ExtResource("1_f4cut")
-grid_width = 3
 id = "fish_african_catfish"
 display_name = "African Catfish"

@@ -1811,6 +1811,15 @@ tile_set = SubResource("TileSet_1tnnr")
 format = 2
 layer_0/tile_data = PackedInt32Array(327680, 393216, 6)
 
+[node name="Jeep" type="Node2D" parent="." unique_id=1739409687]
+
+[node name="Jeep" type="Area2D" parent="Jeep" unique_id=554587957]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Jeep/Jeep" unique_id=2046524505]
+position = Vector2(120, 200)
+scale = Vector2(2, 3)
+shape = SubResource("RectangleShape2D_4u8ac")
+
 [connection signal="body_entered" from="MangroveToIsland/MangroveToIsland" to="Player" method="_on_mangrove_to_island_body_entered"]
-[connection signal="body_entered" from="Node2D/Mangrove3DScene" to="Player" method="_on_area_2d_body_entered"]
 [connection signal="body_entered" from="Node2D/Mangrove3DScene" to="Player" method="_on_mangrove_3d_scene_body_entered"]
+[connection signal="body_entered" from="Jeep/Jeep" to="Player" method="_on_jeep_body_entered"]

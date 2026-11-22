@@ -3,7 +3,7 @@ extends Node2D
 @onready var player: Node2D = $Player
 
 func get_scene_state() -> Dictionary:
-	return {"player_pos": player.global_position}
+	return {"player_pos": player.get_safe_return_position()}
 
 func _ready() -> void:
 	var mem: Dictionary = GameManager.recall("overworld_house_1")

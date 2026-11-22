@@ -313,7 +313,7 @@ environment = SubResource("Environment_i1y24")
 [node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
 script = ExtResource("7_nxvdb")
 player_anchors = [NodePath("../PlayerFishing")]
-rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
+rod_holders = [NodePath("../PlayerFishing/CharacterBody3D/FishingRod_Lvl3")]
 bobber_scene = ExtResource("8_ineg3")
 debug_spot_id = "location_calatagan"
 debug_rod_id = "rod_light"

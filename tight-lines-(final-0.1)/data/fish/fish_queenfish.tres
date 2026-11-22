@@ -8,9 +8,10 @@ script = ExtResource("1_uev2m")
 scientific_name = "Scomberoides commersonnianus"
 description = "A fast-swimming, coastal pelagic jack found around reefs, rocky headlands, and estuaries across the Indo-Pacific. It features a deeply compressed, bright silvery body marked with a row of dark oval blotches along its flanks, preying on small fish and cephalopods.
 Local Name: Talang Talang"
-speed = 3.0
-pull_strength = 8.0
-stamina = 45.0
+size_class = "large"
+base_price = 90
+pull_strength = 15.0
+stamina = 75.0
 min_size = 60.0
 avg_size = 90.0
 max_size = 120.0

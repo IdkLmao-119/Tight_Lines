@@ -10,7 +10,6 @@ description = "A large freshwater fish characterized by its very large head and 
 Local Name: Mamali"
 size_class = "large"
 base_price = 40
-speed = 6.0
 pull_strength = 15.0
 stamina = 75.0
 min_size = 50.0
@@ -18,6 +17,5 @@ avg_size = 80.0
 max_size = 140.0
 avg_weight = 6.0
 icon = ExtResource("1_i2rlu")
-grid_width = 3
 id = "fish_bighead_carp"
 display_name = "Bighead Carp"

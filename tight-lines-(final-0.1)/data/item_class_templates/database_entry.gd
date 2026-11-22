@@ -1,7 +1,7 @@
 ## DatabaseEntry: base class of every authored record in the game database.
 ##
 ## Each fish, bait, rod and location is one [code].tres[/code] file whose script is a subclass of
-## this class. The class definitions live in [code]res://resources/[/code] (the "shape" of the data);
+## this class. The class definitions live in [code]res://data/item_class_templates/[/code] (the "shape" of the data);
 ## the .tres files in [code]res://data/[/code] hold the actual values.
 ##
 ## [b]Class tree[/b]

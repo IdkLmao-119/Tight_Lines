@@ -10,7 +10,6 @@ description = "A resilient predator sporting camouflage stripes, often found in 
 Local Name: Dalag"
 size_class = "medium"
 base_price = 52
-speed = 4.5
 pull_strength = 12.0
 stamina = 60.0
 min_size = 20.0
@@ -18,6 +17,5 @@ avg_size = 40.0
 max_size = 75.0
 avg_weight = 2.2
 icon = ExtResource("1_at7jw")
-grid_width = 2
 id = "fish_striped_snakehead"
-display_name = "Striped Snakehea"
+display_name = "Striped Snakehead"

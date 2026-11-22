@@ -3475,6 +3475,10 @@ polygon = PackedVector2Array(1628, 421, 1682, 421, 1685, 423, 1686, 457, 1628, 4
 position = Vector2(1834, 502)
 shape = SubResource("CircleShape2D_tssdi")
 
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="RiverParkToSpawn/RiverParkToSpawn" unique_id=97144409]
+position = Vector2(1496, 440)
+shape = SubResource("CircleShape2D_tssdi")
+
 [node name="RiverParkToRiverParkFishingSpot" type="Node2D" parent="." unique_id=572732677]
 position = Vector2(258, 97)
 
@@ -3507,5 +3511,5 @@ tile_set = SubResource("TileSet_n0nod")
 format = 2
 layer_0/tile_data = PackedInt32Array(720952, 196608, 6)
 
-[connection signal="body_entered" from="RiverParkToSpawn/RiverParkToSpawn" to="Player" method="_on_river_park_to_spawn_body_entered"]
+[connection signal="body_entered" from="RiverParkToSpawn/RiverParkToSpawn" to="Player" method="_on_jeep_body_entered"]
 [connection signal="body_entered" from="RiverParkToRiverParkFishingSpot/RiverParkToRiverParkFishingSpot" to="Player" method="_on_river_park_to_river_park_fishing_spot_body_entered"]

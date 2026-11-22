@@ -110,13 +110,6 @@ const SCENES: Dictionary = {
 		"pausable": true,
 		"display_name": "Tackle & Fish Shop",
 	},
-	"overworld_fish_barter_shop": {
-		"path": "res://OverWorldSceneAndScript/1_MainArea/Shop_Folder/FishBarterShop.tscn",
-		"input": "overworld",
-		"music": "res://Assets/Audio/The+Other+Side.mp3",
-		"pausable": true,
-		"display_name": "Fish Barter Shop",
-	},
 
 	#Area 2
 	"overworld_fish_market": {
@@ -208,9 +201,6 @@ const SCENES: Dictionary = {
 	},
 }
 
-# Placeholder path of the inventory overlay UI (no owner yet).
-const INVENTORY_OVERLAY_SCENE := "res://ui/InventoryOverlay.tscn"
-
 # --- Tuning ----------------------------------------------------------------
 const FADE_TIME := 0.4              # seconds, each direction
 const MUSIC_CROSSFADE_TIME := 1.0   # seconds
@@ -284,7 +274,6 @@ var _loading_label: Label
 var _fade_tween: Tween
 var _scene_title_label: Label
 var _title_tween: Tween
-var _overlay_layer: CanvasLayer
 var _overlay_node: Node = null
 var _overlay_prev_input: String = ""
 
@@ -295,8 +284,6 @@ var _music_tween: Tween
 var _current_music_path: String = ""
 var _music_suppressed := false           # true while a fish song overrides the scene music
 var _warned_missing: Dictionary = {}     # so each missing file warns once
-var _pause_panel: Control
-var _last_resume_frame := -1
 
 
 func _ready() -> void:
@@ -494,7 +481,17 @@ func get_world_time_state() -> Dictionary:
 	}
 
 
-func set_world_time_state(state: Dictionary) -> void:
+func set_world_time_state(state_or_phase: Variant, p_weather: String = "", p_day_count: int = -1, p_game_minutes: float = -1.0) -> void:
+	var state: Dictionary = {}
+	if state_or_phase is Dictionary:
+		state = state_or_phase
+	else:
+		state = {
+			"time_of_day": String(state_or_phase),
+			"weather": p_weather,
+			"day_count": p_day_count if p_day_count >= 1 else world_day_count,
+			"game_minutes": p_game_minutes if p_game_minutes >= 0.0 else world_game_minutes,
+		}
 	if state.has("game_minutes"):
 		world_game_minutes = fposmod(float(state["game_minutes"]), 1440.0)
 	if state.has("day_count"):
@@ -525,7 +522,7 @@ func rest_to_phase(target_phase: String, new_weather: String = "") -> Dictionary
 	if new_weather != "":
 		world_weather = new_weather.strip_edges().to_lower()
 	else:
-		var pool := PackedStringArray(["clear", "cloudy", "rain", "fog"])
+		var pool := PackedStringArray(["clear", "cloudy", "rain", "storm"])
 		var db := get_node_or_null("/root/GameDB")
 		if db != null and db.has_method("get_condition_values"):
 			var db_pool: PackedStringArray = db.call("get_condition_values", "weather")
@@ -731,6 +728,8 @@ func set_music_suppressed(suppressed: bool, fade_seconds: float = 0.5) -> void:
 	_music_suppressed = suppressed
 	if _music_tween and _music_tween.is_valid():
 		_music_tween.kill()
+	if not _music_a.playing and not _music_b.playing:
+		return
 	_music_tween = create_tween()
 	_music_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	_music_tween.set_parallel(true)
@@ -739,10 +738,10 @@ func set_music_suppressed(suppressed: bool, fade_seconds: float = 0.5) -> void:
 		if not p.playing:
 			continue
 		if p == _music_active:
-			_music_tween.tween_property(p, "volume_db", SILENT_DB if suppressed else 0.0, fade)
+			_music_tween.parallel().tween_property(p, "volume_db", SILENT_DB if suppressed else 0.0, fade)
 		else:
 			# A leftover crossfade player: finish its fade-out.
-			_music_tween.tween_property(p, "volume_db", SILENT_DB, fade)
+			_music_tween.parallel().tween_property(p, "volume_db", SILENT_DB, fade)
 			_music_tween.chain().tween_callback(p.stop)
 
 
@@ -798,9 +797,38 @@ func _input(event: InputEvent) -> void:
 	if _overlay_node != null:
 		close_inventory()
 		get_viewport().set_input_as_handled()
-	elif get_tree().paused and _pause_reasons.has(REASON_USER):
-		_resume_from_pause()
-		get_viewport().set_input_as_handled()
+	elif get_tree().paused:
+		if _is_pause_submodal_open():
+			return
+		if _can_esc_unpause():
+			_resume_from_pause()
+			get_viewport().set_input_as_handled()
+
+
+func _is_pause_submodal_open() -> bool:
+	for node in get_tree().get_nodes_in_group("pause_submodal"):
+		if node is CanvasItem and (node as CanvasItem).is_visible_in_tree():
+			return true
+		if node is CanvasLayer and (node as CanvasLayer).visible:
+			return true
+	var save_slots := get_tree().root.find_child("SaveSlots", true, false)
+	if save_slots != null and current_scene_id != "save_slots":
+		if save_slots is CanvasItem and (save_slots as CanvasItem).is_visible_in_tree():
+			return true
+		if save_slots is CanvasLayer and (save_slots as CanvasLayer).visible:
+			return true
+	return false
+
+
+func _can_esc_unpause() -> bool:
+	if _pause_reasons.has(REASON_USER):
+		return true
+	if _pause_reasons.is_empty():
+		return false
+	for r in _pause_reasons.keys():
+		if not String(r).begins_with(REASON_DISCONNECT_PREFIX):
+			return false
+	return true
 
 
 # Clears the player's pause. In SINGLE-PLAYER it also clears a disconnect
@@ -853,33 +881,8 @@ func _current_scene_pausable() -> bool:
 # ============================================================================
 # INVENTORY OVERLAY  (single-player only, overworld + fishing)
 # ============================================================================
-# Opening pauses the game and switches input to MENU. Closing restores the
-# previous input context. The overlay UI calls close_inventory() itself
-# (e.g. on ui_cancel).
 func is_inventory_open() -> bool:
 	return _overlay_node != null
-
-
-func open_inventory() -> void:
-	if _overlay_node != null or is_changing_scene or is_multiplayer:
-		return
-	if not _is_overworld_scene(current_scene_id) and not _is_fishing_scene(current_scene_id):
-		return
-	if get_tree().paused:
-		return  # already paused (pause menu or disconnect)
-	if not ResourceLoader.exists(INVENTORY_OVERLAY_SCENE):
-		push_warning("GameManager: inventory overlay scene not found: %s" % INVENTORY_OVERLAY_SCENE)
-		return
-	var packed := load(INVENTORY_OVERLAY_SCENE) as PackedScene
-	if packed == null:
-		return
-
-	_overlay_node = packed.instantiate()
-	_overlay_layer.add_child(_overlay_node)
-	_overlay_prev_input = _current_input_name
-	_set_input_context("menu")
-	_add_pause_reason(REASON_OVERLAY)
-	inventory_overlay_changed.emit(true)
 
 
 func close_inventory() -> void:
@@ -890,13 +893,6 @@ func close_inventory() -> void:
 	_set_input_context(_overlay_prev_input)
 	_remove_pause_reason(REASON_OVERLAY)
 	inventory_overlay_changed.emit(false)
-
-
-func toggle_inventory() -> void:
-	if _overlay_node != null:
-		close_inventory()
-	else:
-		open_inventory()
 
 
 # ============================================================================
@@ -978,8 +974,6 @@ func _build_overlay() -> void:
 	_scene_title_label.modulate.a = 0.0
 	title_root.add_child(_scene_title_label)
 
-	# Inventory overlay layer sits UNDER the fade layer.
-	_overlay_layer = CanvasLayer.new()
 	var layer := CanvasLayer.new()
 	layer.layer = 100
 	add_child(layer)
@@ -1032,12 +1026,11 @@ func _build_overlay() -> void:
 func _connect_input_manager() -> void:
 	var im: Node = get_node_or_null(INPUT_MANAGER_PATH)
 	if im == null:
-		push_warning("GameManager: no InputManager at %s - pause/disconnect/inventory input disabled." % INPUT_MANAGER_PATH)
+		push_warning("GameManager: no InputManager at %s - pause/disconnect input disabled." % INPUT_MANAGER_PATH)
 		return
 	_try_connect(im, "pause_pressed", _on_pause_pressed)
 	_try_connect(im, "controller_disconnected", _on_controller_disconnected)
 	_try_connect(im, "controller_connected", _on_controller_connected)
-	_try_connect(im, "inventory_pressed", _on_inventory_pressed)
 
 
 func _try_connect(node: Node, signal_name: String, callable: Callable) -> void:
@@ -1049,10 +1042,6 @@ func _try_connect(node: Node, signal_name: String, callable: Callable) -> void:
 
 func _on_pause_pressed(_player_id: int) -> void:
 	toggle_pause()
-
-
-func _on_inventory_pressed(_player_id: int) -> void:
-	toggle_inventory()
 
 
 # A phone dropped during fishing: pause until it comes back (D3).

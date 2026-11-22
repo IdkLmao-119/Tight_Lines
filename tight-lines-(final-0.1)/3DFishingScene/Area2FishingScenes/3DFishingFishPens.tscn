@@ -288,7 +288,8 @@ environment = SubResource("Environment_i1y24")
 [node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
 script = ExtResource("7_tgr45")
 player_anchors = [NodePath("../PlayerFishing")]
-rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
+rod_holders = [NodePath("../PlayerFishing/CharacterBody3D/FishingRod_Lvl3")]
+water_level = -0.8650255
 bobber_scene = ExtResource("8_5s4s2")
 debug_spot_id = "location_fish_pens"
 debug_rod_id = "rod_light"
@@ -311,7 +312,7 @@ texture = SubResource("CompressedTexture2D_b03px")
 
 [node name="WeatherSystem" type="Node3D" parent="." unique_id=826944014]
 script = ExtResource("10_3w45k")
-start_weather = "clear"
+weather_change_game_minutes = 100.0
 avoid_repeat = false
 
 [node name="MudRoads2" type="Node3D" parent="." unique_id=2065130742]

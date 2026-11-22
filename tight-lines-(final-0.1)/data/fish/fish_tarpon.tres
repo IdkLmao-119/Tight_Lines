@@ -10,7 +10,6 @@ description = "A legendary game fish covered in giant silver scales, known for e
 Local Name: Buwan-buwan"
 size_class = "large"
 base_price = 120
-speed = 6.0
 pull_strength = 15.0
 stamina = 75.0
 min_size = 50.0
@@ -18,6 +17,5 @@ avg_size = 110.0
 max_size = 180.0
 avg_weight = 15.0
 icon = ExtResource("1_k5up2")
-grid_width = 4
 id = "fish_tarpon"
 display_name = "Tarpon"

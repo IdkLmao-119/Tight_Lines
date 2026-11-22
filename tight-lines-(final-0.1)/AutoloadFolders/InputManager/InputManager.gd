@@ -202,9 +202,15 @@ var context: InputContext = InputContext.MENU:
 	set(value):
 		if value == context:
 			return
+		var prev := context
 		context = value
 		_cast_charge_start = -1.0
 		_p2_cast_charge_start = -1.0
+		if prev == InputContext.OVERWORLD and context != InputContext.OVERWORLD:
+			for st in _state.values():
+				if st is Dictionary:
+					st["move"] = Vector2.ZERO
+					st["move_until"] = 0.0
 		context_changed.emit(context)
 		if debug_log:
 			print("[InputManager] context -> %s" % InputContext.keys()[context])
@@ -376,6 +382,8 @@ func get_release_strength(player_id: int = KEYBOARD_PLAYER_ID) -> float:
 # instantly from the swing, so this is 0 for them. Pass DEBUG_PLAYER2_ID
 # (or 2) for the debug second keyboard player's charge.
 func get_cast_charge(player_id: int = KEYBOARD_PLAYER_ID) -> float:
+	if player_id != KEYBOARD_PLAYER_ID and player_id != DEBUG_PLAYER2_ID:
+		return 0.0
 	var start := _p2_cast_charge_start if player_id == DEBUG_PLAYER2_ID else _cast_charge_start
 	if start < 0.0:
 		return 0.0
@@ -456,6 +464,8 @@ func _on_phone_connected(phone_id: int) -> void:
 func _on_phone_disconnected(phone_id: int) -> void:
 	_phones.erase(phone_id)
 	_state.erase(phone_id)
+	if _phones.is_empty():
+		_state.erase(KEYBOARD_PLAYER_ID)
 	print("[InputManager] controller disconnected: player %d" % phone_id)
 	controller_disconnected.emit(phone_id)
 
@@ -477,7 +487,12 @@ func _accept_phone_input(phone_id: int) -> int:
 		_set_device(pid, DEVICE_PHONE)
 	return pid
 
+func _is_paused_gameplay() -> bool:
+	return get_tree() != null and get_tree().paused and context != InputContext.MENU
+
 func _on_phone_swipe(phone_id: int, direction: String, _dx: float, _dy: float) -> void:
+	if _is_paused_gameplay():
+		return
 	var pid := _accept_phone_input(phone_id)
 	if pid < 0:
 		return
@@ -493,6 +508,8 @@ func _on_phone_swipe(phone_id: int, direction: String, _dx: float, _dy: float) -
 			_pulse_reel(pid)
 
 func _on_phone_tap(phone_id: int, _x: float, _y: float) -> void:
+	if _is_paused_gameplay():
+		return
 	var pid := _accept_phone_input(phone_id)
 	if pid < 0:
 		return
@@ -503,9 +520,10 @@ func _on_phone_tap(phone_id: int, _x: float, _y: float) -> void:
 			interact_pressed.emit(pid)
 		InputContext.FISHING:
 			interact_pressed.emit(pid)
-			cast_triggered.emit(pid, 0.6)
 
 func _on_phone_swing(phone_id: int, magnitude: float) -> void:
+	if _is_paused_gameplay():
+		return
 	var pid := _accept_phone_input(phone_id)
 	if pid < 0:
 		return
@@ -521,16 +539,20 @@ func _on_phone_swing(phone_id: int, magnitude: float) -> void:
 			cast_triggered.emit(pid, power)
 
 func _on_phone_tilt(phone_id: int, value: float) -> void:
-	if context != InputContext.FISHING:
+	if context != InputContext.FISHING or (get_tree() != null and get_tree().paused):
 		return
 	var pid := _phone_player_id(phone_id)
 	if pid < 0:
 		return
 	var st := _get_state(pid)
-	st["look"] = clampf(value, -1.0, 1.0)
+	var v := clampf(value, -1.0, 1.0)
+	var prev_tilt := float(st["look"]) if (_now() - float(st["look_time"]) <= TILT_TIMEOUT_SEC) else v
+	st["look"] = lerpf(prev_tilt, v, 0.35)
 	st["look_time"] = _now()
 
 func _on_phone_move(phone_id: int, x: float, y: float) -> void:
+	if _is_paused_gameplay() or context != InputContext.OVERWORLD:
+		return
 	var pid := _accept_phone_input(phone_id)
 	if pid < 0:
 		return
@@ -581,7 +603,10 @@ func _on_phone_knot_complete(phone_id: int, knot_name: String, accuracy: float) 
 # Helpers
 # ----------------------------------------------------------------------------
 func _swing_to_power(magnitude: float) -> float:
-	return clampf(inverse_lerp(SWING_MIN_MAGNITUDE, SWING_MAX_MAGNITUDE, magnitude), MIN_CAST_POWER, 1.0)
+	var active_th := lerpf(16.0, 12.0, clampf(cast_sensitivity, 0.0, 1.0))
+	var min_mag := active_th if magnitude >= active_th else SWING_MIN_MAGNITUDE
+	var t := clampf(inverse_lerp(min_mag, min_mag + 12.0, magnitude), 0.0, 1.0)
+	return lerpf(MIN_CAST_POWER, 1.0, t)
 
 # Zeroes out small values and rescales the rest so output still reaches +/-1.
 func _apply_deadzone(v: float, deadzone: float) -> float:
@@ -630,7 +655,7 @@ func _get_state(pid: int) -> Dictionary:
 	return _state[pid]
 
 func _on_phone_reel(phone_id: int, crank_delta: float) -> void:
-	if context != InputContext.FISHING:
+	if context != InputContext.FISHING or _is_paused_gameplay():
 		return
 	var pid := _accept_phone_input(phone_id)
 	if pid < 0 or absf(crank_delta) > CRANK_MAX_STEP:

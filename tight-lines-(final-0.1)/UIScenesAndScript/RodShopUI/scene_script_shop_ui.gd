@@ -34,9 +34,16 @@ func _ready() -> void:
 
 	if SaveManager.has_signal(&"money_changed"):
 		SaveManager.money_changed.connect(_update_money_label)
+	visibility_changed.connect(_on_visibility_changed)
 
 	_update_money_label(SaveManager.get_money())
 	show_choices()
+
+
+func _on_visibility_changed() -> void:
+	var im := get_node_or_null("/root/InputManager")
+	if im != null and im.has_method(&"set_context"):
+		im.call(&"set_context", InputManager.InputContext.MENU if visible else InputManager.InputContext.OVERWORLD)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -51,6 +58,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func open_shop() -> void:
 	visible = true
+	var im := get_node_or_null("/root/InputManager")
+	if im != null and im.has_method(&"set_context"):
+		im.call(&"set_context", InputManager.InputContext.MENU)
 	_update_money_label(SaveManager.get_money())
 	show_choices()
 	_sell_fish_button.grab_focus()
@@ -58,6 +68,9 @@ func open_shop() -> void:
 
 func close_shop() -> void:
 	visible = false
+	var im := get_node_or_null("/root/InputManager")
+	if im != null and im.has_method(&"set_context"):
+		im.call(&"set_context", InputManager.InputContext.OVERWORLD)
 	close_requested.emit()
 
 

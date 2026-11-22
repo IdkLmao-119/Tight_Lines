@@ -14,17 +14,6 @@
 [ext_resource type="PackedScene" uid="uid://gs0b8245xrex" path="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/rock_02.glb" id="11_03g4m"]
 [ext_resource type="PackedScene" uid="uid://bupjsnur3jhb5" path="res://Assets/3D/StylizedNaturePack_FreeSampler_v1.2/StylizedNaturePack_FreeSampler/GLB/flower_sunflower_01.glb" id="12_5ivq8"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_cawde"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qfde3"]
-transparency = 1
-albedo_texture = ExtResource("2_d6y1a")
-metallic_specular = 0.0
-roughness = 0.0
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_goktk"]
-size = Vector2(10, 10)
-
 [sub_resource type="Shader" id="Shader_k1q4s"]
 code = "// NOTE: Shader automatically converted from Godot Engine 4.6.2.stable's StandardMaterial3D.
 
@@ -160,6 +149,9 @@ shader_parameter/uv1_offset = Vector3(0, 0, 0)
 shader_parameter/uv2_scale = Vector3(1, 1, 1)
 shader_parameter/uv2_offset = Vector3(0, 0, 0)
 
+[sub_resource type="PlaneMesh" id="PlaneMesh_goktk"]
+size = Vector2(10, 10)
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u4n2x"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ud65s"]
@@ -170,17 +162,6 @@ shader_parameter/uv2_offset = Vector3(0, 0, 0)
 albedo_texture = ExtResource("2_d6y1a")
 
 [sub_resource type="BoxMesh" id="BoxMesh_8navb"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mhxq0"]
-cull_mode = 1
-albedo_color = Color(1.4348425, 1.4348425, 1.4348425, 1)
-albedo_texture = ExtResource("5_ed3u3")
-emission_enabled = true
-uv1_scale = Vector3(2, 2.055, 1)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_mhxq0"]
-cap_top = false
-cap_bottom = false
 
 [sub_resource type="Environment" id="Environment_i1y24"]
 background_mode = 1
@@ -198,23 +179,19 @@ albedo_texture = ExtResource("6_t1afk")
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5ivq8"]
+cull_mode = 1
+albedo_texture = ExtResource("5_ed3u3")
+metallic_specular = 0.0
+emission_energy_multiplier = 0.0
+uv1_scale = Vector3(1.5, 2, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ed3u3"]
+cap_top = false
+cap_bottom = false
+
 [node name="3dFishing2" type="Node3D" unique_id=836610391]
 script = ExtResource("1_lwidx")
-
-[node name="Land" type="Node3D" parent="." unique_id=225201374]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.3714695, 5)
-
-[node name="StaticBody3D" type="StaticBody3D" parent="Land" unique_id=870294090]
-transform = Transform3D(50, 0, 0, 0, 49.969543, -1.7449747, 0, 1.7449747, 49.969543, 0, -1, 0)
-
-[node name="SeaFloorCollisionShape3D" type="CollisionShape3D" parent="Land/StaticBody3D" unique_id=881990315]
-transform = Transform3D(10, 0, 0, 0, 9.993908, -0.3489949, 0, 0.3489949, 9.993908, 0, -1, 0)
-shape = SubResource("BoxShape3D_cawde")
-
-[node name="SeaFloorColor" type="MeshInstance3D" parent="Land/StaticBody3D" unique_id=1676985478]
-transform = Transform3D(0.99999976, 0, 0, 0, 0.99939084, -0.034899496, 0, 0.034899496, 0.99939084, 0, 0, 0)
-material_overlay = SubResource("StandardMaterial3D_qfde3")
-mesh = SubResource("PlaneMesh_goktk")
 
 [node name="WaterColor" type="MeshInstance3D" parent="." unique_id=1089644210]
 transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, 0, 0, 0)
@@ -273,7 +250,7 @@ omni_attenuation = 1.077
 omni_shadow_mode = 0
 
 [node name="MudRoads" type="Node3D" parent="." unique_id=867985978]
-transform = Transform3D(5, 0, 0, 0, 1, 0, 0, 0, 5, -19.9149, 0, 8.093548)
+transform = Transform3D(5, 0, 0, 0, 2, 0, 0, 0, 5, -19.9149, 0, 8.093548)
 
 [node name="MudRoadRight" type="StaticBody3D" parent="MudRoads" unique_id=2144219306]
 transform = Transform3D(3.999999, 0, 0, 0, 5, 0, 0, 0, 14.999996, -5, -1.620821, 2.624061)
@@ -309,13 +286,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02032268)
 material_overlay = SubResource("StandardMaterial3D_ncjx7")
 mesh = SubResource("BoxMesh_8navb")
 
-[node name="Background" type="Node3D" parent="." unique_id=336146113]
-transform = Transform3D(-3.278354e-05, 0, 750, 0, 150, 0, -750, 0, -3.278354e-05, 0, 73.4481, 0)
+[node name="MudRoadBack2" type="StaticBody3D" parent="MudRoads" unique_id=375516843]
+transform = Transform3D(14.999996, 0, 0, 0, 5, 0, 0, 0, 2.9999995, 3.9814932, -1.620821, 11.494522)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Background" unique_id=1420362856]
-transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 1.0000001, 0, 0.18371171, 0)
-material_overlay = SubResource("StandardMaterial3D_mhxq0")
-mesh = SubResource("CylinderMesh_mhxq0")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MudRoads/MudRoadBack2" unique_id=682857596]
+transform = Transform3D(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_y1byi")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MudRoads/MudRoadBack2" unique_id=2043505660]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02032268)
+material_overlay = SubResource("StandardMaterial3D_ncjx7")
+mesh = SubResource("BoxMesh_8navb")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2126582781]
 environment = SubResource("Environment_i1y24")
@@ -427,3 +408,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.833794, 0.88196534, -3.1558
 
 [node name="flower_sunflower_016" parent="." unique_id=777968990 instance=ExtResource("12_5ivq8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.732382, 0.8819651, -2.6456232)
+
+[node name="Background" type="Node3D" parent="." unique_id=1593170833]
+transform = Transform3D(-375.00003, 0, -649.51904, 0, 250, 0, 649.51904, 0, -375.00003, 0, -6.647423, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Background" unique_id=243325433]
+transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 1.0000001, 0, 0.18371171, 0)
+material_overlay = SubResource("StandardMaterial3D_5ivq8")
+mesh = SubResource("CylinderMesh_ed3u3")

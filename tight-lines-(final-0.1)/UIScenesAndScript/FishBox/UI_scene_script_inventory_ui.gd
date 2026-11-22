@@ -44,10 +44,12 @@ func _ready() -> void:
 
 
 func open() -> void:
+	var was_visible := visible
 	visible = true
-	_refresh_fish_buttons()
-	_update_mode_ui()
-	_highlight_focused.call_deferred()
+	if was_visible:
+		_refresh_fish_buttons()
+		_update_mode_ui()
+		_highlight_focused.call_deferred()
 
 
 func close() -> void:
@@ -302,10 +304,10 @@ func _on_fish_slot_pressed(slot_index: int) -> void:
 		if locked:
 			_update_mode_ui("%s is locked (★)! Unlock it in Fish Box before selling." % display_name)
 			return
-		InventoryManager.remove_item(uid)
-		SaveManager.add_money(price)
-		fish_sold.emit(display_name, price)
-		_update_mode_ui("Sold %s (%.1f cm) for +₱%d!" % [display_name, size_cm, price])
+		if InventoryManager.remove_item(uid) > 0:
+			SaveManager.add_money(price)
+			fish_sold.emit(display_name, price)
+			_update_mode_ui("Sold %s (%.1f cm) for +₱%d!" % [display_name, size_cm, price])
 	else:
 		var lock_note := "  [★ Locked]" if locked else ""
 		_update_mode_ui("%s%s — %.1f cm | %.2f kg | Value: ₱%d" % [display_name, lock_note, size_cm, weight, price])

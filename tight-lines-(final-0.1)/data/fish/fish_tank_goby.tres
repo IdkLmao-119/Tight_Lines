@@ -9,7 +9,6 @@ scientific_name = "Glossogobius giuris"
 description = "A heavily-built bottom-dweller with a broad head and strong pectoral fins for stability.
 Local Name: Biya"
 base_price = 22
-speed = 3.0
 pull_strength = 8.0
 avg_size = 18.0
 avg_weight = 0.35

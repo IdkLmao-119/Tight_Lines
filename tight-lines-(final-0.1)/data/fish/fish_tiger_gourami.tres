@@ -9,7 +9,6 @@ scientific_name = "Trichopodus pectoralis"
 description = "A larger relative of the gourami family displaying prominent vertical tiger-like banding.
 Local Name: Gourami"
 base_price = 25
-speed = 3.0
 pull_strength = 8.0
 stamina = 45.0
 avg_size = 18.0

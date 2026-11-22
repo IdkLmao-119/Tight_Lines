@@ -39,10 +39,14 @@ func _ready() -> void:
 	_sensitivity_slider.value_changed.connect(_on_sensitivity_slider_changed)
 	_sensitivity_slider.drag_ended.connect(_on_slider_drag_ended)
 	_sensitivity_input.text_submitted.connect(_on_sensitivity_input_submitted)
+	_sensitivity_input.focus_exited.connect(func() -> void:
+		_on_sensitivity_input_submitted(_sensitivity_input.text)
+	)
 
 	_save_button.pressed.connect(_on_save_button_pressed)
 	_back_button.pressed.connect(close)
 	_menu_button.pressed.connect(_on_menu_button_pressed)
+	_save_slot_menu.add_to_group(&"pause_submodal")
 	_save_slot_menu.close_requested.connect(_on_save_slot_menu_closed)
 	visibility_changed.connect(_on_visibility_changed)
 
@@ -51,10 +55,12 @@ func _ready() -> void:
 
 
 func open() -> void:
+	var was_visible := visible
 	_save_slot_menu.visible = false
 	visible = true
-	_apply_button_visibility()
-	_sync_values()
+	if was_visible:
+		_apply_button_visibility()
+		_sync_values()
 	_back_button.grab_focus()
 
 
@@ -63,6 +69,15 @@ func close() -> void:
 	_save_settings()
 	visible = false
 	close_requested.emit()
+
+
+func handle_mobile_action(action: String) -> void:
+	match action:
+		"back":
+			if _save_slot_menu.visible:
+				_on_save_slot_menu_closed()
+			else:
+				close()
 
 
 func _on_visibility_changed() -> void:

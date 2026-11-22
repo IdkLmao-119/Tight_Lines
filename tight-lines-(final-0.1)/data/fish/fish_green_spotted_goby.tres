@@ -9,7 +9,6 @@ scientific_name = "Glossogobius giuris"
 description = "A benthic ambush hunter that blends seamlessly into sandy and muddy bottoms.
 Local Name: Biya"
 base_price = 18
-speed = 3.0
 pull_strength = 8.0
 stamina = 45.0
 min_size = 8.0
@@ -18,4 +17,4 @@ max_size = 28.0
 avg_weight = 0.25
 icon = ExtResource("1_bpe8r")
 id = "fish_green_spotted_goby"
-display_name = "Green spotted Goby"
+display_name = "Green Spotted Goby"

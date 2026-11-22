@@ -2209,4 +2209,14 @@ layer_0/tile_data = PackedInt32Array(851977, 131072, 8, 851979, 131072, 8, 85198
 layer_1/name = "Layer1"
 layer_1/tile_data = PackedInt32Array(-196571, 1, 5)
 
+[node name="Jeep" type="Node2D" parent="." unique_id=1739409683]
+
+[node name="Jeep" type="Area2D" parent="Jeep" unique_id=554587953]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Jeep/Jeep" unique_id=2046524500]
+position = Vector2(536, 344)
+scale = Vector2(0.6, 0.5)
+shape = SubResource("RectangleShape2D_rdwqf")
+
 [connection signal="body_entered" from="Node2D/SeasidePark3DScene" to="Player" method="_on_seaside_park_3d_scene_body_entered"]
+[connection signal="body_entered" from="Jeep/Jeep" to="Player" method="_on_jeep_body_entered"]

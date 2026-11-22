@@ -140,7 +140,10 @@ public class FishingReelView extends View {
                 isDragging = true;
                 accumulatedDelta = 0f;               // NEW: no leftovers from the last crank
                 lastTouchAngleDeg = touchAngleDeg;
-                getParent().requestDisallowInterceptTouchEvent(true);
+                if (getParent() != null) {
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                }
+                invalidate();
                 return true;
 
             case MotionEvent.ACTION_MOVE: {
@@ -185,6 +188,7 @@ public class FishingReelView extends View {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 isDragging = false;
+                invalidate();
                 if (listener != null && Math.abs(accumulatedDelta) > 1f) {
                     listener.onReel(accumulatedDelta);
                     accumulatedDelta = 0f;

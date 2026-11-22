@@ -52,7 +52,7 @@ signal day_passed(day_number: int)
 @export var start_weather := ""                 # "" = random
 @export var avoid_repeat := true                # never the same weather twice in a row
 @export var weather_weights: Dictionary = {}    # e.g. {"storm": 0.3, "clear": 2.0}; missing = 1.0
-@export var fallback_weathers: PackedStringArray = ["clear", "cloudy", "rain", "storm", "fog"]
+@export var fallback_weathers: PackedStringArray = ["clear", "cloudy", "rain", "storm"]
 
 @export_group("Scene links (optional)")
 @export var world_environment: WorldEnvironment
@@ -82,7 +82,7 @@ const NIGHT_LIGHT := 0.12     # sun brightness multiplier at night (moonlight)
 var weather := ""
 var time_of_day := ""
 var game_minutes := 0.0       # minutes since midnight, 0..1440
-var day_count := 0
+var day_count := 1
 
 # --- Internals ---
 var _db: Node = null
@@ -97,6 +97,7 @@ var _base_fog_enabled := false
 var _base_fog_density := 0.0
 var _base_sun_energy := 1.0
 var _warned: Dictionary = {}
+var _cached_cameras: Array[Camera3D] = []
 
 
 func _ready() -> void:
@@ -119,6 +120,7 @@ func _ready() -> void:
 		_base_sun_energy = sun.light_energy
 
 	_build_rain()
+	_refresh_camera_cache()
 
 	var gm := get_node_or_null("/root/GameManager")
 	if gm != null and gm.has_method("get_world_time_state"):
@@ -193,6 +195,7 @@ func set_weather(word: String, immediate := false) -> void:
 
 # Pick a new random weather right now and restart the 10-minute timer.
 func roll_weather() -> void:
+	_weather_timer = 0.0
 	set_weather(_pick_weather())
 
 
@@ -219,6 +222,8 @@ func _push_to_game_manager() -> void:
 		gm.world_weather = weather
 	if time_of_day != "":
 		gm.world_time_of_day = time_of_day
+	if gm.has_method("set_world_time_state"):
+		gm.call(&"set_world_time_state", time_of_day, weather, maxi(day_count, 1), game_minutes)
 
 
 # ----------------------------------------------------------------------------
@@ -402,29 +407,41 @@ func _build_rain() -> void:
 	add_child(_rain)
 
 
+func _refresh_camera_cache() -> void:
+	_cached_cameras.clear()
+	var main_cam := get_viewport().get_camera_3d() if get_viewport() != null else null
+	if main_cam != null:
+		_cached_cameras.append(main_cam)
+	if get_tree() != null and get_tree().current_scene != null:
+		for vp in get_tree().current_scene.find_children("*", "SubViewport", true, false):
+			var sub_cam := (vp as SubViewport).get_camera_3d()
+			if sub_cam != null and not _cached_cameras.has(sub_cam):
+				_cached_cameras.append(sub_cam)
+
+
 # Follows the main camera, or the midpoint of all active split-screen SubViewport cameras.
 func _follow_camera() -> void:
 	if _rain == null:
 		return
-	var cams: Array[Camera3D] = []
-	var main_cam := get_viewport().get_camera_3d()
-	if main_cam != null:
-		cams.append(main_cam)
-	if get_tree() != null and get_tree().current_scene != null:
-		for vp in get_tree().current_scene.find_children("*", "SubViewport", true, false):
-			var sub_cam := (vp as SubViewport).get_camera_3d()
-			if sub_cam != null and not cams.has(sub_cam):
-				cams.append(sub_cam)
-	if cams.is_empty():
+	var valid_cams: Array[Camera3D] = []
+	for c in _cached_cameras:
+		if is_instance_valid(c):
+			valid_cams.append(c)
+	if valid_cams.is_empty():
+		_refresh_camera_cache()
+		for c in _cached_cameras:
+			if is_instance_valid(c):
+				valid_cams.append(c)
+	if valid_cams.is_empty():
 		return
 	var center := Vector3.ZERO
-	for c in cams:
+	for c in valid_cams:
 		center += c.global_position
-	center /= float(cams.size())
+	center /= float(valid_cams.size())
 	_rain.global_position = center + Vector3(0.0, rain_height, 0.0)
-	if cams.size() > 1 and _rain.process_material is ParticleProcessMaterial:
+	if valid_cams.size() > 1 and _rain.process_material is ParticleProcessMaterial:
 		var spread_x := rain_radius
-		for c in cams:
+		for c in valid_cams:
 			spread_x = maxf(spread_x, absf(c.global_position.x - center.x) + rain_radius)
 		(_rain.process_material as ParticleProcessMaterial).emission_box_extents = Vector3(spread_x, 0.5, rain_radius)
 

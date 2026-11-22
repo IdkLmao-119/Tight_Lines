@@ -9,7 +9,6 @@ scientific_name = "Sarotherodon melanotheron"
 description = "A resilient cichlid easily identified by the distinct dark pigmentation under its chin.
 Local Name: Tilapiang Arroyo"
 base_price = 20
-speed = 3.0
 pull_strength = 8.0
 avg_weight = 0.4
 icon = ExtResource("1_atb72")

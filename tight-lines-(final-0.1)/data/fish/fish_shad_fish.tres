@@ -10,7 +10,6 @@ description = "An anadromous schooling fish valued for its silvery scales and sp
 Local Name: Kabasi"
 size_class = "medium"
 base_price = 40
-speed = 4.5
 pull_strength = 12.0
 stamina = 60.0
 min_size = 20.0
@@ -18,6 +17,5 @@ avg_size = 35.0
 max_size = 55.0
 avg_weight = 1.3
 icon = ExtResource("1_qjb3y")
-grid_width = 2
 id = "fish_shad_fish"
 display_name = "Shad Fish"

@@ -58,6 +58,8 @@ func _run() -> void:
 
 	var map_btn := ow_ui.find_child("WorldMapButton", true, false) as Button
 	var map_overlay := ow_ui.find_child("WorldMapOverlay", true, false) as Control
+	var stuck_map_ui := ow_ui.find_child("WorldMapUi", true, false)
+	_check(stuck_map_ui == null, "Stuck WorldMapUi node is removed from GameHUD Overlays")
 	_check(map_btn != null and map_overlay != null, "OverworldUI built WorldMapButton and WorldMapOverlay")
 	_check(map_btn.text.contains("Day 4"), "WorldMapButton shows persistent Day 4: %s" % map_btn.text)
 
@@ -65,9 +67,18 @@ func _run() -> void:
 	await process_frame
 	_check(map_overlay.visible, "Clicking WorldMapButton opens WorldMapOverlay")
 
+	# Test mobile/D-Pad interaction inside WorldMapOverlay
+	map_overlay.call("handle_mobile_action", "back")
+	await process_frame
+	_check(not map_overlay.visible, "WorldMapOverlay handle_mobile_action('back') closes overlay")
+	ow_ui.call("toggle_world_map")
+	await process_frame
+	_check(map_overlay.visible, "toggle_world_map reopens WorldMapOverlay")
+
 	# Check locked vs unlocked destinations
 	var snap1: Dictionary = map_overlay.call("get_destination_snapshot")
 	_check(not bool(snap1["overworld_river_park"]["disabled"]), "Marikina River Park is unlocked at start")
+	_check(bool(snap1["overworld_mangrove"]["disabled"]), "Calatagan Mangroves is locked before unlock_calatagan")
 	_check(bool(snap1["overworld_island"]["disabled"]), "Fortune Island is locked before unlock_fortune_island")
 
 	# Rest to Dusk -> verify overlay & button update
@@ -78,11 +89,13 @@ func _run() -> void:
 	_check(String(gm.get("world_time_of_day")) == "dusk", "Clicking Rest_dusk advanced GameManager to dusk")
 	_check(map_btn.text.contains("17:30"), "WorldMapButton updated to 17:30: %s" % map_btn.text)
 
-	# Unlock Fortune Island -> verify map refreshes and unlocks it
+	# Unlock Calatagan & Fortune Island -> Calatagan unlocks on WorldMap, Fortune Island stays boat-only
+	sm.add_unlock_flag("unlock_calatagan")
 	sm.add_unlock_flag("unlock_fortune_island")
 	map_overlay.call("refresh")
 	var snap2: Dictionary = map_overlay.call("get_destination_snapshot")
-	_check(not bool(snap2["overworld_island"]["disabled"]), "Fortune Island unlocked on WorldMap after flag granted")
+	_check(not bool(snap2["overworld_mangrove"]["disabled"]), "Calatagan unlocked on WorldMap after flag granted")
+	_check(bool(snap2["overworld_island"]["disabled"]), "Fortune Island fast travel via WorldMap stays disabled (boat via Calatagan only)")
 	ow_ui.queue_free()
 	await process_frame
 

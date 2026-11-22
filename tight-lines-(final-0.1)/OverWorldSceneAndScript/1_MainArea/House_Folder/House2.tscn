@@ -278,7 +278,7 @@ layer_1/tile_data = PackedInt32Array(2293776, 589825, 7, 2228240, 589825, 6, 222
 polygon = PackedVector2Array(205, 465, 205, 576, 672, 576, 670, 473, 206, 473, 147, 379, 233, 331, 444, 344, 598, 344, 681, 336, 747, 393, 755, 585, 739, 675, 562, 681, 249, 685, 136, 596, 106, 496, 106, 428, 180, 407, 205, 429)
 
 [node name="Player" parent="." unique_id=394178850 instance=ExtResource("3_6pvbn")]
-position = Vector2(263, 555)
+position = Vector2(263, 515)
 
 [node name="House2ToHouse1" type="Node2D" parent="." unique_id=1494793175]
 position = Vector2(263, 564)

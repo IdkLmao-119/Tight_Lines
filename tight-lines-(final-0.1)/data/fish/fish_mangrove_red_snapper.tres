@@ -9,7 +9,7 @@ scientific_name = "Lutjanus argentimaculatus"
 description = "A versatile, aggressive predator whose juveniles inhabit mangrove estuaries and lower freshwater river reaches before migrating out to deeper coral reefs as adults. It features a reddish-brown to bronze body and prominent canine teeth.
 Local Name: Maya-maya"
 size_class = "medium"
-speed = 4.5
+base_price = 45
 pull_strength = 12.0
 stamina = 60.0
 min_size = 40.0

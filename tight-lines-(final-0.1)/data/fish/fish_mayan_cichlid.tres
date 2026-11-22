@@ -9,7 +9,6 @@ scientific_name = "Mayaheros urophthalmus"
 description = "A beautifully marked and fiercely defensive cichlid found in shallow, structured waters.
 Local Name: Tilapiang Pla-pla"
 base_price = 24
-speed = 3.0
 pull_strength = 8.0
 avg_size = 22.0
 max_size = 35.0

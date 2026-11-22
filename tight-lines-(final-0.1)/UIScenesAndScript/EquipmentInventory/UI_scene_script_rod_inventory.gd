@@ -53,10 +53,12 @@ func _ready() -> void:
 
 
 func open() -> void:
+	var was_visible := visible
 	visible = true
-	_ensure_starter_equipment()
-	_refresh_ui()
-	_highlight_focused.call_deferred()
+	if was_visible:
+		_ensure_starter_equipment()
+		_refresh_ui()
+		_highlight_focused.call_deferred()
 
 
 func close() -> void:

@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" uid="uid://c724smmkgxfdy" path="res://Assets/3D/Bobber.tscn" id="8_jvp6q"]
 [ext_resource type="PackedScene" uid="uid://brvjgf6qtkkau" path="res://UIScenesAndScript/FishingUI/FishingUI.tscn" id="9_xwkjo"]
 [ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="10_am77k"]
+[ext_resource type="Script" uid="uid://6pqlg1cq306c" path="res://data/item_class_templates/fish_music_entry.gd" id="11_ed3u3"]
+[ext_resource type="Resource" uid="uid://ik80ye4cintd" path="res://data/fish to music connection/Marlin.tres" id="12_t1afk"]
 
 [sub_resource type="Shader" id="Shader_k1q4s"]
 code = "// NOTE: Shader automatically converted from Godot Engine 4.6.2.stable's StandardMaterial3D.
@@ -251,11 +253,12 @@ environment = SubResource("Environment_i1y24")
 [node name="FishingManager" type="Node3D" parent="." unique_id=1502920418 node_paths=PackedStringArray("player_anchors", "rod_holders")]
 script = ExtResource("7_ej3al")
 player_anchors = [NodePath("../PlayerFishing")]
-rod_holders = [NodePath("../PlayerFishing/CharacterBody3D")]
+rod_holders = [NodePath("../PlayerFishing/CharacterBody3D/FishingRod_Lvl3")]
 bobber_scene = ExtResource("8_jvp6q")
 debug_spot_id = "location_fortune_island"
 debug_rod_id = "rod_light"
 debug_bait_id = "bait_1"
+fish_music = Array[ExtResource("11_ed3u3")]([ExtResource("12_t1afk")])
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1354921119]
 

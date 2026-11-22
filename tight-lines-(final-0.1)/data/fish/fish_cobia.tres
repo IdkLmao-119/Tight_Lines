@@ -9,7 +9,7 @@ scientific_name = "Rachycentron canadum"
 description = "A large, fast-swimming pelagic marine fish found in warm tropical and subtropical waters worldwide. It has an elongated, fusiform body with a broad, flattened head and dark lateral stripes, and feeds on crabs, squid, and smaller fishes.
 Local Name: Dalag Dagat"
 size_class = "large"
-speed = 6.0
+base_price = 95
 pull_strength = 15.0
 stamina = 75.0
 min_size = 75.0

@@ -10,7 +10,6 @@ description = "A heavily armored freshwater fish covered in bony plates for prot
 Local Name: Janitor Fish"
 size_class = "medium"
 base_price = 30
-speed = 4.5
 pull_strength = 12.0
 stamina = 60.0
 min_size = 15.0
@@ -18,6 +17,5 @@ avg_size = 30.0
 max_size = 50.0
 avg_weight = 1.0
 icon = ExtResource("1_sutim")
-grid_width = 2
 id = "fish_armored_catfish"
 display_name = "Armored Catfish"

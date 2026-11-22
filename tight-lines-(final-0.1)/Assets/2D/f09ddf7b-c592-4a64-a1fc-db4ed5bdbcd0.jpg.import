@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bi6rjmpygycl5"
-path="res://.godot/imported/Example.png-ef7a6dccd6f4c8b3e5c6846b02dacece.ctex"
+uid="uid://bsjfme3us3nt1"
+path="res://.godot/imported/f09ddf7b-c592-4a64-a1fc-db4ed5bdbcd0.jpg-58dc6293495bc2f69e189f3739745d76.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://UIScenesAndScript/AlmanacUI/Example.png"
-dest_files=["res://.godot/imported/Example.png-ef7a6dccd6f4c8b3e5c6846b02dacece.ctex"]
+source_file="res://Assets/2D/f09ddf7b-c592-4a64-a1fc-db4ed5bdbcd0.jpg"
+dest_files=["res://.godot/imported/f09ddf7b-c592-4a64-a1fc-db4ed5bdbcd0.jpg-58dc6293495bc2f69e189f3739745d76.ctex"]
 
 [params]
 

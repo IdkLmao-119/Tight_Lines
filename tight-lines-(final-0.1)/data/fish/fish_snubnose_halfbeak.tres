@@ -9,7 +9,6 @@ scientific_name = "Hemiramphus archipelagicus"
 description = "A sleek surface dweller recognized by its elongated lower jaw and skimming movement.
 Local Name: Siliw"
 base_price = 20
-speed = 3.0
 pull_strength = 8.0
 stamina = 45.0
 min_size = 12.0

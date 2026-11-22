@@ -2,6 +2,7 @@ class_name GameHUD
 extends Control
 
 signal return_requested
+signal menu_opened(menu_id: String)
 
 const PHONE_MENU_NAMES := {
 	"fish_box": "fish_box",
@@ -88,7 +89,7 @@ func _ready() -> void:
 		var overlay: Control = _overlays[menu_id]
 		if overlay.has_signal(&"close_requested"):
 			overlay.connect(&"close_requested", _on_overlay_close_requested.bind(menu_id))
-		if overlay.has_signal(&"back_requested"):
+		elif overlay.has_signal(&"back_requested"):
 			overlay.connect(&"back_requested", _on_overlay_close_requested.bind(menu_id))
 		if PHONE_MENU_NAMES.has(menu_id):
 			overlay.visibility_changed.connect(_sync_active_menu_to_phone)
@@ -141,6 +142,8 @@ func open_menu(menu_id: String) -> void:
 	if menu_id == "options" and not GameManager.is_paused():
 		GameManager.set_paused(true)
 
+	menu_opened.emit(menu_id)
+	_sync_input_context()
 	_sync_active_menu_to_phone()
 
 
@@ -160,7 +163,26 @@ func close_all_menus() -> void:
 	if was_options and GameManager.is_paused():
 		GameManager.set_paused(false)
 
+	_sync_input_context()
 	_sync_active_menu_to_phone()
+
+
+func is_any_menu_open() -> bool:
+	for overlay: Control in _overlays.values():
+		if overlay != null and overlay.visible:
+			return true
+	return false
+
+
+func _sync_input_context() -> void:
+	var im := get_node_or_null("/root/InputManager")
+	if im == null or not im.has_method(&"set_context"):
+		return
+	if is_any_menu_open():
+		im.call(&"set_context", InputManager.InputContext.MENU)
+	else:
+		var default_ctx := InputManager.InputContext.FISHING if show_return_button else InputManager.InputContext.OVERWORLD
+		im.call(&"set_context", default_ctx)
 
 
 func _apply_configuration() -> void:
@@ -179,6 +201,7 @@ func _on_overlay_close_requested(menu_id: String) -> void:
 		_active_menu_id = ""
 	if menu_id == "options" and GameManager.is_paused():
 		GameManager.set_paused(false)
+	_sync_input_context()
 	_sync_active_menu_to_phone()
 
 
@@ -189,6 +212,7 @@ func _on_paused_changed(is_paused: bool) -> void:
 	elif _active_menu_id == "options":
 		_active_menu_id = ""
 		_options_menu.call(&"close")
+		_sync_input_context()
 		_sync_active_menu_to_phone()
 
 
@@ -197,6 +221,10 @@ func _on_phone_connected(_player_id: int) -> void:
 
 
 func _on_phone_menu_action(_player_id: int, action: String) -> void:
+	var story := get_node_or_null("/root/StoryManager")
+	if story != null and story.has_method(&"is_playing") and story.call(&"is_playing"):
+		return
+
 	if show_menu_buttons:
 		match action:
 			"fish_box":
@@ -211,10 +239,6 @@ func _on_phone_menu_action(_player_id: int, action: String) -> void:
 			"quests":
 				toggle_menu("quests")
 				return
-
-	var story := get_node_or_null("/root/StoryManager")
-	if story != null and story.has_method(&"is_playing") and story.call(&"is_playing"):
-		return
 
 	if _active_menu_id != "" and _overlays.has(_active_menu_id):
 		var active: Control = _overlays[_active_menu_id]

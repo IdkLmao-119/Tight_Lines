@@ -88,9 +88,11 @@ func _ready() -> void:
 # ============================================================================
 
 func open() -> void:
+	var was_visible := visible
 	show()
-	_refresh()
-	_tree.grab_focus()
+	if was_visible:
+		_refresh()
+		_tree.grab_focus()
 
 
 func close() -> void:
@@ -279,7 +281,7 @@ func _rewards_text(rewards: Dictionary) -> String:
 	var lines := PackedStringArray()
 	var money := int(rewards.get("money", 0))
 	if money > 0:
-		lines.append("- Money: %d" % money)
+		lines.append("- ₱%d" % money)
 	for entry in rewards.get("bait", []):
 		lines.append("- %s x%d" % [_bait_name(entry["id"]), entry["count"]])
 	for rod_id in rewards.get("rods", []):

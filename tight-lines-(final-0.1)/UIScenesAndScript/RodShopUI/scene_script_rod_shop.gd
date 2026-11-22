@@ -109,7 +109,7 @@ func _buy_rod(rod_id: String) -> void:
 		return
 
 	if not SaveManager.spend_money(price):
-		purchase_failed.emit("Not enough money for %s (%d G needed)." % [display_name, price])
+		purchase_failed.emit("Not enough money for %s (₱%d needed)." % [display_name, price])
 		refresh_ui()
 		return
 

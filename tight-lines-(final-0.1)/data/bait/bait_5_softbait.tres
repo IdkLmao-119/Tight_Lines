@@ -21,8 +21,10 @@
 [resource]
 script = ExtResource("5_k6x75")
 enables_fish = Array[ExtResource("2_d8mme")]([ExtResource("3_sjnby"), ExtResource("4_dug18"), ExtResource("5_6u1dw"), ExtResource("6_uhdih"), ExtResource("7_07y4w"), ExtResource("8_apa0t"), ExtResource("9_tarpon"), ExtResource("10_mangrove"), ExtResource("11_juvenile"), ExtResource("12_juvenile"), ExtResource("13_needle_f"), ExtResource("14_jvgrp")])
-unlimited = true
+unlimited = false
+compost_weight = 20.0
+price = 9
 icon = ExtResource("4_ldklj")
 max_stack = 99
 id = "bait_5"
-display_name = "Soft bait"
+display_name = "Soft Bait"

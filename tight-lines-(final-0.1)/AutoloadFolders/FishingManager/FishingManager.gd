@@ -117,7 +117,7 @@ enum Difficulty { CASUAL, ANGLER }
 @export_group("Round rules")
 @export var result_display_time := 2.5           # Seconds the CAUGHT / ESCAPED result stays before IDLE. | Lower to get back to casting faster.
 @export var time_limit_sec := 0.0                # Round length in seconds, 0 = no limit. | MUST be set for multiplayer, or nothing ends the round.
-@export var require_bait := false                # true = a cast needs bait and spends it (D10 says always true). | Your value kept (false) for testing; set true for the real game.
+@export var require_bait: bool = true            # true = a cast needs bait and spends it (D10 says always true).
 @export var store_catches_in_inventory := true   # Put kept fish in the Fish Box (single player only, D7). | Turn off to test without InventoryManager.
 @export var enable_knotting_minigame := true     # Require the mobile knotting tracing minigame after a tension line snap. | Turn off to skip straight back to IDLE.
 
@@ -180,7 +180,15 @@ const MSG_KNOT_TIED := "Knot tied! Ready to cast"
 const MSG_NO_CATCH_ODDS := "hm. seems like I need to change up my gear"
 
 const CATCH_POPUP_SECONDS := 5.0         # How long the catch popup and picture stay up. | Lower to move on faster.
-const FISH_IMAGE_PROPERTIES := ["jpg", "image", "icon", "texture"]   # FishData property names tried for the fish picture. | Add the name your FishData uses.
+const FISH_IMAGE_PROPERTIES := ["icon_3d", "jpg", "image", "icon", "texture"]   # FishData property names tried for the fish picture. | Add the name your FishData uses.
+const SPOT_STORY_PREFIXES := {
+	"location_imus": "imus",
+	"location_kawit": "kawit",
+	"location_fish_pens": "pen",
+	"location_salt_farm": "salt",
+	"location_calatagan": "mangrove",
+	"location_fortune_island": "island",
+}
 
 # ----------------------------------------------------------------------------
 # Per-player session data
@@ -200,6 +208,8 @@ class FishingSession extends RefCounted:
 	var rod: Dictionary = {}
 	var rod_model: Node3D = null
 	var line_tip: Node3D = null
+	var cached_tip_local_offset := Vector3.ZERO
+	var has_cached_tip_offset := false
 	var holder_base_rotation := Vector3.ZERO
 	var line_mesh_node: MeshInstance3D = null
 	var line_im: ImmediateMesh = null
@@ -723,6 +733,7 @@ func _try_bite(s: FishingSession) -> void:
 func on_bite(s: FishingSession) -> void:
 	_notify_phone(s.player_id, {"type": "vibrate", "reason": "bite"})
 	_show_message(s.player_id, MSG_BITE, 0.0)
+	_try_play_spot_story_beat("first_bite")
 
 	s.msg_token += 1
 	var token := s.msg_token
@@ -730,8 +741,30 @@ func on_bite(s: FishingSession) -> void:
 		on_reeling(s)
 	else:
 		get_tree().create_timer(bite_message_seconds).timeout.connect(func() -> void:
+			if not is_instance_valid(self):
+				return
 			if token == s.msg_token and s.state == State.REELING:
 				on_reeling(s))
+
+
+func _try_play_spot_story_beat(event_suffix: String) -> void:
+	if _multiplayer:
+		return
+	var spot_id := String(_context.get("spot_id", ""))
+	if not SPOT_STORY_PREFIXES.has(spot_id):
+		return
+	var prefix := String(SPOT_STORY_PREFIXES[spot_id])
+	var beat_id := "%s_%s" % [prefix, event_suffix]
+	var sm := get_node_or_null("/root/StoryManager")
+	if sm == null:
+		return
+	if not bool(sm.call("has_seen", prefix + "_arrival")):
+		return
+	if bool(sm.call("has_seen", beat_id)) or not bool(sm.call("has_cutscene", beat_id)):
+		return
+	if bool(sm.call("is_playing")):
+		return
+	sm.call("play", beat_id)
 
 
 func on_reeling(s: FishingSession) -> void:
@@ -773,6 +806,8 @@ func _send_to_phones(player_id: int, msg: Dictionary) -> void:
 	if debug_log:
 		print("[FishingManager] -> phone (player %d): %s" % [player_id, str(msg)])
 	if _multiplayer:
+		if _connection.has_method("is_player_connected") and not bool(_connection.is_player_connected(player_id)):
+			return
 		if _connection.has_method("send_to_player"):
 			_connection.send_to_player(player_id, msg)
 	elif _connection.has_method("send_to_all"):
@@ -859,7 +894,7 @@ func _update_tension_ui(s: FishingSession) -> void:
 		var ratio := s.tension / line_strength
 		bar.value = clampf(ratio, 0.0, 1.2)
 
-		if ratio >= 1.0:
+		if ratio >= SNAP_RATIO:
 			bar.modulate = Color(1.0, 0.2, 0.2)
 		elif ratio > 0.75:
 			bar.modulate = Color(1.0, 0.8, 0.2)
@@ -948,6 +983,7 @@ func _roll_fish(s: FishingSession) -> Dictionary:
 		"weight": snappedf(weight_kg, 0.01),
 		"pull_strength": _record_float(record, "pull_strength", TEMP_FISH_PULL_STRENGTH),
 		"stamina": _record_float(record, "stamina", TEMP_FISH_STAMINA),
+		"fight_length_multiplier": _record_float(record, "fight_length_multiplier", 1.0),
 	}
 
 
@@ -1100,14 +1136,16 @@ func _update_reeling(s: FishingSession, delta: float) -> void:
 		reel_gain *= CALM_REEL_PROGRESS_MULT
 	# fight_length_multiplier stretches the fight: line is won AND lost more slowly, so the
 	# odds of landing the fish stay the same but the fight lasts longer.
-	var pace := 1.0 / maxf(fight_length_multiplier, 0.1)
+	var fish_fight_mult := maxf(float(s.fish.get("fight_length_multiplier", 1.0)), 0.1)
+	var pace := 1.0 / (maxf(fight_length_multiplier, 0.1) * fish_fight_mult)
 	s.progress += reel_gain * pace * delta
 	s.progress -= fish_pull * FISH_DRAG_RATE * pace * delta
 	# Letting line out costs distance: the fish takes it back.
 	s.progress -= release * RELEASE_LINE_LOSS_RATE * pace * delta
 	s.progress = clampf(s.progress, 0.0, 1.0)
 
-	s.stamina = maxf(s.stamina - (SURGE_DRAIN if s.surging else CALM_DRAIN) * delta, 0.0)
+	# Scale stamina drain with fish_fight_mult so boss fish do not exhaust early and shorten the fight.
+	s.stamina = maxf(s.stamina - (SURGE_DRAIN if s.surging else CALM_DRAIN) / fish_fight_mult * delta, 0.0)
 
 	if s.tension >= line_strength * SNAP_RATIO:
 		s.snap_timer += delta
@@ -1217,12 +1255,15 @@ func _fish_won(s: FishingSession) -> void:
 	var fish := s.fish.duplicate(true)
 	var kept := true
 	if store_catches_in_inventory and not _multiplayer:
+		var spot_id := String(_context.get("spot_id", ""))
+		if _quest != null and _quest.has_method("set_current_spot_id"):
+			_quest.call("set_current_spot_id", spot_id)
 		kept = _store_fish(fish)
 		var rec_info := _record_caught_fish(String(fish["id"]), float(fish["size_cm"]), float(fish["weight"]))
 		fish["is_new_species"] = bool(rec_info.get("is_new_species", false))
 		fish["is_new_record"] = bool(rec_info.get("is_new_record", false))
 		fish["trophy_tier"] = String(rec_info.get("trophy_tier", ""))
-		_report_catch(String(fish["id"]), float(fish["size_cm"]), String(_context.get("spot_id", "")))
+		_report_catch(String(fish["id"]), float(fish["size_cm"]), spot_id)
 
 	if kept:
 		s.catches.append(fish)
@@ -1238,6 +1279,7 @@ func _fish_won(s: FishingSession) -> void:
 	else:
 		fish_released.emit(s.player_id, fish, "fish_box_full")
 	_show_catch_popup(s.player_id, fish, kept)
+	_try_play_spot_story_beat("first_catch")
 
 
 func _record_caught_fish(fish_id: String, size_cm: float = 0.0, weight_kg: float = -1.0) -> Dictionary:
@@ -1458,6 +1500,7 @@ func _fish_escapes(s: FishingSession, reason: String) -> void:
 		_play_sfx("splash", -6.0, 0.85)
 	fish_escaped.emit(s.player_id, s.fish.duplicate(true), reason)
 	on_escape(s, reason)
+	_try_play_spot_story_beat("first_fail")
 
 
 # --- Knotting minigame (triggered on tension line snap) ---
@@ -1563,12 +1606,23 @@ func _on_cast(player_id: int, power: float) -> void:
 		return
 
 	if require_bait:
+		if s.bait_id == "" and _db != null and _db.has_bait("bait_1"):
+			s.bait_id = "bait_1"
+			bait_changed.emit(player_id, s.bait_id)
 		if s.bait_id == "":
 			_reject_cast(player_id, "no_bait", "no bait_id set")
 			return
 		if not _spend_bait(s):
-			_reject_cast(player_id, "no_bait", "none left in inventory")
-			return
+			if s.bait_id != "bait_1" and _db != null and _db.has_bait("bait_1"):
+				var fallback_bait: BaitData = _db.get_bait("bait_1")
+				if fallback_bait != null and fallback_bait.unlimited:
+					s.bait_id = "bait_1"
+					if _save != null and not _multiplayer and _save.has_method("set_equipped_bait"):
+						_save.call("set_equipped_bait", "bait_1")
+					bait_changed.emit(player_id, "bait_1")
+			if not _spend_bait(s):
+				_reject_cast(player_id, "no_bait", "none left in inventory")
+				return
 
 	power = clampf(power, 0.0, 1.0)
 	var max_dist := float(s.rod.get("max_cast_distance", TEMP_ROD_MAX_CAST_DISTANCE))
@@ -1658,18 +1712,11 @@ func _on_save_equipment_changed() -> void:
 	if new_rod != "":
 		_context["rod_id"] = new_rod
 		for pid in _order:
-			if not set_rod(pid, new_rod):
-				var s := _sessions.get(pid) as FishingSession
-				if s != null:
-					s.rod_id = new_rod
-					_load_rod(s)
+			set_rod(pid, new_rod)
 	if new_bait != "":
 		_context["bait_id"] = new_bait
 		for pid in _order:
-			if not set_bait(pid, new_bait):
-				var s := _sessions.get(pid) as FishingSession
-				if s != null:
-					s.bait_id = new_bait
+			set_bait(pid, new_bait)
 
 
 func _pick_player_ids() -> Array[int]:
@@ -1713,6 +1760,14 @@ func _reject_cast(player_id: int, reason: String, detail: String = "") -> void:
 	cast_rejected.emit(player_id, reason)
 
 
+func _any_session_in_states(states: Array[int]) -> bool:
+	for other in _sessions.values():
+		var os := other as FishingSession
+		if os != null and states.has(os.state):
+			return true
+	return false
+
+
 func _set_state(s: FishingSession, new_state: int) -> void:
 	var old := s.state
 	s.state = new_state
@@ -1723,17 +1778,28 @@ func _set_state(s: FishingSession, new_state: int) -> void:
 			node_to_hide_on_bite.visible = false
 
 	if old == State.REELING:
-		_stop_fish_music()
+		if not _any_session_in_states([State.REELING, State.KNOTTING]):
+			_stop_fish_music()
 		if s.anchor != null:
 			s.anchor.rotation.x = 0.0
 			s.anchor.rotation.y = s.base_yaw + s.look_offset
 		# Fix: the tension bar used to stay on screen after a catch or escape.
 		_update_tension_ui(s)
-		if node_to_hide_on_bite != null and new_state != State.KNOTTING:
+		if node_to_hide_on_bite != null and not _any_session_in_states([State.REELING, State.KNOTTING]):
 			node_to_hide_on_bite.visible = true
 	elif old == State.KNOTTING:
-		if node_to_hide_on_bite != null and new_state != State.REELING:
+		if not _any_session_in_states([State.REELING, State.KNOTTING]):
+			_stop_fish_music()
+		if node_to_hide_on_bite != null and not _any_session_in_states([State.REELING, State.KNOTTING]):
 			node_to_hide_on_bite.visible = true
+
+	if new_state == State.IDLE and not _multiplayer and not force_debug_equipment:
+		var wanted_rod := String(_context.get("rod_id", ""))
+		if wanted_rod != "" and s.rod_id != wanted_rod:
+			set_rod(s.player_id, wanted_rod)
+		var wanted_bait := String(_context.get("bait_id", ""))
+		if wanted_bait != "" and s.bait_id != wanted_bait:
+			set_bait(s.player_id, wanted_bait)
 
 	if debug_log:
 		print("[FishingManager] player %d: %s -> %s" % [s.player_id, State.keys()[old], State.keys()[new_state]])
@@ -1803,6 +1869,33 @@ func _load_rod(s: FishingSession) -> void:
 	s.holder.add_child(model)
 	s.rod_model = model
 	s.line_tip = _db.find_line_tip(model)
+	_cache_rod_tip_offset(s)
+
+
+func _cache_rod_tip_offset(s: FishingSession) -> void:
+	s.has_cached_tip_offset = false
+	s.cached_tip_local_offset = rod_tip_fallback_offset
+	if s.holder == null or not is_instance_valid(s.holder):
+		return
+	if s.line_tip != null and is_instance_valid(s.line_tip):
+		return
+	var best_pos := Vector3.ZERO
+	var found_mesh := false
+	for child in s.holder.find_children("*", "MeshInstance3D", true, false):
+		var mi := child as MeshInstance3D
+		if mi == null or mi.mesh == null:
+			continue
+		var aabb := mi.get_aabb()
+		for cx in [aabb.position.x, aabb.end.x]:
+			for cy in [aabb.position.y, aabb.end.y]:
+				for cz in [aabb.position.z, aabb.end.z]:
+					var wp := mi.to_global(Vector3(cx, cy, cz))
+					if not found_mesh or wp.y > best_pos.y:
+						best_pos = wp
+						found_mesh = true
+	if found_mesh and best_pos.y > water_level + 0.25:
+		s.cached_tip_local_offset = s.holder.to_local(best_pos)
+	s.has_cached_tip_offset = true
 
 
 func _remove_rod_model(s: FishingSession) -> void:
@@ -1810,6 +1903,7 @@ func _remove_rod_model(s: FishingSession) -> void:
 		s.rod_model.queue_free()
 	s.rod_model = null
 	s.line_tip = null
+	s.has_cached_tip_offset = false
 
 
 func _spawn_bobber(s: FishingSession) -> void:
@@ -1875,27 +1969,11 @@ func _get_line_tip_position(s: FishingSession) -> Vector3:
 	if s.line_tip != null and is_instance_valid(s.line_tip):
 		return s.line_tip.global_position
 	if s.holder != null and is_instance_valid(s.holder):
-		# Auto-detect the highest point of any MeshInstance3D inside the rod holder
-		# so the line attaches to the real rod tip regardless of FBX axis/scale.
-		var best_pos := Vector3.ZERO
-		var found_mesh := false
-		for child in s.holder.find_children("*", "MeshInstance3D", true, false):
-			var mi := child as MeshInstance3D
-			if mi == null or mi.mesh == null:
-				continue
-			var aabb := mi.get_aabb()
-			for cx in [aabb.position.x, aabb.end.x]:
-				for cy in [aabb.position.y, aabb.end.y]:
-					for cz in [aabb.position.z, aabb.end.z]:
-						var wp := mi.to_global(Vector3(cx, cy, cz))
-						if not found_mesh or wp.y > best_pos.y:
-							best_pos = wp
-							found_mesh = true
-		if found_mesh and best_pos.y > water_level + 0.25:
-			return best_pos
-		var fallback := s.holder.to_global(rod_tip_fallback_offset)
-		fallback.y = maxf(fallback.y, water_level + 0.5)
-		return fallback
+		if not s.has_cached_tip_offset:
+			_cache_rod_tip_offset(s)
+		var tip_pos := s.holder.to_global(s.cached_tip_local_offset)
+		tip_pos.y = maxf(tip_pos.y, water_level + 0.5)
+		return tip_pos
 	if s.anchor != null and is_instance_valid(s.anchor):
 		return s.anchor.global_position + Vector3(0.4, 1.1, 0.0)
 	return global_position + Vector3.UP

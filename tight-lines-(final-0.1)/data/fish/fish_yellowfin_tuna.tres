@@ -9,12 +9,14 @@ scientific_name = "Thunnus albacares"
 description = "A large, fast-swimming epipelagic marine predator found in open tropical and subtropical oceans worldwide, including major Philippine fishing grounds like the Sulu Sea and Moro Gulf. It is recognized by its bright yellow dorsal and anal finlets and torpedo-shaped body.
 Local Name: Tambakol"
 size_class = "large"
-speed = 5.0
+base_price = 110
 pull_strength = 17.0
 stamina = 80.0
+fight_length_multiplier = 5.0
 min_size = 100.0
 avg_size = 167.5
 max_size = 235.0
+avg_weight = 30.0
 icon = ExtResource("1_o2nwu")
 id = "fish_yellowfin_tuna"
 display_name = "Yellowfin Tuna"

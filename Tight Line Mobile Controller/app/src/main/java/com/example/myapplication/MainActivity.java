@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             .writeTimeout(0, TimeUnit.MILLISECONDS)
             .build();
 
-    private WebSocket webSocket;
+    private volatile WebSocket webSocket;
 
     private static final long RECONNECT_DELAY_MS = 2000L;
     private static final long AUTO_DISCOVER_INTERVAL_MS = 3500L;
@@ -75,12 +75,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable reconnectRunnable;
     private Runnable autoDiscoverRunnable;
+    private Runnable pendingKnotCompleteRunnable;
+    private volatile Thread discoveryThread;
     private String lastIp = null;
-    private boolean wantConnected = false;
-    private int connectionAttempt = 0;
+    private volatile boolean wantConnected = false;
+    private volatile int connectionAttempt = 0;
     private volatile boolean isDiscovering = false;
     private boolean triedSavedIpThisCycle = false;
-    private int reconnectFailureCount = 0;
+    private volatile int reconnectFailureCount = 0;
 
     private String serverUrl = null;
     private static final int SERVER_PORT = 9080;
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static final String DISCOVERY_MESSAGE = "DISCOVER_FISHING_SERVER";
     private static final int DISCOVERY_TIMEOUT_MS = 3000;
 
-    private boolean isConnected = false;
+    private volatile boolean isConnected = false;
     private long latencyMs = -1;
 
     private SensorManager sensorManager;
@@ -96,9 +98,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor accelSensor;
 
     private static final long TILT_SEND_INTERVAL_MS = 50L;
-    private static final float TILT_FULL_ANGLE_DEG = 20f;
-    // Dynamic sensitivity: TILT_FILTER_ALPHA range 0.70f (high sens / fast) to 0.95f (low sens / heavy smooth)
-    private float tiltFilterAlpha = 0.8f;
+    private static final float TILT_DEADZONE_DEG = 6f;
+    private static final float TILT_FULL_ANGLE_DEG = 32f;
+    // Dynamic sensitivity: low-pass smoothing alpha for new sample (0.08f heavy smooth .. 0.25f fast)
+    private volatile float tiltFilterAlpha = 0.15f;
     private static final long TILT_HOLD_AFTER_SWING_MS = 100L; // Reduced so tilt recovers quickly after a cast
 
     private final float[] gravity = new float[3];
@@ -106,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private long lastTiltSentMs = 0L;
 
     // Dynamic sensitivity: SWING_THRESHOLD range 12.0f (high sens / easier) to 16.0f (low sens / harder)
-    private float swingThreshold = 12.0f;
+    private volatile float swingThreshold = 12.0f;
     private static final long SWING_COOLDOWN_MS = 500L;
     private long lastSwingTimeMs = 0L;
 
@@ -118,11 +121,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private String deviceId;
 
     private enum AppState { CONNECTION, OVERWORLD, CASTING, REELING, KNOTTING, MENU }
-    private AppState currentState = null;
-    private AppState underlyingGameState = AppState.OVERWORLD;
-    private String activeMenu = "none";
-    private String assignedPlayerName = "";
-    private String assignedScreenSide = "";
+    private volatile AppState currentState = null;
+    private volatile AppState underlyingGameState = AppState.OVERWORLD;
+    private volatile String activeMenu = "none";
+    private volatile String assignedPlayerName = "";
+    private volatile String assignedScreenSide = "";
 
     private TextView statusText;
     private TextView connectionSubtext;
@@ -164,6 +167,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void switchToState(AppState newState) {
         if (currentState == newState) return;
         currentState = newState;
+        swingWindowOpen = false;
+        if (pendingKnotCompleteRunnable != null) {
+            handler.removeCallbacks(pendingKnotCompleteRunnable);
+            pendingKnotCompleteRunnable = null;
+        }
 
         runOnUiThread(() -> {
             FrameLayout rootContainer = findViewById(R.id.rootContainer);
@@ -335,7 +343,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 if (hintSubtitle != null) {
                     hintSubtitle.setText("Line repaired — ready to cast");
                 }
-                handler.postDelayed(() -> {
+                if (pendingKnotCompleteRunnable != null) {
+                    handler.removeCallbacks(pendingKnotCompleteRunnable);
+                }
+                pendingKnotCompleteRunnable = () -> {
+                    pendingKnotCompleteRunnable = null;
                     JSONObject msg = new JSONObject();
                     try {
                         msg.put("type", "knot_complete");
@@ -345,7 +357,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         e.printStackTrace();
                     }
                     sendMessage(msg);
-                }, 360L);
+                };
+                handler.postDelayed(pendingKnotCompleteRunnable, 360L);
             }
         });
     }
@@ -645,12 +658,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return newId;
     }
 
-    private void connectToServer(String ip) {
-        if (webSocket != null) {
-            webSocket.close(1000, "Reconnecting");
-            webSocket = null;
+    private void cleanupSocket(String reason) {
+        if (pendingKnotCompleteRunnable != null) {
+            handler.removeCallbacks(pendingKnotCompleteRunnable);
+            pendingKnotCompleteRunnable = null;
         }
+        WebSocket ws = webSocket;
+        webSocket = null;
         isConnected = false;
+        if (ws != null) {
+            ws.close(1000, reason);
+        }
+    }
+
+    private void connectToServer(String ip) {
+        cleanupSocket("Reconnecting");
         lastIp = ip;
         wantConnected = true;
         handler.removeCallbacks(reconnectRunnable);
@@ -670,6 +692,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onOpen(WebSocket ws, Response response) {
                 if (attempt != connectionAttempt) return;
+                webSocket = ws;
                 isConnected = true;
                 reconnectFailureCount = 0;
                 triedSavedIpThisCycle = false;
@@ -689,7 +712,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                sendMessage(msg);
+                ws.send(msg.toString());
                 switchToState(AppState.OVERWORLD);
             }
 
@@ -795,6 +818,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void handleConnectionLost() {
+        if (pendingKnotCompleteRunnable != null) {
+            handler.removeCallbacks(pendingKnotCompleteRunnable);
+            pendingKnotCompleteRunnable = null;
+        }
         isConnected = false;
         activeMenu = "none";
         assignedScreenSide = "";
@@ -841,10 +868,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (isConnected) return;
         handler.removeCallbacks(autoDiscoverRunnable);
         if (isDiscovering) return;
-        performDiscovery(userInitiated);
+        startUdpDiscovery(userInitiated);
     }
 
-    private void performDiscovery(boolean userInitiated) {
+    private void startUdpDiscovery(boolean userInitiated) {
         if (isDiscovering || isConnected) return;
         isDiscovering = true;
 
@@ -854,7 +881,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 true
         ));
 
-        new Thread(() -> {
+        Thread thread = new Thread(() -> {
             try (DatagramSocket socket = new DatagramSocket()) {
                 socket.setBroadcast(true);
                 socket.setSoTimeout(DISCOVERY_TIMEOUT_MS);
@@ -886,6 +913,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 isDiscovering = false;
 
                 runOnUiThread(() -> {
+                    if (isConnected || currentState != AppState.CONNECTION || isFinishing() || isDestroyed()) return;
                     if (serverIpInput != null) serverIpInput.setText(foundIp);
                     setConnectionStatusUI("Found PC at " + foundIp, "Connecting automatically...", true);
                     connectToServer(foundIp);
@@ -893,12 +921,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             } catch (SocketTimeoutException e) {
                 isDiscovering = false;
-                runOnUiThread(() -> onDiscoveryMissed(userInitiated, "Make sure Tight Lines is running on your PC"));
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    onDiscoveryMissed(userInitiated, "Make sure Tight Lines is running on your PC");
+                });
             } catch (IOException e) {
                 isDiscovering = false;
-                runOnUiThread(() -> onDiscoveryMissed(userInitiated, "Check Wi-Fi or Hotspot connection"));
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    onDiscoveryMissed(userInitiated, "Check Wi-Fi or Hotspot connection");
+                });
             }
-        }).start();
+        });
+        discoveryThread = thread;
+        thread.start();
     }
 
     private void onDiscoveryMissed(boolean userInitiated, String hint) {
@@ -990,19 +1026,35 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            JSONObject msg = new JSONObject();
-            try {
-                msg.put("type", "cancel");
-            } catch (JSONException ex) {
-                ex.printStackTrace();
+            if (currentState == AppState.CASTING) {
+                JSONObject msg = new JSONObject();
+                try {
+                    msg.put("type", "cancel");
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+                sendMessage(msg);
+                return true;
             }
-            sendMessage(msg);
+            if (currentState == AppState.OVERWORLD || currentState == AppState.MENU || currentState == AppState.REELING) {
+                JSONObject msg = new JSONObject();
+                try {
+                    msg.put("type", "tap");
+                    msg.put("x", e.getX());
+                    msg.put("y", e.getY());
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+                sendMessage(msg);
+                return true;
+            }
             return true;
         }
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            if (e1 == null) return false;
+            if (e1 == null || e2 == null) return false;
+            if (currentState != AppState.OVERWORLD && currentState != AppState.MENU) return false;
 
             float dx = e2.getX() - e1.getX();
             float dy = e2.getY() - e1.getY();
@@ -1025,10 +1077,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void applySensitivity(float sens) {
         float clamped = Math.max(0.0f, Math.min(1.0f, sens));
-        // High sensitivity (1.0) -> swingThreshold 12.0f, tiltFilterAlpha 0.70f (more responsive)
-        // Low sensitivity (0.0) -> swingThreshold 16.0f, tiltFilterAlpha 0.95f (heavy smoothing, harder swing)
+        // High sensitivity (1.0) -> swingThreshold 12.0f, tiltFilterAlpha 0.25f (more responsive)
+        // Low sensitivity (0.0) -> swingThreshold 16.0f, tiltFilterAlpha 0.08f (heavy smoothing, harder swing)
         swingThreshold = 16.0f - clamped * (16.0f - 12.0f);
-        tiltFilterAlpha = 0.95f - clamped * (0.95f - 0.70f);
+        tiltFilterAlpha = 0.08f + clamped * (0.25f - 0.08f);
     }
 
     @Override
@@ -1039,17 +1091,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             return;
         }
         if (sensorType != Sensor.TYPE_GYROSCOPE) return;
-        if (currentState == AppState.KNOTTING) return;
+        if (currentState != AppState.CASTING) {
+            swingWindowOpen = false;
+            return;
+        }
 
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
-        double magnitude = Math.sqrt(x * x + y * y + z * z);
+        float gx = event.values[0];
+        float gy = event.values[1];
+        float gz = event.values[2];
+        double magnitude = Math.sqrt(gx * gx + gy * gy + gz * gz);
+        float primaryCastAxis = Math.max(Math.abs(gx), Math.abs(gy));
+        boolean castAxisDominates = primaryCastAxis > Math.abs(gz);
 
         long now = System.currentTimeMillis();
 
         if (swingWindowOpen) {
-            if (magnitude > swingPeak) swingPeak = magnitude;
+            if (castAxisDominates && magnitude > swingPeak) swingPeak = magnitude;
             if (now - swingWindowStartMs >= SWING_PEAK_WINDOW_MS) {
                 swingWindowOpen = false;
                 lastSwingTimeMs = now;
@@ -1058,7 +1115,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             return;
         }
 
-        if (magnitude < swingThreshold) return;
+        if (magnitude < swingThreshold || !castAxisDominates) return;
         if (now - lastSwingTimeMs < SWING_COOLDOWN_MS) return;
 
         swingWindowOpen = true;
@@ -1079,15 +1136,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @SuppressWarnings("deprecation")
     private void handleAccelerometer(SensorEvent event) {
+        if (currentState != AppState.CASTING) return;
+
         long nowMs = System.currentTimeMillis();
         boolean swingBusy = swingWindowOpen || (nowMs - lastSwingTimeMs < TILT_HOLD_AFTER_SWING_MS);
 
+        float alpha = Math.max(0.02f, Math.min(0.95f, tiltFilterAlpha));
         if (!gravityInitialized) {
             System.arraycopy(event.values, 0, gravity, 0, 3);
             gravityInitialized = true;
         } else if (!swingBusy) {
             for (int i = 0; i < 3; i++) {
-                gravity[i] = tiltFilterAlpha * gravity[i] + (1f - tiltFilterAlpha) * event.values[i];
+                gravity[i] = (1f - alpha) * gravity[i] + alpha * event.values[i];
             }
         }
 
@@ -1110,11 +1170,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 screenRight = gravity[0];
                 break;
         }
-        if (currentState == AppState.REELING || currentState == AppState.KNOTTING) return;
 
+        float deadzoneSin = (float) Math.sin(Math.toRadians(TILT_DEADZONE_DEG));
         float maxSin = (float) Math.sin(Math.toRadians(TILT_FULL_ANGLE_DEG));
-        double ratio = -screenRight / (SensorManager.GRAVITY_EARTH * maxSin);
-        double value = Math.max(-1.0, Math.min(1.0, ratio));
+        float normSin = -screenRight / SensorManager.GRAVITY_EARTH;
+        double value;
+        if (Math.abs(normSin) <= deadzoneSin) {
+            value = 0.0;
+        } else {
+            double sign = Math.signum(normSin);
+            double span = Math.max(0.001f, maxSin - deadzoneSin);
+            double ratio = (Math.abs(normSin) - deadzoneSin) / span;
+            value = sign * Math.max(0.0, Math.min(1.0, ratio));
+        }
 
         JSONObject msg = new JSONObject();
         try {
@@ -1152,8 +1220,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onDestroy() {
         super.onDestroy();
         wantConnected = false;
+        isDiscovering = false;
+        Thread dt = discoveryThread;
+        discoveryThread = null;
+        if (dt != null) {
+            dt.interrupt();
+        }
+        if (pendingKnotCompleteRunnable != null) {
+            handler.removeCallbacks(pendingKnotCompleteRunnable);
+            pendingKnotCompleteRunnable = null;
+        }
         handler.removeCallbacks(autoDiscoverRunnable);
         handler.removeCallbacks(reconnectRunnable);
-        if (webSocket != null) webSocket.close(1000, "App closed");
+        handler.removeCallbacksAndMessages(null);
+        cleanupSocket("App closed");
     }
 }

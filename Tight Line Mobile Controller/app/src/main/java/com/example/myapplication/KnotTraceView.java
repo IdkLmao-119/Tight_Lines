@@ -286,8 +286,7 @@ public class KnotTraceView extends View {
             float[] p2 = ctrl[i + 1];
             float[] p3 = ctrl[Math.min(ctrl.length - 1, i + 2)];
 
-            int steps = (i == segCount - 1) ? stepsPerSeg : stepsPerSeg;
-            for (int s = 0; s < steps; s++) {
+            for (int s = 0; s < stepsPerSeg; s++) {
                 float t = (float) s / (float) stepsPerSeg;
                 float x = catmullRom(p0[0], p1[0], p2[0], p3[0], t);
                 float y = catmullRom(p0[1], p1[1], p2[1], p3[1], t);
@@ -491,7 +490,9 @@ public class KnotTraceView extends View {
                     accumulatedErrorRatio = 0f;
                     accuracySamples = 0;
                     rebuildTracedPath();
-                    getParent().requestDisallowInterceptTouchEvent(true);
+                    if (getParent() != null) {
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                    }
                     notifyProgress(0f, true);
                     invalidate();
                 } else {

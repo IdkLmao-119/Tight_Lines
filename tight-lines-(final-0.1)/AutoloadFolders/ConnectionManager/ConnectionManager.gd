@@ -59,7 +59,7 @@ const PORT := 9080
 
 # When true, every gameplay message received from a phone is printed to the
 # Output panel. Set to false once everything works.
-@export var debug_log := true
+@export var debug_log: bool = false
 
 # Tilt messages arrive ~20 times per second per phone, which would flood the
 # Output panel, so they are hidden from debug_log unless this is turned on.
@@ -262,40 +262,8 @@ func _process(_delta):
 
 				# The FIRST message from any new connection must be a
 				# "connected" handshake carrying a device_id.
-				if typeof(data) == TYPE_DICTIONARY and data.get("type") == "connected" and data.has("device_id"):
-					var device_id = data["device_id"]
-					var player_id: int
-
-					if _device_id_to_player_id.has(device_id):
-						player_id = _device_id_to_player_id[device_id]
-						print("Player %d reconnected (device_id=%s)" % [player_id, device_id])
-					else:
-						player_id = _next_player_id
-						_next_player_id += 1
-						_device_id_to_player_id[device_id] = player_id
-						print("Player %d connected (device_id=%s)" % [player_id, device_id])
-
-					# FIX 2: if this player still has an old socket (the PC
-					# had not noticed it died yet), close it instead of
-					# overwriting and leaking it.
-					if _peers.has(player_id) and _peers[player_id] != ws:
-						_peers[player_id].close()
-					_peers[player_id] = ws
-
-					var initial_screen := String(data.get("screen", "overworld")).strip_edges().to_lower()
-					if initial_screen == "":
-						initial_screen = "overworld"
-					_player_base_screens[player_id] = initial_screen
-					_player_screens[player_id] = initial_screen
-
-					var raw_name := String(data.get("player_name", "")).strip_edges()
-					if raw_name != "" and not has_custom_player_name(player_id):
-						_player_names[player_id] = raw_name.substr(0, MAX_PLAYER_NAME_LENGTH)
-
-					emit_signal("player_connected", player_id)
-					emit_signal("player_screen_changed", player_id, _player_screens[player_id])
-					if has_custom_player_name(player_id):
-						emit_signal("player_name_changed", player_id, get_player_name(player_id))
+				if typeof(data) == TYPE_DICTIONARY and data.get("type") == "connected":
+					_handle_handshake(ws, data)
 					identified = true
 					break # remaining packets are handled next frame
 
@@ -360,6 +328,48 @@ func _warn_if_unconnected(sig_name: String):
 		push_warning("'%s' arrived but NOTHING is connected to the '%s' signal yet." % [sig_name, sig_name])
 
 
+func _handle_handshake(peer: WebSocketPeer, data: Dictionary) -> void:
+	var device_id := String(data.get("device_id", "")).strip_edges()
+	if device_id == "":
+		device_id = "peer_%d" % peer.get_instance_id()
+	var player_id: int
+
+	if _device_id_to_player_id.has(device_id):
+		player_id = _device_id_to_player_id[device_id]
+		print("Player %d reconnected (device_id=%s)" % [player_id, device_id])
+	else:
+		player_id = _next_player_id
+		_next_player_id += 1
+		_device_id_to_player_id[device_id] = player_id
+		print("Player %d connected (device_id=%s)" % [player_id, device_id])
+
+	# FIX 2: if this player still has an old socket (the PC
+	# had not noticed it died yet), close it instead of
+	# overwriting and leaking it.
+	if _peers.has(player_id) and _peers[player_id] != peer:
+		_peers[player_id].close()
+	_peers[player_id] = peer
+
+	var initial_screen := String(data.get("screen", "overworld")).strip_edges().to_lower()
+	if initial_screen == "":
+		initial_screen = "overworld"
+	_player_base_screens[player_id] = initial_screen
+	_player_screens[player_id] = initial_screen
+
+	var raw_name := String(data.get("player_name", "")).strip_edges()
+	if raw_name != "" and not has_custom_player_name(player_id):
+		_player_names[player_id] = raw_name.substr(0, MAX_PLAYER_NAME_LENGTH)
+
+	emit_signal("player_connected", player_id)
+	emit_signal("player_screen_changed", player_id, _player_screens[player_id])
+	if has_custom_player_name(player_id):
+		emit_signal("player_name_changed", player_id, get_player_name(player_id))
+
+
+func _is_finite_float(v: float) -> bool:
+	return not is_nan(v) and not is_inf(v)
+
+
 # Takes a raw JSON text message from a phone and emits the matching signal,
 # tagged with the player_id it came from.
 func _handle_message(player_id: int, message: String):
@@ -373,7 +383,7 @@ func _handle_message(player_id: int, message: String):
 	if debug_log and (data.get("type") != "tilt" or debug_log_tilt):
 		print("[Player %d] received: %s" % [player_id, message])
 
-	match data.get("type"):
+	match String(data.get("type", "")):
 		"connected":
 			# Harmless duplicate: identification already happened in _process().
 			if data.has("screen"):
@@ -406,35 +416,56 @@ func _handle_message(player_id: int, message: String):
 			emit_signal("cancel_input", player_id)
 			
 		"swipe":
+			var dx := float(data.get("dx", 0.0))
+			var dy := float(data.get("dy", 0.0))
+			if not _is_finite_float(dx) or not _is_finite_float(dy):
+				return
 			_warn_if_unconnected("swipe_input")
 			emit_signal(
 				"swipe_input",
 				player_id,
-				data.get("direction", ""),
-				data.get("dx", 0.0),
-				data.get("dy", 0.0)
+				String(data.get("direction", "")),
+				dx,
+				dy
 			)
 
 		"tap":
 			# x/y are normalized (0.0 to 1.0).
+			var tx := float(data.get("x", 0.0))
+			var ty := float(data.get("y", 0.0))
+			if not _is_finite_float(tx) or not _is_finite_float(ty):
+				return
 			_warn_if_unconnected("tap_input")
-			emit_signal("tap_input", player_id, data.get("x", 0.0), data.get("y", 0.0))
+			emit_signal("tap_input", player_id, tx, ty)
 
 		"swing":
 			# magnitude = peak rotation speed detected by the phone.
+			var mag := float(data.get("magnitude", 0.0))
+			if not _is_finite_float(mag):
+				return
 			_warn_if_unconnected("swing_input")
-			emit_signal("swing_input", player_id, data.get("magnitude", 0.0))
+			emit_signal("swing_input", player_id, mag)
 
 		"reel":
-			emit_signal("reel_input", player_id, float(data.get("delta", 0.0)))
+			var r_delta := float(data.get("delta", 0.0))
+			if not _is_finite_float(r_delta):
+				return
+			emit_signal("reel_input", player_id, r_delta)
 
 		"tilt":
 			# value is -1.0 (left) .. +1.0 (right). Not passed through
 			# _warn_if_unconnected: it streams constantly.
-			emit_signal("tilt_input", player_id, data.get("value", 0.0))
+			var t_val := float(data.get("value", 0.0))
+			if not _is_finite_float(t_val):
+				return
+			emit_signal("tilt_input", player_id, t_val)
 
 		"move":
-			emit_signal("move_input", player_id, float(data.get("x", 0.0)), float(data.get("y", 0.0)))
+			var mx := float(data.get("x", 0.0))
+			var my := float(data.get("y", 0.0))
+			if not _is_finite_float(mx) or not _is_finite_float(my):
+				return
+			emit_signal("move_input", player_id, mx, my)
 
 		"menu":
 			emit_signal("menu_action_input", player_id, String(data.get("action", "")))
@@ -443,14 +474,20 @@ func _handle_message(player_id: int, message: String):
 			emit_signal("interact_input", player_id)
 
 		"knot_progress":
-			emit_signal("knot_progress_input", player_id, clampf(float(data.get("progress", 0.0)), 0.0, 1.0))
+			var kp := float(data.get("progress", 0.0))
+			if not _is_finite_float(kp):
+				return
+			emit_signal("knot_progress_input", player_id, clampf(kp, 0.0, 1.0))
 
 		"knot_complete":
+			var acc := float(data.get("accuracy", 1.0))
+			if not _is_finite_float(acc):
+				return
 			emit_signal(
 				"knot_complete_input",
 				player_id,
 				String(data.get("knot_name", "")),
-				clampf(float(data.get("accuracy", 1.0)), 0.0, 1.0)
+				clampf(acc, 0.0, 1.0)
 			)
 
 
@@ -606,5 +643,13 @@ func get_connected_players() -> Array:
 
 
 func _exit_tree():
+	for peer in _peers.values():
+		if peer is WebSocketPeer:
+			(peer as WebSocketPeer).close()
+	_peers.clear()
+	for peer in _pending_peers:
+		if peer is WebSocketPeer:
+			(peer as WebSocketPeer).close()
+	_pending_peers.clear()
 	_tcp_server.stop()
 	_discovery_udp.close()

@@ -296,8 +296,9 @@ var _order: Array = []                # quest ids in authored order
 var _states: Dictionary = {}          # { quest_id: STATE_* }  (missing = inactive)
 var _progress: Dictionary = {}        # { quest_id: int }  (almanac is computed live)
 var _pending_bait: Dictionary = {}    # { bait_id: count } waiting for room
-var _pending_money := 0               # waiting for SaveManager.add_money()
-var _warned_money := false
+var _last_catch_spot_id: String = ""
+var _unlocked_on_current_catch: Array[String] = []
+var _in_catch_event := false
 
 var _evaluating := false              # guards re-entrant unlock checks
 var _reevaluate := false
@@ -375,30 +376,62 @@ func _connect_modules() -> void:
 # EVENTS FROM OTHER MODULES
 # ============================================================================
 
+func set_current_spot_id(spot_id: String) -> void:
+	_last_catch_spot_id = spot_id
+
+
+func _resolve_current_spot_id() -> String:
+	if _last_catch_spot_id != "":
+		return _last_catch_spot_id
+	if get_tree() != null and get_tree().current_scene != null:
+		var fm := get_tree().current_scene.find_child("FishingManager", true, false)
+		if fm != null and fm.has_method("get_context"):
+			var ctx: Variant = fm.call("get_context")
+			if ctx is Dictionary:
+				return String((ctx as Dictionary).get("spot_id", ""))
+	return ""
+
+
 # FishingManager calls this ONCE for every fish the player catches (repeats
 # included). `spot_id` is the fishing location id, if known.
 #     QuestManager.report_catch(fish_id, size_cm, spot_id)
 func report_catch(fish_id: String, _size_cm: float = 0.0, spot_id: String = "") -> void:
+	if spot_id != "":
+		_last_catch_spot_id = spot_id
+	var eff_spot := spot_id if spot_id != "" else _resolve_current_spot_id()
+	var prev_in_catch := _in_catch_event
+	_in_catch_event = true
 	for id in _ids_in_state(STATE_IN_PROGRESS):
+		if _unlocked_on_current_catch.has(id):
+			continue
 		if _states.get(id, STATE_INACTIVE) != STATE_IN_PROGRESS:
 			continue   # an earlier quest in this loop may have changed things
 		var goal: Dictionary = _defs[id]["goal"]
-		if goal["type"] == TYPE_CATCH_COUNT and _fish_matches(goal, fish_id, spot_id):
+		if goal["type"] == TYPE_CATCH_COUNT and _fish_matches(goal, fish_id, eff_spot):
 			_add_progress(id, 1)
+	_in_catch_event = prev_in_catch
+	_unlocked_on_current_catch.clear()
 
 
 # SaveManager.fish_caught: fires only the FIRST time a species is recorded.
 func _on_fish_caught(fish_id: String) -> void:
+	_unlocked_on_current_catch.clear()
+	var spot_id := _resolve_current_spot_id()
+	var prev_in_catch := _in_catch_event
+	_in_catch_event = true
 	for id in _ids_in_state(STATE_IN_PROGRESS):
+		if _unlocked_on_current_catch.has(id):
+			continue
 		if _states.get(id, STATE_INACTIVE) != STATE_IN_PROGRESS:
 			continue
 		var goal: Dictionary = _defs[id]["goal"]
 		match goal["type"]:
 			TYPE_FIRST_CATCH:
-				if _fish_matches(goal, fish_id, ""):
+				if _fish_matches(goal, fish_id, spot_id):
 					_add_progress(id, 1)
 			TYPE_ALMANAC:
 				_check_progress(id)
+	_in_catch_event = prev_in_catch
 
 
 func _on_scene_changed(_scene_id: String) -> void:
@@ -495,15 +528,10 @@ func is_questline_complete(questline_id: String) -> bool:
 # PENDING REWARDS
 # ============================================================================
 
-# Tries again to hand over bait that did not fit and money that had no home.
+# Tries again to hand over bait that did not fit.
 # Called automatically on every scene change; a UI may also call it.
 func claim_pending_rewards() -> void:
 	var changed := false
-	if _pending_money > 0:
-		var left_money := _give_money(_pending_money)
-		if left_money != _pending_money:
-			changed = true
-		_pending_money = left_money
 	for bait_id in _pending_bait.keys():
 		var wanted := int(_pending_bait[bait_id])
 		var left := _give_bait(String(bait_id), wanted)
@@ -518,7 +546,7 @@ func claim_pending_rewards() -> void:
 
 
 func has_pending_rewards() -> bool:
-	return _pending_money > 0 or not _pending_bait.is_empty()
+	return not _pending_bait.is_empty()
 
 
 # ============================================================================
@@ -543,7 +571,6 @@ func to_save_data() -> Dictionary:
 		"states": states,
 		"progress": progress,
 		"pending_bait": _pending_bait.duplicate(),
-		"pending_money": _pending_money,
 	}
 
 
@@ -584,7 +611,6 @@ func load_save_data(data: Dictionary) -> void:
 			var count := int(pending_bait[raw_id])
 			if count > 0:
 				_pending_bait[String(raw_id)] = count
-	_pending_money = maxi(int(data.get("pending_money", 0)), 0)
 
 	# Re-check everything: a changed target may complete a quest, and new
 	# questline starters (or quests added by a game update) may now be due.
@@ -607,8 +633,9 @@ func _clear_state() -> void:
 	_states.clear()
 	_progress.clear()
 	_pending_bait.clear()
-	_pending_money = 0
-	_warned_money = false
+	_last_catch_spot_id = ""
+	_unlocked_on_current_catch.clear()
+	_in_catch_event = false
 
 
 # ============================================================================
@@ -649,6 +676,8 @@ func _prerequisites_met(quest_id: String) -> bool:
 func _activate(quest_id: String) -> void:
 	_states[quest_id] = STATE_IN_PROGRESS
 	_progress[quest_id] = 0
+	if _in_catch_event and not _unlocked_on_current_catch.has(quest_id):
+		_unlocked_on_current_catch.append(quest_id)
 	quest_activated.emit(quest_id)
 	quests_changed.emit()
 	_check_progress(quest_id)   # an almanac quest may already be satisfied
@@ -801,11 +830,8 @@ func _grant_rewards(def: Dictionary) -> Dictionary:
 
 	var money := int(rewards.get("money", 0))
 	if money > 0:
-		var left_money := _give_money(money)
-		summary["money"] = money - left_money
-		if left_money > 0:
-			_pending_money += left_money
-			summary["pending_money"] = left_money
+		_give_money(money)
+		summary["money"] = money
 
 	for entry in rewards.get("bait", []):
 		var bait_id: String = entry["id"]
@@ -815,7 +841,7 @@ func _grant_rewards(def: Dictionary) -> Dictionary:
 			summary["bait"][bait_id] = int(summary["bait"].get(bait_id, 0)) + count - left
 		if left > 0:
 			_pending_bait[bait_id] = int(_pending_bait.get(bait_id, 0)) + left
-			summary["pending_bait"][bait_id] = left
+			summary["pending_bait"][bait_id] = int(summary["pending_bait"].get(bait_id, 0)) + left
 
 	for rod_id in rewards.get("rods", []):
 		if _give_rod(String(rod_id)):
@@ -853,17 +879,10 @@ func _give_rod(rod_id: String) -> bool:
 	return added
 
 
-# Returns the amount that could NOT be delivered. Money has no owner yet, so
-# until SaveManager gets add_money() it waits as pending money.
-func _give_money(amount: int) -> int:
+func _give_money(amount: int) -> void:
 	var save_manager := _autoload("SaveManager")
 	if save_manager != null and save_manager.has_method("add_money"):
 		save_manager.call("add_money", amount)
-		return 0
-	if not _warned_money:
-		_warned_money = true
-		push_warning("QuestManager: SaveManager has no add_money(); money rewards are kept as pending until it exists.")
-	return amount
 
 
 # ============================================================================
@@ -1024,73 +1043,3 @@ func _ids_in_state(state: String) -> Array:
 		if get_state(id) == state:
 			result.append(id)
 	return result
-
-
-# ============================================================================
-# SELF-TEST  (debug only)
-# ============================================================================
-# Call from any scene's _ready() while developing:
-#     QuestManager.run_self_test()
-# It uses its own temporary quests (no rewards, so nothing leaks into
-# SaveManager) and restores your real quests and progress afterwards.
-# Results print to Output.
-func run_self_test() -> bool:
-	var snapshot := to_save_data()
-	var result := {"ok": true}
-	var check := func(condition: bool, label: String) -> void:
-		print("[QuestManager test] %s: %s" % ["PASS" if condition else "FAIL", label])
-		if not condition:
-			result["ok"] = false
-
-	load_definitions([
-		{"id": "quest_t1", "questline": "t_line", "title": "T1", "prerequisites": [],
-				"goal": {"type": "catch_count", "count": 2}},
-		{"id": "quest_t2a", "questline": "t_line", "title": "T2a", "prerequisites": ["quest_t1"],
-				"goal": {"type": "catch_count", "count": 1}},
-		{"id": "quest_t2b", "questline": "t_line", "title": "T2b", "prerequisites": ["quest_t1"],
-				"goal": {"type": "catch_count", "count": 2}},
-		{"id": "quest_t3a", "questline": "t_line", "title": "T3a", "prerequisites": ["quest_t2a"],
-				"goal": {"type": "catch_count", "count": 5}},
-		{"id": "quest_t3b", "questline": "t_line", "title": "T3b", "prerequisites": ["quest_t2b"],
-				"goal": {"type": "catch_count", "count": 5}},
-		{"id": "quest_loop_a", "questline": "t_loop", "title": "A", "prerequisites": ["quest_loop_b"],
-				"goal": {"type": "catch_count", "count": 1}},
-		{"id": "quest_loop_b", "questline": "t_loop", "title": "B", "prerequisites": ["quest_loop_a"],
-				"goal": {"type": "catch_count", "count": 1}},
-	])
-
-	check.call(not has_quest("quest_loop_a") and not has_quest("quest_loop_b"), "quests in a prerequisite loop are dropped")
-	check.call(is_in_progress("quest_t1"), "questline starter begins in progress")
-	check.call(is_inactive("quest_t2a") and is_inactive("quest_t2b"), "later quests start inactive")
-
-	report_catch("fish_test")
-	check.call(get_progress("quest_t1") == {"current": 1, "target": 2}, "progress counts catches (1/2)")
-	check.call(is_inactive("quest_t2a"), "quest 2a waits for quest 1")
-
-	report_catch("fish_test")
-	check.call(is_completed("quest_t1"), "quest 1 completes at 2 catches")
-	check.call(is_in_progress("quest_t2a") and is_in_progress("quest_t2b"), "quest 2a AND 2b start (branch)")
-
-	report_catch("fish_test")
-	check.call(is_completed("quest_t2a"), "quest 2a completes")
-	check.call(is_in_progress("quest_t3a"), "quest 3a starts after 2a")
-	check.call(is_inactive("quest_t3b"), "quest 3b stays inactive (2b not done)")
-	check.call(get_progress("quest_t2b")["current"] == 1, "quest 2b progress is 1/2")
-
-	# Save / load round trip (through real JSON: numbers become floats).
-	var json_text := JSON.stringify(to_save_data())
-	var parsed: Variant = JSON.parse_string(json_text)
-	load_save_data(parsed)
-	check.call(is_completed("quest_t1") and is_completed("quest_t2a"), "completed quests survive save/load")
-	check.call(is_in_progress("quest_t3a") and is_inactive("quest_t3b"), "branch state survives save/load")
-	check.call(get_progress("quest_t2b")["current"] == 1, "progress survives save/load")
-
-	# New game.
-	load_save_data({})
-	check.call(is_in_progress("quest_t1") and is_inactive("quest_t2a"), "empty save data = new game")
-
-	# Restore the real quests and progress.
-	load_definitions(QUEST_DEFS)
-	load_save_data(snapshot)
-	print("[QuestManager test] %s" % ("ALL PASSED" if result["ok"] else "SOME FAILED"))
-	return result["ok"]

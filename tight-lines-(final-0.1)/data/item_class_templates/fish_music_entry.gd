@@ -1,7 +1,7 @@
 class_name FishMusicEntry
 extends Resource
 ## One "this fish plays this song" row for FishingManager's Fish Music list.
-## Save this file as res://resources/fish_music_entry.gd
+## Save this file as res://data/item_class_templates/fish_music_entry.gd
 
 ## Drag the fish's .tres record here (from res://data/fish/).
 @export var fish: FishData

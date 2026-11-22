@@ -1159,5 +1159,22 @@ tile_set = SubResource("TileSet_6fu07")
 format = 2
 layer_0/tile_data = PackedInt32Array(655358, 0, 6)
 
+[node name="Jeep" type="Node2D" parent="." unique_id=1739409682]
+
+[node name="Jeep" type="Area2D" parent="Jeep" unique_id=554587952]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Jeep/Jeep" unique_id=2046524498]
+position = Vector2(72, 264)
+scale = Vector2(2, 3)
+shape = SubResource("RectangleShape2D_fu8dt")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Jeep/Jeep" unique_id=2046524499]
+position = Vector2(378, 261)
+scale = Vector2(3.5, 3.5)
+shape = SubResource("RectangleShape2D_fu8dt")
+
 [connection signal="body_entered" from="RiceFieldsToRiceFishingSpot1/RiceFieldsToRiceFishingSpot1" to="Player" method="_on_rice_fields_to_rice_fishing_spot_1_body_entered"]
 [connection signal="body_entered" from="RiceFieldsToRiceFishingSpot2/RiceFieldsToRiceFishingSpot2" to="Player" method="_on_rice_fields_to_rice_fishing_spot_2_body_entered"]
+[connection signal="body_entered" from="Jeep/Jeep" to="Player" method="_on_jeep_body_entered"]
+
+[editable path="Player"]

@@ -15,6 +15,13 @@ var _right_pid := 2
 
 
 func _ready() -> void:
+	var main_world := get_world_3d()
+	var vp1 := get_node_or_null("GridContainer/SubViewportContainer/SubViewport") as SubViewport
+	var vp2 := get_node_or_null("GridContainer/SubViewportContainer2/SubViewport") as SubViewport
+	if vp1 != null and main_world != null:
+		vp1.world_3d = main_world
+	if vp2 != null and main_world != null:
+		vp2.world_3d = main_world
 	_hud.return_requested.connect(_on_return_to_menu)
 	if fishing_manager.has_signal(&"fish_caught"):
 		fishing_manager.fish_caught.connect(_on_fish_caught)

@@ -86,6 +86,19 @@ public class DPadView extends View {
     }
 
     @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        isPressed = false;
+        currentX = 0f;
+        currentY = 0f;
+        handler.removeCallbacks(streamRunnable);
+        removeCallbacks(streamRunnable);
+        if (listener != null) {
+            listener.onMove(0f, 0f);
+        }
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
@@ -145,7 +158,9 @@ public class DPadView extends View {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE: {
                 isPressed = true;
-                getParent().requestDisallowInterceptTouchEvent(true);
+                if (getParent() != null) {
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                }
 
                 float radius = Math.min(cx, cy);
                 float normX = dx / radius;

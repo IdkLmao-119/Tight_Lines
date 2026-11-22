@@ -45,6 +45,69 @@ func _run() -> void:
 	_check(FishingManagerScript.RELEASE_LINE_LOSS_RATE > 0.0,
 		"RELEASE_LINE_LOSS_RATE is positive so releasing has tactical tradeoff")
 
+	# 2b. Per-fish fight_length_multiplier (Marlin & Yellowfin Tuna = 5x)
+	var db := root.get_node_or_null("GameDB")
+	if db != null:
+		_check(db.load_warnings.is_empty() and db.load_errors.is_empty(),
+			"GameDB loaded with 0 warnings and 0 errors with fight_length_multiplier")
+		var marlin: FishData = db.get_fish("fish_marlin")
+		var tuna: FishData = db.get_fish("fish_yellowfin_tuna")
+		var amberjack: FishData = db.get_fish("fish_amberjack")
+		_check(marlin != null and is_equal_approx(marlin.fight_length_multiplier, 5.0),
+			"fish_marlin has fight_length_multiplier == 5.0")
+		_check(tuna != null and is_equal_approx(tuna.fight_length_multiplier, 5.0),
+			"fish_yellowfin_tuna has fight_length_multiplier == 5.0")
+		_check(amberjack != null and is_equal_approx(amberjack.fight_length_multiplier, 1.0),
+			"Other fish (fish_amberjack) default to fight_length_multiplier == 1.0")
+
+	var fm: Node = FishingManagerScript.new()
+	fm.show_tension_bar = false
+	fm.send_phone_messages = false
+	fm.enable_sfx = false
+	fm.enable_water_splashes = false
+	fm.enable_fish_sweep = false
+	fm._input = im
+	if im != null:
+		im.set_context(im.InputContext.FISHING)
+		Input.action_press(&"tl_reel")
+
+	var s1: RefCounted = FishingManagerScript.FishingSession.new()
+	s1.player_id = 1
+	s1.state = FishingManagerScript.State.REELING
+	s1.rod = {"line_strength": 18.0, "reel_speed": 1.4, "control": 1.5}
+	s1.fish = {"pull_strength": 16.0, "stamina": 80.0, "fight_length_multiplier": 1.0}
+	s1.progress = 0.35
+	s1.stamina = 80.0
+	s1.max_stamina = 80.0
+	s1.surging = false
+	s1.surge_timer = 10.0
+
+	var s5: RefCounted = FishingManagerScript.FishingSession.new()
+	s5.player_id = 1
+	s5.state = FishingManagerScript.State.REELING
+	s5.rod = {"line_strength": 18.0, "reel_speed": 1.4, "control": 1.5}
+	s5.fish = {"pull_strength": 16.0, "stamina": 80.0, "fight_length_multiplier": 5.0}
+	s5.progress = 0.35
+	s5.stamina = 80.0
+	s5.max_stamina = 80.0
+	s5.surging = false
+	s5.surge_timer = 10.0
+
+	fm._update_reeling(s1, 0.1)
+	fm._update_reeling(s5, 0.1)
+	if im != null:
+		Input.action_release(&"tl_reel")
+
+	var dp1: float = float(s1.progress) - 0.35
+	var dp5: float = float(s5.progress) - 0.35
+	var ds1: float = 80.0 - float(s1.stamina)
+	var ds5: float = 80.0 - float(s5.stamina)
+	_check(absf(dp1) > 0.0 and is_equal_approx(dp1, dp5 * 5.0) and (im == null or dp1 > 0.0),
+		"fight_length_multiplier = 5.0 slows reel progress delta by 5x")
+	_check(ds1 > 0.0 and is_equal_approx(ds1, ds5 * 5.0),
+		"fight_length_multiplier = 5.0 slows stamina drain by 5x")
+	fm.free()
+
 	# 3. Fishing line sag & color math
 	var sag_wait: float = FishingManagerScript.compute_line_sag(FishingManagerScript.State.WAITING, 0.0)
 	var sag_reel_low: float = FishingManagerScript.compute_line_sag(FishingManagerScript.State.REELING, 0.1)

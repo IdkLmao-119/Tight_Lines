@@ -9,7 +9,6 @@ scientific_name = "Scatophagus argus"
 description = "A deep-bodied brackish fish adorned with dark spots over an olive-green background.
 Local Name: Kitang"
 base_price = 26
-speed = 3.0
 pull_strength = 8.0
 icon = ExtResource("1_qmfex")
 id = "fish_scatophagus_argus"

@@ -313,6 +313,8 @@ func compost_fish(uid: int) -> Dictionary:
 	var candidates: Array = []
 	var total_weight := 0.0
 	for bait in db.call("get_all_bait"):
+		if bool(bait.get("unlimited")):
+			continue
 		var w := float(bait.get("compost_weight"))
 		if w > 0.0:
 			candidates.append({"bait": bait, "weight": w})
@@ -320,8 +322,10 @@ func compost_fish(uid: int) -> Dictionary:
 	# Fallback: if no bait has compost_weight > 0, pick from non-debug baits equally.
 	if candidates.is_empty():
 		for bait in db.call("get_all_bait"):
+			if bool(bait.get("unlimited")):
+				continue
 			var bid := String(bait.get("id"))
-			if not bid.contains("debug") and not bid.begins_with("bait_d"):
+			if not bid.contains("debug"):
 				candidates.append({"bait": bait, "weight": 1.0})
 				total_weight += 1.0
 	if candidates.is_empty() or total_weight <= 0.0:
@@ -413,6 +417,7 @@ func split_stack(uid: int, amount: int) -> int:
 	item["count"] -= amount
 	var new_uid := _create_item(container, item["item_id"], amount, item["meta"])
 	stack_changed.emit(uid, item["count"])
+	item_added.emit(container, new_uid, item["item_id"], amount)
 	inventory_changed.emit(container)
 	return new_uid
 
@@ -446,12 +451,16 @@ func auto_arrange(container: String) -> bool:
 		for s_uid in stack_uids:
 			total += int(_items[s_uid]["count"])
 		for s_uid in stack_uids:
+			var prev_count := int(_items[s_uid]["count"])
 			if total > 0:
 				var n := mini(total, max_stack)
 				_items[s_uid]["count"] = n
 				total -= n
+				if n != prev_count:
+					stack_changed.emit(s_uid, n)
 			else:
 				_delete_item(s_uid)
+				item_removed.emit(container, s_uid, group_item_id, prev_count)
 
 	# 2) Sort remaining entries cleanly.
 	list.sort_custom(func(a: int, b: int) -> bool:
@@ -532,11 +541,14 @@ func remove_item(uid: int, count: int = -1) -> int:
 func consume_item(item_id: String, count: int = 1) -> bool:
 	if count <= 0:
 		return true
+	var container := container_for(item_id)
+	if container == "" or not _lists.has(container):
+		return false
 	if count_of(item_id) < count:
 		return false
 
 	var stacks: Array = []
-	for uid in _lists[container_for(item_id)]:
+	for uid in _lists[container]:
 		if _items[uid]["item_id"] == item_id:
 			stacks.append(uid)
 	stacks.sort_custom(func(a: int, b: int) -> bool:
@@ -725,97 +737,3 @@ func _delete_item(uid: int) -> void:
 	var container: String = _items[uid]["container"]
 	_lists[container].erase(uid)
 	_items.erase(uid)
-
-
-# ============================================================================
-# SELF-TEST  (debug only)
-# ============================================================================
-func run_self_test() -> bool:
-	var saved_provider := item_def_provider
-	var saved_defs := _fallback_defs.duplicate()
-	item_def_provider = Callable()
-	refresh_definitions()
-	_clear_all()
-
-	register_item_def("t_worm", {"category": "bait", "max_stack": 10})
-	register_item_def("t_tray", {"category": "supply", "max_stack": 1})
-	register_item_def("t_pike", {"category": "fish"})
-
-	var result := {"ok": true}
-	var check := func(condition: bool, label: String) -> void:
-		print("[InventoryManager test] %s: %s" % ["PASS" if condition else "FAIL", label])
-		if not condition:
-			result["ok"] = false
-
-	# Stacking: 25 worms with max 10 -> three entries (10, 10, 5).
-	check.call(add_item("t_worm", 25) == 0, "add 25 worms, nothing left over")
-	check.call(count_of("t_worm") == 25, "worm total is 25")
-	check.call(get_used_slot_count(TACKLE_BOX) == 3, "worms form 3 list entries")
-
-	# Consume across stacks, smallest first.
-	check.call(consume_item("t_worm", 7), "consume 7 worms")
-	check.call(count_of("t_worm") == 18, "18 worms remain")
-	check.call(not consume_item("t_worm", 99), "over-consume is refused")
-	check.call(count_of("t_worm") == 18, "refused consume changes nothing")
-
-	# Fish never stack, go to the fish box, and keep their own data.
-	check.call(add_fish("t_pike", 32.0), "add_fish stores a fish")
-	add_item("t_pike", 1, {"size_cm": 40.0})
-	check.call(get_used_slot_count(FISH_BOX) == 2, "two pike are two separate entries")
-	check.call(count_of("t_pike", TACKLE_BOX) == 0, "no fish in tackle box")
-
-	# Reordering & Merging via move_item.
-	var second_pike_uid := get_uid_at(FISH_BOX, 1)
-	check.call(move_item(second_pike_uid, 0), "move 2nd fish to top of list")
-	check.call(get_uid_at(FISH_BOX, 0) == second_pike_uid, "2nd fish is now at index 0")
-
-	# Save / load round trip.
-	var snapshot := to_save_data()
-	var json_text := JSON.stringify(snapshot)
-	var parsed: Variant = JSON.parse_string(json_text)
-	_clear_all()
-	load_save_data(parsed)
-	check.call(count_of("t_worm") == 18, "worms survive JSON save/load")
-	check.call(get_used_slot_count(FISH_BOX) == 2, "fish survive JSON save/load")
-
-	# can_add changes nothing.
-	var before := to_save_data()
-	check.call(can_add("t_worm", 2), "can_add: room for 2 worms")
-	check.call(can_add("t_tray", 1), "can_add: room for a tray")
-	check.call(JSON.stringify(to_save_data()) == JSON.stringify(before), "can_add leaves inventory untouched")
-
-	# auto_arrange merges loose stacks and sorts list.
-	var first_stack := get_uid_at(TACKLE_BOX, 0)
-	check.call(split_stack(first_stack, 4) != 0, "split a stack")
-	check.call(get_used_slot_count(TACKLE_BOX) == 3, "now 3 worm entries")
-	check.call(auto_arrange(TACKLE_BOX), "auto_arrange succeeds")
-	check.call(get_used_slot_count(TACKLE_BOX) == 2, "stacks merged back to 2")
-	check.call(count_of("t_worm") == 18, "no worms lost while arranging")
-
-	# Bad save data & duplicate uids.
-	load_save_data(null)
-	check.call(_items.is_empty(), "null save data loads as empty")
-	load_save_data({"version": 2, "next_uid": 1, "items": [
-		{"uid": 5, "item_id": "t_worm", "count": 3, "meta": {}},
-		{"uid": 5, "item_id": "t_tray", "count": 1, "meta": {}},
-		{"uid": 2, "item_id": "t_worm", "count": 2, "meta": {}},
-	]})
-	check.call(_items.size() == 3, "duplicate uids load without losing items")
-
-	# Fill the fish box until it rejects.
-	_clear_all()
-	var added := 0
-	while add_item("t_pike") == 0:
-		added += 1
-		if added > 100:
-			break
-	check.call(added == CONTAINER_CAPACITIES[FISH_BOX], "fish box fills to exact capacity")
-	check.call(not can_add("t_pike"), "can_add agrees the fish box is full")
-
-	# Clean up.
-	_clear_all()
-	_fallback_defs = saved_defs
-	item_def_provider = saved_provider
-	refresh_definitions()
-	print("[InventoryManager test] %s" % ("ALL PASSED" if result["ok"] else "SOME FAILED"))
-	return result["ok"]

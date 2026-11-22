@@ -42,9 +42,8 @@ A few days ago I wouldn't have found a single one.
 Hm. That's the open sea.
 
 Is that an island?
-!open_ui map
 Fortune Island. I've seen it on posts before. Old ruins, clear water, cliffs.
 
 I never thought I'd actually go.
 Okay, Lolo. Time to leave the mangroves and head out to sea.
-!objective Travel to Fortune Island.
+!objective Take the boat in Calatagan to Fortune Island.

@@ -472,7 +472,7 @@ size = Vector2i(574, 648)
 render_target_update_mode = 4
 
 [node name="PlayerFishing" type="Node3D" parent="GridContainer/SubViewportContainer/SubViewport" unique_id=502106798]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.3307042, 5.0081625)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -2.0, 1.3307042, 3.0786262)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="GridContainer/SubViewportContainer/SubViewport/PlayerFishing" unique_id=731221113]
 
@@ -501,7 +501,7 @@ size = Vector2i(574, 648)
 render_target_update_mode = 4
 
 [node name="PlayerFishing2" type="Node3D" parent="GridContainer/SubViewportContainer2/SubViewport" unique_id=484533126]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3307042, -1.1187874)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 2.0, 1.3307042, 3.0786262)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2" unique_id=1727319788]
 
@@ -521,9 +521,10 @@ current = true
 [node name="FishingManager" type="Node3D" parent="." unique_id=1166121472 node_paths=PackedStringArray("player_anchors", "rod_holders")]
 script = ExtResource("8_rl387")
 player_anchors = [NodePath("../GridContainer/SubViewportContainer/SubViewport/PlayerFishing"), NodePath("../GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2")]
-rod_holders = [NodePath("../GridContainer/SubViewportContainer/SubViewport/PlayerFishing/CharacterBody3D"), NodePath("../GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2/CharacterBody3D")]
+rod_holders = [NodePath("../GridContainer/SubViewportContainer/SubViewport/PlayerFishing/CharacterBody3D/FishingRod_Lvl3"), NodePath("../GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2/CharacterBody3D/FishingRod_Lvl3")]
 bobber_scene = ExtResource("9_7ac3p")
-max_players = 3
+max_players = 2
+time_limit_sec = 120.0
 debug_spot_id = "location_imus"
 debug_rod_id = "rod_light"
 debug_bait_id = "bait_1"

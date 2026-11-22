@@ -3,6 +3,8 @@ extends CanvasLayer
 # Pokemon-style text box + story HUD overlays (objective, tutorial, banner, credits).
 # Owned by StoryManager (it instances this scene).
 
+signal choice_selected(index: int)
+
 const CHARS_PER_SECOND := 45.0
 const BLIP_CHAR_INTERVAL := 2
 
@@ -28,10 +30,12 @@ var _shown := 0.0
 var _last_blip_char := 0
 var _is_parchment := false
 var _arrow_phase := 0.0
+var _arrow_base_y := 0.0
 
 var _options := PackedStringArray()
 var _pending_choices := PackedStringArray()
 var _choice_index := -1
+var _current_objective := ""
 
 var _box_tween: Tween
 var _tutorial_tween: Tween
@@ -43,8 +47,17 @@ var _blip_playback: AudioStreamGeneratorPlayback
 
 func _ready() -> void:
 	layer = 50
+	_objective_label.text = ""
+	_objective_panel.hide()
 	_hide_all()
 	_setup_blip_audio()
+
+	var right_col := _arrow.get_parent() as Container
+	if right_col != null:
+		right_col.sort_children.connect(func() -> void:
+			_arrow_base_y = _arrow.position.y
+		)
+	_arrow_base_y = _arrow.position.y
 
 	_box.gui_input.connect(_on_box_gui_input)
 	_skip_button.pressed.connect(StoryManager.skip)
@@ -56,6 +69,7 @@ func _ready() -> void:
 	StoryManager.box_style_changed.connect(_on_box_style_changed)
 	StoryManager.command_emitted.connect(_on_command_emitted)
 	StoryManager.notice_requested.connect(_show_tutorial)
+	StoryManager.jeep_reached.connect(_on_jeep_reached)
 
 	var gm := get_node_or_null("/root/GameManager")
 	if gm != null and gm.has_signal("scene_changed"):
@@ -67,10 +81,37 @@ func _ready() -> void:
 		im.connect("menu_action", _on_menu_action)
 
 
+func _exit_tree() -> void:
+	if StoryManager != null:
+		if StoryManager.line_shown.is_connected(_on_line_shown):
+			StoryManager.line_shown.disconnect(_on_line_shown)
+		if StoryManager.choices_shown.is_connected(_on_choices_shown):
+			StoryManager.choices_shown.disconnect(_on_choices_shown)
+		if StoryManager.dialogue_hidden.is_connected(_hide_all):
+			StoryManager.dialogue_hidden.disconnect(_hide_all)
+		if StoryManager.box_style_changed.is_connected(_on_box_style_changed):
+			StoryManager.box_style_changed.disconnect(_on_box_style_changed)
+		if StoryManager.command_emitted.is_connected(_on_command_emitted):
+			StoryManager.command_emitted.disconnect(_on_command_emitted)
+		if StoryManager.notice_requested.is_connected(_show_tutorial):
+			StoryManager.notice_requested.disconnect(_show_tutorial)
+		if StoryManager.jeep_reached.is_connected(_on_jeep_reached):
+			StoryManager.jeep_reached.disconnect(_on_jeep_reached)
+	var gm := get_node_or_null("/root/GameManager")
+	if gm != null and gm.has_signal("scene_changed") and gm.is_connected("scene_changed", _on_scene_changed):
+		gm.disconnect("scene_changed", _on_scene_changed)
+	var im := get_node_or_null("/root/InputManager")
+	if im != null:
+		if im.has_signal("interact_pressed") and im.is_connected("interact_pressed", _on_interact):
+			im.disconnect("interact_pressed", _on_interact)
+		if im.has_signal("menu_action") and im.is_connected("menu_action", _on_menu_action):
+			im.disconnect("menu_action", _on_menu_action)
+
+
 func _process(delta: float) -> void:
 	if _arrow.visible:
 		_arrow_phase += delta * 6.0
-		_arrow.position.y = sin(_arrow_phase) * 3.0
+		_arrow.position.y = _arrow_base_y + sin(_arrow_phase) * 3.0
 
 	if not _typing:
 		return
@@ -129,6 +170,7 @@ func _press() -> void:
 	elif _choice_index >= 0:
 		var picked := _choice_index
 		_close_choices()
+		choice_selected.emit(picked)
 		StoryManager.choose(picked)
 	elif _box.visible:
 		StoryManager.advance()
@@ -168,10 +210,11 @@ func _on_command_emitted(command: String, args: PackedStringArray) -> void:
 	var text := " ".join(args)
 	match command:
 		"objective":
-			_show_objective(text)
+			set_objective(text)
 		"tutorial":
-			_show_tutorial(text)
+			show_tutorial(text)
 		"banner":
+			set_objective(text)
 			_show_banner(text)
 		"open_ui":
 			if args.size() > 0 and args[0] == "credits":
@@ -183,8 +226,37 @@ func _on_scene_changed(scene_id: String) -> void:
 	_objective_panel.visible = show_obj
 
 
+func set_objective(text: String) -> void:
+	_show_objective(text)
+
+
+func get_objective() -> String:
+	return _current_objective
+
+
+func complete_objective(filter: String = "") -> bool:
+	if _current_objective == "":
+		return false
+	if filter != "" and not _current_objective.to_lower().contains(filter.to_lower()):
+		return false
+	var done := _current_objective
+	_show_objective("")
+	_show_tutorial("Objective Complete: " + done)
+	return true
+
+
+func show_tutorial(text: String) -> void:
+	_show_tutorial(text)
+
+
+func _on_jeep_reached() -> void:
+	complete_objective("jeep")
+
+
 func _show_objective(text: String) -> void:
+	_current_objective = text
 	if text == "":
+		_objective_label.text = ""
 		_objective_panel.hide()
 		return
 	_objective_label.text = "Objective: " + text
@@ -256,11 +328,24 @@ func _finish_typing() -> void:
 
 func _open_choices(options: PackedStringArray) -> void:
 	_close_choices()
+	if options.is_empty():
+		return
 	_options = options
-	for text in options:
+	for i in options.size():
+		var text := options[i]
 		var label := Label.new()
 		label.text = text
+		label.mouse_filter = Control.MOUSE_FILTER_STOP
 		label.add_theme_font_size_override(&"font_size", 18)
+		var choice_idx := i
+		label.gui_input.connect(func(event: InputEvent) -> void:
+			if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+				_choice_index = choice_idx
+				_close_choices()
+				choice_selected.emit(choice_idx)
+				StoryManager.choose(choice_idx)
+				get_viewport().set_input_as_handled()
+		)
 		_choices.add_child(label)
 	_choice_index = 0
 	_choices.show()

@@ -90,12 +90,14 @@ func load_game(slot: int) -> Dictionary:
 
 func delete_save(slot: int) -> void:
 	var path := _slot_path(slot)
-	if FileAccess.file_exists(path):
-		DirAccess.remove_absolute(path)
+	for p in [path, path + ".bak", path + ".tmp"]:
+		if FileAccess.file_exists(p):
+			DirAccess.remove_absolute(p)
 
 
 func slot_exists(slot: int) -> bool:
-	return FileAccess.file_exists(_slot_path(slot))
+	var path := _slot_path(slot)
+	return FileAccess.file_exists(path) or FileAccess.file_exists(path + ".bak") or FileAccess.file_exists(path + ".tmp")
 
 
 func get_slot_info(slot: int) -> Dictionary:
@@ -110,7 +112,11 @@ func get_slot_info(slot: int) -> Dictionary:
 	var scene_id := String(data.get("scene", DEFAULT_START_SCENE))
 	var gm := _autoload("GameManager")
 	var scene_name := String(gm.call("get_scene_display_name", scene_id)) if (gm != null and gm.has_method("get_scene_display_name")) else scene_id
-	var caught: Array = data.get("caught_fish", []) if data.get("caught_fish") is Array else []
+	var raw_caught: Array = data.get("caught_fish", []) if data.get("caught_fish") is Array else []
+	var caught: Array = []
+	for fid in raw_caught:
+		if fid is String and not caught.has(fid):
+			caught.append(fid)
 	var db := _autoload("GameDB")
 	var total_fish := 0
 	if db != null and bool(db.get("is_loaded")) and db.has_method("get_ids"):
@@ -118,8 +124,8 @@ func get_slot_info(slot: int) -> Dictionary:
 	var almanac_pct := int(round(float(caught.size()) / float(total_fish) * 100.0)) if total_fish > 0 else 0
 	var wt: Dictionary = data.get("world_time", {}) if data.get("world_time") is Dictionary else {}
 	var day_num := maxi(int(wt.get("day_count", 1)), 1)
-	var mins := float(wt.get("game_minutes", 480.0))
-	var clock_str := "%02d:%02d" % [int(mins / 60.0) % 24, int(mins) % 60]
+	var total_min := posmod(int(float(wt.get("game_minutes", 480.0))), 1440)
+	var clock_str := "%02d:%02d" % [(total_min / 60) % 24, total_min % 60]
 	return {
 		"exists": true,
 		"timestamp": String(data.get("timestamp", "")),
@@ -176,6 +182,12 @@ func build_save_data() -> Dictionary:
 
 func apply_save_data(data: Dictionary) -> void:
 	_reset_player_state()
+	var gm_reset := _autoload("GameManager")
+	if gm_reset != null and gm_reset.get("scene_memory") is Dictionary:
+		(gm_reset.get("scene_memory") as Dictionary).clear()
+	var sm_reset := _autoload("StoryManager")
+	if sm_reset != null and sm_reset.has_method("clear_queued_cutscenes"):
+		sm_reset.call("clear_queued_cutscenes")
 
 	# Scene.
 	if data.get("scene") is String and data["scene"] != "" and not NON_SAVABLE_SCENES.has(data["scene"]):
@@ -365,7 +377,7 @@ func record_fish_catch(fish_id: String, size_cm: float, weight_kg: float = -1.0)
 	if not _db_knows("has_fish", fish_id):
 		push_warning("SaveManager: unknown fish id '%s'." % fish_id)
 		return {"is_new_species": false, "is_new_record": false, "trophy_tier": "", "record": {}}
-	var clean_size := maxf(size_cm, 0.0)
+	var clean_size := snappedf(maxf(size_cm, 0.0), 0.1)
 	var clean_weight := weight_kg
 	if clean_weight < 0.0:
 		var db := _autoload("GameDB")
@@ -381,11 +393,11 @@ func record_fish_catch(fish_id: String, size_cm: float, weight_kg: float = -1.0)
 		"best_size_cm": 0.0,
 		"best_weight_kg": 0.0,
 	})
-	var prev_best := float(rec.get("best_size_cm", 0.0))
+	var prev_best := snappedf(float(rec.get("best_size_cm", 0.0)), 0.1)
 	rec["count"] = int(rec.get("count", 0)) + 1
-	var is_new_record := (not is_new_species) and (clean_size > prev_best + 0.001)
+	var is_new_record := (not is_new_species) and (clean_size > prev_best)
 	if clean_size > prev_best:
-		rec["best_size_cm"] = snappedf(clean_size, 0.1)
+		rec["best_size_cm"] = clean_size
 		rec["best_weight_kg"] = snappedf(clean_weight, 0.01)
 	_fish_records[fish_id] = rec
 	if is_new_record:
@@ -543,7 +555,7 @@ func load_settings() -> bool:
 			game_manager.call("apply_volume_settings", volume)
 	var input_manager := _autoload("InputManager")
 	if input_manager != null and data.has("cast_sensitivity"):
-		input_manager.cast_sensitivity = float(data.get("cast_sensitivity", 1.0))
+		input_manager.cast_sensitivity = clampf(float(data.get("cast_sensitivity", 0.5)), 0.0, 1.0)
 	return true
 
 
@@ -559,6 +571,16 @@ func _autoload(autoload_name: String) -> Node:
 	return get_node_or_null("/root/" + autoload_name)
 
 
+func reset_state() -> void:
+	_reset_player_state()
+	var gm := _autoload("GameManager")
+	if gm != null and gm.get("scene_memory") is Dictionary:
+		(gm.get("scene_memory") as Dictionary).clear()
+	var sm := _autoload("StoryManager")
+	if sm != null and sm.has_method("clear_queued_cutscenes"):
+		sm.call("clear_queued_cutscenes")
+
+
 func _reset_player_state() -> void:
 	_unlock_flags = []
 	_owned_rods = NEW_GAME_OWNED_ROD_IDS.duplicate()
@@ -569,6 +591,12 @@ func _reset_player_state() -> void:
 	_difficulty = NEW_GAME_DIFFICULTY
 	_saved_scene = DEFAULT_START_SCENE
 	_money = NEW_GAME_STARTER_MONEY
+	var gm := _autoload("GameManager")
+	if gm != null and gm.get("scene_memory") is Dictionary:
+		(gm.get("scene_memory") as Dictionary).clear()
+	var sm := _autoload("StoryManager")
+	if sm != null and sm.has_method("clear_queued_cutscenes"):
+		sm.call("clear_queued_cutscenes")
 
 
 func _migrate_rod_id(rod_id: String) -> String:
@@ -648,32 +676,62 @@ func _clean_volume(raw: Variant) -> Dictionary:
 
 func _write_json(path: String, data: Dictionary) -> bool:
 	var tmp_path := path + ".tmp"
+	var bak_path := path + ".bak"
 	var file := FileAccess.open(tmp_path, FileAccess.WRITE)
 	if file == null:
 		push_error("SaveManager: cannot write '%s'." % tmp_path)
 		return false
 	file.store_string(JSON.stringify(data))
+	var write_err := file.get_error()
+	file.flush()
 	file.close()
+	if write_err != OK:
+		push_error("SaveManager: write error (%d) on '%s'." % [write_err, tmp_path])
+		if FileAccess.file_exists(tmp_path):
+			DirAccess.remove_absolute(tmp_path)
+		return false
 
-	if FileAccess.file_exists(path):
-		DirAccess.remove_absolute(path)
+	var had_existing := FileAccess.file_exists(path)
+	if had_existing:
+		if FileAccess.file_exists(bak_path):
+			DirAccess.remove_absolute(bak_path)
+		var bak_err := DirAccess.rename_absolute(path, bak_path)
+		if bak_err != OK:
+			DirAccess.remove_absolute(path)
+
 	var err := DirAccess.rename_absolute(tmp_path, path)
 	if err != OK:
+		if FileAccess.file_exists(bak_path):
+			DirAccess.rename_absolute(bak_path, path)
 		push_error("SaveManager: could not finish writing '%s'." % path)
 		return false
+
+	if FileAccess.file_exists(bak_path):
+		DirAccess.remove_absolute(bak_path)
 	return true
 
 
 func _read_json(path: String) -> Dictionary:
-	if not FileAccess.file_exists(path):
-		return {}
-	var file := FileAccess.open(path, FileAccess.READ)
+	var read_path := path
+	if not FileAccess.file_exists(read_path):
+		if FileAccess.file_exists(path + ".bak"):
+			DirAccess.rename_absolute(path + ".bak", path)
+		elif FileAccess.file_exists(path + ".tmp"):
+			DirAccess.rename_absolute(path + ".tmp", path)
+		if not FileAccess.file_exists(path):
+			if FileAccess.file_exists(path + ".bak"):
+				read_path = path + ".bak"
+			elif FileAccess.file_exists(path + ".tmp"):
+				read_path = path + ".tmp"
+			else:
+				return {}
+	var file := FileAccess.open(read_path, FileAccess.READ)
 	if file == null:
-		push_error("SaveManager: cannot read '%s'." % path)
+		push_error("SaveManager: cannot read '%s'." % read_path)
 		return {}
 	var data: Variant = JSON.parse_string(file.get_as_text())
 	file.close()
 	if not (data is Dictionary):
-		push_warning("SaveManager: '%s' is corrupt; ignoring it." % path)
+		push_warning("SaveManager: '%s' is corrupt; ignoring it." % read_path)
 		return {}
 	return data

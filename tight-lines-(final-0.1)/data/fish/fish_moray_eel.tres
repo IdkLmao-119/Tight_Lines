@@ -9,7 +9,7 @@ scientific_name = "Gymnothorax javanicus"
 description = "A long, snake-like reef fish with thick, scaleless, mucus-coated skin and no pectoral or pelvic fins. They hide in coral crevices and rocky burrows during the day and emerge at night to ambush fish, crabs, and octopuses
 Local Name: Igat"
 size_class = "medium"
-speed = 4.5
+base_price = 65
 pull_strength = 12.0
 stamina = 60.0
 min_size = 100.0

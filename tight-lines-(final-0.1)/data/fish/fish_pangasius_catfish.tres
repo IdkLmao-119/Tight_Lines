@@ -10,7 +10,6 @@ description = "A large, smooth-skinned schooling catfish known for swift, energe
 Local Name: Cream Dory"
 size_class = "large"
 base_price = 50
-speed = 6.0
 pull_strength = 15.0
 stamina = 75.0
 min_size = 40.0
@@ -18,6 +17,5 @@ avg_size = 75.0
 max_size = 130.0
 avg_weight = 5.5
 icon = ExtResource("1_lqh0m")
-grid_width = 3
 id = "fish_pangasius_catfish"
 display_name = "Pangasius Catfish"

@@ -76,15 +76,14 @@ And then I'll make my own Almanac.
 !objective Find a place to fish.
 
 
-=== marikina_street | scene: overworld_spawn | requires: met_lolo_diary
+=== marikina_street | scene: overworld_spawn | requires: saw_lolo_diary
 @john
 Okay... where do I even start?
 I'll start here at Marikina River. I remember there are fishing areas nearby.
 
-!objective use the map.
-!open_ui map
+!objective Go to the jeep.
 Cavite and Batangas... Lolo's Almanac is waiting.
-!tutorial Open the map to travel.
+!tutorial Go to the jeep to travel.
 
 
 === marikina_phone_store | requires: marikina_street

@@ -547,10 +547,6 @@ func _warn(message: String) -> void:
 # loaded resources; files that fail to load are reported and skipped.
 func _scan_and_load(data_dir: String, cache_mode: ResourceLoader.CacheMode) -> Array:
 	var records: Array = []
-	if not DirAccess.dir_exists_absolute(data_dir):
-		_err("data folder not found: %s" % data_dir)
-		_fatal = true
-		return records
 	var paths: Array[String] = []
 	_collect_paths(data_dir, paths)
 	paths.sort()
@@ -609,6 +605,8 @@ func _process_records(records: Array) -> void:
 			continue
 		var kind := _kind_of(record)
 		if kind.is_empty():
+			if record is BaitBoost or record is FishMusicEntry:
+				continue
 			_warn("%s: not a database record (FishData, BaitData, RodData or LocationData); ignored" % record.resource_path)
 			continue
 
@@ -694,18 +692,19 @@ func _validate_entry(record: DatabaseEntry, ctx: String) -> void:
 		_err("%s: id must not be empty" % ctx)
 	elif not id.begins_with(prefix) or id.length() == prefix.length() or _slug_regex.search(id) == null:
 		_err("%s: id '%s' must be lowercase snake_case and start with '%s' (e.g. '%sexample')" % [ctx, id, prefix, prefix])
-	elif not record.resource_path.is_empty() and record.resource_path.get_file().get_basename() != id:
-		# Only a warning: the id is what saves use, the file name is just a convenience.
-		_warn("%s: file name '%s' does not match the id '%s' (convention: name the file like its id)" % [
-			ctx, record.resource_path.get_file(), id])
+	elif not record.resource_path.is_empty():
+		var file_stem := record.resource_path.get_file().get_basename()
+		var suffix := id.trim_prefix(prefix)
+		if file_stem != id and not file_stem.begins_with(id + "_") and not id.begins_with(file_stem) and not file_stem.ends_with("_" + suffix):
+			# Only a warning: the id is what saves use, the file name is just a convenience.
+			_warn("%s: file name '%s' does not match the id '%s' (convention: name the file like its id)" % [
+				ctx, record.resource_path.get_file(), id])
 	if record.display_name.strip_edges().is_empty():
 		_err("%s: display_name must not be empty" % ctx)
 
 
-# Rules for anything that goes in the grid inventory (fish and bait).
+# Rules for anything that goes in the inventory (fish and bait).
 func _validate_item(item: ItemData, ctx: String) -> void:
-	_check_min_int(item.grid_width, 1, "grid_width", ctx)
-	_check_min_int(item.grid_height, 1, "grid_height", ctx)
 	_check_min_int(item.max_stack, 1, "max_stack", ctx)
 
 
@@ -716,7 +715,6 @@ func _validate_fish(fish: FishData, ctx: String) -> void:
 	if not FishingTerms.SIZE_CLASSES.has(fish.size_class):
 		_err("%s: size_class '%s' is not one of: %s" % [ctx, fish.size_class, ", ".join(FishingTerms.SIZE_CLASSES)])
 	_check_min_int(fish.base_price, 0, "base_price", ctx)
-	_check_min_float(fish.speed, 0.0, "speed", ctx)
 	_check_min_float(fish.min_size, 0.0, "min_size", ctx)
 	if fish.min_size > fish.max_size:
 		_err("%s: min_size (%s) must be <= max_size (%s)" % [ctx, str(fish.min_size), str(fish.max_size)])
@@ -730,8 +728,10 @@ func _validate_fish(fish: FishData, ctx: String) -> void:
 	if fish.avg_weight <= 0.0:
 		_err("%s: avg_weight must be greater than 0" % ctx)
 	# Fight stats: must be above 0 (error); outside the suggested design range is only a warning.
-	_check_stat(fish.pull_strength, "pull_strength", 2.0, 8.0, ctx)
-	_check_stat(fish.stamina, "stamina", 10.0, 30.0, ctx)
+	_check_stat(fish.pull_strength, "pull_strength", 2.0, 25.0, ctx)
+	_check_stat(fish.stamina, "stamina", 10.0, 150.0, ctx)
+	if fish.fight_length_multiplier <= 0.0:
+		_err("%s: fight_length_multiplier must be greater than 0 (got %s)" % [ctx, str(fish.fight_length_multiplier)])
 
 
 # Checks the shape of a bait record. Whether the fish are actually in the database is checked later in

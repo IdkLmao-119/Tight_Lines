@@ -3,21 +3,59 @@ extends CharacterBody2D
 const SHOP_UI_SCENE := preload("res://UIScenesAndScript/RodShopUI/ShopUI.tscn")
 
 var character_direction : Vector2
+var last_safe_position: Vector2 = Vector2.ZERO
+var last_move_dir: Vector2 = Vector2.DOWN
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision: CollisionShape2D = $CollisionShape2D
 
 var _shop_ui: Control = null
 
 
+func _ready() -> void:
+	last_safe_position = global_position
+
+
+func _play_idle_from_current() -> void:
+	match animated_sprite.animation:
+		"walking_front", "idle_front":
+			animated_sprite.play("idle_front")
+		"walking_back", "idle_back":
+			animated_sprite.play("idle_back")
+		"walking_left", "idle_left":
+			animated_sprite.play("idle_left")
+		"walking_right", "idle_right":
+			animated_sprite.play("idle_right")
+		_:
+			animated_sprite.play("idle_front")
+
+
+func get_safe_return_position() -> Vector2:
+	var step_dir := last_move_dir.normalized() if last_move_dir.length_squared() > 0.001 else Vector2.DOWN
+	if last_safe_position != Vector2.ZERO and last_safe_position.distance_to(global_position) >= 12.0:
+		return last_safe_position
+	return global_position - step_dir * 36.0
+
+
+func _mark_portal_trigger_entered() -> void:
+	var step_dir := last_move_dir.normalized() if last_move_dir.length_squared() > 0.001 else Vector2.DOWN
+	last_safe_position = global_position - step_dir * 36.0
+
+
 func _physics_process(_delta):
-	var story := get_node_or_null("/root/StoryManager")
-	if story != null and story.is_playing():
+	if (StoryManager != null and StoryManager.is_playing()) or GameManager.is_changing_scene or InputManager.context != InputManager.InputContext.OVERWORLD or (_shop_ui != null and _shop_ui.visible):
 		velocity = Vector2.ZERO
+		if String(animated_sprite.animation).begins_with("walking_"):
+			_play_idle_from_current()
 		return
 
 	var dir = Input.get_vector("Left", "Right", "Up", "Down")
-	if dir == Vector2.ZERO and get_node_or_null("/root/InputManager") != null:
-		dir = get_node_or_null("/root/InputManager").get_move_vector()
+	if dir == Vector2.ZERO and InputManager != null:
+		dir = InputManager.get_move_vector()
+
+	if dir != Vector2.ZERO:
+		last_move_dir = dir.normalized()
+		last_safe_position = global_position - last_move_dir * 36.0
 
 	velocity = dir * 200.0
 	move_and_slide()
@@ -34,20 +72,11 @@ func _physics_process(_delta):
 			else:
 				sprite.play("walking_back")
 	else:
-		match sprite.animation:
-			"walking_front", "idle_front":
-				sprite.play("idle_front")
-			"walking_back", "idle_back":
-				sprite.play("idle_back")
-			"walking_left", "idle_left":
-				sprite.play("idle_left")
-			"walking_right", "idle_right":
-				sprite.play("idle_right")
-			_:
-				sprite.play("idle_front")
+		_play_idle_from_current()
 
 
 func _enter_fishing(scene_id: String, spot_id: String) -> void:
+	_mark_portal_trigger_entered()
 	var ctx := {"spot_id": spot_id}
 	var rod_id := SaveManager.get_equipped_rod()
 	var bait_id := SaveManager.get_equipped_bait()
@@ -59,6 +88,7 @@ func _enter_fishing(scene_id: String, spot_id: String) -> void:
 
 
 func _try_change_scene(scene_id: String, required_flag: String = "", locked_msg: String = "") -> void:
+	_mark_portal_trigger_entered()
 	if required_flag != "" and not SaveManager.has_unlock_flag(required_flag):
 		var story := get_node_or_null("/root/StoryManager")
 		if story != null and locked_msg != "":
@@ -67,41 +97,42 @@ func _try_change_scene(scene_id: String, required_flag: String = "", locked_msg:
 	GameManager.change_scene(scene_id)
 
 
-# Spawn Signals
-func _on_spawn_to_fish_market_body_entered(body: Node2D) -> void:
-	if body != self:
+func _on_jeep_body_entered(body: Node2D) -> void:
+	if body != self or GameManager.is_changing_scene:
 		return
-	_try_change_scene("overworld_fish_market", "unlock_kawit", "Catch every small fish in Imus to unlock Kawit!")
+	var story := get_node_or_null("/root/StoryManager")
+	if story != null and story.has_method(&"notify_jeep_reached"):
+		story.call(&"notify_jeep_reached")
+	_mark_portal_trigger_entered()
+	var ui := get_node_or_null("CanvasLayer/2DSceneUI")
+	if ui != null and ui.has_method(&"open_world_map"):
+		ui.call(&"open_world_map")
 
+
+# Spawn Signals
 func _on_spawn_to_house_1_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
+	_mark_portal_trigger_entered()
 	GameManager.change_scene("overworld_house_1")
-
-func _on_spawn_to_rice_fields_body_entered(body: Node2D) -> void:
-	if body != self:
-		return
-	_try_change_scene("overworld_rice_field", "unlock_imus", "Catch every small fish in Marikina River to unlock Imus!")
-
-func _on_spawn_to_river_park_body_entered(body: Node2D) -> void:
-	if body != self:
-		return
-	GameManager.change_scene("overworld_river_park")
 
 # House Signals
 func _on_house_1_to_house_2_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
+	_mark_portal_trigger_entered()
 	GameManager.change_scene("overworld_house_2")
 
 func _on_house_1_to_spawn_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
+	_mark_portal_trigger_entered()
 	GameManager.change_scene("overworld_spawn")
 
 func _on_house_2_to_house_1_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
+	_mark_portal_trigger_entered()
 	GameManager.change_scene("overworld_house_1")
 
 # Rice Field Signals (Imus Fields -> location_imus)
@@ -115,32 +146,11 @@ func _on_rice_fields_to_rice_fishing_spot_2_body_entered(body: Node2D) -> void:
 		return
 	_enter_fishing("fishing_rice_field", "location_imus")
 
-func _on_rice_fields_to_spawn_body_entered(body: Node2D) -> void:
-	if body != self:
-		return
-	GameManager.change_scene("overworld_spawn")
-
 # River Park Signal (Marikina River Park -> location_marikina)
-func _on_river_park_to_spawn_body_entered(body: Node2D) -> void:
-	if body != self:
-		return
-	GameManager.change_scene("overworld_spawn")
-
 func _on_river_park_to_river_park_fishing_spot_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
 	_enter_fishing("fishing_river_park", "location_marikina")
-
-# Fish Market Signals
-func _on_fish_market_to_spawn_body_entered(body: Node2D) -> void:
-	if body != self:
-		return
-	GameManager.change_scene("overworld_spawn")
-
-func _on_fish_market_to_fish_pens_body_entered(body: Node2D) -> void:
-	if body != self:
-		return
-	_try_change_scene("overworld_fishing_pens", "unlock_fish_pens", "Catch every small fish in Kawit to unlock Noveleta!")
 
 # Seaside Park 3D Scene (Kawit Seaside Park -> location_kawit)
 func _on_seaside_park_3d_scene_body_entered(body: Node2D) -> void:
@@ -149,11 +159,6 @@ func _on_seaside_park_3d_scene_body_entered(body: Node2D) -> void:
 	_enter_fishing("fishing_fish_market", "location_kawit")
 
 # Fish Pens Signals
-func _on_fish_pens_to_seaside_park_body_entered(body: Node2D) -> void:
-	if body != self:
-		return
-	GameManager.change_scene("overworld_fish_market")
-
 func _on_fish_pen_to_salt_farm_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
@@ -166,15 +171,11 @@ func _on_fish_pen_3d_scene_body_entered(body: Node2D) -> void:
 	_enter_fishing("fishing_fishing_pens", "location_fish_pens")
 
 # Salt Farm Signals
-func _on_salt_farm_to_fish_pens_body_entered(body: Node2D) -> void:
+func _on_salt_farm_to_fish_pen_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
+	_mark_portal_trigger_entered()
 	GameManager.change_scene("overworld_fishing_pens")
-
-func _on_salt_farm_to_mangrove_forest_body_entered(body: Node2D) -> void:
-	if body != self:
-		return
-	_try_change_scene("overworld_mangrove", "unlock_calatagan", "Catch every small & medium fish in the Salt Farm to unlock Batangas!")
 
 # Salt Farm 3D Signal (Noveleta Salt Farm -> location_salt_farm)
 func _on_salt_farm_3d_scene_body_entered(body: Node2D) -> void:
@@ -186,12 +187,10 @@ func _on_salt_farm_3d_scene_body_entered(body: Node2D) -> void:
 func _on_mangrove_to_island_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
-	_try_change_scene("overworld_island", "unlock_fortune_island", "Catch every fish in Calatagan Mangrove Forest to unlock Fortune Island!")
-
-func _on_mangrove_to_salt_farm_body_entered(body: Node2D) -> void:
-	if body != self:
-		return
-	GameManager.change_scene("overworld_salt_farm")
+	var qm := get_node_or_null("/root/QuestManager")
+	if qm != null and qm.has_method(&"is_completed") and qm.call(&"is_completed", "quest_roots") and not SaveManager.has_unlock_flag("unlock_fortune_island"):
+		SaveManager.add_unlock_flag("unlock_fortune_island")
+	_try_change_scene("overworld_island", "unlock_fortune_island", "Complete the Calatagan main quest to unlock the boat to Fortune Island!")
 
 # Mangrove 3D Signal (Calatagan Mangrove Forest -> location_calatagan)
 func _on_mangrove_3d_scene_body_entered(body: Node2D) -> void:
@@ -203,6 +202,7 @@ func _on_mangrove_3d_scene_body_entered(body: Node2D) -> void:
 func _on_island_to_mangrove_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
+	_mark_portal_trigger_entered()
 	GameManager.change_scene("overworld_mangrove")
 
 # Island 3D Signal (Fortune Island -> location_fortune_island)
@@ -215,6 +215,7 @@ func _on_island_3d_scene_body_entered(body: Node2D) -> void:
 func _on_rod_shop_exit_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
+	_mark_portal_trigger_entered()
 	GameManager.change_scene("overworld_spawn")
 
 func _on_shop_ui_signal_body_entered(body: Node2D) -> void:
@@ -231,4 +232,5 @@ func _on_shop_ui_signal_body_entered(body: Node2D) -> void:
 func _on_spawn_to_rod_shop_body_entered(body: Node2D) -> void:
 	if body != self:
 		return
+	_mark_portal_trigger_entered()
 	GameManager.change_scene("overworld_rod_shop")

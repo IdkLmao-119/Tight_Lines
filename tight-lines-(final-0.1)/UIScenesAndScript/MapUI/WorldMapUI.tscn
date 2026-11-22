@@ -73,13 +73,14 @@ anchor_left = 0.40600002
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -265.07703
+offset_left = -317.57703
 offset_top = -461.0
-offset_right = -233.0
+offset_right = -180.5
 offset_bottom = -399.0
 grow_horizontal = 2
 grow_vertical = 0
-text = "Spawn
+text = "Marikina
+(Home)
 
 "
 

@@ -10,7 +10,6 @@ description = "A secretive nocturnal predator that lurks in muddy riverbeds wait
 Local Name: Kanduli"
 size_class = "medium"
 base_price = 38
-speed = 4.5
 pull_strength = 12.0
 stamina = 60.0
 min_size = 20.0
@@ -18,6 +17,5 @@ avg_size = 40.0
 max_size = 70.0
 avg_weight = 2.1
 icon = ExtResource("1_g6hdk")
-grid_width = 2
 id = "fish_manila_catfish"
 display_name = "Manila Catfish"

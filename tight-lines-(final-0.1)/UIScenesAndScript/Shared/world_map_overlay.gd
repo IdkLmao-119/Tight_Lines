@@ -14,12 +14,19 @@ const DESTINATIONS: Array[Dictionary] = [
 	{"name": "Noveleta Fishing Pens", "region": "Cavite", "scene_id": "overworld_fishing_pens", "location_id": "location_fish_pens", "unlock_flag": "unlock_fish_pens"},
 	{"name": "Noveleta Salt Farm", "region": "Cavite", "scene_id": "overworld_salt_farm", "location_id": "location_salt_farm", "unlock_flag": "unlock_salt_farm"},
 	{"name": "Calatagan Mangroves", "region": "Batangas", "scene_id": "overworld_mangrove", "location_id": "location_calatagan", "unlock_flag": "unlock_calatagan"},
-	{"name": "Fortune Island", "region": "Batangas", "scene_id": "overworld_island", "location_id": "location_fortune_island", "unlock_flag": "unlock_fortune_island"},
+	{"name": "Fortune Island", "region": "Batangas", "scene_id": "overworld_island", "location_id": "location_fortune_island", "unlock_flag": "unlock_fortune_island", "fast_travel": false},
 ]
 
 var _clock_label: Label = null
+var _close_btn: Button = null
 var _dest_grid: GridContainer = null
 var _dest_buttons: Dictionary = {} # { scene_id: Button }
+var _dest_button_list: Array[Button] = []
+var _rest_buttons: Array[Button] = []
+var _cursor_highlight: MobileCursorHighlight = null
+var _focus_section: int = 1 # 0 = rest row, 1 = destinations, 2 = close button
+var _rest_idx: int = 0
+var _dest_idx: int = 0
 
 
 func _ready() -> void:
@@ -37,11 +44,96 @@ func _ready() -> void:
 func open() -> void:
 	visible = true
 	refresh()
+	_focus_section = 1
+	_dest_idx = _get_first_enabled_dest_index()
+	_apply_focus.call_deferred()
 
 
 func close() -> void:
+	if _cursor_highlight != null:
+		_cursor_highlight.clear()
 	visible = false
 	close_requested.emit()
+
+
+func toggle() -> void:
+	if visible:
+		close()
+	else:
+		open()
+
+
+func handle_mobile_action(action: String) -> void:
+	match action:
+		"back":
+			close()
+			return
+		"tab_prev":
+			_focus_section = 0
+		"tab_next":
+			_focus_section = 1
+		"select":
+			var btn := _get_focused_button()
+			if btn != null and not btn.disabled:
+				btn.pressed.emit()
+			return
+		"up":
+			if _focus_section == 1:
+				if _dest_idx >= 2:
+					_dest_idx -= 2
+				else:
+					_focus_section = 0
+					_rest_idx = clampi((_dest_idx % 2) * 2, 0, _rest_buttons.size() - 1)
+			elif _focus_section == 0:
+				_focus_section = 2
+		"down":
+			if _focus_section == 2:
+				_focus_section = 0
+			elif _focus_section == 0:
+				_focus_section = 1
+			elif _focus_section == 1 and _dest_idx + 2 < _dest_button_list.size():
+				_dest_idx += 2
+		"left":
+			if _focus_section == 1 and (_dest_idx % 2) > 0:
+				_dest_idx -= 1
+			elif _focus_section == 0:
+				_rest_idx = maxi(0, _rest_idx - 1)
+			elif _focus_section == 2:
+				_focus_section = 0
+		"right":
+			if _focus_section == 1 and (_dest_idx % 2) == 0 and _dest_idx + 1 < _dest_button_list.size():
+				_dest_idx += 1
+			elif _focus_section == 0:
+				_rest_idx = mini(_rest_buttons.size() - 1, _rest_idx + 1)
+
+	_apply_focus.call_deferred()
+
+
+func _get_first_enabled_dest_index() -> int:
+	for i in _dest_button_list.size():
+		if not _dest_button_list[i].disabled:
+			return i
+	return 0
+
+
+func _get_focused_button() -> Button:
+	if _focus_section == 2 and _close_btn != null:
+		return _close_btn
+	if _focus_section == 0 and not _rest_buttons.is_empty():
+		return _rest_buttons[clampi(_rest_idx, 0, _rest_buttons.size() - 1)]
+	if not _dest_button_list.is_empty():
+		return _dest_button_list[clampi(_dest_idx, 0, _dest_button_list.size() - 1)]
+	return _close_btn
+
+
+func _apply_focus() -> void:
+	if not visible:
+		return
+	var btn := _get_focused_button()
+	if btn != null and btn.is_visible_in_tree():
+		btn.grab_focus()
+		if _cursor_highlight != null:
+			_cursor_highlight.highlight(btn)
 
 
 func refresh() -> void:
@@ -65,6 +157,7 @@ func refresh() -> void:
 		var req_flag := String(dest.get("unlock_flag", ""))
 		if req_flag != "" and not unlocked_flags.has(req_flag):
 			is_open = false
+		var can_fast_travel := bool(dest.get("fast_travel", true))
 		var progress_txt := "Safe Haven"
 		if loc_id != "" and db != null and bool(db.get("is_loaded")):
 			is_open = is_open and bool(db.call(&"is_location_available", loc_id, {"unlocked": unlocked_flags}))
@@ -75,8 +168,10 @@ func refresh() -> void:
 				if entry != null and entry.fish != null and caught_list.has(String(entry.fish.id)):
 					caught += 1
 			progress_txt = "%d / %d Species" % [caught, total] if is_open else "Locked"
+		if is_open and not can_fast_travel:
+			progress_txt += " (Boat via Calatagan)"
 
-		btn.disabled = not is_open
+		btn.disabled = (not is_open) or (not can_fast_travel)
 		btn.text = "%s\n%s  •  %s" % [dest["name"], dest["region"], progress_txt]
 
 
@@ -107,6 +202,8 @@ func _on_rest_pressed(phase: String) -> void:
 
 
 func _on_destination_pressed(scene_id: String) -> void:
+	if scene_id == "overworld_island":
+		return
 	close()
 	travel_requested.emit(scene_id)
 	var gm := get_node_or_null("/root/GameManager")
@@ -118,10 +215,15 @@ func _build_ui() -> void:
 	var dim := ColorRect.new()
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.color = Color(0.0, 0.0, 0.0, 0.58)
+	dim.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			close()
+	)
 	add_child(dim)
 
 	var center := CenterContainer.new()
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(center)
 
 	var panel := PanelContainer.new()
@@ -156,11 +258,12 @@ func _build_ui() -> void:
 
 	var close_btn := Button.new()
 	close_btn.name = "CloseMapButton"
-	close_btn.text = "Close"
-	close_btn.custom_minimum_size = Vector2(110, 44)
+	close_btn.text = "Close [Esc]"
+	close_btn.custom_minimum_size = Vector2(126, 44)
 	close_btn.add_theme_font_size_override("font_size", 20)
 	close_btn.pressed.connect(close)
 	header.add_child(close_btn)
+	_close_btn = close_btn
 
 	# Clock + Rest Bar
 	_clock_label = Label.new()
@@ -194,6 +297,7 @@ func _build_ui() -> void:
 		btn.add_theme_font_size_override("font_size", 16)
 		btn.pressed.connect(_on_rest_pressed.bind(entry["phase"]))
 		rest_row.add_child(btn)
+		_rest_buttons.append(btn)
 
 	# Destinations Grid
 	_dest_grid = GridContainer.new()
@@ -213,3 +317,8 @@ func _build_ui() -> void:
 		btn.pressed.connect(_on_destination_pressed.bind(sid))
 		_dest_grid.add_child(btn)
 		_dest_buttons[sid] = btn
+		_dest_button_list.append(btn)
+
+	_cursor_highlight = MobileCursorHighlight.new()
+	_cursor_highlight.name = "CursorHighlight"
+	add_child(_cursor_highlight)

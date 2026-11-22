@@ -82,18 +82,10 @@ func _ready() -> void:
 
 
 func open() -> void:
+	var was_visible := visible
 	visible = true
-	_refresh_location_buttons()
-	if _current_location_id == "" or not _is_location_unlocked(_current_location_id):
-		var first_idx := _get_first_unlocked_location_index()
-		if first_idx >= 0:
-			_focused_location_idx = first_idx
-			_current_location_id = LOCATION_IDS[first_idx]
-		else:
-			_current_location_id = ""
-	if _current_location_id != "":
-		_select_location(_current_location_id)
-	_highlight_focused.call_deferred()
+	if was_visible:
+		_on_visibility_changed()
 
 
 func close() -> void:
