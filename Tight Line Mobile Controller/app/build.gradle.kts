@@ -11,7 +11,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.myapplication"
+        applicationId = "com.TightLines.TightLinesMobileContoller"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

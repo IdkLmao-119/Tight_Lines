@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://n6v5svu6yftj" path="res://UIScenesAndScript/FishTankUI/fish_tank.gd" id="2_fish_tank"]
 
 [node name="FishTank" type="Control" unique_id=451500958]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

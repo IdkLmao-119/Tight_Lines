@@ -2,14 +2,6 @@ extends Control
 
 const DPAD_ACTIONS: Array[StringName] = [&"Up", &"Down", &"Left", &"Right"]
 
-## Toggle this to show or hide the on-screen mobile controls overlay in Godot.
-@export var show_on_screen_controls: bool = false:
-	set(val):
-		show_on_screen_controls = val
-		visible = show_on_screen_controls
-		if not visible:
-			_release_all_actions()
-
 @onready var _up_button: Button = %UpButton
 @onready var _down_button: Button = %DownButton
 @onready var _left_button: Button = %LeftButton
@@ -19,7 +11,6 @@ var _pressed_actions: Dictionary = {}
 
 
 func _ready() -> void:
-	visible = show_on_screen_controls
 	visibility_changed.connect(_on_visibility_changed)
 
 	var dpad_map := {

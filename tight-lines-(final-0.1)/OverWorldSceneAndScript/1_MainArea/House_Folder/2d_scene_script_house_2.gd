@@ -18,4 +18,6 @@ func _process(delta: float) -> void:
 	pass
 
 func _on_fish_tank_body_entered(body: Node2D) -> void:
-	$"Player/CanvasLayer/2DSceneUI/GameHUD/Overlays/FishTankUI".visible = not $"Player/CanvasLayer/2DSceneUI/GameHUD/Overlays/FishTankUI".visible
+	if body != player:
+		return
+	$"Player/CanvasLayer/2DSceneUI/GameHUD/Overlays/FishTankUI".visible = true

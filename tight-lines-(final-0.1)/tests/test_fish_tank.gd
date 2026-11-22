@@ -45,6 +45,7 @@ func _run() -> void:
 	inv.set_item_locked(uid, true)
 
 	var tank: Control = FishTankScene.instantiate()
+	_check(not tank.visible, "FishTank defaults to visible = false")
 	root.add_child(tank)
 	await process_frame
 

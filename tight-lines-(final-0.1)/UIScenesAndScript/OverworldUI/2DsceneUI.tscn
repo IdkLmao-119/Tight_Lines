@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://cbxf3bfas3m8g"]
 
 [ext_resource type="Script" uid="uid://bmoettm0ijjix" path="res://UIScenesAndScript/OverworldUI/scene_script_2d_scene_ui.gd" id="1_aao6p"]
-[ext_resource type="PackedScene" path="res://UIScenesAndScript/Shared/GameHUD.tscn" id="2_hud"]
+[ext_resource type="PackedScene" uid="uid://b5es22atom3iq" path="res://UIScenesAndScript/Shared/GameHUD.tscn" id="2_hud"]
 [ext_resource type="Theme" uid="uid://cc043mp1yfy3k" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="3_theme"]
-[ext_resource type="PackedScene" uid="uid://c8b74x2m9y8q5" path="res://UIScenesAndScript/MobileControlsUI/MobileControlsUI.tscn" id="4_mctl"]
+[ext_resource type="PackedScene" uid="uid://c8b74x2nay8q5" path="res://UIScenesAndScript/MobileControlsUI/MobileControlsUI.tscn" id="4_mctl"]
 
 [node name="2DSceneUI" type="Control" unique_id=1628659695]
 layout_mode = 3
@@ -16,10 +16,12 @@ mouse_filter = 2
 theme = ExtResource("3_theme")
 script = ExtResource("1_aao6p")
 
-[node name="MobileControlsUI" parent="." instance=ExtResource("4_mctl")]
+[node name="MobileControlsUI" parent="." unique_id=826652811 instance=ExtResource("4_mctl")]
 layout_mode = 1
 
 [node name="GameHUD" parent="." unique_id=1268247505 instance=ExtResource("2_hud")]
 unique_name_in_owner = true
 layout_mode = 1
 show_save_in_options = true
+
+[editable path="GameHUD"]
