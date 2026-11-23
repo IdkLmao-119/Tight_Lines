@@ -62,6 +62,37 @@ func _run() -> void:
 	# 2. ShopUI TopBar removed
 	_check(shop.find_child("TopBar", true, false) == null, "ShopUI TopBar is removed")
 
+	# 2b. ShopUI Buy / Sell / Close button wiring
+	shop.open_shop()
+	await process_frame
+	_check(shop.visible and shop._choice_center.visible, "open_shop() shows ChoiceCenter")
+
+	shop._buy_button.pressed.emit()
+	await process_frame
+	_check(shop._rod_shop.visible and not shop._choice_center.visible, "BuyButton opens RodShop")
+
+	shop._rod_shop._bait_shop_button.pressed.emit()
+	await process_frame
+	_check(shop._bait_shop.visible and not shop._rod_shop.visible, "BaitShopButton switches to BaitShop")
+
+	shop._bait_shop._back_button.pressed.emit()
+	await process_frame
+	_check(shop._choice_center.visible and not shop._bait_shop.visible, "BaitShop BackButton returns to ChoiceCenter")
+
+	shop._sell_fish_button.pressed.emit()
+	await process_frame
+	_check(shop._sell_fish_ui.visible and shop._sell_fish_ui.sell_mode, "SellFishButton opens SellFishUI in sell_mode")
+
+	shop._sell_fish_ui._back_button.pressed.emit()
+	await process_frame
+	_check(shop._choice_center.visible and not shop._sell_fish_ui.visible, "SellFishUI BackButton returns to ChoiceCenter")
+
+	shop._close_button.pressed.emit()
+	await process_frame
+	_check(not shop.visible, "CloseButton closes ShopUI")
+	shop.open_shop()
+	await process_frame
+
 	# 3. Buy Rod notification
 	_reset_toasts(hud)
 	shop._rod_shop._buy_rod("rod_medium_light")
