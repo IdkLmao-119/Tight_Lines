@@ -81,6 +81,7 @@ const SCENES: Dictionary = {
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 		"display_name": "Marikina River Park",
+		"location_id": "location_marikina",
 	},
 	"overworld_rice_field": {
 		"path": "res://OverWorldSceneAndScript/1_MainArea/RiceFields/RiceField.tscn",
@@ -88,6 +89,7 @@ const SCENES: Dictionary = {
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 		"display_name": "Imus Fields",
+		"location_id": "location_imus",
 	},
 
 	#House Sub-Area
@@ -118,6 +120,7 @@ const SCENES: Dictionary = {
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 		"display_name": "Kawit Seaside Park",
+		"location_id": "location_kawit",
 	},
 	"overworld_fishing_pens": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/FishPens/FishPens.tscn",
@@ -125,6 +128,7 @@ const SCENES: Dictionary = {
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 		"display_name": "Noveleta Fishing Pens",
+		"location_id": "location_fish_pens",
 	},
 	"overworld_salt_farm": {
 		"path": "res://OverWorldSceneAndScript/2_FishMarket/AbandonedSaltfarm/SaltFarm.tscn",
@@ -132,6 +136,7 @@ const SCENES: Dictionary = {
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 		"display_name": "Noveleta Salt Farm",
+		"location_id": "location_salt_farm",
 	},
 
 	#Area 3
@@ -141,6 +146,7 @@ const SCENES: Dictionary = {
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 		"display_name": "Calatagan Mangrove Forest",
+		"location_id": "location_calatagan",
 	},
 	"overworld_island": {
 		"path": "res://OverWorldSceneAndScript/3_Shore/Island/Island.tscn",
@@ -148,6 +154,7 @@ const SCENES: Dictionary = {
 		"music": "res://Assets/Audio/The+Other+Side.mp3",
 		"pausable": true,
 		"display_name": "Fortune Island",
+		"location_id": "location_fortune_island",
 	},
 
 	#3D Fishing
@@ -156,42 +163,49 @@ const SCENES: Dictionary = {
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"location_id": "location_imus",
 	},
 	"fishing_river_park": {
 		"path": "res://3DFishingScene/Area1FishingScenes/3DFishingRiverPark.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"location_id": "location_marikina",
 	},
 	"fishing_fish_market": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingSeasidePark.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"location_id": "location_kawit",
 	},
 	"fishing_fishing_pens": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingFishPens.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"location_id": "location_fish_pens",
 	},
 	"fishing_salt_farm": {
 		"path": "res://3DFishingScene/Area2FishingScenes/3DFishingSaltFarm.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"location_id": "location_salt_farm",
 	},
 	"fishing_mangrove": {
 		"path": "res://3DFishingScene/Area3FishingScenes/3DFishingMangrove.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"location_id": "location_calatagan",
 	},
 	"fishing_island": {
 		"path": "res://3DFishingScene/Area3FishingScenes/3DFishingIsland.tscn",
 		"input": "fishing",
 		"music": "res://Assets/Audio/Tangled.mp3",
 		"pausable": true,
+		"location_id": "location_fortune_island",
 	},
 	"multiplayer": {
 		"path": "res://3DFishingScene/MultiplayerFishingScene/3d_fishing_multiplayer.tscn",
@@ -261,6 +275,25 @@ var world_day_count: int = 1
 var world_weather: String = "clear"
 var world_time_of_day: String = "day"
 
+const TIDE_CONFIG_PATH := "res://data/tide_config.json"
+const DEFAULT_TIDE_CONFIG := {
+	"cycle_hours": 12.42,
+	"slack_threshold": 0.25,
+	"multipliers": {
+		"rising": 1.25,
+		"high_slack": 0.90,
+		"falling": 1.30,
+		"low_slack": 0.85,
+	},
+}
+const TIDE_LABELS := {
+	"rising": "Rising",
+	"high_slack": "High Slack",
+	"falling": "Falling",
+	"low_slack": "Low Slack",
+}
+var _tide_config: Dictionary = {}
+
 # --- Internals -------------------------------------------------------------
 var _current_input_name: String = ""     # input context of the live scene
 var _current_context: Dictionary = {}    # context the live scene was entered with
@@ -291,6 +324,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 	_ensure_buses()
+	_load_tide_config()
 	_build_overlay()
 	_build_music_players()
 
@@ -542,6 +576,88 @@ func get_world_clock_text() -> String:
 	return "Day %d  •  %02d:%02d (%s)  •  %s" % [
 		world_day_count, hh, mm, world_time_of_day.capitalize(), world_weather.capitalize()
 	]
+
+
+# --- Tide System ---
+func _load_tide_config() -> void:
+	var cfg: Dictionary = DEFAULT_TIDE_CONFIG.duplicate(true)
+	if FileAccess.file_exists(TIDE_CONFIG_PATH):
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(TIDE_CONFIG_PATH))
+		if parsed is Dictionary:
+			var raw: Dictionary = parsed.get("tide", parsed) if parsed.has("tide") else parsed
+			if raw is Dictionary:
+				if raw.has("cycle_hours"):
+					cfg["cycle_hours"] = maxf(float(raw["cycle_hours"]), 0.01)
+				if raw.has("slack_threshold"):
+					cfg["slack_threshold"] = clampf(float(raw["slack_threshold"]), 0.0, 1.0)
+				if raw.get("multipliers") is Dictionary:
+					var mults: Dictionary = cfg["multipliers"]
+					var raw_mults: Dictionary = raw["multipliers"]
+					for k in mults:
+						if raw_mults.has(k):
+							mults[k] = maxf(float(raw_mults[k]), 0.0)
+	_tide_config = cfg
+
+
+func get_tide_config() -> Dictionary:
+	if _tide_config.is_empty():
+		_load_tide_config()
+	return _tide_config.duplicate(true)
+
+
+func get_total_elapsed_hours() -> float:
+	return float(maxi(world_day_count, 1) - 1) * 24.0 + world_game_minutes / 60.0
+
+
+static func compute_tide(total_hours: float, cfg: Dictionary = DEFAULT_TIDE_CONFIG) -> Dictionary:
+	var cycle_hours := maxf(float(cfg.get("cycle_hours", 12.42)), 0.01)
+	var slack_threshold := clampf(float(cfg.get("slack_threshold", 0.25)), 0.0, 1.0)
+	var mults: Dictionary = cfg.get("multipliers", DEFAULT_TIDE_CONFIG["multipliers"])
+	var phase := TAU * total_hours / cycle_hours
+	var height := sin(phase)
+	var flow := cos(phase)
+	var state := "falling"
+	if absf(flow) < slack_threshold:
+		state = "high_slack" if height > 0.0 else "low_slack"
+	elif flow >= slack_threshold:
+		state = "rising"
+	return {
+		"state": state,
+		"height": height,
+		"flow": flow,
+		"multiplier": float(mults.get(state, 1.0)),
+		"label": String(TIDE_LABELS.get(state, "Rising")),
+	}
+
+
+func get_tide_state(total_hours_override: float = -1.0) -> Dictionary:
+	if _tide_config.is_empty():
+		_load_tide_config()
+	var t_hours := total_hours_override if total_hours_override >= 0.0 else get_total_elapsed_hours()
+	return compute_tide(t_hours, _tide_config)
+
+
+func get_tide_multiplier(is_tidal: bool = true, total_hours_override: float = -1.0) -> float:
+	if not is_tidal:
+		return 1.0
+	return float(get_tide_state(total_hours_override).get("multiplier", 1.0))
+
+
+func is_location_tidal(location_id: String) -> bool:
+	if location_id == "":
+		return false
+	var db := get_node_or_null("/root/GameDB")
+	if db == null or not bool(db.get("is_loaded")) or not db.has_method("has_location") or not bool(db.call("has_location", location_id)):
+		return false
+	var loc: Variant = db.call("get_location", location_id)
+	return loc != null and bool(loc.get("is_tidal"))
+
+
+func is_current_scene_tidal() -> bool:
+	var entry: Variant = SCENES.get(current_scene_id, {})
+	if not (entry is Dictionary):
+		return false
+	return is_location_tidal(String((entry as Dictionary).get("location_id", "")))
 
 
 func get_scene_display_name(scene_id: String) -> String:

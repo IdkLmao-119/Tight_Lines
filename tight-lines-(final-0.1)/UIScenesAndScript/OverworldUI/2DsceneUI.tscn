@@ -17,6 +17,7 @@ theme = ExtResource("3_theme")
 script = ExtResource("1_aao6p")
 
 [node name="MobileControlsUI" parent="." unique_id=826652811 instance=ExtResource("4_mctl")]
+visible = false
 layout_mode = 1
 
 [node name="GameHUD" parent="." unique_id=1268247505 instance=ExtResource("2_hud")]

@@ -46,6 +46,9 @@ extends ItemData
 ## Multiplies how long the reel fight lasts for this species (1.0 = normal, 5.0 = 5x longer). Must be above 0.
 @export_range(0.1, 20.0, 0.1, "or_greater", "suffix:x") var fight_length_multiplier: float = 1.0
 
+## True for night-active species (uses the nocturnal hourly bite-speed curve).
+@export var is_nocturnal: bool = false
+
 @export_group("Size and weight")
 
 ## Smallest possible size in centimetres (the catch logic rolls between min_size and max_size).

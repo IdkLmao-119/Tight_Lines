@@ -14,6 +14,11 @@ extends DatabaseEntry
 ## GameDB as context["unlocked"].
 @export var unlock_flag: String = ""
 
+@export_group("Environment")
+
+## True for coastal, estuary, or brackish zones where tides affect catch rate; inland freshwater stays false (1.00x).
+@export var is_tidal: bool = false
+
 @export_group("Fish")
 
 ## The fish that can appear here (at least one). This is the ONLY place the fish<->location relationship

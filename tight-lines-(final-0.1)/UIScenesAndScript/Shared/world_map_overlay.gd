@@ -18,6 +18,7 @@ const DESTINATIONS: Array[Dictionary] = [
 ]
 
 var _clock_label: Label = null
+var _tide_indicator: TideIndicator = null
 var _close_btn: Button = null
 var _dest_grid: GridContainer = null
 var _dest_buttons: Dictionary = {} # { scene_id: Button }
@@ -140,6 +141,8 @@ func refresh() -> void:
 	var gm := get_node_or_null("/root/GameManager")
 	if _clock_label != null and gm != null and gm.has_method(&"get_world_clock_text"):
 		_clock_label.text = String(gm.call(&"get_world_clock_text"))
+	if _tide_indicator != null and gm != null and gm.has_method(&"get_tide_state"):
+		_tide_indicator.set_tide(gm.call(&"get_tide_state"))
 
 	var sm := get_node_or_null("/root/SaveManager")
 	var db := get_node_or_null("/root/GameDB")
@@ -265,14 +268,22 @@ func _build_ui() -> void:
 	header.add_child(close_btn)
 	_close_btn = close_btn
 
-	# Clock + Rest Bar
+	# Clock + Tide + Rest Bar
+	var clock_row := HBoxContainer.new()
+	clock_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	clock_row.add_theme_constant_override("separation", 14)
+	vbox.add_child(clock_row)
+
 	_clock_label = Label.new()
 	_clock_label.name = "WorldClockLabel"
 	_clock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_clock_label.add_theme_font_override("font", UI_FONT)
 	_clock_label.add_theme_font_size_override("font_size", 20)
 	_clock_label.add_theme_color_override("font_color", Color(0.75, 0.94, 1.0, 1.0))
-	vbox.add_child(_clock_label)
+	clock_row.add_child(_clock_label)
+
+	_tide_indicator = TideIndicator.new()
+	clock_row.add_child(_tide_indicator)
 
 	var rest_row := HBoxContainer.new()
 	rest_row.alignment = BoxContainer.ALIGNMENT_CENTER

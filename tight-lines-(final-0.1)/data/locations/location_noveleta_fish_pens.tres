@@ -45,4 +45,5 @@ script = ExtResource("2_dfktm")
 fish_pool = Array[ExtResource("1_d27q1")]([SubResource("Resource_668tc"), SubResource("Resource_3rf3m"), SubResource("Resource_rvagp"), SubResource("Resource_8mye5"), SubResource("Resource_loowd"), SubResource("Resource_be6xs")])
 id = "location_fish_pens"
 display_name = "Noveleta Fish Pens"
+is_tidal = true
 metadata/_custom_type_script = "uid://bbts02hgiiwr"

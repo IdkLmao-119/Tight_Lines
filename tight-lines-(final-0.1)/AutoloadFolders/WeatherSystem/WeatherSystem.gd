@@ -161,6 +161,10 @@ func get_hour() -> float:
 	return game_minutes / 60.0
 
 
+func get_total_elapsed_hours() -> float:
+	return float(maxi(day_count, 1) - 1) * 24.0 + game_minutes / 60.0
+
+
 # "08:30": for a HUD label.
 func get_clock_text() -> String:
 	return "%02d:%02d" % [int(game_minutes / 60.0) % 24, int(game_minutes) % 60]

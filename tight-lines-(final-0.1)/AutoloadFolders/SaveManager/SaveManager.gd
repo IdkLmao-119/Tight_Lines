@@ -34,6 +34,7 @@ signal fish_caught(fish_id: String)
 signal fish_record_broken(fish_id: String, size_cm: float, weight_kg: float)
 signal fish_tank_changed
 signal money_changed(amount: int)
+signal player_name_changed(player_name: String)
 
 const SAVE_DIR := "user://saves/"
 const SETTINGS_PATH := "user://settings.json"
@@ -49,6 +50,8 @@ const NEW_GAME_EQUIPPED_BAIT := "bait_1"
 const NEW_GAME_DIFFICULTY := "casual"
 const NEW_GAME_STARTER_MONEY := 0
 const NEW_GAME_STARTER_ITEMS: Dictionary = {"bait_1": 10}
+const DEFAULT_PLAYER_NAME := "John"
+const MAX_PLAYER_NAME_LENGTH := 16
 
 const DEFAULT_START_SCENE := "overworld_house_2"
 const NON_SAVABLE_SCENES := ["main_menu", "save_slots", "multiplayer_lobby", "multiplayer"]
@@ -64,6 +67,7 @@ var _equipped_bait := ""
 var _difficulty := NEW_GAME_DIFFICULTY
 var _saved_scene := DEFAULT_START_SCENE
 var _money: int = NEW_GAME_STARTER_MONEY
+var _player_name: String = DEFAULT_PLAYER_NAME
 
 var _slug_regex := RegEx.new()     # same rule as GameDB: lowercase snake_case
 
@@ -110,6 +114,7 @@ func get_slot_info(slot: int) -> Dictionary:
 			"scene_id": "", "scene_name": "", "money": 0,
 			"caught_count": 0, "total_fish": 0, "almanac_percent": 0,
 			"day_count": 1, "clock_text": "", "difficulty": NEW_GAME_DIFFICULTY,
+			"player_name": "",
 		}
 	var scene_id := String(data.get("scene", DEFAULT_START_SCENE))
 	var gm := _autoload("GameManager")
@@ -141,6 +146,7 @@ func get_slot_info(slot: int) -> Dictionary:
 		"day_count": day_num,
 		"clock_text": clock_str,
 		"difficulty": String(data.get("difficulty", NEW_GAME_DIFFICULTY)).capitalize(),
+		"player_name": _clean_player_name(data.get("player_name", DEFAULT_PLAYER_NAME)),
 	}
 
 
@@ -158,6 +164,7 @@ func build_save_data() -> Dictionary:
 
 	var data := {
 		"scene": scene_to_save,
+		"player_name": _player_name,
 		"difficulty": _difficulty,
 		"money": _money,
 		"unlock_flags": _unlock_flags.duplicate(),
@@ -191,6 +198,9 @@ func apply_save_data(data: Dictionary) -> void:
 	var sm_reset := _autoload("StoryManager")
 	if sm_reset != null and sm_reset.has_method("clear_queued_cutscenes"):
 		sm_reset.call("clear_queued_cutscenes")
+
+	_player_name = _clean_player_name(data.get("player_name", DEFAULT_PLAYER_NAME))
+	_sync_story_player_name()
 
 	# Scene.
 	if data.get("scene") is String and data["scene"] != "" and not NON_SAVABLE_SCENES.has(data["scene"]):
@@ -277,6 +287,7 @@ func apply_save_data(data: Dictionary) -> void:
 	equipment_changed.emit()
 	difficulty_changed.emit(_difficulty)
 	money_changed.emit(_money)
+	player_name_changed.emit(_player_name)
 	fish_tank_changed.emit()
 
 
@@ -302,10 +313,11 @@ func get_saved_scene() -> String:
 	return _saved_scene
 
 
-func new_game() -> void:
+func new_game(player_name: String = DEFAULT_PLAYER_NAME) -> void:
 	# apply_save_data({}) also resets QuestManager, which makes every
 	# questline starter IN_PROGRESS.
 	apply_save_data({})
+	set_player_name(player_name)
 	var inventory := _autoload("InventoryManager")
 	if inventory == null:
 		return
@@ -313,6 +325,20 @@ func new_game() -> void:
 		var leftover: int = inventory.call("add_item", item_id, int(NEW_GAME_STARTER_ITEMS[item_id]))
 		if leftover > 0:
 			push_warning("SaveManager: no room for %d starter '%s'." % [leftover, item_id])
+
+
+func get_player_name() -> String:
+	return _player_name
+
+
+func set_player_name(raw_name: String) -> void:
+	var clean := _clean_player_name(raw_name)
+	if _player_name != clean:
+		_player_name = clean
+		_sync_story_player_name()
+		player_name_changed.emit(_player_name)
+	else:
+		_sync_story_player_name()
 
 
 # ============================================================================
@@ -606,6 +632,22 @@ func _autoload(autoload_name: String) -> Node:
 	return get_node_or_null("/root/" + autoload_name)
 
 
+func _clean_player_name(raw_name: Variant) -> String:
+	if not (raw_name is String):
+		return DEFAULT_PLAYER_NAME
+	var clean := String(raw_name).replace("\r", " ").replace("\n", " ").replace("\t", " ")
+	# Strip brackets so custom names cannot inject BBCode into DialogueBox.
+	clean = clean.replace("[", "").replace("]", "").strip_edges()
+	clean = clean.left(MAX_PLAYER_NAME_LENGTH).strip_edges()
+	return DEFAULT_PLAYER_NAME if clean.is_empty() else clean
+
+
+func _sync_story_player_name() -> void:
+	var sm := _autoload("StoryManager")
+	if sm != null and sm.get("variables") is Dictionary:
+		(sm.get("variables") as Dictionary)["player"] = _player_name
+
+
 func reset_state() -> void:
 	_reset_player_state()
 	var gm := _autoload("GameManager")
@@ -627,6 +669,8 @@ func _reset_player_state() -> void:
 	_difficulty = NEW_GAME_DIFFICULTY
 	_saved_scene = DEFAULT_START_SCENE
 	_money = NEW_GAME_STARTER_MONEY
+	_player_name = DEFAULT_PLAYER_NAME
+	_sync_story_player_name()
 	var gm := _autoload("GameManager")
 	if gm != null and gm.get("scene_memory") is Dictionary:
 		(gm.get("scene_memory") as Dictionary).clear()

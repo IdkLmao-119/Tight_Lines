@@ -169,17 +169,6 @@ uv1_scale = Vector3(6, 1, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_8navb"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mhxq0"]
-cull_mode = 1
-albedo_color = Color(1.4348425, 1.4348425, 1.4348425, 1)
-albedo_texture = ExtResource("6_by57o")
-emission_enabled = true
-uv1_scale = Vector3(2, 2.055, 1)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_mhxq0"]
-cap_top = false
-cap_bottom = false
-
 [sub_resource type="Environment" id="Environment_i1y24"]
 background_mode = 1
 background_color = Color(0.54509807, 0.73333335, 0.79607844, 1)
@@ -187,6 +176,17 @@ background_energy_multiplier = 1.45
 ambient_light_sky_contribution = 0.98
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mqrlg"]
+cull_mode = 1
+albedo_texture = ExtResource("6_by57o")
+metallic_specular = 0.0
+emission_energy_multiplier = 0.0
+uv1_scale = Vector3(1.5, 2, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_linb5"]
+cap_top = false
+cap_bottom = false
 
 [node name="3dFishing" type="Node3D" unique_id=836610391]
 script = ExtResource("1_xtqfu")
@@ -298,14 +298,6 @@ shape = SubResource("BoxShape3D_y1byi")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02032268)
 material_overlay = SubResource("StandardMaterial3D_ncjx7")
 mesh = SubResource("BoxMesh_8navb")
-
-[node name="Background" type="Node3D" parent="." unique_id=336146113]
-transform = Transform3D(-3.278354e-05, 0, 750, 0, 150, 0, -750, 0, -3.278354e-05, 0, 73.4481, 0)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Background" unique_id=1420362856]
-transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 1.0000001, 0, 0.18371171, 0)
-material_overlay = SubResource("StandardMaterial3D_mhxq0")
-mesh = SubResource("CylinderMesh_mhxq0")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2126582781]
 environment = SubResource("Environment_i1y24")
@@ -437,3 +429,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.34652, -0.9323454, 9.74597
 
 [node name="tree_mangrove_022" parent="." unique_id=73438317 instance=ExtResource("11_wmgrq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.406263, -0.78146935, 6.044913)
+
+[node name="Background" type="Node3D" parent="." unique_id=608341719]
+transform = Transform3D(-375.00003, 0, -649.51904, 0, 250, 0, 649.51904, 0, -375.00003, 0, -6.647423, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Background" unique_id=2102985720]
+transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 1.0000001, 0, 0.18371171, 0)
+material_overlay = SubResource("StandardMaterial3D_mqrlg")
+mesh = SubResource("CylinderMesh_linb5")

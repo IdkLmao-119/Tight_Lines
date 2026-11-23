@@ -4,6 +4,9 @@ extends Control
 signal return_requested
 signal menu_opened(menu_id: String)
 
+const UI_FONT: FontFile = preload("res://Assets/2D/ShortStack-Regular.ttf")
+const WALLET_ICON_PATH := "res://Assets/2D/wallet_icon.png"
+
 const PHONE_MENU_NAMES := {
 	"fish_box": "fish_box",
 	"almanac": "almanac",
@@ -41,9 +44,9 @@ const PHONE_MENU_NAMES := {
 		if is_node_ready():
 			_apply_configuration()
 
+@onready var _hud_buttons: Control = %HUDButtons
 @onready var _pause_button: Button = %PauseButton
 @onready var _return_button: Button = %ReturnButton
-@onready var _left_menu_column: VBoxContainer = %LeftMenuColumn
 @onready var _right_menu_column: VBoxContainer = %RightMenuColumn
 @onready var _quest_button: Button = %QuestButton
 @onready var _equipment_button: Button = %EquipmentButton
@@ -60,9 +63,11 @@ var _overlays: Dictionary = {}
 var _active_menu_id: String = ""
 var _toast_panel: PanelContainer = null
 var _toast_label: Label = null
-var _toast_queue: Array[String] = []
+var _toast_queue: Array[Dictionary] = []
 var _toast_showing := false
 var _toast_tween: Tween = null
+var _wallet_panel: PanelContainer = null
+var _wallet_label: Label = null
 
 
 func _ready() -> void:
@@ -105,13 +110,19 @@ func _ready() -> void:
 	if cm != null and cm.has_signal(&"player_connected"):
 		cm.connect(&"player_connected", _on_phone_connected)
 
+	_build_wallet_badge()
 	_build_toast_banner()
 	var qm := get_node_or_null("/root/QuestManager")
 	if qm != null and qm.has_signal(&"quest_completed"):
 		qm.connect(&"quest_completed", _on_quest_completed)
 	var sm := get_node_or_null("/root/SaveManager")
-	if sm != null and sm.has_signal(&"unlock_flag_added"):
-		sm.connect(&"unlock_flag_added", _on_unlock_flag_added)
+	if sm != null:
+		if sm.has_signal(&"unlock_flag_added"):
+			sm.connect(&"unlock_flag_added", _on_unlock_flag_added)
+		if sm.has_signal(&"money_changed"):
+			sm.connect(&"money_changed", _on_money_changed)
+		if sm.has_method(&"get_money"):
+			_on_money_changed(int(sm.call(&"get_money")))
 
 	_apply_configuration()
 	close_all_menus()
@@ -188,7 +199,6 @@ func _sync_input_context() -> void:
 func _apply_configuration() -> void:
 	_return_button.visible = show_return_button
 	_return_button.text = return_button_text
-	_left_menu_column.visible = show_menu_buttons
 	_right_menu_column.visible = show_menu_buttons
 	_options_menu.set(&"show_save_button", show_save_in_options)
 	_options_menu.set(&"show_main_menu_button", show_main_menu_in_options)
@@ -260,10 +270,10 @@ func _sync_active_menu_to_phone() -> void:
 		cm.call(&"send_to_all", {"active_menu": _get_active_phone_menu_name()})
 
 
-func show_toast(message: String) -> void:
+func show_toast(message: String, below_hud: bool = false) -> void:
 	if message.strip_edges() == "":
 		return
-	_toast_queue.append(message)
+	_toast_queue.append({"text": message, "below_hud": below_hud})
 	if not _toast_showing:
 		_pop_next_toast()
 
@@ -285,6 +295,7 @@ func _build_toast_banner() -> void:
 
 	_toast_panel = PanelContainer.new()
 	_toast_panel.name = "ToastBanner"
+	_toast_panel.z_index = 100
 	_toast_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_toast_panel.add_theme_stylebox_override("panel", style)
 	_toast_panel.anchor_left = 0.5
@@ -297,7 +308,8 @@ func _build_toast_banner() -> void:
 	_toast_panel.offset_bottom = 128.0
 	_toast_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_toast_panel.visible = false
-	add_child(_toast_panel)
+	# In Overlays (layer 50): z=-1 sits over HUDButtons/DialogueBox and under Overlays; z=100 sits over Overlays.
+	$Overlays.add_child(_toast_panel)
 
 	_toast_label = Label.new()
 	_toast_label.name = "ToastLabel"
@@ -317,7 +329,9 @@ func _pop_next_toast() -> void:
 			_toast_panel.visible = false
 		return
 	_toast_showing = true
-	_toast_label.text = _toast_queue.pop_front()
+	var entry: Dictionary = _toast_queue.pop_front()
+	_toast_label.text = String(entry["text"])
+	_toast_panel.z_index = -1 if bool(entry["below_hud"]) else 100
 	_toast_panel.modulate.a = 0.0
 	_toast_panel.visible = true
 	if _toast_tween != null and _toast_tween.is_valid():
@@ -337,11 +351,85 @@ func _on_quest_completed(quest_id: String) -> void:
 		var info: Dictionary = qm.call(&"get_quest_info", quest_id)
 		if info.has("title"):
 			title = String(info["title"])
-	show_toast("Quest Complete: %s!" % title)
+	show_toast("Quest Complete: %s!" % title, true)
 
 
 func _on_unlock_flag_added(flag: String) -> void:
 	if flag.begins_with("seen_"):
 		return
 	var pretty := flag.trim_prefix("unlock_").replace("_", " ").capitalize()
-	show_toast("Unlocked: %s!" % pretty)
+	show_toast("Unlocked: %s!" % pretty, true)
+
+
+static func load_wallet_texture() -> Texture2D:
+	if ResourceLoader.exists(WALLET_ICON_PATH):
+		var res := load(WALLET_ICON_PATH)
+		if res is Texture2D:
+			return res
+	var abs_path := ProjectSettings.globalize_path(WALLET_ICON_PATH)
+	if FileAccess.file_exists(abs_path):
+		var img := Image.load_from_file(abs_path)
+		if img != null and not img.is_empty():
+			return ImageTexture.create_from_image(img)
+	return null
+
+
+func _build_wallet_badge() -> void:
+	if _hud_buttons == null:
+		return
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.11, 0.14, 0.18, 0.84)
+	style.border_color = Color(0.86, 0.74, 0.52, 0.9)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(10)
+	style.content_margin_left = 10
+	style.content_margin_right = 14
+	style.content_margin_top = 6
+	style.content_margin_bottom = 6
+
+	_wallet_panel = PanelContainer.new()
+	_wallet_panel.name = "WalletPanel"
+	_wallet_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_wallet_panel.add_theme_stylebox_override("panel", style)
+	_wallet_panel.anchor_left = 0.0
+	_wallet_panel.anchor_right = 0.0
+	_wallet_panel.anchor_top = 0.0
+	_wallet_panel.anchor_bottom = 0.0
+	_wallet_panel.offset_left = 18.0
+	_wallet_panel.offset_top = 17.0
+	_wallet_panel.offset_right = 148.0
+	_wallet_panel.offset_bottom = 73.0
+	_wallet_panel.grow_horizontal = Control.GROW_DIRECTION_END
+	_hud_buttons.add_child(_wallet_panel)
+
+	var row := HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_theme_constant_override("separation", 8)
+	_wallet_panel.add_child(row)
+
+	var icon := TextureRect.new()
+	icon.name = "WalletIcon"
+	icon.custom_minimum_size = Vector2(36, 36)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon.texture = load_wallet_texture()
+	row.add_child(icon)
+
+	_wallet_label = Label.new()
+	_wallet_label.name = "WalletLabel"
+	_wallet_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_wallet_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_wallet_label.add_theme_font_override("font", UI_FONT)
+	_wallet_label.add_theme_font_size_override("font_size", 22)
+	_wallet_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.48, 1.0))
+	_wallet_label.add_theme_color_override("font_outline_color", Color(0.1, 0.07, 0.04, 1.0))
+	_wallet_label.add_theme_constant_override("outline_size", 4)
+	_wallet_label.text = "₱0"
+	row.add_child(_wallet_label)
+
+
+func _on_money_changed(amount: int) -> void:
+	if _wallet_label != null:
+		_wallet_label.text = "₱%d" % amount

@@ -87,5 +87,33 @@ func _run() -> void:
 	sm.delete_save(test_slot)
 	_check(not sm.slot_exists(test_slot), "Cleaned up temporary test slot 99")
 
+	# 4. Player name persistence, StoryManager sync, and sanitization
+	var story := root.get_node_or_null("StoryManager")
+	sm.new_game("  Andrei  ")
+	_check(String(sm.call("get_player_name")) == "Andrei", "new_game trims and stores player_name")
+	if story != null:
+		_check(String(story.get("variables")["player"]) == "Andrei", "StoryManager.variables['player'] synced on new_game")
+		_check(String(story.call("get_speaker_info", "john")["name"]) == "Andrei", "StoryManager john speaker uses player_name")
+
+	var named_save: Dictionary = JSON.parse_string(JSON.stringify(sm.build_save_data()))
+	_check(String(named_save.get("player_name", "")) == "Andrei", "build_save_data includes player_name")
+	_check(sm.save_slot(test_slot), "Saved temporary named slot 99")
+	var named_info: Dictionary = sm.get_slot_info(test_slot)
+	_check(String(named_info.get("player_name", "")) == "Andrei", "get_slot_info reports player_name='Andrei'")
+	sm.new_game()
+	_check(String(sm.call("get_player_name")) == "John", "new_game() defaults player_name to 'John'")
+	sm.apply_save_data(named_save)
+	_check(String(sm.call("get_player_name")) == "Andrei", "apply_save_data restores player_name='Andrei'")
+
+	sm.new_game("   ")
+	_check(String(sm.call("get_player_name")) == "John", "Blank player_name falls back to 'John'")
+	sm.call("set_player_name", "[b]LongName1234567890\nX[/b]")
+	var sanitized := String(sm.call("get_player_name"))
+	_check(not sanitized.contains("[") and not sanitized.contains("]") and not sanitized.contains("\n") and sanitized.length() <= 16,
+		"set_player_name strips brackets/newlines and caps length: '%s'" % sanitized)
+	sm.apply_save_data({})
+	_check(String(sm.call("get_player_name")) == "John", "Legacy/empty save without player_name falls back to 'John'")
+	sm.delete_save(test_slot)
+
 	print("=== Phase C Unit Tests Summary: %d passed, %d failed ===" % [_passed, _failed])
 	quit(0 if _failed == 0 else 1)

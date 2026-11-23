@@ -15,7 +15,7 @@ Whoa, that's a lot of blanks. I have no idea what's hiding out here.
 This is the part Lolo must have loved.
 Not knowing what's on the line until it's already in your hands.
 
-Easy, John. You're allowed to be excited, but you still have to cast properly.
+Easy, {player}. You're allowed to be excited, but you still have to cast properly.
 !tutorial Walk to a canal or paddy edge. Press [E] / A near the water to cast.
 !objective Find out what lives in the Imus rice field.
 

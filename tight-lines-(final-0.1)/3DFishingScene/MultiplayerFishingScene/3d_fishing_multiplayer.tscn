@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://f34ws4nq7q07" path="res://3DFishingScene/MultiplayerFishingScene/scene_script_3d_fishing_multiplayer.gd" id="1_56q14"]
 [ext_resource type="Texture2D" uid="uid://dn2kqyke1omnq" path="res://Assets/3D/Sand.jpg" id="2_532by"]
 [ext_resource type="Texture2D" uid="uid://cu06l1k3f7ndc" path="res://Assets/3D/download.jpg" id="4_tchfx"]
-[ext_resource type="PackedScene" path="res://UIScenesAndScript/Shared/GameHUD.tscn" id="5_hud"]
+[ext_resource type="PackedScene" uid="uid://b5es22atom3iq" path="res://UIScenesAndScript/Shared/GameHUD.tscn" id="5_hud"]
 [ext_resource type="Script" uid="uid://dgrav1vdqqjqq" path="res://AutoloadFolders/WeatherSystem/WeatherSystem.gd" id="6_a5w1c"]
 [ext_resource type="PackedScene" uid="uid://b1nafx68sxq8s" path="res://Assets/3D/FishingRod_Lvl3.fbx" id="7_o14e8"]
 [ext_resource type="Script" uid="uid://bdeonsbyrbwk3" path="res://AutoloadFolders/FishingManager/FishingManager.gd" id="8_rl387"]
@@ -163,18 +163,6 @@ albedo_texture = ExtResource("2_532by")
 
 [sub_resource type="BoxMesh" id="BoxMesh_8navb"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mhxq0"]
-cull_mode = 1
-albedo_texture = ExtResource("4_tchfx")
-emission_enabled = true
-emission = Color(0.012617188, 0.012617188, 0.012617188, 1)
-emission_energy_multiplier = 4.57
-uv1_scale = Vector3(2, 2.055, 1)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_mhxq0"]
-cap_top = false
-cap_bottom = false
-
 [sub_resource type="Environment" id="Environment_i1y24"]
 background_mode = 1
 background_color = Color(0.54509807, 0.73333335, 0.79607844, 1)
@@ -233,11 +221,20 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_b03px"]
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u4n2x"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ud65s"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_56q14"]
+cull_mode = 1
+albedo_texture = ExtResource("4_tchfx")
+metallic_specular = 0.0
+emission_energy_multiplier = 0.0
+uv1_scale = Vector3(1, 2, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_532by"]
+cap_top = false
+cap_bottom = false
 
 [node name="3dFishingMultiplayer" type="Node3D" unique_id=836610391]
 script = ExtResource("1_56q14")
@@ -284,14 +281,6 @@ light_energy = 16.0
 light_size = 1.0
 light_specular = 16.0
 
-[node name="Background" type="Node3D" parent="." unique_id=336146113]
-transform = Transform3D(-2.6226833e-05, 0, 600, 0, 120, 0, -600, 0, -2.6226833e-05, 0, 73.4481, 0)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Background" unique_id=1420362856]
-transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 1.0000001, 0, 0.18371171, 0)
-material_overlay = SubResource("StandardMaterial3D_mhxq0")
-mesh = SubResource("CylinderMesh_mhxq0")
-
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2126582781]
 environment = SubResource("Environment_i1y24")
 
@@ -324,9 +313,9 @@ color = Color(0.95, 0.88, 0.72, 0.5)
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.5
-offset_left = 142.0
+offset_left = 140.0
 offset_top = 14.0
-offset_right = -90.0
+offset_right = -118.0
 offset_bottom = 82.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_left_hud")
@@ -362,9 +351,9 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -78.0
+offset_left = -108.0
 offset_top = 12.0
-offset_right = 78.0
+offset_right = 108.0
 offset_bottom = 82.0
 grow_horizontal = 2
 mouse_filter = 2
@@ -399,7 +388,7 @@ layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
 anchor_right = 1.0
-offset_left = 90.0
+offset_left = 118.0
 offset_top = 14.0
 offset_right = -228.0
 offset_bottom = 82.0
@@ -432,20 +421,13 @@ theme_override_font_sizes/font_size = 15
 text = "0 fish  •  0.00 kg"
 horizontal_alignment = 1
 
-[node name="GameHUD" parent="CanvasLayer" unique_id=1628659695 instance=ExtResource("5_hud")]
+[node name="GameHUDLayer" type="CanvasLayer" parent="." unique_id=335398742]
+layer = 30
+
+[node name="GameHUD" parent="GameHUDLayer" unique_id=1628659695 instance=ExtResource("5_hud")]
 show_return_button = true
 return_button_text = "Lobby"
 show_menu_buttons = false
-
-[node name="FishLayout" type="TextureRect" parent="CanvasLayer" unique_id=729170580]
-visible = false
-custom_minimum_size = Vector2(300, 300)
-offset_left = 485.0
-offset_top = 125.99999
-offset_right = 785.0
-offset_bottom = 426.0
-rotation = 0.43633232
-texture = SubResource("CompressedTexture2D_b03px")
 
 [node name="WeatherSystem" type="Node3D" parent="." unique_id=826944014]
 script = ExtResource("6_a5w1c")
@@ -472,7 +454,7 @@ size = Vector2i(574, 648)
 render_target_update_mode = 4
 
 [node name="PlayerFishing" type="Node3D" parent="GridContainer/SubViewportContainer/SubViewport" unique_id=502106798]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -2.0, 1.3307042, 3.0786262)
+transform = Transform3D(1.1924881e-08, 0, 1, 0, 1, 0, -1, 0, 1.1924881e-08, -4.25, 1.331, 3.079)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="GridContainer/SubViewportContainer/SubViewport/PlayerFishing" unique_id=731221113]
 
@@ -501,7 +483,7 @@ size = Vector2i(574, 648)
 render_target_update_mode = 4
 
 [node name="PlayerFishing2" type="Node3D" parent="GridContainer/SubViewportContainer2/SubViewport" unique_id=484533126]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 2.0, 1.3307042, 3.0786262)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 4.25, 1.331, 3.079)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2" unique_id=1727319788]
 
@@ -523,9 +505,18 @@ script = ExtResource("8_rl387")
 player_anchors = [NodePath("../GridContainer/SubViewportContainer/SubViewport/PlayerFishing"), NodePath("../GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2")]
 rod_holders = [NodePath("../GridContainer/SubViewportContainer/SubViewport/PlayerFishing/CharacterBody3D/FishingRod_Lvl3"), NodePath("../GridContainer/SubViewportContainer2/SubViewport/PlayerFishing2/CharacterBody3D/FishingRod_Lvl3")]
 bobber_scene = ExtResource("9_7ac3p")
-max_players = 2
+bite_delay_min = 15.0
+bite_delay_max = 30.0
 time_limit_sec = 120.0
 debug_spot_id = "location_imus"
-debug_rod_id = "rod_light"
+debug_rod_id = "rod_medium_heavy"
 debug_bait_id = "bait_1"
 debug_multiplayer = true
+
+[node name="Background" type="Node3D" parent="." unique_id=344189797]
+transform = Transform3D(-375.00003, 0, -649.51904, 0, 250, 0, 649.51904, 0, -375.00003, 0, -6.647423, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Background" unique_id=729783897]
+transform = Transform3D(1.0000001, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 1.0000001, 0, 0.18371171, 0)
+material_overlay = SubResource("StandardMaterial3D_56q14")
+mesh = SubResource("CylinderMesh_532by")
