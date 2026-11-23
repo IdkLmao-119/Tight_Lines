@@ -2,12 +2,15 @@
 
 [ext_resource type="Script" uid="uid://pptvsgjc7fvk" path="res://UIScenesAndScript/Shared/game_hud.gd" id="1_hud"]
 [ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="2_font"]
-[ext_resource type="Texture2D" uid="uid://cry2te8geq2pe" path="res://Assets/Fish Box.png" id="3_fishbox_tex"]
-[ext_resource type="Texture2D" uid="uid://b2cdd1hh8eh8t" path="res://Assets/2D/Almanac_icon.png" id="4_almanac_tex"]
+[ext_resource type="Texture2D" uid="uid://vubs87imwcso" path="res://Assets/Scroll.png" id="4_il3j4"]
 [ext_resource type="Texture2D" uid="uid://bgch78mw1pv2s" path="res://Assets/2D/rod_sprites/Ultralight Rod.png" id="5_rod_tex"]
 [ext_resource type="PackedScene" uid="uid://c67j2bnervxgj" path="res://UIScenesAndScript/FishBox/inventory_ui.tscn" id="6_fishbox"]
+[ext_resource type="Texture2D" uid="uid://bxuvh86230fkm" path="res://Assets/Book.png" id="6_p0u3c"]
 [ext_resource type="PackedScene" uid="uid://b3mamplrn4kpe" path="res://UIScenesAndScript/EquipmentInventory/rod_inventory.tscn" id="7_equipment"]
+[ext_resource type="Texture2D" uid="uid://dhjbl53exec5q" path="res://Assets/Fish Box New.png" id="7_il3j4"]
+[ext_resource type="Texture2D" uid="uid://dy2xk4ubjv640" path="res://Assets/2D/Rod_Sprites_Standing/Ultralight_Rod.png" id="8_2jf1e"]
 [ext_resource type="PackedScene" uid="uid://tbpjuosbsm8e" path="res://UIScenesAndScript/AlmanacUI/AlmanacUI.tscn" id="8_almanac"]
+[ext_resource type="Texture2D" uid="uid://c5ltlchnh26q1" path="res://Assets/2D/bait_sprites/Dough.png" id="9_45xp1"]
 [ext_resource type="PackedScene" uid="uid://c8tqiturk1ud6" path="res://UIScenesAndScript/QuestLog/QuestLog.tscn" id="9_questlog"]
 [ext_resource type="PackedScene" uid="uid://c0u77axaegcsm" path="res://UIScenesAndScript/Options/Options.tscn" id="10_options"]
 [ext_resource type="Theme" uid="uid://cc043mp1yfy3k" path="res://UIScenesAndScript/Shared/ui_theme.tres" id="11_theme"]
@@ -52,15 +55,15 @@ shadow_color = Color(0, 0, 0, 0.45882353)
 shadow_size = 5
 shadow_offset = Vector2(0, 3)
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_almanac"]
-texture = ExtResource("4_almanac_tex")
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2jf1e"]
+texture = ExtResource("4_il3j4")
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_almanac_pressed"]
-texture = ExtResource("4_almanac_tex")
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_45xp1"]
+texture = ExtResource("4_il3j4")
 modulate_color = Color(0.88, 0.88, 0.88, 1)
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_almanac_hover"]
-texture = ExtResource("4_almanac_tex")
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hs5ay"]
+texture = ExtResource("4_il3j4")
 modulate_color = Color(1.12, 1.12, 1.12, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rod"]
@@ -74,16 +77,34 @@ modulate_color = Color(0.88, 0.88, 0.88, 1)
 texture = ExtResource("5_rod_tex")
 modulate_color = Color(1.12, 1.12, 1.12, 1)
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_almanac"]
+texture = ExtResource("6_p0u3c")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_almanac_pressed"]
+texture = ExtResource("6_p0u3c")
+modulate_color = Color(0.88, 0.88, 0.88, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_almanac_hover"]
+texture = ExtResource("6_p0u3c")
+modulate_color = Color(1.12, 1.12, 1.12, 1)
+
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fishbox"]
-texture = ExtResource("3_fishbox_tex")
+texture = ExtResource("7_il3j4")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fishbox_pressed"]
-texture = ExtResource("3_fishbox_tex")
+texture = ExtResource("7_il3j4")
 modulate_color = Color(0.88, 0.88, 0.88, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fishbox_hover"]
-texture = ExtResource("3_fishbox_tex")
+texture = ExtResource("7_il3j4")
 modulate_color = Color(1.12, 1.12, 1.12, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_equipped_bg"]
+bg_color = Color(0, 0, 0, 0.5)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="GameHUD" type="Control" unique_id=2143439050]
 layout_mode = 3
@@ -107,7 +128,7 @@ grow_vertical = 2
 mouse_filter = 2
 theme = SubResource("Theme_hud_buttons")
 
-[node name="TopRightButtons" type="HBoxContainer" parent="HUDButtons"]
+[node name="TopRightButtons" type="HBoxContainer" parent="HUDButtons" unique_id=898669075]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -133,7 +154,7 @@ text = "Overworld"
 
 [node name="PauseButton" type="Button" parent="HUDButtons/TopRightButtons" unique_id=622092142]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(56, 48)
+custom_minimum_size = Vector2(75, 75)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_button")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
@@ -163,10 +184,9 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(116, 102)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_styles/normal = SubResource("StyleBoxTexture_almanac")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_almanac_pressed")
-theme_override_styles/hover = SubResource("StyleBoxTexture_almanac_hover")
-text = "  Quests"
+theme_override_styles/normal = SubResource("StyleBoxTexture_2jf1e")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_45xp1")
+theme_override_styles/hover = SubResource("StyleBoxTexture_hs5ay")
 alignment = 0
 
 [node name="EquipmentButton" type="Button" parent="HUDButtons/RightMenuColumn" unique_id=654770421]
@@ -177,7 +197,7 @@ size_flags_horizontal = 4
 theme_override_styles/normal = SubResource("StyleBoxTexture_rod")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_rod_pressed")
 theme_override_styles/hover = SubResource("StyleBoxTexture_rod_hover")
-text = "Equipment"
+text = "Equip"
 
 [node name="AlmanacButton" type="Button" parent="HUDButtons/RightMenuColumn" unique_id=53069590]
 unique_name_in_owner = true
@@ -187,7 +207,6 @@ size_flags_horizontal = 4
 theme_override_styles/normal = SubResource("StyleBoxTexture_almanac")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_almanac_pressed")
 theme_override_styles/hover = SubResource("StyleBoxTexture_almanac_hover")
-text = " Almanac"
 alignment = 0
 
 [node name="FishBoxButton" type="Button" parent="HUDButtons/RightMenuColumn" unique_id=212267663]
@@ -198,7 +217,56 @@ size_flags_horizontal = 4
 theme_override_styles/normal = SubResource("StyleBoxTexture_fishbox")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_fishbox_pressed")
 theme_override_styles/hover = SubResource("StyleBoxTexture_fishbox_hover")
-text = "Fish Box"
+
+[node name="LeftMenuColumn" type="VBoxContainer" parent="HUDButtons" unique_id=1732047150]
+layout_mode = 0
+offset_top = 153.0
+offset_right = 130.0
+offset_bottom = 557.0
+
+[node name="EquippedRod" type="TextureRect" parent="HUDButtons/LeftMenuColumn" unique_id=1947074278]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+texture = ExtResource("8_2jf1e")
+expand_mode = 4
+stretch_mode = 5
+
+[node name="Background" type="Panel" parent="HUDButtons/LeftMenuColumn/EquippedRod"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_equipped_bg")
+
+[node name="Padding" type="TextureRect" parent="HUDButtons/LeftMenuColumn" unique_id=905400753]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+texture = ExtResource("9_45xp1")
+stretch_mode = 5
+
+[node name="EquippedBait" type="TextureRect" parent="HUDButtons/LeftMenuColumn" unique_id=1372683038]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+texture = ExtResource("9_45xp1")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Background" type="Panel" parent="HUDButtons/LeftMenuColumn/EquippedBait"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_equipped_bg")
 
 [node name="Overlays" type="CanvasLayer" parent="." unique_id=1955864332]
 layer = 50

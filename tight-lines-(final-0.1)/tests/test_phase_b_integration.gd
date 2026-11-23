@@ -100,6 +100,15 @@ func _run() -> void:
 	_check(desc_lbl != null and desc_lbl.text.contains("₱"), "Almanac displays Base Value in Pesos (₱)")
 	_check(desc_lbl != null and desc_lbl.text.contains("Best:") and desc_lbl.text.contains("Gold Trophy"),
 		"Almanac displays Personal Best and Gold Trophy")
+	var fish_grid := almanac.find_child("FishGrid", true, false) as GridContainer
+	var first_fish_btn := fish_grid.get_child(0) as TextureButton if (fish_grid != null and fish_grid.get_child_count() > 0) else null
+	var trophy_bg := first_fish_btn.get_node_or_null("TrophyBackground") as TextureRect if first_fish_btn != null else null
+	_check(trophy_bg != null and trophy_bg.show_behind_parent and trophy_bg.texture != null,
+		"Almanac caught Gold Trophy fish button has TrophyBackground behind parent")
+	if fish_grid != null and fish_grid.get_child_count() > 1:
+		var second_fish_btn := fish_grid.get_child(1) as TextureButton
+		_check(second_fish_btn != null and second_fish_btn.get_node_or_null("TrophyBackground") == null,
+			"Almanac uncaught fish button has no TrophyBackground")
 	almanac.queue_free()
 
 	# 3. GameHUD Toast Banner integration: Quest Complete & Unlock Flag (ignores seen_*)

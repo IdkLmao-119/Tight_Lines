@@ -118,6 +118,29 @@ func _run() -> void:
 	_check(sell_all_toast.contains("Sold") and sell_all_toast.contains("+₱"),
 		"Selling all fish shows toast notification: %s" % sell_all_toast)
 
+	# 6. EquippedRod & EquippedBait icons + translucent black backgrounds
+	var eq_rod := hud.get_node_or_null("HUDButtons/LeftMenuColumn/EquippedRod") as TextureRect
+	var eq_bait := hud.get_node_or_null("HUDButtons/LeftMenuColumn/EquippedBait") as TextureRect
+	_check(eq_rod != null and eq_rod.texture == db.get_rod("rod_light").icon,
+		"EquippedRod starts with rod_light icon")
+	_check(eq_bait != null and eq_bait.texture == db.get_bait("bait_1").icon,
+		"EquippedBait starts with bait_1 icon")
+
+	for slot_node in [eq_rod, eq_bait]:
+		var bg := slot_node.get_node_or_null("Background") as Panel if slot_node != null else null
+		var sb := bg.get_theme_stylebox("panel") as StyleBoxFlat if bg != null else null
+		_check(bg != null and bg.show_behind_parent and sb != null and sb.bg_color.r == 0.0 and sb.bg_color.g == 0.0 and sb.bg_color.b == 0.0 and sb.bg_color.a > 0.0 and sb.bg_color.a < 1.0,
+			"%s has translucent black Background panel" % (slot_node.name if slot_node != null else "null"))
+
+	sm.add_owned_rod("rod_heavy")
+	sm.set_equipped_rod("rod_heavy")
+	sm.set_equipped_bait("bait_3")
+	await process_frame
+	_check(eq_rod != null and eq_rod.texture == db.get_rod("rod_heavy").icon,
+		"EquippedRod updates to rod_heavy icon on equipment_changed")
+	_check(eq_bait != null and eq_bait.texture == db.get_bait("bait_3").icon,
+		"EquippedBait updates to bait_3 icon on equipment_changed")
+
 	container.queue_free()
 	await process_frame
 	print("=== Shop Notifications & Wallet HUD Tests Summary: %d passed, %d failed ===" % [_passed, _failed])

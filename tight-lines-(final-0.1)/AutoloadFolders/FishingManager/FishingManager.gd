@@ -63,8 +63,8 @@ enum Difficulty { CASUAL, ANGLER }
 @export var max_look_angle_deg := 75.0           # How far the view can turn left AND right. | Lower to keep players facing the water.
 
 @export_group("Bites")
-@export var bite_delay_min := 90.0               # Shortest wait before a bite (seconds). | Lower for faster action.
-@export var bite_delay_max := 180.0              # Longest wait before a bite (seconds). | Raise for a calmer, slower game.
+@export var bite_delay_min := 30.0               # Shortest wait before a bite (seconds). | Lower for faster action.
+@export var bite_delay_max := 45.0              # Longest wait before a bite (seconds). | Raise for a calmer, slower game.
 @export var bobber_bite_sink := 0.12             # How far the bobber dips on a bite (metres). | Raise if the bite is hard to notice.
 @export var bobber_sink_duration := 1.0          # Seconds the bobber takes to sink. | Lower for a sudden, snappy dip.
 

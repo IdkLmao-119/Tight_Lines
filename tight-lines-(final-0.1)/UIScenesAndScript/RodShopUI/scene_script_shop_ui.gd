@@ -56,7 +56,7 @@ func open_shop() -> void:
 	var im := get_node_or_null("/root/InputManager")
 	if im != null and im.has_method(&"set_context"):
 		im.call(&"set_context", InputManager.InputContext.MENU)
-	_add_wallet_icon()
+	show_choices()
 	_sell_fish_button.grab_focus()
 
 

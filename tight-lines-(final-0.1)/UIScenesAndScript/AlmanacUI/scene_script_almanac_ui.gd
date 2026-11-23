@@ -4,6 +4,11 @@ signal close_requested
 
 const GRID_COLUMNS := 4
 const FISH_BUTTON_SIZE := Vector2(96, 96)
+const TROPHY_TEXTURE_PATHS := {
+	"Gold": "res://Assets/2D/trophy_gold.png",
+	"Silver": "res://Assets/2D/trophy_silver.png",
+	"Bronze": "res://Assets/2D/trophy_bronze.png",
+}
 
 const LOCATION_IDS: Array[String] = [
 	"location_marikina",
@@ -59,6 +64,7 @@ var _location_labels: Array[String] = []
 var _fish_buttons: Array[TextureButton] = []
 var _current_location_fish: Array[FishData] = []
 var _current_location_id: String = ""
+var _trophy_textures: Dictionary = {}
 
 var _focus_area: FocusArea = FocusArea.FISH_GRID
 var _focused_location_idx: int = 0
@@ -319,10 +325,56 @@ func _rebuild_fish_grid() -> void:
 		btn.ignore_texture_size = true
 		btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 		btn.texture_normal = fish.icon_3d if fish.icon_3d != null else fish.icon
-		btn.modulate = Color.WHITE if SaveManager.has_caught_fish(fish.id) else Color(0.15, 0.15, 0.15, 1.0)
+		var caught := SaveManager.has_caught_fish(fish.id)
+		btn.modulate = Color.WHITE if caught else Color(0.15, 0.15, 0.15, 1.0)
+		if caught:
+			var trophy_tex := _get_trophy_texture(_get_fish_trophy_tier(fish.id))
+			if trophy_tex != null:
+				var trophy_bg := TextureRect.new()
+				trophy_bg.name = "TrophyBackground"
+				trophy_bg.show_behind_parent = true
+				trophy_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+				trophy_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				trophy_bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				trophy_bg.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+				trophy_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				trophy_bg.texture = trophy_tex
+				btn.add_child(trophy_bg)
 		btn.pressed.connect(_on_fish_button_pressed.bind(i))
 		_fish_grid.add_child(btn)
 		_fish_buttons.append(btn)
+
+
+func _get_fish_trophy_tier(fish_id: String) -> String:
+	if not SaveManager.has_caught_fish(fish_id) or not SaveManager.has_method(&"get_fish_record") or not SaveManager.has_method(&"get_trophy_tier"):
+		return ""
+	var rec: Dictionary = SaveManager.get_fish_record(fish_id)
+	var best_size := float(rec.get("best_size_cm", 0.0))
+	if best_size <= 0.0:
+		return ""
+	return String(SaveManager.get_trophy_tier(fish_id, best_size))
+
+
+func _get_trophy_texture(tier: String) -> Texture2D:
+	if tier == "" or not TROPHY_TEXTURE_PATHS.has(tier):
+		return null
+	if _trophy_textures.has(tier):
+		return _trophy_textures[tier] as Texture2D
+	var path := String(TROPHY_TEXTURE_PATHS[tier])
+	var tex: Texture2D = null
+	if ResourceLoader.exists(path):
+		var res := load(path)
+		if res is Texture2D:
+			tex = res
+	if tex == null:
+		var abs_path := ProjectSettings.globalize_path(path)
+		if FileAccess.file_exists(abs_path):
+			var img := Image.load_from_file(abs_path)
+			if img != null and not img.is_empty():
+				tex = ImageTexture.create_from_image(img)
+	if tex != null:
+		_trophy_textures[tier] = tex
+	return tex
 
 
 func _on_fish_button_pressed(index: int) -> void:

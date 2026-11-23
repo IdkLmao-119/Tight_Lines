@@ -52,6 +52,8 @@ const PHONE_MENU_NAMES := {
 @onready var _equipment_button: Button = %EquipmentButton
 @onready var _almanac_button: Button = %AlmanacButton
 @onready var _fish_box_button: Button = %FishBoxButton
+@onready var _equipped_rod: TextureRect = %EquippedRod
+@onready var _equipped_bait: TextureRect = %EquippedBait
 
 @onready var _fish_box_ui: Control = %FishBoxUI
 @onready var _equipment_ui: Control = %EquipmentUI
@@ -121,8 +123,11 @@ func _ready() -> void:
 			sm.connect(&"unlock_flag_added", _on_unlock_flag_added)
 		if sm.has_signal(&"money_changed"):
 			sm.connect(&"money_changed", _on_money_changed)
+		if sm.has_signal(&"equipment_changed"):
+			sm.connect(&"equipment_changed", _refresh_equipped_icons)
 		if sm.has_method(&"get_money"):
 			_on_money_changed(int(sm.call(&"get_money")))
+	_refresh_equipped_icons()
 
 	_apply_configuration()
 	close_all_menus()
@@ -433,3 +438,24 @@ func _build_wallet_badge() -> void:
 func _on_money_changed(amount: int) -> void:
 	if _wallet_label != null:
 		_wallet_label.text = "₱%d" % amount
+
+
+func _refresh_equipped_icons() -> void:
+	var sm := get_node_or_null("/root/SaveManager")
+	var db := get_node_or_null("/root/GameDB")
+	if sm == null or db == null:
+		return
+
+	if _equipped_rod != null and sm.has_method(&"get_equipped_rod"):
+		var rod_id := String(sm.call(&"get_equipped_rod"))
+		if rod_id != "" and db.has_method(&"has_rod") and bool(db.call(&"has_rod", rod_id)):
+			_equipped_rod.texture = db.call(&"get_rod", rod_id).icon
+		else:
+			_equipped_rod.texture = null
+
+	if _equipped_bait != null and sm.has_method(&"get_equipped_bait"):
+		var bait_id := String(sm.call(&"get_equipped_bait"))
+		if bait_id != "" and db.has_method(&"has_bait") and bool(db.call(&"has_bait", bait_id)):
+			_equipped_bait.texture = db.call(&"get_bait", bait_id).icon
+		else:
+			_equipped_bait.texture = null
