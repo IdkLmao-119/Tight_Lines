@@ -99,4 +99,5 @@ script = ExtResource("2_mc6ek")
 fish_pool = Array[ExtResource("1_feb4a")]([SubResource("Resource_15ppc"), SubResource("Resource_1vgu8"), SubResource("Resource_gwx68"), SubResource("Resource_rceeu"), SubResource("Resource_fnwne"), SubResource("Resource_ufd0n"), SubResource("Resource_phbyu"), SubResource("Resource_g7qt2"), SubResource("Resource_njhvd"), SubResource("Resource_sugrk"), SubResource("Resource_vc2bt"), SubResource("Resource_b0lvt"), SubResource("Resource_whml2"), SubResource("Resource_l8prq"), SubResource("Resource_scatf")])
 id = "location_salt_farm"
 display_name = "Noveleta Salt Farm"
+is_tidal = true
 metadata/_custom_type_script = "uid://bbts02hgiiwr"

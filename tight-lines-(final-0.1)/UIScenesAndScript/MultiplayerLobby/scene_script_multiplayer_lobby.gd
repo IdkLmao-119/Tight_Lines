@@ -14,13 +14,13 @@ const WIN_MODES: Array[Dictionary] = [
 ]
 
 const ARENA_SPOTS: Array[Dictionary] = [
-	{"id": "location_marikina", "label": "Marikina River"},
-	{"id": "location_imus", "label": "Imus Fields"},
-	{"id": "location_kawit", "label": "Kawit Seaside"},
-	{"id": "location_fish_pens", "label": "Noveleta Pens"},
-	{"id": "location_salt_farm", "label": "Noveleta Salt Farm"},
-	{"id": "location_calatagan", "label": "Calatagan Mangroves"},
-	{"id": "location_fortune_island", "label": "Fortune Island"},
+	{"id": "location_marikina", "label": "Marikina River", "rod_id": "rod_medium_heavy", "bait_id": "bait_2"},
+	{"id": "location_imus", "label": "Imus Fields", "rod_id": "rod_medium_heavy", "bait_id": "bait_1"},
+	{"id": "location_kawit", "label": "Kawit Seaside", "rod_id": "rod_medium_heavy", "bait_id": "bait_1"},
+	{"id": "location_fish_pens", "label": "Noveleta Pens", "rod_id": "rod_medium_heavy", "bait_id": "bait_1"},
+	{"id": "location_salt_farm", "label": "Noveleta Salt Farm", "rod_id": "rod_medium_heavy", "bait_id": "bait_1"},
+	{"id": "location_calatagan", "label": "Calatagan Mangroves", "rod_id": "rod_medium_heavy", "bait_id": "bait_5"},
+	{"id": "location_fortune_island", "label": "Fortune Island", "rod_id": "rod_medium_heavy", "bait_id": "bait_3"},
 ]
 
 const COLOR_CONNECTED := Color(0.45, 0.95, 0.56, 1.0)
@@ -242,6 +242,14 @@ func get_selected_win_mode() -> String:
 
 func get_selected_arena_id() -> String:
 	return String(ARENA_SPOTS[_arena_idx]["id"])
+
+
+func get_selected_arena_rod_id() -> String:
+	return String(ARENA_SPOTS[_arena_idx].get("rod_id", "rod_medium_heavy"))
+
+
+func get_selected_arena_bait_id() -> String:
+	return String(ARENA_SPOTS[_arena_idx].get("bait_id", "bait_1"))
 
 
 func _connect_ui_signals() -> void:
@@ -639,6 +647,8 @@ func _start_match() -> void:
 		"time_limit_sec": float(_duration_sec),
 		"win_mode": get_selected_win_mode(),
 		"spot_id": get_selected_arena_id(),
+		"rod_id": get_selected_arena_rod_id(),
+		"bait_id": get_selected_arena_bait_id(),
 		"player_ids": [left_pid, right_pid],
 		"player_names": {
 			left_pid: left_name,

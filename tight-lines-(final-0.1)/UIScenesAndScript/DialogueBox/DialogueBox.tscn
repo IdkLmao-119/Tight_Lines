@@ -60,7 +60,7 @@ variation_embolden = 0.65
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_skip"]
 
 [node name="DialogueBox" type="CanvasLayer"]
-layer = 50
+layer = 40
 script = ExtResource("1_script")
 
 [node name="ObjectivePanel" type="PanelContainer" parent="."]

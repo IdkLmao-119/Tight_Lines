@@ -35,6 +35,18 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_prompt_panel"]
+bg_color = Color(0.42352942, 0.2784314, 0.13725491, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.82, 0.48, 0.85)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [node name="SaveSlotMenu" type="Control" unique_id=1702898332]
 layout_mode = 3
 anchors_preset = 15
@@ -190,3 +202,98 @@ theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
 theme_override_styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
 theme_override_styles/focus = SubResource("StyleBoxFlat_btn_focus")
 text = "Delete Save"
+
+[node name="NamePromptOverlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="CenterContainer" type="CenterContainer" parent="NamePromptOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PromptPanel" type="PanelContainer" parent="NamePromptOverlay/CenterContainer"]
+custom_minimum_size = Vector2(520, 260)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_prompt_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="NamePromptOverlay/CenterContainer/PromptPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 28
+
+[node name="PromptVBox" type="VBoxContainer" parent="NamePromptOverlay/CenterContainer/PromptPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="TitleLabel" type="Label" parent="NamePromptOverlay/CenterContainer/PromptPanel/MarginContainer/PromptVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.07, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 30
+text = "Choose Your Name"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayerNameInput" type="LineEdit" parent="NamePromptOverlay/CenterContainer/PromptPanel/MarginContainer/PromptVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+placeholder_text = "John"
+alignment = 1
+max_length = 16
+
+[node name="HintLabel" type="Label" parent="NamePromptOverlay/CenterContainer/PromptPanel/MarginContainer/PromptVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.88, 0.8, 0.85)
+theme_override_font_sizes/font_size = 16
+text = "Leave blank to play as John"
+horizontal_alignment = 1
+
+[node name="PromptButtons" type="HBoxContainer" parent="NamePromptOverlay/CenterContainer/PromptPanel/MarginContainer/PromptVBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="CancelNameButton" type="Button" parent="NamePromptOverlay/CenterContainer/PromptPanel/MarginContainer/PromptVBox/PromptButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_btn_focus")
+text = "Back"
+
+[node name="ConfirmNameButton" type="Button" parent="NamePromptOverlay/CenterContainer/PromptPanel/MarginContainer/PromptVBox/PromptButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_outline_color = Color(0.14, 0.08, 0.04, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_btn_focus")
+text = "Start Game"

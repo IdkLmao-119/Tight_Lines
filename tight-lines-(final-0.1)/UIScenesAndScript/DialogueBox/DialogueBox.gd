@@ -46,7 +46,8 @@ var _blip_playback: AudioStreamGeneratorPlayback
 
 
 func _ready() -> void:
-	layer = 50
+	# Layer 40 sits over GameHUD buttons (1/30) and under GameHUD Overlays (50).
+	layer = 40
 	_objective_label.text = ""
 	_objective_panel.hide()
 	_hide_all()

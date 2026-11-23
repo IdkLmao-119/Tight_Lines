@@ -1,6 +1,6 @@
 {
  "version": 1,
- "timestamp": "2026-11-21T10:04:51",
+ "timestamp": "2026-11-22T23:04:28",
  "scene": "overworld_island",
  "difficulty": "casual",
  "money": 12000,
@@ -19,6 +19,9 @@
   "seen_marikina_desk",
   "seen_marikina_hallway",
   "seen_marikina_street",
+  "seen_marikina_arrival",
+  "seen_marikina_fishing_intro",
+  "seen_marikina_fishing_tutorial",
   "seen_marikina_phone_store",
   "seen_marikina_duplicate_fish",
   "seen_marikina_complete",

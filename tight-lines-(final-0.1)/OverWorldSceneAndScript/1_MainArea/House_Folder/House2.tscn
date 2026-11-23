@@ -285,7 +285,6 @@ polygon = PackedVector2Array(205, 465, 205, 576, 672, 576, 670, 473, 206, 473, 1
 position = Vector2(263, 515)
 
 [node name="FishTankUI" parent="Player/CanvasLayer/2DSceneUI/GameHUD/Overlays" parent_id_path=PackedInt32Array(394178850, 1628659695, 1268247505, 1955864332) index="5" unique_id=451500958 instance=ExtResource("6_4hloe")]
-visible = false
 layout_mode = 1
 
 [node name="House2ToHouse1" type="Node2D" parent="." unique_id=1494793175]

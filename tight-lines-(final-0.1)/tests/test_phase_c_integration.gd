@@ -128,26 +128,53 @@ func _run() -> void:
 	ow_ui.queue_free()
 	await process_frame
 
-	# 3. SaveSlots UI rich preview rendering
+	# 3. SaveSlots UI rich preview rendering & New Game name prompt
 	var backup_slot0_exists: bool = sm.slot_exists(0)
 	var backup_slot0_data: Dictionary = sm.load_game(0) if backup_slot0_exists else {}
+	var backup_slot2_exists: bool = sm.slot_exists(2)
+	var backup_slot2_data: Dictionary = sm.load_game(2) if backup_slot2_exists else {}
+	sm.new_game("Andrei")
 	sm.add_money(555)
 	sm.save_slot(0)
+	sm.delete_save(2)
 
 	var slots_ui := (load(SAVE_SLOTS_PATH) as PackedScene).instantiate()
 	root.add_child(slots_ui)
 	await process_frame
 	var slot_list := slots_ui.find_child("SlotList", true, false)
 	var first_btn := slot_list.get_child(0) as Button if slot_list != null and slot_list.get_child_count() > 0 else null
-	_check(first_btn != null and first_btn.text.contains("₱555") and first_btn.text.contains("Almanac"),
-		"SaveSlots button renders rich preview (₱555 + Almanac %%)")
+	_check(first_btn != null and first_btn.text.contains("Andrei") and first_btn.text.contains("₱555") and first_btn.text.contains("Almanac"),
+		"SaveSlots button renders rich preview (Andrei + ₱555 + Almanac %%)")
+
+	var slot2_btn := slot_list.get_child(2) as Button if slot_list != null and slot_list.get_child_count() > 2 else null
+	var load_btn := slots_ui.find_child("LoadSaveButton", true, false) as Button
+	var name_overlay := slots_ui.find_child("NamePromptOverlay", true, false) as Control
+	var cancel_name_btn := slots_ui.find_child("CancelNameButton", true, false) as Button
+	if slot2_btn != null and load_btn != null and name_overlay != null and cancel_name_btn != null:
+		slot2_btn.pressed.emit()
+		await process_frame
+		_check(load_btn.text == "New Game", "Empty slot shows 'New Game' on LoadSaveButton")
+		load_btn.pressed.emit()
+		await process_frame
+		_check(name_overlay.visible, "Pressing New Game on empty slot opens NamePromptOverlay")
+		cancel_name_btn.pressed.emit()
+		await process_frame
+		_check(not name_overlay.visible and not sm.slot_exists(2),
+			"CancelNameButton closes NamePromptOverlay without creating slot 2")
+	else:
+		_check(false, "SaveSlots name prompt nodes found")
+
 	slots_ui.queue_free()
 
-	# Restore slot 0 cleanly
+	# Restore slots 0 and 2 cleanly
 	if backup_slot0_exists:
 		sm.save_game(0, backup_slot0_data)
 	else:
 		sm.delete_save(0)
+	if backup_slot2_exists:
+		sm.save_game(2, backup_slot2_data)
+	else:
+		sm.delete_save(2)
 
 	await process_frame
 	print("=== Phase C Integration Tests Summary: %d passed, %d failed ===" % [_passed, _failed])

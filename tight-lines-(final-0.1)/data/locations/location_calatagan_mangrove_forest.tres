@@ -99,4 +99,5 @@ script = ExtResource("17_ae0it")
 fish_pool = Array[ExtResource("1_gilvd")]([SubResource("Resource_evpwh"), SubResource("Resource_vm21d"), SubResource("Resource_ny4ye"), SubResource("Resource_7pi5j"), SubResource("Resource_8huf2"), SubResource("Resource_knyp3"), SubResource("Resource_qvn37"), SubResource("Resource_udi5w"), SubResource("Resource_r2vth"), SubResource("Resource_8qn1d"), SubResource("Resource_p4qy3"), SubResource("Resource_ly3il"), SubResource("Resource_kj4go"), SubResource("Resource_8eo0o"), SubResource("Resource_jvgrp")])
 id = "location_calatagan"
 display_name = "Calatagan Mangrove Forest"
+is_tidal = true
 metadata/_custom_type_script = "uid://bbts02hgiiwr"

@@ -78,6 +78,11 @@ func _run() -> void:
 	var money_before: int = sm.get_money()
 	sell_all_btn.pressed.emit()
 	await process_frame
+	var confirm_overlay := box.find_child("SellConfirmOverlay", true, false) as ColorRect
+	var confirm_btn := box.find_child("SellConfirmButton", true, false) as Button
+	_check(confirm_overlay != null and confirm_overlay.visible, "Sell All opens confirmation prompt")
+	confirm_btn.pressed.emit()
+	await process_frame
 	_check(inv.get_used_slot_count(inv.FISH_BOX) == 1, "Sell All kept the 1 locked fish and sold the unlocked fish")
 	_check(inv.is_item_locked(inv.get_uid_at(inv.FISH_BOX, 0)), "Remaining fish is the locked trophy fish")
 	_check(sm.get_money() > money_before, "Selling unlocked fish earned Pesos (₱%d)" % sm.get_money())
@@ -109,6 +114,7 @@ func _run() -> void:
 	sm.add_unlock_flag("unlock_imus")
 	await process_frame
 	_check(hud.get_active_toast_text().contains("Imus"), "GameHUD shows toast for unlock_imus: %s" % hud.get_active_toast_text())
+	_check(hud._toast_panel.z_index < 0, "Unlock toast renders below GameHUD (z_index=%d)" % hud._toast_panel.z_index)
 
 	# Complete an active quest and confirm toast queues/displays
 	hud._toast_showing = false
@@ -116,6 +122,14 @@ func _run() -> void:
 	qm.debug_complete("quest_pocket_change")
 	await process_frame
 	_check(hud.get_active_toast_text().contains("Quest Complete"), "GameHUD shows Quest Complete toast: %s" % hud.get_active_toast_text())
+	_check(hud._toast_panel.z_index < 0, "Quest Complete toast renders below GameHUD (z_index=%d)" % hud._toast_panel.z_index)
+
+	var overlays_layer := hud.get_node_or_null("Overlays") as CanvasLayer
+	var story := root.get_node_or_null("StoryManager")
+	var dlg := story.get_node_or_null("DialogueBox") as CanvasLayer if story != null else null
+	_check(overlays_layer != null and overlays_layer.layer == 50, "GameHUD Overlays uses CanvasLayer layer 50")
+	_check(dlg != null and dlg.layer > 30 and overlays_layer != null and dlg.layer < overlays_layer.layer,
+		"StoryManager DialogueBox renders over HUD buttons and under GameHUD Overlays (layer=%d)" % (dlg.layer if dlg != null else -1))
 	hud.queue_free()
 
 	await process_frame

@@ -18,8 +18,8 @@ Button/colors/font_focus_color = Color(1, 0.95, 0.72, 1)
 Button/colors/font_hover_color = Color(1, 0.94, 0.62, 1)
 Button/colors/font_outline_color = Color(0.12, 0.08, 0.05, 1)
 Button/colors/font_pressed_color = Color(0.92, 0.82, 0.52, 1)
-Button/constants/outline_size = 5
-Button/font_sizes/font_size = 26
+Button/constants/outline_size = 3
+Button/font_sizes/font_size = 16
 Button/fonts/font = ExtResource("2_font")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
@@ -107,69 +107,38 @@ grow_vertical = 2
 mouse_filter = 2
 theme = SubResource("Theme_hud_buttons")
 
-[node name="PauseButton" type="Button" parent="HUDButtons" unique_id=622092142]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 18.0
-offset_top = 17.0
-offset_right = 127.0
-offset_bottom = 109.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_button")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
-text = "II"
-
-[node name="ReturnButton" type="Button" parent="HUDButtons" unique_id=2046295828]
-unique_name_in_owner = true
-visible = false
+[node name="TopRightButtons" type="HBoxContainer" parent="HUDButtons"]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -215.0
-offset_top = 17.0
+offset_left = -210.0
+offset_top = 14.0
 offset_right = -16.0
-offset_bottom = 80.0
+offset_bottom = 62.0
 grow_horizontal = 0
+mouse_filter = 2
+theme_override_constants/separation = 8
+alignment = 2
+
+[node name="ReturnButton" type="Button" parent="HUDButtons/TopRightButtons" unique_id=2046295828]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(130, 48)
+layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_button")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
 text = "Overworld"
 
-[node name="LeftMenuColumn" type="VBoxContainer" parent="HUDButtons" unique_id=529062429]
+[node name="PauseButton" type="Button" parent="HUDButtons/TopRightButtons" unique_id=622092142]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = -420.0
-offset_right = 224.0
-offset_bottom = -20.0
-grow_vertical = 0
-mouse_filter = 2
-theme_override_constants/separation = 24
-alignment = 2
-
-[node name="QuestButton" type="Button" parent="HUDButtons/LeftMenuColumn" unique_id=354828614]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 175)
+custom_minimum_size = Vector2(56, 48)
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxTexture_almanac")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_almanac_pressed")
-theme_override_styles/hover = SubResource("StyleBoxTexture_almanac_hover")
-text = "  Quests"
-alignment = 0
-
-[node name="EquipmentButton" type="Button" parent="HUDButtons/LeftMenuColumn" unique_id=654770421]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 150)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_styles/normal = SubResource("StyleBoxTexture_rod")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_rod_pressed")
-theme_override_styles/hover = SubResource("StyleBoxTexture_rod_hover")
-text = "Equipment"
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "II"
 
 [node name="RightMenuColumn" type="VBoxContainer" parent="HUDButtons" unique_id=417247062]
 unique_name_in_owner = true
@@ -179,19 +148,40 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -244.0
-offset_top = -430.0
+offset_left = -140.0
+offset_top = -454.0
 offset_right = -16.0
-offset_bottom = -10.0
+offset_bottom = -12.0
 grow_horizontal = 0
 grow_vertical = 0
 mouse_filter = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 10
 alignment = 2
+
+[node name="QuestButton" type="Button" parent="HUDButtons/RightMenuColumn" unique_id=354828614]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(116, 102)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/normal = SubResource("StyleBoxTexture_almanac")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_almanac_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_almanac_hover")
+text = "  Quests"
+alignment = 0
+
+[node name="EquipmentButton" type="Button" parent="HUDButtons/RightMenuColumn" unique_id=654770421]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(108, 92)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/normal = SubResource("StyleBoxTexture_rod")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_rod_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_rod_hover")
+text = "Equipment"
 
 [node name="AlmanacButton" type="Button" parent="HUDButtons/RightMenuColumn" unique_id=53069590]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 175)
+custom_minimum_size = Vector2(116, 102)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_styles/normal = SubResource("StyleBoxTexture_almanac")
@@ -202,44 +192,34 @@ alignment = 0
 
 [node name="FishBoxButton" type="Button" parent="HUDButtons/RightMenuColumn" unique_id=212267663]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 200)
+custom_minimum_size = Vector2(124, 112)
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_styles/normal = SubResource("StyleBoxTexture_fishbox")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_fishbox_pressed")
 theme_override_styles/hover = SubResource("StyleBoxTexture_fishbox_hover")
 text = "Fish Box"
 
-[node name="Overlays" type="Control" parent="." unique_id=1955864332]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+[node name="Overlays" type="CanvasLayer" parent="." unique_id=1955864332]
+layer = 50
 
 [node name="FishBoxUI" parent="Overlays" unique_id=1138836529 instance=ExtResource("6_fishbox")]
 unique_name_in_owner = true
 visible = false
-layout_mode = 1
 
 [node name="EquipmentUI" parent="Overlays" unique_id=1886432038 instance=ExtResource("7_equipment")]
 unique_name_in_owner = true
 visible = false
-layout_mode = 1
 
 [node name="AlmanacUI" parent="Overlays" unique_id=1066467312 instance=ExtResource("8_almanac")]
 unique_name_in_owner = true
 visible = false
-layout_mode = 1
 
 [node name="QuestLog" parent="Overlays" unique_id=1168891029 instance=ExtResource("9_questlog")]
 unique_name_in_owner = true
 visible = false
-layout_mode = 1
 close_on_cancel = false
 
 [node name="OptionsMenu" parent="Overlays" unique_id=1697500706 instance=ExtResource("10_options")]
 unique_name_in_owner = true
 visible = false
-layout_mode = 1

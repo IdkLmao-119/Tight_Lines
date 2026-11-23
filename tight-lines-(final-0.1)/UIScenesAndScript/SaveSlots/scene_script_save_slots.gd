@@ -13,6 +13,10 @@ signal close_requested
 @onready var _make_save_button: Button = %MakeSaveButton
 @onready var _load_save_button: Button = %LoadSaveButton
 @onready var _delete_save_button: Button = %DeleteSaveButton
+@onready var _name_prompt_overlay: ColorRect = %NamePromptOverlay
+@onready var _player_name_input: LineEdit = %PlayerNameInput
+@onready var _cancel_name_button: Button = %CancelNameButton
+@onready var _confirm_name_button: Button = %ConfirmNameButton
 
 var _slot_buttons: Array[Button] = []
 var _selected_slot: int = -1
@@ -32,6 +36,12 @@ func _ready() -> void:
 	_make_save_button.pressed.connect(_on_make_save_button_pressed)
 	_load_save_button.pressed.connect(_on_load_save_button_pressed)
 	_delete_save_button.pressed.connect(_on_delete_save_button_pressed)
+	_cancel_name_button.pressed.connect(_close_name_prompt)
+	_confirm_name_button.pressed.connect(_confirm_new_game)
+	_player_name_input.text_submitted.connect(_on_name_submitted)
+	_player_name_input.max_length = SaveManager.MAX_PLAYER_NAME_LENGTH
+	_player_name_input.placeholder_text = SaveManager.DEFAULT_PLAYER_NAME
+	_name_prompt_overlay.visible = false
 	visibility_changed.connect(_on_visibility_changed)
 
 	if not GameDB.is_loaded:
@@ -45,6 +55,7 @@ func _ready() -> void:
 
 
 func open() -> void:
+	_name_prompt_overlay.visible = false
 	var was_visible := visible
 	visible = true
 	if was_visible:
@@ -55,6 +66,7 @@ func open() -> void:
 
 
 func close() -> void:
+	_name_prompt_overlay.visible = false
 	if not get_signal_connection_list(&"close_requested").is_empty():
 		visible = false
 		close_requested.emit()
@@ -65,11 +77,15 @@ func close() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed(&"ui_cancel") and not event.is_echo():
 		get_viewport().set_input_as_handled()
-		close()
+		if _name_prompt_overlay.visible:
+			_close_name_prompt()
+		else:
+			close()
 
 
 func _on_visibility_changed() -> void:
 	if visible:
+		_name_prompt_overlay.visible = false
 		refresh_slot_labels()
 		_update_action_buttons()
 
@@ -78,8 +94,10 @@ func refresh_slot_labels() -> void:
 	for i in range(_slot_buttons.size()):
 		var info: Dictionary = SaveManager.get_slot_info(i)
 		if info["exists"]:
-			var line1 := "Slot %d — %s  •  Day %d (%s)" % [
+			var player_name := String(info.get("player_name", SaveManager.DEFAULT_PLAYER_NAME))
+			var line1 := "Slot %d (%s) — %s  •  Day %d (%s)" % [
 				i + 1,
+				player_name,
 				String(info.get("scene_name", "Unknown")),
 				int(info.get("day_count", 1)),
 				String(info.get("clock_text", "08:00")),
@@ -134,13 +152,38 @@ func _on_load_save_button_pressed() -> void:
 		return
 
 	if not SaveManager.slot_exists(_selected_slot):
-		SaveManager.new_game()
-		SaveManager.save_slot(_selected_slot)
-		GameManager.change_scene(SaveManager.get_saved_scene())
+		_open_name_prompt()
 		return
 
 	if SaveManager.load_slot(_selected_slot):
 		GameManager.change_scene(SaveManager.get_saved_scene())
+
+
+func _open_name_prompt() -> void:
+	_player_name_input.text = ""
+	_name_prompt_overlay.visible = true
+	_player_name_input.grab_focus()
+
+
+func _close_name_prompt() -> void:
+	_name_prompt_overlay.visible = false
+	if _selected_slot != -1:
+		_load_save_button.grab_focus()
+	elif not _slot_buttons.is_empty():
+		_slot_buttons[0].grab_focus()
+
+
+func _on_name_submitted(_text: String) -> void:
+	_confirm_new_game()
+
+
+func _confirm_new_game() -> void:
+	if _selected_slot == -1 or not _name_prompt_overlay.visible or SaveManager.slot_exists(_selected_slot):
+		return
+	_name_prompt_overlay.visible = false
+	SaveManager.new_game(_player_name_input.text)
+	SaveManager.save_slot(_selected_slot)
+	GameManager.change_scene(SaveManager.get_saved_scene())
 
 
 func _on_delete_save_button_pressed() -> void:

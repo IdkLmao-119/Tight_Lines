@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tight Lines (Capstone Edition) — Game UI &amp; Screen Flow Storyboard</title>
+<style>
+  @font-face {
+    font-family: "ShortStack";
+    src: url("tight-lines-(final-0.1)/Assets/2D/ShortStack-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  :root {
+    --ocean: #132a3e;
+    --ocean-mid: #1d3f5c;
+    --wood: #6c4527;
+    --wood-dark: #452915;
+    --parchment: #fbf6ec;
+    --parchment-border: #d9b982;
+    --gold: #f2c94c;
+    --teal: #2d9cdb;
+    --green: #2e8b57;
+    --coral: #e05a47;
+    --ink: #1e242b;
+    --muted: #5a6572;
+    --card-bg: #ffffff;
+    --page-bg: #eef2f5;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 20px;
+    background: var(--page-bg);
+    color: var(--ink);
+    font-family: "ShortStack", "Segoe UI", system-ui, -apple-system, sans-serif;
+    line-height: 1.4;
+  }
+
+  .pixel {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  .container {
+    max-width: 1320px;
+    margin: 0 auto;
+  }
+
+  /* Cover Header */
+  .doc-header {
+    background: linear-gradient(135deg, var(--ocean) 0%, var(--ocean-mid) 100%);
+    color: #ffffff;
+    border-radius: 14px;
+    padding: 22px 26px;
+    border: 3px solid var(--parchment-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 6px 18px rgba(19, 42, 62, 0.16);
+  }
+
+  .doc-header h1 {
+    margin: 0 0 6px 0;
+    font-size: 24px;
+    color: var(--gold);
+    letter-spacing: 0.3px;
+  }
+
+  .doc-meta {
+    font-size: 12.5px;
+    color: #e6eef5;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
+  .doc-meta span strong {
+    color: var(--parchment-border);
+  }
+
+  .print-btn {
+    background: var(--gold);
+    color: var(--wood-dark);
+    border: 2px solid var(--wood-dark);
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 3px 0 var(--wood-dark);
+  }
+
+  .print-btn:hover { background: #ffd866; }
+
+  /* Master Flow Box */
+  .flow-box {
+    background: var(--card-bg);
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 22px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .section-title {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    color: var(--ocean);
+    border-left: 5px solid var(--wood);
+    padding-left: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .section-title small {
+    font-size: 11.5px;
+    color: var(--muted);
+    font-weight: normal;
+  }
+
+  .flow-svg-wrap {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  /* Act Headers */
+  .act-section {
+    margin-top: 22px;
+  }
+
+  .act-banner {
+    background: var(--wood);
+    color: var(--parchment);
+    border: 2px solid var(--parchment-border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    margin-bottom: 14px;
+    font-size: 15px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .act-banner span.act-sub {
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: normal;
+  }
+
+  /* 2-Column Storyboard Grid */
+  .sb-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .panel-card {
+    background: var(--card-bg);
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .panel-head {
+    background: var(--ocean);
+    color: #fff;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 2px solid var(--parchment-border);
+  }
+
+  .panel-head-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: bold;
+  }
+
+  .sb-id {
+    background: var(--gold);
+    color: var(--wood-dark);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 11.5px;
+    font-weight: bold;
+  }
+
+  .scene-tag {
+    background: rgba(255, 255, 255, 0.14);
+    color: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 10.5px;
+    font-family: Consolas, monospace;
+  }
+
+  /* 16:9 Mockup Viewport */
+  .viewport {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #1a2d3d;
+    overflow: hidden;
+    border-bottom: 2px solid #cbd5e1;
+    font-size: 10px;
+    color: #fff;
+  }
+
+  .vp-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Shared Mockup UI Primitives */
+  .wood-panel {
+    background: rgba(74, 46, 25, 0.92);
+    border: 2px solid var(--parchment-border);
+    border-radius: 7px;
+    color: var(--parchment);
+  }
+
+  .hud-pill {
+    background: rgba(17, 24, 34, 0.85);
+    border: 1.5px solid var(--parchment-border);
+    border-radius: 7px;
+    color: #f8f4e8;
+    padding: 3px 9px;
+    font-size: 9.5px;
+  }
+
+  .btn-mock {
+    background: #6c4527;
+    border: 1.5px solid var(--parchment-border);
+    color: #fff8e7;
+    border-radius: 5px;
+    padding: 3px 8px;
+    text-align: center;
+    font-size: 9.5px;
+    font-weight: bold;
+  }
+
+  .btn-mock.gold {
+    background: #c8962e;
+    color: #241409;
+    border-color: #fff2b2;
+  }
+
+  .btn-mock.green {
+    background: #2e7d4f;
+    border-color: #9ae6b4;
+  }
+
+  .btn-mock.red {
+    background: #9b2c2c;
+    border-color: #feb2b2;
+  }
+
+  .bar-track {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    height: 9px;
+    overflow: hidden;
+  }
+
+  .bar-fill { height: 100%; }
+
+  /* Spec Grid */
+  .spec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+    padding: 10px 12px;
+    background: var(--parchment);
+    font-size: 11px;
+    flex: 1;
+  }
+
+  .spec-item strong {
+    display: block;
+    color: var(--wood);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 2px;
+  }
+
+  .spec-item span {
+    color: var(--ink);
+    display: block;
+  }
+
+  /* Phone Frame Mini */
+  .phone-frame {
+    background: #141a21;
+    border: 2.5px solid #94a3b8;
+    border-radius: 12px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .phone-notch {
+    width: 28px;
+    height: 3px;
+    background: #475569;
+    border-radius: 2px;
+    margin: 0 auto 4px auto;
+  }
+
+  /* Print Rules */
+  @media print {
+    @page {
+      size: A4 landscape;
+      margin: 8mm;
+    }
+    body {
+      background: #ffffff;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .no-print { display: none !important; }
+    .doc-header { box-shadow: none; margin-bottom: 10px; padding: 14px 18px; }
+    .flow-box { margin-bottom: 12px; padding: 10px 12px; }
+    .act-section { break-before: page; page-break-before: always; margin-top: 0; }
+    .act-section.first-act { break-before: auto; page-break-before: auto; }
+    .sb-grid { gap: 10px; }
+    .panel-card { box-shadow: none; }
+    .spec-grid { font-size: 10px; padding: 7px 9px; gap: 5px 9px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- COVER HEADER -->
+  <header class="doc-header">
+    <div>
+      <h1>Tight Lines (Capstone Edition) — Game UI &amp; Screen Flow Storyboard</h1>
+      <div class="doc-meta">
+        <span><strong>Engine:</strong> Godot 4.6 (GL Compatibility)</span>
+        <span><strong>Platform:</strong> PC Host + Android Mobile Controller (LAN WebSocket :9080 / UDP Discovery :9081)</span>
+        <span><strong>Scope:</strong> 11 Overworld Scenes • 7 Fishing Regions • 50 Fish Species • 5 Rods • 6 Baits • 8 Story Chapters • 2P Split-Screen</span>
+      </div>
+    </div>
+    <button class="print-btn no-print" onclick="window.print()">Print / Save as PDF</button>
+  </header>
+
+  <!-- MASTER SCREEN FLOW DIAGRAM -->
+  <section class="flow-box">
+    <h2 class="section-title">
+      Master Screen Flow &amp; Companion Architecture
+      <small>GameManager scene registry + GameHUD overlays + ConnectionManager phone sync</small>
+    </h2>
+    <div class="flow-svg-wrap">
+      <svg viewBox="0 0 1220 265" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" font-family="ShortStack, Segoe UI, sans-serif">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#1d3f5c"/>
+          </marker>
+          <marker id="arr-gold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#b7791f"/>
+          </marker>
+        </defs>
+
+        <!-- Main Menu -->
+        <rect x="14" y="80" width="128" height="54" rx="8" fill="#132a3e" stroke="#d9b982" stroke-width="2"/>
+        <text x="78" y="103" fill="#f2c94c" font-size="12" font-weight="bold" text-anchor="middle">Main Menu</text>
+        <text x="78" y="120" fill="#e2e8f0" font-size="9.5" text-anchor="middle">SB-01 • Reluctance.mp3</text>
+
+        <!-- Options -->
+        <rect x="14" y="182" width="128" height="48" rx="8" fill="#452915" stroke="#d9b982" stroke-width="2"/>
+        <text x="78" y="203" fill="#fbf6ec" font-size="11.5" font-weight="bold" text-anchor="middle">Options / Pause</text>
+        <text x="78" y="218" fill="#f2c94c" font-size="9.5" text-anchor="middle">SB-03 • Diff &amp; Sens</text>
+
+        <!-- Save Slots -->
+        <rect x="182" y="80" width="136" height="54" rx="8" fill="#1d3f5c" stroke="#d9b982" stroke-width="2"/>
+        <text x="250" y="103" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">Save Slots (1-3)</text>
+        <text x="250" y="120" fill="#cbd5e1" font-size="9.5" text-anchor="middle">SB-02 • New / Load</text>
+
+        <!-- Multiplayer Lobby -->
+        <rect x="182" y="14" width="160" height="46" rx="8" fill="#2d4a22" stroke="#d9b982" stroke-width="2"/>
+        <text x="262" y="34" fill="#f2c94c" font-size="11.5" font-weight="bold" text-anchor="middle">Multiplayer Lobby</text>
+        <text x="262" y="49" fill="#e2e8f0" font-size="9.5" text-anchor="middle">SB-16 • LAN P1 vs P2</text>
+
+        <!-- 2P Split-Screen -->
+        <rect x="386" y="14" width="190" height="46" rx="8" fill="#2d4a22" stroke="#f2c94c" stroke-width="2"/>
+        <text x="481" y="34" fill="#ffffff" font-size="11.5" font-weight="bold" text-anchor="middle">2P Split-Screen 3D Fishing</text>
+        <text x="481" y="49" fill="#f2c94c" font-size="9.5" text-anchor="middle">Sunday.mp3 → Match Results</text>
+
+        <!-- 2D Overworld -->
+        <rect x="362" y="80" width="214" height="54" rx="8" fill="#6c4527" stroke="#f2c94c" stroke-width="2.5"/>
+        <text x="469" y="103" fill="#f2c94c" font-size="12.5" font-weight="bold" text-anchor="middle">2D Overworld (11 Scenes)</text>
+        <text x="469" y="120" fill="#fbf6ec" font-size="9.5" text-anchor="middle">SB-04 • The+Other+Side.mp3</text>
+
+        <!-- HUD Overlays Box -->
+        <rect x="310" y="160" width="320" height="92" rx="8" fill="#fbf6ec" stroke="#6c4527" stroke-width="2"/>
+        <text x="470" y="177" fill="#6c4527" font-size="11" font-weight="bold" text-anchor="middle">Overworld HUD &amp; Modal Overlays</text>
+        <text x="470" y="195" fill="#1e242b" font-size="9.5" text-anchor="middle">• World Map &amp; Rest [M] (SB-05)   • Story Dialogue (SB-06)</text>
+        <text x="470" y="211" fill="#1e242b" font-size="9.5" text-anchor="middle">• Tackle &amp; Fish Shop (SB-07)     • Fish Box (SB-08)</text>
+        <text x="470" y="227" fill="#1e242b" font-size="9.5" text-anchor="middle">• Equipment (SB-09) • Almanac (SB-10) • Quests &amp; Tank (SB-11)</text>
+        <text x="470" y="243" fill="#5a6572" font-size="9" text-anchor="middle">ESC / Pause → Options &amp; In-Game Save (SB-03)</text>
+
+        <!-- 3D Fishing Loop -->
+        <rect x="642" y="64" width="332" height="104" rx="10" fill="#132a3e" stroke="#2d9cdb" stroke-width="2.5"/>
+        <text x="808" y="84" fill="#f2c94c" font-size="12" font-weight="bold" text-anchor="middle">3D Fishing Loop (7 Locations • Tangled.mp3)</text>
+        <rect x="656" y="96" width="94" height="28" rx="5" fill="#1d3f5c" stroke="#90cdf4"/>
+        <text x="703" y="114" fill="#fff" font-size="9.5" text-anchor="middle">IDLE → CAST → WAIT</text>
+        <rect x="766" y="96" width="90" height="28" rx="5" fill="#2b6cb0" stroke="#f2c94c"/>
+        <text x="811" y="114" fill="#fff" font-size="9.5" text-anchor="middle">REELING (SB-13)</text>
+        <rect x="872" y="96" width="88" height="28" rx="5" fill="#2e8b57" stroke="#9ae6b4"/>
+        <text x="916" y="114" fill="#fff" font-size="9.5" text-anchor="middle">CAUGHT / ESC</text>
+        <text x="808" y="148" fill="#feb2b2" font-size="9.5" font-weight="bold" text-anchor="middle">Line Snap → KNOTTING Minigame on Phone (SB-14) → IDLE</text>
+        <line x1="750" y1="110" x2="764" y2="110" stroke="#f2c94c" stroke-width="1.8" marker-end="url(#arr-gold)"/>
+        <line x1="856" y1="110" x2="870" y2="110" stroke="#f2c94c" stroke-width="1.8" marker-end="url(#arr-gold)"/>
+
+        <!-- Android Companion Sync Band -->
+        <rect x="1008" y="14" width="198" height="238" rx="10" fill="#1e293b" stroke="#f2c94c" stroke-width="2"/>
+        <text x="1107" y="34" fill="#f2c94c" font-size="11.5" font-weight="bold" text-anchor="middle">Android Companion (SB-15)</text>
+        <text x="1107" y="49" fill="#94a3b8" font-size="9" text-anchor="middle">WebSocket :9080 • UDP :9081</text>
+        <rect x="1024" y="60" width="166" height="28" rx="5" fill="#334155"/>
+        <text x="1107" y="78" fill="#e2e8f0" font-size="9.5" text-anchor="middle">1. Auto-Discovery &amp; Connect</text>
+        <rect x="1024" y="96" width="166" height="28" rx="5" fill="#334155"/>
+        <text x="1107" y="114" fill="#e2e8f0" font-size="9.5" text-anchor="middle">2. Overworld D-Pad / Menu</text>
+        <rect x="1024" y="132" width="166" height="28" rx="5" fill="#334155"/>
+        <text x="1107" y="150" fill="#e2e8f0" font-size="9.5" text-anchor="middle">3. Casting (Tilt + Flick)</text>
+        <rect x="1024" y="168" width="166" height="28" rx="5" fill="#334155"/>
+        <text x="1107" y="186" fill="#e2e8f0" font-size="9.5" text-anchor="middle">4. Reeling Crank + Haptics</text>
+        <rect x="1024" y="204" width="166" height="32" rx="5" fill="#742a2a" stroke="#feb2b2"/>
+        <text x="1107" y="224" fill="#fed7d7" font-size="9.5" text-anchor="middle">5. Knot Trace (On Snap)</text>
+
+        <!-- Connectors -->
+        <line x1="142" y1="107" x2="178" y2="107" stroke="#1d3f5c" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="78" y1="134" x2="78" y2="178" stroke="#1d3f5c" stroke-width="2" marker-end="url(#arr)" marker-start="url(#arr)"/>
+        <path d="M 105 80 L 105 37 L 178 37" fill="none" stroke="#1d3f5c" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="342" y1="37" x2="382" y2="37" stroke="#1d3f5c" stroke-width="2" marker-end="url(#arr)" marker-start="url(#arr)"/>
+        <line x1="318" y1="107" x2="358" y2="107" stroke="#1d3f5c" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="469" y1="134" x2="469" y2="156" stroke="#1d3f5c" stroke-width="2" marker-end="url(#arr)" marker-start="url(#arr)"/>
+        <line x1="576" y1="107" x2="638" y2="107" stroke="#1d3f5c" stroke-width="2" marker-end="url(#arr)" marker-start="url(#arr)"/>
+        <line x1="974" y1="115" x2="1004" y2="115" stroke="#b7791f" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#arr-gold)" marker-start="url(#arr-gold)"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ACT I -->
+  <section class="act-section first-act">
+    <div class="act-banner">
+      <span>ACT I — Entry, Save Management &amp; Settings</span>
+      <span class="act-sub">Panels SB-01 to SB-03</span>
+    </div>
+    <div class="sb-grid">
+
+      <!-- SB-01: Main Menu -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-01</span> Main Menu</div>
+          <span class="scene-tag">MainMenu.tscn</span>
+        </div>
+        <div class="viewport">
+          <img class="vp-bg pixel" src="tight-lines-(final-0.1)/Assets/2D/Water%20background.png" alt="Water background" />
+          <img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Milkfish-605e.png" alt="Milkfish" style="position:absolute; left:10%; top:22%; width:54px; opacity:0.85;" />
+          <img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Barramundi%20final.png" alt="Barramundi" style="position:absolute; right:10%; bottom:18%; width:64px; opacity:0.85; transform:scaleX(-1);" />
+          <div style="position:relative; z-index:2; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;">
+            <div style="position:relative; width:210px; height:48px; display:flex; align-items:center; justify-content:center;">
+              <img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/SignBoard.png" alt="Signboard" style="position:absolute; inset:0; width:100%; height:100%; object-fit:fill;" />
+              <span style="position:relative; font-size:22px; font-weight:bold; color:#fff; text-shadow:0 2px 0 #231409;">Tight Lines</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:5px; width:130px;">
+              <div class="btn-mock gold">Start</div>
+              <div class="btn-mock">Multiplayer</div>
+              <div class="btn-mock">Options</div>
+              <div class="btn-mock">Exit</div>
+            </div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>Animated water backdrop with ambient swimming fish sprites; wooden signboard title and stacked navigation buttons.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span>Mouse click, Arrow keys + Enter, or phone MENU swipe/tap. Clears multiplayer screen-side assignments on load.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Music: <code>Reluctance.mp3</code> (persists seamlessly across menu screens). Gold focus border on active button.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Start → Save Slots (SB-02) • Multiplayer → Lobby (SB-16) • Options → Overlay (SB-03) • Exit → Quit.</span></div>
+        </div>
+      </article>
+
+      <!-- SB-02: Save Slots -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-02</span> Save Slots</div>
+          <span class="scene-tag">SaveSlots.tscn</span>
+        </div>
+        <div class="viewport">
+          <img class="vp-bg pixel" src="tight-lines-(final-0.1)/Assets/2D/Water%20background.png" alt="Water background" />
+          <div style="position:relative; z-index:2; height:100%; padding:14px 24px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div style="text-align:center; font-size:13px; font-weight:bold; color:#f2c94c; text-shadow:0 1px 2px #000;">SELECT SAVE SLOT</div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div class="wood-panel" style="padding:6px 10px; border-color:#f2c94c; background:rgba(92,58,31,0.96);">
+                <div style="font-weight:bold; color:#f2c94c;">Slot 1 — Marikina City  •  Day 1 (08:00)</div>
+                <div style="color:#e2e8f0; font-size:9px;">₱250  •  Almanac 12% (6/50)  •  Casual  •  2026-11-22 20:15</div>
+              </div>
+              <div class="wood-panel" style="padding:6px 10px; opacity:0.88;">
+                <div style="font-weight:bold;">Slot 2 — Empty</div>
+              </div>
+              <div class="wood-panel" style="padding:6px 10px; opacity:0.88;">
+                <div style="font-weight:bold;">Slot 3 — Empty</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:6px; justify-content:center;">
+              <div class="btn-mock green">Load Save</div>
+              <div class="btn-mock" style="opacity:0.5;">Make Save</div>
+              <div class="btn-mock red">Delete Save</div>
+              <div class="btn-mock">Back</div>
+            </div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>Displays 3 save slots with location, day/clock, Pesos (₱), Almanac completion %, difficulty, and timestamp.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span>Select slot to enable action buttons. Empty slot switches Load button to <code>New Game</code>; <code>Make Save</code> only active in-game.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Keeps <code>Reluctance.mp3</code> playing without restart when entered from Main Menu.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Load/New Game → Saved Overworld Scene (defaults to Marikina City Home) • Back → Main Menu or Options.</span></div>
+        </div>
+      </article>
+
+      <!-- SB-03: Options & Pause Menu -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-03</span> Options &amp; Pause Menu</div>
+          <span class="scene-tag">Options.tscn</span>
+        </div>
+        <div class="viewport" style="background:#0f1d2b; display:flex; align-items:center; justify-content:center; padding:12px;">
+          <div class="wood-panel" style="width:76%; padding:12px 16px; display:flex; flex-direction:column; gap:7px;">
+            <div style="text-align:center; font-size:13px; font-weight:bold; color:#f2c94c;">OPTIONS &amp; PAUSE</div>
+            <div style="display:grid; grid-template-columns:105px 1fr; align-items:center; gap:6px;">
+              <span>Music Volume</span>
+              <div class="bar-track"><div class="bar-fill" style="width:75%; background:#f2c94c;"></div></div>
+              <span>SFX Volume</span>
+              <div class="bar-track"><div class="bar-fill" style="width:85%; background:#2d9cdb;"></div></div>
+              <span>Difficulty</span>
+              <div class="btn-mock" style="width:110px;">Casual / Angler</div>
+              <span>Cast Sensitivity</span>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <div class="bar-track" style="flex:1;"><div class="bar-fill" style="width:50%; background:#48bb78;"></div></div>
+                <span class="hud-pill" style="padding:1px 6px;">0.50</span>
+              </div>
+            </div>
+            <div style="display:flex; gap:6px; justify-content:center; margin-top:4px;">
+              <div class="btn-mock green">Save (In-Game)</div>
+              <div class="btn-mock">Main Menu</div>
+              <div class="btn-mock gold">Back</div>
+            </div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>Shared modal for Main Menu settings and in-game pause. Adjusts audio buses, Casual/Angler difficulty, and cast sensitivity.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span>Opened via <code>ESC</code> or Pause button. Sensitivity (0.00–1.00) live-syncs <code>swing_threshold</code> &amp; <code>tilt_filter_alpha</code> to connected phones.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Persists settings immediately to <code>SaveManager.save_settings()</code> on slider release or close.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Save → Embedded SaveSlotMenu • Main Menu → SB-01 • Back / ESC → Unpause &amp; Resume.</span></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ACT II -->
+  <section class="act-section">
+    <div class="act-banner">
+      <span>ACT II — 2D Overworld, Travel, Story &amp; Economy</span>
+      <span class="act-sub">Panels SB-04 to SB-07</span>
+    </div>
+    <div class="sb-grid">
+
+      <!-- SB-04: 2D Overworld & GameHUD -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-04</span> 2D Overworld &amp; GameHUD</div>
+          <span class="scene-tag">11 2D Scenes • 2DsceneUI.tscn</span>
+        </div>
+        <div class="viewport">
+          <img class="vp-bg pixel" src="tight-lines-(final-0.1)/Assets/2D/Maps/RiverParkMap.png" alt="River Park Map" />
+          <img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/RedJeep.png" alt="Red Jeep" style="position:absolute; right:18%; bottom:24%; width:54px;" />
+          <!-- Top Center Map & Clock -->
+          <div class="hud-pill" style="position:absolute; top:8px; left:50%; transform:translateX(-50%); white-space:nowrap;">
+            Map [M]  •  Day 1  •  08:00 (Day)  •  Clear
+          </div>
+          <!-- Toast Banner -->
+          <div style="position:absolute; top:34px; left:50%; transform:translateX(-50%); background:rgba(41,61,46,0.92); border:1.5px solid #f2c94c; border-radius:6px; padding:2px 10px; color:#fff8dc; font-size:9px; white-space:nowrap;">
+            Unlocked: Imus Fields!
+          </div>
+          <!-- Pause Top Right -->
+          <div class="btn-mock" style="position:absolute; top:8px; right:8px;">Pause</div>
+          <!-- Left & Right HUD Columns -->
+          <div style="position:absolute; left:8px; top:36%; display:flex; flex-direction:column; gap:5px;">
+            <div class="btn-mock">Quests</div>
+            <div class="btn-mock">Equipment</div>
+          </div>
+          <div style="position:absolute; right:8px; top:36%; display:flex; flex-direction:column; gap:5px;">
+            <div class="btn-mock">Almanac</div>
+            <div class="btn-mock">Fish Box</div>
+          </div>
+          <!-- Scene Title Flash -->
+          <div style="position:absolute; bottom:14px; left:50%; transform:translateX(-50%); font-size:15px; font-weight:bold; color:#fff; text-shadow:0 2px 4px #000;">
+            Marikina River Park
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>Top-down 2D exploration across 11 scenes (Home, House 1/2, Tackle Shop, and 7 fishing regions) with persistent player coordinates.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span><code>WASD</code> / D-Pad move, <code>E</code> / Tap interact with NPCs, docks, doors &amp; Jeep, <code>M</code> World Map, <code>ESC</code> Pause.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Music: <code>The+Other+Side.mp3</code>. 5s animated scene title flash on entry; golden Toast banner for quest &amp; area unlocks.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Dock trigger → 3D Fishing (SB-12) • Shop/House doors → Interiors • Map [M] → SB-05 • HUD buttons → SB-08..11.</span></div>
+        </div>
+      </article>
+
+      <!-- SB-05: World Map, Fast Travel & Time Rest -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-05</span> World Map, Fast Travel &amp; Rest</div>
+          <span class="scene-tag">world_map_overlay.gd</span>
+        </div>
+        <div class="viewport" style="background:#132a3e; padding:10px; display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:bold; color:#f2c94c;">WORLD MAP &amp; REST</span>
+            <span class="hud-pill">Day 1  •  08:00 (Day)  •  Clear</span>
+            <div class="btn-mock red">Close</div>
+          </div>
+          <div style="display:flex; gap:8px; flex:1; min-height:0;">
+            <div style="width:28%; background:#1d3f5c; border:1.5px solid #d9b982; border-radius:6px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+              <img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/MapPhilippines.png" alt="Map Philippines" style="width:100%; height:100%; object-fit:contain;" />
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
+              <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px;">
+                <div class="btn-mock gold" style="font-size:8.5px;">Dawn 05:30</div>
+                <div class="btn-mock gold" style="font-size:8.5px;">Day 09:00</div>
+                <div class="btn-mock gold" style="font-size:8.5px;">Dusk 17:30</div>
+                <div class="btn-mock gold" style="font-size:8.5px;">Night 21:00</div>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:4px; flex:1;">
+                <div class="btn-mock green" style="font-size:8.5px; text-align:left;">Marikina City (Home) • Safe Haven</div>
+                <div class="btn-mock green" style="font-size:8.5px; text-align:left;">Marikina River Park • 4/7 Species</div>
+                <div class="btn-mock green" style="font-size:8.5px; text-align:left;">Imus Fields (Cavite) • 2/7 Species</div>
+                <div class="btn-mock" style="font-size:8.5px; text-align:left; opacity:0.55;">Kawit Seaside • Locked</div>
+                <div class="btn-mock" style="font-size:8.5px; text-align:left; opacity:0.55;">Noveleta Pens • Locked</div>
+                <div class="btn-mock" style="font-size:8.5px; text-align:left; opacity:0.55;">Noveleta Salt Farm • Locked</div>
+                <div class="btn-mock" style="font-size:8.5px; text-align:left; opacity:0.55;">Calatagan Mangroves • Locked</div>
+                <div class="btn-mock" style="font-size:8.5px; text-align:left; opacity:0.55;">Fortune Island • Boat via Calatagan</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>8 destinations across Metro Manila, Cavite &amp; Batangas with per-area species progress. Fortune Island requires boat travel from Calatagan.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span>Press <code>M</code> or click top bar; phone <code>map</code> action toggles overlay and navigates Rest/Destinations via D-Pad.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Rest buttons advance the world clock/day to target phase and roll dynamic weather (Clear, Cloudy, Rain, Storm).</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Click unlocked destination → Fast-travel to Overworld scene • Close / ESC → Resume Overworld.</span></div>
+        </div>
+      </article>
+
+      <!-- SB-06: Story Dialogue, Objectives & Credits -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-06</span> Story Dialogue &amp; Objectives</div>
+          <span class="scene-tag">DialogueBox.tscn • StoryManager</span>
+        </div>
+        <div class="viewport">
+          <img class="vp-bg pixel" src="tight-lines-(final-0.1)/Assets/2D/Maps/RiverParkMap.png" alt="Story backdrop" style="filter:brightness(0.7);" />
+          <!-- Top-left Objective -->
+          <div class="hud-pill" style="position:absolute; top:8px; left:8px; border-color:#f2c94c;">
+            <strong style="color:#f2c94c;">OBJECTIVE:</strong> Catch a Nile Tilapia at Marikina River
+          </div>
+          <!-- Skip Button -->
+          <div class="btn-mock" style="position:absolute; top:8px; right:8px;">Skip</div>
+          <!-- Branching Choices -->
+          <div style="position:absolute; right:12px; bottom:74px; display:flex; flex-direction:column; gap:4px; width:150px;">
+            <div class="btn-mock gold">Ready to cast!</div>
+            <div class="btn-mock">Tell me about bait</div>
+          </div>
+          <!-- Pokemon-style Bottom Box -->
+          <div class="wood-panel" style="position:absolute; left:10px; right:10px; bottom:8px; height:60px; padding:6px 10px; display:flex; gap:10px; align-items:center;">
+            <div style="width:44px; height:44px; background:#2b4c65; border:1.5px solid #d9b982; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:8px; text-align:center;">NPC<br/>Portrait</div>
+            <div style="flex:1;">
+              <div style="font-weight:bold; color:#f2c94c; font-size:10px;">Mang Tomas</div>
+              <div style="font-size:9.5px; color:#fff8e7;">"The river remembers every angler. Grab your Light Rod and test the waters!"</div>
+            </div>
+            <div style="color:#f2c94c; font-size:12px; align-self:flex-end;">▼</div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>Drives the 8-chapter campaign (<code>01_marikina</code> through <code>08_ending</code>), persistent Objective tracker, parchment letters, chapter banners &amp; Credits.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span><code>E</code> / Tap / Click advances typewriter or selects choices; <code>Skip</code> fast-forwards cutscene.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>45 chars/sec typewriter reveal with synthesized voice blips every 2 chars; bouncing next-arrow prompt.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Chapter completion unlocks new regions &amp; quests; <code>08_ending</code> shows Credits overlay with <code>Keep Fishing</code>.</span></div>
+        </div>
+      </article>
+
+      <!-- SB-07: Tackle & Fish Shop -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-07</span> Tackle &amp; Fish Shop</div>
+          <span class="scene-tag">ShopUI • RodShop • BaitShop</span>
+        </div>
+        <div class="viewport" style="background:#2b1e14; padding:8px; display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="hud-pill" style="color:#f2c94c; font-weight:bold;">Pesos: ₱1,450</span>
+            <span style="font-size:9.5px; color:#fbf6ec;">"Welcome! Sell fish or buy gear?"</span>
+            <div class="btn-mock red">Close</div>
+          </div>
+          <div style="display:grid; grid-template-columns:92px 1fr 1fr; gap:6px; flex:1; min-height:0;">
+            <!-- Hub -->
+            <div class="wood-panel" style="padding:6px; display:flex; flex-direction:column; justify-content:center; gap:5px;">
+              <div style="font-size:8.5px; color:#f2c94c; text-align:center; font-weight:bold;">SHOP HUB</div>
+              <div class="btn-mock green">Sell Fish</div>
+              <div class="btn-mock gold">Buy Gear</div>
+            </div>
+            <!-- Rod Shop -->
+            <div class="wood-panel" style="padding:6px; display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:9px; color:#f2c94c; font-weight:bold;">ROD SHOP</span>
+                <span class="btn-mock" style="font-size:8px; padding:1px 5px;">Bait →</span>
+              </div>
+              <div style="display:flex; gap:5px; justify-content:space-around; align-items:center; flex:1;">
+                <div style="text-align:center;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/Rod_Sprites_Standing/Ultralight_Rod.png" alt="Light Rod" style="height:48px;" /><div style="font-size:8px;">Light<br/>Owned</div></div>
+                <div style="text-align:center;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/Rod_Sprites_Standing/Medium_Rod.png" alt="Medium Rod" style="height:48px;" /><div style="font-size:8px; color:#f2c94c;">Medium<br/>₱600</div></div>
+                <div style="text-align:center;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/Rod_Sprites_Standing/Heavy_Rod.png" alt="Heavy Rod" style="height:48px;" /><div style="font-size:8px;">Heavy<br/>₱2,500</div></div>
+              </div>
+            </div>
+            <!-- Bait Shop -->
+            <div class="wood-panel" style="padding:6px; display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:9px; color:#f2c94c; font-weight:bold;">BAIT SHOP</span>
+                <span class="btn-mock" style="font-size:8px; padding:1px 5px;">Rods →</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:4px; flex:1; align-items:center;">
+                <div style="display:flex; align-items:center; gap:4px;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/bait_sprites/Earthworm.png" alt="Worm" style="width:20px;" /><span style="font-size:8px;">Worm ₱15</span></div>
+                <div style="display:flex; align-items:center; gap:4px;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/bait_sprites/Shrimp.png" alt="Shrimp" style="width:20px;" /><span style="font-size:8px;">Shrimp ₱30</span></div>
+                <div style="display:flex; align-items:center; gap:4px;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/bait_sprites/Hardbait%20lure-c4e0.png" alt="Hardbait" style="width:20px;" /><span style="font-size:8px;">Hardbait ₱80</span></div>
+                <div style="display:flex; align-items:center; gap:4px;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/bait_sprites/Top%20water%20lure-c64d.png" alt="Topwater" style="width:20px;" /><span style="font-size:8px;">Topwater ₱120</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>3-mode shop inside Tackle &amp; Fish Shop interior: sell caught fish for Pesos (₱), buy 5 rod tiers, or stock 6 bait/lure types.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span>Switches <code>InputManager</code> to <code>MENU</code> context. Buying a rod or bait automatically equips it and updates status bar.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Live Pesos counter bound to <code>SaveManager.money_changed</code>; status banner confirms purchases or insufficient funds.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Sell Fish → Fish Box (<code>sell_mode = true</code>) • Buy → Rod/Bait Shop toggle • Close / ESC → Overworld.</span></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ACT III -->
+  <section class="act-section">
+    <div class="act-banner">
+      <span>ACT III — Inventory, Encyclopedia &amp; Progression</span>
+      <span class="act-sub">Panels SB-08 to SB-11</span>
+    </div>
+    <div class="sb-grid">
+
+      <!-- SB-08: Fish Box Inventory -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-08</span> Fish Box Inventory</div>
+          <span class="scene-tag">inventory_ui.tscn</span>
+        </div>
+        <div class="viewport" style="background:#1c3144; padding:8px; display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:bold; color:#f2c94c;">FISH BOX</span>
+            <div style="display:flex; gap:4px;">
+              <div class="btn-mock">Sort</div>
+              <div class="btn-mock">Lock</div>
+              <div class="btn-mock">Compost</div>
+              <div class="btn-mock green">Sell All</div>
+              <div class="btn-mock red">Back</div>
+            </div>
+          </div>
+          <div style="position:relative; flex:1; border:2px solid #d9b982; border-radius:8px; overflow:hidden; padding:8px; display:grid; grid-template-columns:repeat(7,1fr); gap:5px; align-content:start;">
+            <img class="vp-bg pixel" src="tight-lines-(final-0.1)/Assets/2D/Inside%20Cooler.png" alt="Cooler" style="opacity:0.45;" />
+            <div class="hud-pill" style="position:relative; padding:3px; text-align:center; border-color:#f2c94c;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Nile-Tilapia-76b4.png" alt="Tilapia" style="width:28px;" /><span style="position:absolute; top:1px; right:3px; font-size:7.5px; color:#f2c94c;">🔒</span></div>
+            <div class="hud-pill" style="position:relative; padding:3px; text-align:center;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Milkfish-605e.png" alt="Milkfish" style="width:28px;" /></div>
+            <div class="hud-pill" style="position:relative; padding:3px; text-align:center;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Giant%20Snakehead.png" alt="Snakehead" style="width:28px;" /></div>
+            <div class="hud-pill" style="position:relative; padding:3px; text-align:center;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Mangrove%20red%20snapper-d727.png" alt="Snapper" style="width:28px;" /></div>
+            <div class="hud-pill" style="position:relative; height:36px; opacity:0.4;"></div>
+            <div class="hud-pill" style="position:relative; height:36px; opacity:0.4;"></div>
+            <div class="hud-pill" style="position:relative; height:36px; opacity:0.4;"></div>
+          </div>
+          <div class="hud-pill" style="text-align:center;">Nile Tilapia  •  1.45 kg  •  Value: ₱120  •  [Locked]</div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>7-column scrollable cooler grid storing caught fish with individual weights, lock protection, sorting, and composting.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span>D-Pad / Arrow navigation with <code>MobileCursorHighlight</code>; phone <code>fish_box</code> button toggles directly.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Lock badge prevents accidental <code>Sell All</code> or compost; info bar shows weight &amp; Peso value.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Back / ESC → Overworld HUD or Shop Hub (when opened in <code>sell_mode</code>).</span></div>
+        </div>
+      </article>
+
+      <!-- SB-09: Equipment Loadout -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-09</span> Equipment Loadout</div>
+          <span class="scene-tag">rod_inventory.tscn</span>
+        </div>
+        <div class="viewport" style="background:#261a12; padding:10px; display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:bold; color:#f2c94c;">EQUIPMENT LOADOUT</span>
+            <span class="hud-pill">Equipped: Medium Rod + Shrimp (x12)</span>
+            <div class="btn-mock red">Back</div>
+          </div>
+          <div style="display:grid; grid-template-columns:1.35fr 1fr; gap:8px; flex:1; min-height:0;">
+            <div class="wood-panel" style="padding:8px; display:flex; flex-direction:column; justify-content:space-between;">
+              <div style="font-size:9px; color:#f2c94c; font-weight:bold;">RODS (5 TIERS)</div>
+              <div style="display:flex; justify-content:space-around; align-items:flex-end; flex:1;">
+                <div style="text-align:center;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/Rod_Sprites_Standing/Ultralight_Rod.png" alt="Light" style="height:64px;" /><div style="font-size:8px;">Light</div></div>
+                <div style="text-align:center; border:1.5px solid #f2c94c; border-radius:6px; padding:3px; background:rgba(242,201,76,0.14);"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/Rod_Sprites_Standing/Medium_Rod.png" alt="Medium" style="height:64px;" /><div style="font-size:8px; color:#f2c94c;">Medium ✓</div></div>
+                <div style="text-align:center; opacity:0.45;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/Rod_Sprites_Standing/Heavy_Rod.png" alt="Heavy" style="height:64px;" /><div style="font-size:8px;">Heavy</div></div>
+              </div>
+            </div>
+            <div class="wood-panel" style="padding:8px; display:flex; flex-direction:column; gap:4px;">
+              <div style="font-size:9px; color:#f2c94c; font-weight:bold;">BAIT &amp; LURES (6)</div>
+              <div style="display:flex; align-items:center; gap:6px;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/bait_sprites/Earthworm.png" alt="Worm" style="width:18px;" /><span>Earthworm (x8)</span></div>
+              <div style="display:flex; align-items:center; gap:6px; background:rgba(242,201,76,0.18); border-radius:4px; padding:1px 4px;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/bait_sprites/Shrimp.png" alt="Shrimp" style="width:18px;" /><span style="color:#f2c94c;">Shrimp (x12) ✓</span></div>
+              <div style="display:flex; align-items:center; gap:6px;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/bait_sprites/Hardbait%20lure-c4e0.png" alt="Hardbait" style="width:18px;" /><span>Hardbait Lure (x1)</span></div>
+              <div style="display:flex; align-items:center; gap:6px;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/bait_sprites/Top%20water%20lure-c64d.png" alt="Topwater" style="width:18px;" /><span>Topwater Lure (x1)</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>Horizontal Rod rack (Light, Med-Light, Medium, Med-Heavy, Heavy) + vertical Bait list (Dough, Worm, Hardbait, Shrimp, Softbait, Topwater).</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span><code>tab_prev</code>/<code>tab_next</code> switches Rods/Baits; D-Pad + Select equips; phone <code>equipment</code> button toggles overlay.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Emits <code>SaveManager.equipment_changed</code>; updates live status label and 3D FishingManager loadout.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Back / ESC → Overworld or 3D Fishing HUD.</span></div>
+        </div>
+      </article>
+
+      <!-- SB-10: Fish Almanac -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-10</span> Fish Almanac</div>
+          <span class="scene-tag">AlmanacUI.tscn</span>
+        </div>
+        <div class="viewport" style="background:#f4ead5; color:#2b1e14; padding:8px; display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #b58d52; padding-bottom:4px;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/Almanac_icon.png" alt="Almanac" style="width:20px;" />
+              <strong style="font-size:11px; color:#452915;">PHILIPPINE FISH ALMANAC (50 SPECIES)</strong>
+            </div>
+            <div class="btn-mock red">Back</div>
+          </div>
+          <div style="display:grid; grid-template-columns:94px 1fr 1.15fr; gap:6px; flex:1; min-height:0;">
+            <!-- Locations -->
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <div class="btn-mock gold" style="font-size:8px; text-align:left;">Marikina River</div>
+              <div class="btn-mock" style="font-size:8px; text-align:left;">Kawit Seaside</div>
+              <div class="btn-mock" style="font-size:8px; text-align:left;">Imus Fields</div>
+              <div class="btn-mock" style="font-size:8px; text-align:left; opacity:0.5;">???</div>
+              <div class="btn-mock" style="font-size:8px; text-align:left; opacity:0.5;">???</div>
+            </div>
+            <!-- 4-col Grid -->
+            <div style="background:#e7d7b9; border:1.5px solid #b58d52; border-radius:6px; padding:5px; display:grid; grid-template-columns:repeat(4,1fr); gap:4px; align-content:start;">
+              <div style="background:#fff8eb; border:1.5px solid #6c4527; border-radius:4px; padding:2px; text-align:center;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Marlin.png" alt="Marlin" style="width:26px;" /></div>
+              <div style="background:#fff8eb; border:1px solid #b58d52; border-radius:4px; padding:2px; text-align:center;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Long%20Comb%20Sawfish.png" alt="Sawfish" style="width:26px;" /></div>
+              <div style="background:#fff8eb; border:1px solid #b58d52; border-radius:4px; padding:2px; text-align:center;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Barramundi%20final.png" alt="Barramundi" style="width:26px; filter:brightness(0);" /></div>
+              <div style="background:#fff8eb; border:1px solid #b58d52; border-radius:4px; padding:2px; text-align:center;"><img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Yellow%20Fin%20Tuna.png" alt="Tuna" style="width:26px; filter:brightness(0);" /></div>
+            </div>
+            <!-- Detail -->
+            <div style="background:#fff8eb; border:1.5px solid #b58d52; border-radius:6px; padding:6px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:3px;">
+              <img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Marlin.png" alt="Marlin" style="width:58px;" />
+              <strong style="font-size:10.5px; color:#452915;">Blue Marlin</strong>
+              <em style="font-size:8.5px; color:#6c4527;">Makaira nigricans</em>
+              <span style="font-size:8.5px; color:#3a2e25;">Deep pelagic predator found off Fortune Island. Favors Topwater Lures.</span>
+            </div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>7 region tabs (locked regions masked as <code>???</code>), 4-column species grid (uncaught shown as silhouettes), and scientific detail card.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span><code>tab_prev</code>/<code>tab_next</code> cycles locations; D-Pad navigates grid; phone <code>almanac</code> button toggles overlay.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Feeds overall Almanac % displayed on Save Slots (SB-02).</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Back / ESC → Overworld or Fishing HUD.</span></div>
+        </div>
+      </article>
+
+      <!-- SB-11: Quest Log & Home Fish Tank -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-11</span> Quest Log &amp; Home Fish Tank</div>
+          <span class="scene-tag">QuestLog.tscn • FishTank.tscn</span>
+        </div>
+        <div class="viewport" style="display:grid; grid-template-columns:1fr 1fr; background:#1b2632;">
+          <!-- Left: Quest Log -->
+          <div style="padding:8px; border-right:2px solid #d9b982; display:flex; flex-direction:column; gap:5px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:10px; font-weight:bold; color:#f2c94c;">QUEST LOG</span>
+              <div style="display:flex; gap:3px;">
+                <span class="btn-mock gold" style="font-size:8px; padding:1px 5px;">Active</span>
+                <span class="btn-mock" style="font-size:8px; padding:1px 5px;">Completed</span>
+              </div>
+            </div>
+            <div class="wood-panel" style="padding:5px; font-size:8.5px; flex:1; display:flex; flex-direction:column; gap:4px;">
+              <strong style="color:#f2c94c;">River Steward (In Progress)</strong>
+              <span>Catch 3 Nile Tilapia in Marikina River Park.</span>
+              <div class="bar-track"><div class="bar-fill" style="width:66%; background:#48bb78;"></div></div>
+              <span style="color:#9ae6b4;">Progress: 2 / 3  •  Reward: ₱300</span>
+            </div>
+          </div>
+          <!-- Right: Fish Tank -->
+          <div style="position:relative; padding:8px; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden;">
+            <img class="vp-bg pixel" src="tight-lines-(final-0.1)/Assets/2D/Water%20background.png" alt="Tank water" />
+            <div style="position:relative; z-index:2; font-size:10px; font-weight:bold; color:#f2c94c; text-shadow:0 1px 2px #000;">HOME FISH TANK</div>
+            <div style="position:relative; z-index:2; flex:1;">
+              <img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Yellow%20Fin%20Tuna.png" alt="Tuna" style="position:absolute; left:12%; top:22%; width:54px;" />
+              <img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Barramundi%20final.png" alt="Barramundi" style="position:absolute; right:10%; bottom:18%; width:48px; transform:scaleX(-1);" />
+            </div>
+            <div style="position:relative; z-index:2; display:flex; gap:4px; justify-content:center;">
+              <div class="btn-mock green" style="font-size:8px;">Add</div>
+              <div class="btn-mock red" style="font-size:8px;">Remove</div>
+              <div class="btn-mock" style="font-size:8px;">Back</div>
+            </div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>Quest Log tracks Active/Completed quests without spoilers. Home Fish Tank lets players display Fish Box trophies swimming live.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span>Quest Log: phone <code>quests</code> button + tabs. Fish Tank: Popup menus transfer fish safely between Fish Box and SaveManager.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Quest completion triggers golden Toast banner on GameHUD; Tank warns if Fish Box is full on removal.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Quest Log → Overworld HUD • Fish Tank → Home Interior (<code>House1.tscn</code>).</span></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ACT IV -->
+  <section class="act-section">
+    <div class="act-banner">
+      <span>ACT IV — Core 3D Fishing, Mobile Controller &amp; Multiplayer</span>
+      <span class="act-sub">Panels SB-12 to SB-16</span>
+    </div>
+    <div class="sb-grid">
+
+      <!-- SB-12: 3D Fishing — Aim, Cast & Wait -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-12</span> 3D Fishing — Aim, Cast &amp; Wait</div>
+          <span class="scene-tag">3DFishing*.tscn • FishingUI</span>
+        </div>
+        <div class="viewport" style="background:linear-gradient(180deg, #5da9e9 0%, #9fd8fb 42%, #1a658a 43%, #0e3a54 100%);">
+          <!-- Top Bar -->
+          <div class="btn-mock" style="position:absolute; top:8px; left:8px;">Overworld</div>
+          <div class="hud-pill" style="position:absolute; top:8px; left:50%; transform:translateX(-50%); white-space:nowrap;">
+            08:15 (Day)  •  Clear  •  Medium Rod  •  Shrimp (x12)
+          </div>
+          <!-- Bobber & Line -->
+          <svg viewBox="0 0 320 180" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;">
+            <line x1="252" y1="168" x2="210" y2="62" stroke="#5a381e" stroke-width="5" stroke-linecap="round"/>
+            <path d="M 210 62 Q 185 88 158 102" fill="none" stroke="#e2e8f0" stroke-width="1.3"/>
+            <circle cx="158" cy="102" r="5" fill="#e53e3e" stroke="#fff" stroke-width="1.5"/>
+          </svg>
+          <!-- Bite Cue -->
+          <div style="position:absolute; top:48%; left:50%; transform:translate(-50%,-50%); font-size:15px; font-weight:bold; color:#f2c94c; text-shadow:0 2px 4px #000;">
+            There's a bite!
+          </div>
+          <!-- Cast Power -->
+          <div class="hud-pill" style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%); width:170px; text-align:center;">
+            <div style="font-size:8.5px; margin-bottom:3px;">CAST POWER</div>
+            <div class="bar-track"><div class="bar-fill" style="width:72%; background:linear-gradient(90deg,#48bb78,#f2c94c);"></div></div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>7 first-person 3D fishing scenes. Covers <code>IDLE → CASTING → WAITING</code> with 3D line arc, water splashes, and bobber sink on bite.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span><code>A/D</code> or phone tilt aims; hold <code>Space/Enter</code> or phone flick casts; <code>E</code>/Tap recalls line while waiting.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Music: <code>Tangled.mp3</code>. Procedural cast/splash SFX; hides overlay HUD on bite for clean visibility.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Bite → REELING (SB-13) • Overworld button → Return to 2D Overworld (SB-04).</span></div>
+        </div>
+      </article>
+
+      <!-- SB-13: 3D Fishing — Reeling Fight & Catch -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-13</span> 3D Fishing — Reeling &amp; Catch</div>
+          <span class="scene-tag">FishingManager.gd</span>
+        </div>
+        <div class="viewport" style="background:linear-gradient(180deg, #3c7ca8 0%, #6cb2d8 38%, #104966 39%, #092738 100%);">
+          <!-- Fight Meters -->
+          <div class="hud-pill" style="position:absolute; top:8px; left:50%; transform:translateX(-50%); width:230px; padding:5px 8px;">
+            <div style="text-align:center; color:#fc8181; font-weight:bold; font-size:10px; margin-bottom:3px;">⚠ SURGE! EASE REEL!</div>
+            <div style="display:grid; grid-template-columns:46px 1fr; gap:3px 6px; align-items:center;">
+              <span>Catch</span><div class="bar-track"><div class="bar-fill" style="width:78%; background:#48bb78;"></div></div>
+              <span>Stamina</span><div class="bar-track"><div class="bar-fill" style="width:42%; background:#f6ad55;"></div></div>
+              <span>Tension</span><div class="bar-track"><div class="bar-fill" style="width:84%; background:linear-gradient(90deg,#48bb78,#f2c94c,#e53e3e);"></div></div>
+            </div>
+          </div>
+          <!-- Flexed Rod + Splash -->
+          <svg viewBox="0 0 320 180" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;">
+            <path d="M 250 175 Q 230 110 185 88" fill="none" stroke="#5a381e" stroke-width="5" stroke-linecap="round"/>
+            <line x1="185" y1="88" x2="108" y2="112" stroke="#fefcbf" stroke-width="1.5"/>
+            <circle cx="108" cy="112" r="7" fill="none" stroke="#90cdf4" stroke-width="2" stroke-dasharray="3 2"/>
+          </svg>
+          <!-- Catch Result Card -->
+          <div class="wood-panel" style="position:absolute; right:10px; bottom:10px; width:148px; padding:6px; text-align:center; border-color:#f2c94c;">
+            <img class="pixel" src="tight-lines-(final-0.1)/Assets/2D/fish_sprites/Yellow%20Fin%20Tuna.png" alt="Yellowfin Tuna" style="width:52px;" />
+            <div style="font-weight:bold; color:#f2c94c; font-size:9.5px;">Yellow Fin Tuna!</div>
+            <div style="font-size:8.5px; color:#e2e8f0;">18.40 kg • Added to Fish Box</div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>50/50 split tension (fish pull + player reel), smooth fish sweep, camera shake, rod flex, and Casual vs Angler snap grace.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span><code>R/Down</code> reels; phone clockwise crank reels, counter-clockwise releases line. Phone vibrates on surges.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>15 rare/boss species override scene music via <code>GameManager.set_music_suppressed()</code> during the fight.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Catch / Escape → 2.5s Result → IDLE • Line Snap → KNOTTING Minigame (SB-14).</span></div>
+        </div>
+      </article>
+
+      <!-- SB-14: Line Snap Recovery — Knot-Tying Minigame -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-14</span> Line Snap — Knot-Tying Minigame</div>
+          <span class="scene-tag">State.KNOTTING • view_knotting.xml</span>
+        </div>
+        <div class="viewport" style="background:#0f202d; display:flex; align-items:center; justify-content:center; gap:18px; padding:10px;">
+          <div class="phone-frame" style="width:136px; height:100%; background:linear-gradient(180deg,#1c3b52,#0f202d);">
+            <div class="phone-notch"></div>
+            <div style="background:#2d1a1a; border:1px solid #fc8181; border-radius:10px; color:#fc8181; text-align:center; font-size:7.5px; font-weight:bold; padding:2px 4px;">
+              LINE SNAPPED! TIE A KNOT
+            </div>
+            <div style="text-align:center; color:#f2c94c; font-size:8.5px; font-weight:bold;">Figure-Eight Knot</div>
+            <div class="bar-track" style="height:6px;"><div class="bar-fill" style="width:62%; background:#2d9cdb;"></div></div>
+            <!-- SVG Knot Path -->
+            <svg viewBox="0 0 100 66" style="width:100%; height:56px;">
+              <path d="M 16 48 C 16 12, 52 12, 50 33 C 48 54, 84 54, 84 18" fill="none" stroke="#475569" stroke-width="5" stroke-linecap="round"/>
+              <path d="M 16 48 C 16 12, 52 12, 50 33" fill="none" stroke="#2d9cdb" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="16" cy="48" r="4" fill="#48bb78"/>
+              <circle cx="84" cy="18" r="4" fill="#f2c94c"/>
+              <text x="10" y="61" fill="#9ae6b4" font-size="7">START</text>
+              <text x="74" y="12" fill="#f2c94c" font-size="7">END</text>
+            </svg>
+            <div class="wood-panel" style="padding:3px 5px; text-align:center; font-size:7.5px;">
+              Trace START → END in one smooth stroke
+            </div>
+          </div>
+          <div style="max-width:165px; color:#e2e8f0; font-size:9.5px; display:flex; flex-direction:column; gap:6px;">
+            <strong style="color:#f2c94c; font-size:11px;">Recovery Flow</strong>
+            <span>1. Excessive tension snaps the line during <code>REELING</code>.</span>
+            <span>2. PC pauses round &amp; pushes <code>knotting</code> screen to phone.</span>
+            <span>3. Player traces knot path on <code>KnotTraceView</code>.</span>
+            <span>4. Emits <code>knot_completed(accuracy)</code> to resume.</span>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>Triggered on tension line snap when <code>enable_knotting_minigame = true</code>. Restores rig before next cast.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span>Touch-trace from START to END along directional arrows on Android <code>KnotTraceView</code>.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Coral alert badge, live teal progress bar, and accuracy score emitted upon completion.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>REELING (Snap) → KNOTTING → IDLE (ready to cast again).</span></div>
+        </div>
+      </article>
+
+      <!-- SB-15: Android Mobile Controller Companion App -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-15</span> Android Companion Controller</div>
+          <span class="scene-tag">Tight Line Mobile Controller</span>
+        </div>
+        <div class="viewport" style="background:#101e2b; padding:10px; display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
+          <!-- Phone 1: Connection -->
+          <div class="phone-frame" style="background:#18344a;">
+            <div class="phone-notch"></div>
+            <div class="wood-panel" style="padding:3px; text-align:center; font-size:8px; color:#f2c94c;">TIGHT LINES</div>
+            <div style="text-align:center; font-size:7.5px; color:#cbd5e1;">Searching PC...<br/>UDP :9081<br/>WS :9080</div>
+            <div style="background:#2d3748; border:1px solid #d9b982; border-radius:4px; padding:2px; font-size:7px; text-align:center;">Angler Name</div>
+            <div class="btn-mock green" style="font-size:7.5px;">Auto-Connect</div>
+          </div>
+          <!-- Phone 2: Overworld -->
+          <div class="phone-frame" style="background:#1b3b2b;">
+            <div class="phone-notch"></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2px;">
+              <div class="btn-mock" style="font-size:6.5px; padding:2px;">FishBox</div>
+              <div class="btn-mock" style="font-size:6.5px; padding:2px;">Almanac</div>
+              <div class="btn-mock" style="font-size:6.5px; padding:2px;">Gear</div>
+              <div class="btn-mock" style="font-size:6.5px; padding:2px;">Map</div>
+            </div>
+            <div style="width:42px; height:42px; margin:0 auto; border-radius:50%; background:#334155; border:1.5px solid #d9b982; display:flex; align-items:center; justify-content:center; font-size:7.5px;">D-PAD</div>
+            <div class="btn-mock gold" style="font-size:7.5px;">INTERACT</div>
+          </div>
+          <!-- Phone 3: Casting -->
+          <div class="phone-frame" style="background:#163954;">
+            <div class="phone-notch"></div>
+            <div style="text-align:center; font-size:7.5px; color:#f2c94c; font-weight:bold;">CASTING MODE</div>
+            <div class="wood-panel" style="padding:5px; text-align:center; font-size:7.5px;">
+              <strong style="color:#f2c94c;">FLICK TO CAST!</strong><br/>Tilt to aim • Tap
+            </div>
+            <div class="btn-mock" style="font-size:7px;">Swap Bait</div>
+          </div>
+          <!-- Phone 4: Reeling -->
+          <div class="phone-frame" style="background:#311b24;">
+            <div class="phone-notch"></div>
+            <div style="text-align:center; font-size:7.5px; color:#f2c94c; font-weight:bold;">FISH ON! REEL</div>
+            <div class="bar-track" style="height:6px;"><div class="bar-fill" style="width:65%; background:#f2c94c;"></div></div>
+            <div style="width:48px; height:48px; margin:0 auto; border-radius:50%; border:3px dashed #f2c94c; display:flex; align-items:center; justify-content:center; font-size:7px; text-align:center;">REEL<br/>CRANK</div>
+            <div style="text-align:center; font-size:6.5px; color:#cbd5e1;">CW Reel • CCW Release</div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>Native Android controller auto-switching views (<code>connection</code>, <code>overworld</code>, <code>casting</code>, <code>reeling</code>, <code>knotting</code>) via PC state packets.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span>IMU gyroscope swing to cast, accelerometer tilt to aim, rotary crank wheel to reel/release, D-Pad &amp; HUD shortcuts.</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Live tension bar, player identity badge in 2P, and vibration haptics on fish surges.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Auto-synced by <code>GameManager</code> &amp; <code>FishingManager</code> over local LAN WebSocket.</span></div>
+        </div>
+      </article>
+
+      <!-- SB-16: 2-Player Multiplayer Lobby & Split-Screen Match -->
+      <article class="panel-card">
+        <div class="panel-head">
+          <div class="panel-head-left"><span class="sb-id">SB-16</span> 2P Multiplayer Lobby &amp; Split-Screen</div>
+          <span class="scene-tag">MultiplayerLobby • 3d_fishing_multiplayer</span>
+        </div>
+        <div class="viewport" style="background:#132a3e; padding:8px; display:flex; flex-direction:column; gap:6px;">
+          <!-- Top: Lobby Config -->
+          <div style="display:grid; grid-template-columns:1fr 78px 1fr; gap:6px; align-items:stretch;">
+            <div class="wood-panel" style="padding:5px 7px; font-size:8px;">
+              <div style="color:#48bb78; font-weight:bold;">LEFT (P1) • Connected</div>
+              <div>Name: Angler 1 • Screen: Menu</div>
+            </div>
+            <div style="display:flex; flex-direction:column; justify-content:center; gap:3px;">
+              <div class="btn-mock" style="font-size:7.5px;">Swap Sides</div>
+              <div class="btn-mock gold" style="font-size:7.5px;">Start Match</div>
+            </div>
+            <div class="wood-panel" style="padding:5px 7px; font-size:8px;">
+              <div style="color:#48bb78; font-weight:bold;">RIGHT (P2) • Connected</div>
+              <div>Name: Angler 2 • Screen: Menu</div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:center; gap:5px; font-size:8px;">
+            <span class="hud-pill">Duration: 60s / 120s / 180s / 300s</span>
+            <span class="hud-pill">Mode: Total Weight / Biggest / Most</span>
+            <span class="hud-pill">Arena: 7 Spots</span>
+          </div>
+          <!-- Bottom: Dual Split-Screen Preview -->
+          <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; gap:4px; position:relative; border:1.5px solid #d9b982; border-radius:6px; overflow:hidden;">
+            <div style="background:linear-gradient(180deg,#5da9e9 0%,#1a658a 50%,#0e3a54 100%); padding:5px;">
+              <div class="hud-pill" style="display:inline-block; font-size:8px;">P1: 2 fish • 4.20 kg</div>
+            </div>
+            <div style="background:linear-gradient(180deg,#5da9e9 0%,#1a658a 50%,#0e3a54 100%); padding:5px; text-align:right;">
+              <div class="hud-pill" style="display:inline-block; font-size:8px;">P2: 1 fish • 5.85 kg</div>
+            </div>
+            <div class="hud-pill" style="position:absolute; top:4px; left:50%; transform:translateX(-50%); border-color:#f2c94c; color:#f2c94c; font-weight:bold; font-size:8.5px;">
+              TIME LEFT • 01:42
+            </div>
+          </div>
+        </div>
+        <div class="spec-grid">
+          <div class="spec-item"><strong>Scene &amp; Mechanics</strong><span>LAN Lobby pairs 2 phones, configures duration (30s–900s), win mode (Total Weight, Biggest Fish, Most Fish), and 7 arenas into dual-SubViewport 3D fishing.</span></div>
+          <div class="spec-item"><strong>Controls (PC / Mobile)</strong><span>Keyboard is disabled in multiplayer fishing (2 Android phones required; IJKL is debug-only).</span></div>
+          <div class="spec-item"><strong>Audio &amp; Feedback</strong><span>Music: <code>Sunday.mp3</code>. Live P1/P2 catch counters, countdown timer (amber ≤30s, red ≤10s), and Winner Results overlay.</span></div>
+          <div class="spec-item"><strong>Transitions</strong><span>Lobby → Split-Screen 3D → Results Overlay (<code>Rematch</code> or <code>Close</code> to Lobby) → Back to Main Menu.</span></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

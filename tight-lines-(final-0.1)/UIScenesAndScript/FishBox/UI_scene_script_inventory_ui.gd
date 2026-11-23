@@ -30,10 +30,18 @@ var _slot_uids: Array[int] = []
 var _focused_index: int = 0
 var _selected_uid: int = 0
 
+var _confirm_overlay: ColorRect = null
+var _confirm_message_label: Label = null
+var _confirm_ok_button: Button = null
+var _confirm_cancel_button: Button = null
+var _pending_sell_mode: String = ""
+var _pending_sell_uid: int = 0
+
 
 func _ready() -> void:
 	_build_action_buttons()
 	_build_fish_slots()
+	_build_sell_confirm_overlay()
 	_sell_all_button.pressed.connect(_on_sell_all_pressed)
 	_back_button.pressed.connect(close)
 	InventoryManager.inventory_changed.connect(_on_inventory_changed)
@@ -52,7 +60,14 @@ func open() -> void:
 		_highlight_focused.call_deferred()
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if visible and _confirm_overlay != null and _confirm_overlay.visible and event.is_action_pressed(&"ui_cancel") and not event.is_echo():
+		get_viewport().set_input_as_handled()
+		_hide_sell_confirm()
+
+
 func close() -> void:
+	_hide_sell_confirm()
 	_cursor_highlight.clear()
 	visible = false
 	back_requested.emit()
@@ -60,6 +75,14 @@ func close() -> void:
 
 
 func handle_mobile_action(action: String) -> void:
+	if _confirm_overlay != null and _confirm_overlay.visible:
+		match action:
+			"select":
+				_on_sell_confirm_pressed()
+			"back":
+				_hide_sell_confirm()
+		return
+
 	if _slot_buttons.is_empty():
 		return
 
@@ -168,6 +191,7 @@ func _on_visibility_changed() -> void:
 		_update_mode_ui()
 		_highlight_focused.call_deferred()
 	else:
+		_hide_sell_confirm()
 		_cursor_highlight.clear()
 
 
@@ -304,10 +328,9 @@ func _on_fish_slot_pressed(slot_index: int) -> void:
 		if locked:
 			_update_mode_ui("%s is locked (★)! Unlock it in Fish Box before selling." % display_name)
 			return
-		if InventoryManager.remove_item(uid) > 0:
-			SaveManager.add_money(price)
-			fish_sold.emit(display_name, price)
-			_update_mode_ui("Sold %s (%.1f cm) for +₱%d!" % [display_name, size_cm, price])
+		_pending_sell_mode = "single"
+		_pending_sell_uid = uid
+		_show_sell_confirm("Sell %s (%.1f cm) for ₱%d?" % [display_name, size_cm, price])
 	else:
 		var lock_note := "  [★ Locked]" if locked else ""
 		_update_mode_ui("%s%s — %.1f cm | %.2f kg | Value: ₱%d" % [display_name, lock_note, size_cm, weight, price])
@@ -316,6 +339,127 @@ func _on_fish_slot_pressed(slot_index: int) -> void:
 func _on_sell_all_pressed() -> void:
 	if not sell_mode:
 		return
+	var sellable_count := _get_sellable_fish_count()
+	if sellable_count <= 0:
+		return
+	var sellable_value := _get_total_fish_value(true)
+	var locked_count := InventoryManager.get_used_slot_count(InventoryManager.FISH_BOX) - sellable_count
+	var prompt := "Sell %d fish for ₱%d?" % [sellable_count, sellable_value]
+	if locked_count > 0:
+		prompt += "\n(%d locked ★ will be kept)" % locked_count
+	_pending_sell_mode = "all"
+	_pending_sell_uid = 0
+	_show_sell_confirm(prompt)
+
+
+func _build_sell_confirm_overlay() -> void:
+	_confirm_overlay = ColorRect.new()
+	_confirm_overlay.name = "SellConfirmOverlay"
+	_confirm_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_confirm_overlay.color = Color(0.0, 0.0, 0.0, 0.55)
+	_confirm_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	_confirm_overlay.visible = false
+	add_child(_confirm_overlay)
+
+	var center := CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_confirm_overlay.add_child(center)
+
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(420, 200)
+	center.add_child(panel)
+
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 24)
+	margin.add_theme_constant_override("margin_top", 24)
+	margin.add_theme_constant_override("margin_right", 24)
+	margin.add_theme_constant_override("margin_bottom", 24)
+	panel.add_child(margin)
+
+	var vbox := VBoxContainer.new()
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 16)
+	margin.add_child(vbox)
+
+	var title := Label.new()
+	title.name = "SellConfirmTitle"
+	title.text = "Confirm Sale"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 24)
+	vbox.add_child(title)
+
+	_confirm_message_label = Label.new()
+	_confirm_message_label.name = "SellConfirmMessage"
+	_confirm_message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_confirm_message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_confirm_message_label.add_theme_font_size_override("font_size", 18)
+	vbox.add_child(_confirm_message_label)
+
+	var btn_row := HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_row.add_theme_constant_override("separation", 16)
+	vbox.add_child(btn_row)
+
+	_confirm_ok_button = Button.new()
+	_confirm_ok_button.name = "SellConfirmButton"
+	_confirm_ok_button.text = "Sell"
+	_confirm_ok_button.custom_minimum_size = Vector2(130, 44)
+	_confirm_ok_button.add_theme_font_size_override("font_size", 20)
+	_confirm_ok_button.pressed.connect(_on_sell_confirm_pressed)
+	btn_row.add_child(_confirm_ok_button)
+
+	_confirm_cancel_button = Button.new()
+	_confirm_cancel_button.name = "SellCancelButton"
+	_confirm_cancel_button.text = "Cancel"
+	_confirm_cancel_button.custom_minimum_size = Vector2(130, 44)
+	_confirm_cancel_button.add_theme_font_size_override("font_size", 20)
+	_confirm_cancel_button.pressed.connect(_hide_sell_confirm)
+	btn_row.add_child(_confirm_cancel_button)
+
+
+func _show_sell_confirm(message: String) -> void:
+	if _confirm_overlay == null or _confirm_message_label == null:
+		return
+	_confirm_message_label.text = message
+	_confirm_overlay.visible = true
+	if _confirm_ok_button != null:
+		_confirm_ok_button.grab_focus()
+
+
+func _hide_sell_confirm() -> void:
+	_pending_sell_mode = ""
+	_pending_sell_uid = 0
+	if _confirm_overlay != null:
+		_confirm_overlay.visible = false
+
+
+func _on_sell_confirm_pressed() -> void:
+	var mode := _pending_sell_mode
+	var uid := _pending_sell_uid
+	_hide_sell_confirm()
+	if mode == "single":
+		_execute_sell_single(uid)
+	elif mode == "all":
+		_execute_sell_all()
+
+
+func _execute_sell_single(uid: int) -> void:
+	if uid == 0:
+		return
+	var fish: Dictionary = InventoryManager.get_item(uid)
+	if fish.is_empty() or InventoryManager.is_item_locked(uid):
+		return
+	var fish_id: String = fish["item_id"]
+	var display_name := _get_fish_display_name(fish_id)
+	var size_cm := float(fish["meta"].get("size_cm", 0.0))
+	var price := InventoryManager.get_fish_sell_price(uid)
+	if InventoryManager.remove_item(uid) > 0:
+		SaveManager.add_money(price)
+		fish_sold.emit(display_name, price)
+		_update_mode_ui("Sold %s (%.1f cm) for +₱%d!" % [display_name, size_cm, price])
+
+
+func _execute_sell_all() -> void:
 	var fish_list: Array = InventoryManager.get_items(InventoryManager.FISH_BOX)
 	if fish_list.is_empty():
 		return

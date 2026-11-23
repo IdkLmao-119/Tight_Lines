@@ -86,6 +86,28 @@ Cavite and Batangas... Lolo's Almanac is waiting.
 !tutorial Go to the jeep to travel.
 
 
+=== marikina_arrival | scene: overworld_river_park | side
+@john:happy
+Marikina River Park. The water's calmer than I expected.
+The riverside fishing spot is just up ahead to the north.
+
+You can check your Quests, Equipment, Almanac, and Fish Box on the HUD anytime.
+Or head back to the Jeep or open the Map [M] to visit the Tackle & Fish Shop in town.
+!tutorial Walk to the riverside fishing spot to start fishing.
+!objective Catch every small fish in the Marikina River.
+
+
+=== marikina_fishing_intro | scene: fishing_river_park | side
+@john
+Okay, first cast at Marikina River. Let's make Lolo proud.
+
+Aim left or right with [A]/[D] (or tilt your phone),
+then hold and release [Space] (or swing your phone) to cast.
+
+When a fish bites, hold [R] (or spin clockwise) while it's calm.
+During a SURGE, hold [F] (or spin counter-clockwise) so the line won't snap!
+
+
 === marikina_phone_store | requires: marikina_street
 @john
 Okay, I have a rod. That's a start.

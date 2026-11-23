@@ -63,8 +63,8 @@ enum Difficulty { CASUAL, ANGLER }
 @export var max_look_angle_deg := 75.0           # How far the view can turn left AND right. | Lower to keep players facing the water.
 
 @export_group("Bites")
-@export var bite_delay_min := 3.0                # Shortest wait before a bite (seconds). | Lower for faster action.
-@export var bite_delay_max := 9.0                # Longest wait before a bite (seconds). | Raise for a calmer, slower game.
+@export var bite_delay_min := 90.0               # Shortest wait before a bite (seconds). | Lower for faster action.
+@export var bite_delay_max := 180.0              # Longest wait before a bite (seconds). | Raise for a calmer, slower game.
 @export var bobber_bite_sink := 0.12             # How far the bobber dips on a bite (metres). | Raise if the bite is hard to notice.
 @export var bobber_sink_duration := 1.0          # Seconds the bobber takes to sink. | Lower for a sudden, snappy dip.
 
@@ -139,6 +139,7 @@ var season := ""
 const UI_THEME: Theme = preload("res://UIScenesAndScript/Shared/ui_theme.tres")
 const UI_FONT: FontFile = preload("res://Assets/2D/ShortStack-Regular.ttf")
 const FISHING_SFX_SCRIPT := preload("res://AutoloadFolders/FishingManager/fishing_sfx.gd")
+const GAME_MANAGER_SCRIPT := preload("res://AutoloadFolders/GameManager/GameManager.gd")
 const TEMP_ROD_LINE_STRENGTH := 10.0     # Default line strength; the tension bar is measured against it. | Raise for a sturdier default rod.
 const TEMP_ROD_MAX_CAST_DISTANCE := 20.0 # Default max cast distance (metres). | Match your water size.
 const TEMP_ROD_CONTROL := 1.0            # Default control; multiplies the snap grace time. | Raise to forgive longer overloads.
@@ -169,6 +170,24 @@ const CALM_DRAIN := 0.5                  # Stamina lost per second while calm. |
 const CAST_ARC_BASE := 2.0               # Height of the cast arc at zero power (metres). | Visual only.
 const CAST_ARC_POWER := 3.0              # Extra arc height at full power (metres). | Visual only.
 const CATCH_STOP_DISTANCE := 2.0         # How close the bobber gets to the player when the fish is nearly landed. | Visual only.
+
+const WEATHER_BITE_SPEED := {
+	"clear": 1.00,
+	"cloudy": 1.20,
+	"rain": 1.30,
+	"rainy": 1.30,
+	"storm": 0.80,
+}
+const HOUR_BITE_SPEED_GENERAL: Array[float] = [
+	0.80, 0.80, 0.75, 0.80, 1.00, 1.35, 1.40, 1.25,
+	1.10, 1.00, 0.90, 0.80, 0.75, 0.75, 0.80, 0.90,
+	1.10, 1.30, 1.45, 1.30, 1.05, 0.95, 0.90, 0.85,
+]
+const HOUR_BITE_SPEED_NOCTURNAL: Array[float] = [
+	1.50, 1.45, 1.40, 1.30, 1.15, 0.95, 0.80, 0.65,
+	0.55, 0.50, 0.45, 0.40, 0.35, 0.35, 0.40, 0.45,
+	0.55, 0.70, 0.90, 1.15, 1.30, 1.40, 1.45, 1.45,
+]
 
 const MSG_BITE := "There's a bite"       # Text shown on a bite. | Change wording / language.
 const MSG_REEL := "Reel now"             # Text shown after the bite message. | Change wording / language.
@@ -220,6 +239,7 @@ class FishingSession extends RefCounted:
 
 	var bobber: Node3D = null
 	var fish: Dictionary = {}
+	var pending_fish: Dictionary = {}
 
 	var cast_start := Vector3.ZERO
 	var cast_target := Vector3.ZERO
@@ -668,6 +688,7 @@ func _update_casting(s: FishingSession, delta: float) -> void:
 		pos.y += s.cast_arc * 4.0 * t * (1.0 - t)
 		s.bobber.global_position = pos
 	if t >= 1.0:
+		s.pending_fish = _roll_fish(s)
 		s.bite_timer = _roll_bite_delay()
 		_set_state(s, State.WAITING)
 		_spawn_water_splash(s.cast_target, 1.0)
@@ -678,6 +699,7 @@ func _update_casting(s: FishingSession, delta: float) -> void:
 # --- WAITING ---
 func _update_waiting(s: FishingSession, delta: float) -> void:
 	if _time_up:
+		s.pending_fish = {}
 		_remove_bobber(s)
 		_set_state(s, State.IDLE)
 		return
@@ -687,7 +709,8 @@ func _update_waiting(s: FishingSession, delta: float) -> void:
 		pos.y += sin(s.state_time * 3.0) * 0.03
 		s.bobber.global_position = pos
 
-	s.bite_timer -= delta
+	var speed_mult := get_bite_speed_multiplier(bool(s.pending_fish.get("is_nocturnal", false)))
+	s.bite_timer -= delta * speed_mult
 	if s.bite_timer <= 0.0:
 		_try_bite(s)
 
@@ -697,8 +720,68 @@ func _roll_bite_delay() -> float:
 	return randf_range(bite_delay_min, bite_delay_max) / mult
 
 
+func is_current_spot_tidal() -> bool:
+	var spot_id := String(_context.get("spot_id", ""))
+	if spot_id == "":
+		spot_id = debug_spot_id
+	if spot_id == "":
+		return false
+	if _db != null and _db.has_method("has_location") and bool(_db.call("has_location", spot_id)):
+		var loc: Variant = _db.call("get_location", spot_id)
+		return loc != null and bool(loc.get("is_tidal"))
+	if _game_manager != null and _game_manager.has_method("is_location_tidal"):
+		return bool(_game_manager.call("is_location_tidal", spot_id))
+	return false
+
+
+func get_tide_state(total_hours_override: float = -1.0) -> Dictionary:
+	var t_hours := total_hours_override
+	if t_hours < 0.0:
+		var ws := _get_weather_system()
+		if ws != null and ws.has_method("get_total_elapsed_hours"):
+			t_hours = float(ws.call("get_total_elapsed_hours"))
+		elif _game_manager != null and _game_manager.has_method("get_total_elapsed_hours"):
+			t_hours = float(_game_manager.call("get_total_elapsed_hours"))
+		else:
+			t_hours = 0.0
+	if _game_manager != null and _game_manager.has_method("get_tide_state"):
+		return _game_manager.call("get_tide_state", t_hours)
+	return GAME_MANAGER_SCRIPT.compute_tide(t_hours)
+
+
+func get_bite_speed_multiplier(is_nocturnal: bool = false, weather_override: String = "", hour_override: int = -1, tidal_override: int = -1, total_hours_override: float = -1.0) -> float:
+	var wx := weather_override
+	var hour := hour_override
+	var ws := _get_weather_system()
+	if wx == "":
+		if ws != null:
+			var ws_wx := String(ws.get("weather"))
+			if ws_wx != "":
+				wx = ws_wx
+		if wx == "":
+			wx = weather
+	if hour < 0 and ws != null and ws.has_method("get_hour"):
+		hour = posmod(int(floor(float(ws.call("get_hour")))), 24)
+
+	var weather_mult := float(WEATHER_BITE_SPEED.get(wx.to_lower(), 1.0))
+	var time_mult := 1.0
+	if hour >= 0:
+		var h := posmod(hour, 24)
+		time_mult = HOUR_BITE_SPEED_NOCTURNAL[h] if is_nocturnal else HOUR_BITE_SPEED_GENERAL[h]
+
+	var is_tidal := (tidal_override > 0) if tidal_override >= 0 else is_current_spot_tidal()
+	var tide_mult := 1.0
+	if is_tidal:
+		var t_hours := total_hours_override
+		if t_hours < 0.0 and hour_override >= 0:
+			t_hours = float(posmod(hour_override, 24))
+		tide_mult = float(get_tide_state(t_hours).get("multiplier", 1.0))
+	return maxf(weather_mult * time_mult * tide_mult, 0.05)
+
+
 func _try_bite(s: FishingSession) -> void:
-	var fish := _roll_fish(s)
+	var fish := s.pending_fish if not s.pending_fish.is_empty() else _roll_fish(s)
+	s.pending_fish = {}
 	if fish.is_empty():
 		s.bite_timer = _roll_bite_delay()
 		return
@@ -856,15 +939,15 @@ func _get_message_label(player_id: int) -> Label:
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.theme = UI_THEME
 	label.add_theme_font_override("font", UI_FONT)
-	label.add_theme_font_size_override("font_size", message_font_size)
+	label.add_theme_font_size_override("font_size", mini(message_font_size, 34) if _multiplayer else message_font_size)
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
 	label.add_theme_constant_override("outline_size", 10)
 	label.anchor_left = float(index) / count
 	label.anchor_right = float(index + 1) / count
 	label.anchor_top = 0.62
 	label.anchor_bottom = 0.78
-	label.offset_left = 0.0
-	label.offset_right = 0.0
+	label.offset_left = 16.0 if _multiplayer else 0.0
+	label.offset_right = -16.0 if _multiplayer else 0.0
 	label.offset_top = 0.0
 	label.offset_bottom = 0.0
 	label.visible = false
@@ -984,6 +1067,7 @@ func _roll_fish(s: FishingSession) -> Dictionary:
 		"pull_strength": _record_float(record, "pull_strength", TEMP_FISH_PULL_STRENGTH),
 		"stamina": _record_float(record, "stamina", TEMP_FISH_STAMINA),
 		"fight_length_multiplier": _record_float(record, "fight_length_multiplier", 1.0),
+		"is_nocturnal": bool(record.get("is_nocturnal")),
 	}
 
 
@@ -1050,7 +1134,7 @@ func _build_odds_context() -> Dictionary:
 
 
 func _get_weather_system() -> Node:
-	if weather_system == null or not is_instance_valid(weather_system):
+	if (weather_system == null or not is_instance_valid(weather_system)) and get_tree() != null:
 		weather_system = get_tree().get_first_node_in_group("weather_system")
 	return weather_system
 
@@ -1377,9 +1461,11 @@ func _store_fish(fish: Dictionary) -> bool:
 	return bool(_inventory.add_fish(String(fish["id"]), float(fish["size_cm"])))
 
 
-# Shows the catch: text popup always, plus the fish picture on 'FishLayout' when the scene has one.
+# Shows the catch: text popup always, plus the fish picture on 'FishLayout' in single-player
+# or inside each catching player's half-screen popup in multiplayer.
 func _show_catch_popup(player_id: int, fish: Dictionary, kept: bool) -> void:
-	_show_catch_picture(fish)
+	if not _multiplayer:
+		_show_catch_picture(fish)
 
 	var text := ""
 	if _multiplayer:
@@ -1409,24 +1495,48 @@ func _show_catch_popup(player_id: int, fish: Dictionary, kept: bool) -> void:
 	label.add_theme_font_size_override("font_size", 32)
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
 	label.add_theme_constant_override("outline_size", 8)
-	layer.add_child(label)
 
 	if _multiplayer:
 		var prev_popup: Variant = _popups.get(player_id)
-		if prev_popup is Node and is_instance_valid(prev_popup):
+		if is_instance_valid(prev_popup) and prev_popup is Node:
 			(prev_popup as Node).queue_free()
 		_popups[player_id] = layer
 		var index := maxi(_order.find(player_id), 0)
 		var count := maxi(_order.size(), 1)
-		label.anchor_left = float(index) / count
-		label.anchor_right = float(index + 1) / count
-		label.anchor_top = 0.0
-		label.anchor_bottom = 0.0
-		label.offset_left = 16.0
-		label.offset_right = -16.0
-		label.offset_top = 96.0
-		label.offset_bottom = 260.0
+		var box := VBoxContainer.new()
+		box.name = "CatchPopupBox"
+		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.alignment = BoxContainer.ALIGNMENT_CENTER
+		box.add_theme_constant_override("separation", 8)
+		box.anchor_left = float(index) / count
+		box.anchor_right = float(index + 1) / count
+		box.anchor_top = 0.0
+		box.anchor_bottom = 0.0
+		box.offset_left = 24.0
+		box.offset_right = -24.0
+		box.offset_top = 112.0
+		box.offset_bottom = 112.0
+		box.grow_vertical = Control.GROW_DIRECTION_END
+		layer.add_child(box)
+
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.add_theme_font_size_override("font_size", 28)
+		box.add_child(label)
+
+		var img := _resolve_fish_image(fish)
+		var tex: Texture2D = img["texture"]
+		if tex != null:
+			var pic := TextureRect.new()
+			pic.name = "FishPicture"
+			pic.texture = tex
+			pic.custom_minimum_size = Vector2(210, 210)
+			pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			pic.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+			pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			box.add_child(pic)
 	else:
+		layer.add_child(label)
 		if is_instance_valid(_popup):
 			_popup.queue_free()
 		label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE, Control.PRESET_MODE_MINSIZE, 40)
@@ -1434,6 +1544,8 @@ func _show_catch_popup(player_id: int, fish: Dictionary, kept: bool) -> void:
 
 	get_tree().create_timer(CATCH_POPUP_SECONDS).timeout.connect(func() -> void:
 		if is_instance_valid(layer):
+			if is_instance_valid(self) and _multiplayer and _popups.get(player_id) == layer:
+				_popups.erase(player_id)
 			layer.queue_free())
 
 
@@ -1442,19 +1554,13 @@ func _clear_popups() -> void:
 		_popup.queue_free()
 	_popup = null
 	for p in _popups.values():
-		if p is Node and is_instance_valid(p):
+		if is_instance_valid(p) and p is Node:
 			(p as Node).queue_free()
 	_popups.clear()
 
 
-func _show_catch_picture(fish: Dictionary) -> void:
-	if not is_instance_valid(_fish_layout):
-		_fish_layout = get_tree().root.find_child("FishLayout", true, false)
-	if _fish_layout == null:
-		_warn_once("fish_layout", "no node named 'FishLayout' in the scene - catch picture not shown.")
-		return
-
-	var record: FishData = _db.get_fish(String(fish["id"])) if _db != null else null
+func _resolve_fish_image(fish: Dictionary) -> Dictionary:
+	var record: FishData = _db.get_fish(String(fish.get("id", ""))) if _db != null else null
 	var path := ""
 	var texture: Texture2D = null
 	if record != null:
@@ -1468,6 +1574,19 @@ func _show_catch_picture(fish: Dictionary) -> void:
 				path = String(value)
 				texture = load(path) as Texture2D
 				break
+	return {"texture": texture, "path": path}
+
+
+func _show_catch_picture(fish: Dictionary) -> void:
+	if not is_instance_valid(_fish_layout):
+		_fish_layout = get_tree().root.find_child("FishLayout", true, false)
+	if _fish_layout == null:
+		_warn_once("fish_layout", "no node named 'FishLayout' in the scene - catch picture not shown.")
+		return
+
+	var img := _resolve_fish_image(fish)
+	var path: String = img["path"]
+	var texture: Texture2D = img["texture"]
 	if texture == null:
 		_warn_once("fish_image", "fish '%s' has no picture." % String(fish["id"]))
 		return
@@ -1661,6 +1780,7 @@ func _on_interact(player_id: int) -> void:
 	if s == null:
 		return
 	if s.state == State.WAITING:
+		s.pending_fish = {}
 		_remove_bobber(s)
 		_set_state(s, State.IDLE)
 	elif s.state == State.KNOTTING and not _has_phone_for_player(player_id):
@@ -1677,6 +1797,7 @@ func _on_cancel(player_id: int) -> void:
 	
 	# If the bobber is out or waiting for a fish, cancel/recall it back to IDLE
 	if s.state == State.WAITING or s.state == State.CASTING:
+		s.pending_fish = {}
 		_remove_bobber(s)
 		_set_state(s, State.IDLE)
 		if debug_log:
@@ -1778,6 +1899,12 @@ func _set_state(s: FishingSession, new_state: int) -> void:
 	var old := s.state
 	s.state = new_state
 	s.state_time = 0.0
+
+	if new_state == State.REELING and _multiplayer and _popups.has(s.player_id):
+		var prev_popup: Variant = _popups[s.player_id]
+		if is_instance_valid(prev_popup) and prev_popup is Node:
+			(prev_popup as Node).queue_free()
+		_popups.erase(s.player_id)
 
 	if new_state == State.REELING or new_state == State.KNOTTING:
 		if node_to_hide_on_bite != null:

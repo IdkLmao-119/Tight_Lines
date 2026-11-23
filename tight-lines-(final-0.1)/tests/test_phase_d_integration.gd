@@ -91,6 +91,39 @@ func _run() -> void:
 		"Multiplayer FishingManager applied win_mode='biggest_fish'")
 	_check(timer_title != null and timer_title.text.contains("BIGGEST FISH"),
 		"Multiplayer HUD timer title displays active win mode: %s" % (timer_title.text if timer_title != null else ""))
+
+	_check(mp_scene.find_child("FishLayout", true, false) == null,
+		"Centered FishLayout removed from multiplayer scene")
+	_check(
+		mp_scene.find_child("FightMetersPanel_0", true, false) != null
+		and mp_scene.find_child("FightMetersPanel_1", true, false) != null
+		and mp_scene.find_child("CastPowerPanel_0", true, false) != null
+		and mp_scene.find_child("CastPowerPanel_1", true, false) != null
+		and mp_scene.find_child("FishingStatusPanel", true, false) != null,
+		"Multiplayer scene builds per-player fishing HUD panels and status pill")
+	var mp_tide := mp_scene.find_child("TideIndicator", true, false) as CanvasItem
+	_check(mp_tide != null and mp_tide.visible,
+		"Multiplayer FishingStatusPanel shows TideIndicator for tidal location_kawit")
+	var hud_layer := mp_scene.find_child("GameHUDLayer", true, false) as CanvasLayer
+	_check(hud_layer != null and hud_layer.layer >= 30,
+		"Multiplayer GameHUDLayer renders above FishingManager layers (layer=%d)" % (hud_layer.layer if hud_layer != null else -1))
+
+	var sample_fish := {"id": "fish_african_catfish", "display_name": "African Catfish", "size_cm": 50.0, "weight": 2.5}
+	mp_fm.call("_show_catch_popup", 1, sample_fish, true)
+	mp_fm.call("_show_catch_popup", 2, sample_fish, true)
+	await process_frame
+	var popups: Dictionary = mp_fm.get("_popups")
+	var p1_box := (popups.get(1) as Node).find_child("CatchPopupBox", true, false) as Control if popups.get(1) is Node else null
+	var p2_box := (popups.get(2) as Node).find_child("CatchPopupBox", true, false) as Control if popups.get(2) is Node else null
+	var p1_pic := p1_box.find_child("FishPicture", true, false) as TextureRect if p1_box != null else null
+	var p2_pic := p2_box.find_child("FishPicture", true, false) as TextureRect if p2_box != null else null
+	_check(p1_box != null and is_equal_approx(p1_box.anchor_left, 0.0) and is_equal_approx(p1_box.anchor_right, 0.5),
+		"Player 1 catch popup anchored to left half (0.0..0.5)")
+	_check(p2_box != null and is_equal_approx(p2_box.anchor_left, 0.5) and is_equal_approx(p2_box.anchor_right, 1.0),
+		"Player 2 catch popup anchored to right half (0.5..1.0)")
+	_check(p1_pic != null and p1_pic.texture != null and p2_pic != null and p2_pic.texture != null,
+		"Both player catch popups display fish picture inside their own half")
+
 	mp_scene.queue_free()
 	await process_frame
 

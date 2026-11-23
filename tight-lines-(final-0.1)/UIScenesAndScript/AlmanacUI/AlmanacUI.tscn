@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cxb2dk18i1fmg" path="res://UIScenesAndScript/AlmanacUI/scene_script_almanac_ui.gd" id="1_dyt5v"]
 [ext_resource type="Texture2D" uid="uid://1w3ooxvm15dy" path="res://Assets/Example.png" id="2_kkthf"]
-[ext_resource type="Theme" path="res://UIScenesAndScript/AlmanacUI/almanac_theme.tres" id="3_theme"]
+[ext_resource type="Theme" uid="uid://i84v6oqs2bu1" path="res://UIScenesAndScript/AlmanacUI/almanac_theme.tres" id="3_theme"]
 [ext_resource type="FontFile" uid="uid://clfxnvtdw487f" path="res://Assets/2D/ShortStack-Regular.ttf" id="4_body"]
 [ext_resource type="Script" uid="uid://2chvs05xvoei" path="res://UIScenesAndScript/Shared/mobile_cursor_highlight.gd" id="5_cursor"]
 
@@ -74,17 +74,17 @@ size_flags_vertical = 3
 text = "Marikina
 River"
 
-[node name="KawitButton" type="Button" parent="MarginContainer/MainHBox/LocationList" unique_id=375971686]
-layout_mode = 2
-size_flags_vertical = 3
-text = "Kawit
-Seaside"
-
 [node name="ImusButton" type="Button" parent="MarginContainer/MainHBox/LocationList" unique_id=655322677]
 layout_mode = 2
 size_flags_vertical = 3
 text = "Imus
 Fields"
+
+[node name="KawitButton" type="Button" parent="MarginContainer/MainHBox/LocationList" unique_id=375971686]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Kawit
+Seaside"
 
 [node name="FishPensButton" type="Button" parent="MarginContainer/MainHBox/LocationList" unique_id=1405573883]
 layout_mode = 2

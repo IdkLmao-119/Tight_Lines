@@ -2,12 +2,17 @@ extends Control
 
 const UI_THEME: Theme = preload("res://UIScenesAndScript/Shared/ui_theme.tres")
 const UI_FONT: FontFile = preload("res://Assets/2D/ShortStack-Regular.ttf")
+const MARIKINA_TUTORIAL_FLAG := "seen_marikina_fishing_tutorial"
+const MARIKINA_SPOT_ID := "location_marikina"
+const TUTORIAL_COMPLETE_SECONDS := 4.5
 
 @export var fishing_manager: Node
 
 @onready var hud: GameHUD = %GameHUD
 
 var _status_panel: PanelContainer = null
+var _clock_label: Label = null
+var _tide_indicator: TideIndicator = null
 var _status_label: Label = null
 
 var _cast_panel: PanelContainer = null
@@ -18,6 +23,12 @@ var _surge_label: Label = null
 var _progress_bar: ProgressBar = null
 var _stamina_bar: ProgressBar = null
 var _pulse_time := 0.0
+
+var _tutorial_panel: PanelContainer = null
+var _tutorial_title_label: Label = null
+var _tutorial_body_label: Label = null
+var _tutorial_skip_button: Button = null
+var _tutorial_complete_timer: float = 0.0
 
 
 func _ready() -> void:
@@ -31,6 +42,7 @@ func _process(delta: float) -> void:
 	var fm := _resolve_fishing_manager()
 	_refresh_status_pill(fm)
 	_refresh_fishing_meters(fm)
+	_refresh_tutorial_card(fm, delta)
 
 
 func open_menu(menu_id: String) -> void:
@@ -41,15 +53,36 @@ func close_all_menus() -> void:
 	hud.close_all_menus()
 
 
+func skip_tutorial() -> void:
+	var save := get_node_or_null("/root/SaveManager")
+	if save != null and save.has_method(&"add_unlock_flag"):
+		save.call(&"add_unlock_flag", MARIKINA_TUTORIAL_FLAG)
+	_tutorial_complete_timer = 0.0
+	if _tutorial_panel != null:
+		_tutorial_panel.visible = false
+
+
 func get_hud_snapshot() -> Dictionary:
+	var status_parts := PackedStringArray()
+	if _clock_label != null and _clock_label.visible and _clock_label.text != "":
+		status_parts.append(_clock_label.text)
+	if _tide_indicator != null and _tide_indicator.visible:
+		status_parts.append(_tide_indicator.get_display_text())
+	if _status_label != null and _status_label.text != "":
+		status_parts.append(_status_label.text)
 	return {
-		"status_text": _status_label.text if _status_label != null else "",
+		"status_text": "  •  ".join(status_parts),
+		"tide_visible": _tide_indicator.visible if _tide_indicator != null else false,
+		"tide_state": _tide_indicator.tide_state if _tide_indicator != null else "",
 		"cast_visible": _cast_panel.visible if _cast_panel != null else false,
 		"cast_value": _cast_bar.value if _cast_bar != null else 0.0,
 		"fight_visible": _fight_panel.visible if _fight_panel != null else false,
 		"progress_value": _progress_bar.value if _progress_bar != null else 0.0,
 		"stamina_value": _stamina_bar.value if _stamina_bar != null else 0.0,
 		"surge_text": _surge_label.text if _surge_label != null else "",
+		"tutorial_visible": _tutorial_panel.visible if _tutorial_panel != null else false,
+		"tutorial_title": _tutorial_title_label.text if _tutorial_title_label != null else "",
+		"tutorial_body": _tutorial_body_label.text if _tutorial_body_label != null else "",
 	}
 
 
@@ -99,8 +132,31 @@ func _build_fishing_hud() -> void:
 	_status_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	add_child(_status_panel)
 
+	var status_row := HBoxContainer.new()
+	status_row.name = "StatusRow"
+	status_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	status_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	status_row.add_theme_constant_override("separation", 10)
+	_status_panel.add_child(status_row)
+
+	_clock_label = Label.new()
+	_clock_label.name = "ClockLabel"
+	_clock_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_clock_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_clock_label.add_theme_font_override("font", UI_FONT)
+	_clock_label.add_theme_font_size_override("font_size", 18)
+	_clock_label.add_theme_color_override("font_color", Color(0.98, 0.96, 0.90, 1.0))
+	_clock_label.add_theme_color_override("font_outline_color", Color(0.08, 0.06, 0.05, 1.0))
+	_clock_label.add_theme_constant_override("outline_size", 4)
+	status_row.add_child(_clock_label)
+
+	_tide_indicator = TideIndicator.new()
+	_tide_indicator.visible = false
+	status_row.add_child(_tide_indicator)
+
 	_status_label = Label.new()
 	_status_label.name = "StatusLabel"
+	_status_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_status_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_status_label.add_theme_font_override("font", UI_FONT)
@@ -108,7 +164,7 @@ func _build_fishing_hud() -> void:
 	_status_label.add_theme_color_override("font_color", Color(0.98, 0.96, 0.90, 1.0))
 	_status_label.add_theme_color_override("font_outline_color", Color(0.08, 0.06, 0.05, 1.0))
 	_status_label.add_theme_constant_override("outline_size", 4)
-	_status_panel.add_child(_status_label)
+	status_row.add_child(_status_label)
 
 	# --- Cast Power Meter (bottom-center while charging cast) ---
 	_cast_panel = PanelContainer.new()
@@ -215,11 +271,74 @@ func _build_fishing_hud() -> void:
 	_stamina_bar.modulate = Color(1.0, 0.78, 0.30, 1.0)
 	stam_row.add_child(_stamina_bar)
 
+	# --- First-Time Marikina Fishing Tutorial Card ---
+	_tutorial_panel = PanelContainer.new()
+	_tutorial_panel.name = "MarikinaTutorialPanel"
+	_tutorial_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tutorial_panel.theme = UI_THEME
+	_tutorial_panel.add_theme_stylebox_override("panel", card_style)
+	_tutorial_panel.anchor_left = 0.5
+	_tutorial_panel.anchor_right = 0.5
+	_tutorial_panel.anchor_top = 0.0
+	_tutorial_panel.anchor_bottom = 0.0
+	_tutorial_panel.offset_left = -260.0
+	_tutorial_panel.offset_right = 260.0
+	_tutorial_panel.offset_top = 74.0
+	_tutorial_panel.offset_bottom = 152.0
+	_tutorial_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_tutorial_panel.visible = false
+	add_child(_tutorial_panel)
+
+	var tut_vbox := VBoxContainer.new()
+	tut_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tut_vbox.add_theme_constant_override("separation", 4)
+	_tutorial_panel.add_child(tut_vbox)
+
+	var tut_header := HBoxContainer.new()
+	tut_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tut_header.add_theme_constant_override("separation", 8)
+	tut_vbox.add_child(tut_header)
+
+	_tutorial_title_label = Label.new()
+	_tutorial_title_label.name = "TutorialTitleLabel"
+	_tutorial_title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_tutorial_title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tutorial_title_label.add_theme_font_override("font", UI_FONT)
+	_tutorial_title_label.add_theme_font_size_override("font_size", 16)
+	_tutorial_title_label.add_theme_color_override("font_color", Color(1.0, 0.90, 0.48, 1.0))
+	_tutorial_title_label.add_theme_color_override("font_outline_color", Color(0.08, 0.06, 0.05, 1.0))
+	_tutorial_title_label.add_theme_constant_override("outline_size", 4)
+	tut_header.add_child(_tutorial_title_label)
+
+	_tutorial_skip_button = Button.new()
+	_tutorial_skip_button.name = "TutorialSkipButton"
+	_tutorial_skip_button.text = "Skip"
+	_tutorial_skip_button.flat = true
+	_tutorial_skip_button.focus_mode = Control.FOCUS_NONE
+	_tutorial_skip_button.add_theme_font_override("font", UI_FONT)
+	_tutorial_skip_button.add_theme_font_size_override("font_size", 14)
+	_tutorial_skip_button.add_theme_color_override("font_color", Color(0.82, 0.86, 0.94, 0.9))
+	_tutorial_skip_button.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.72, 1.0))
+	_tutorial_skip_button.pressed.connect(skip_tutorial)
+	tut_header.add_child(_tutorial_skip_button)
+
+	_tutorial_body_label = Label.new()
+	_tutorial_body_label.name = "TutorialBodyLabel"
+	_tutorial_body_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_tutorial_body_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tutorial_body_label.add_theme_font_override("font", UI_FONT)
+	_tutorial_body_label.add_theme_font_size_override("font_size", 15)
+	_tutorial_body_label.add_theme_color_override("font_color", Color(0.96, 0.97, 1.0, 1.0))
+	_tutorial_body_label.add_theme_color_override("font_outline_color", Color(0.08, 0.06, 0.05, 1.0))
+	_tutorial_body_label.add_theme_constant_override("outline_size", 3)
+	tut_vbox.add_child(_tutorial_body_label)
+
 
 func _refresh_status_pill(fm: Node) -> void:
 	if _status_label == null:
 		return
 	var parts := PackedStringArray()
+	var clock_txt := ""
 
 	var ws := get_tree().get_first_node_in_group("weather_system") if get_tree() != null else null
 	if ws != null:
@@ -227,9 +346,19 @@ func _refresh_status_pill(fm: Node) -> void:
 		var tod: String = String(ws.get("time_of_day")).capitalize()
 		var wx: String = String(ws.get("weather")).capitalize()
 		if clock_str != "" and tod != "":
-			parts.append("%s (%s)" % [clock_str, tod])
+			clock_txt = "%s (%s)" % [clock_str, tod]
 		if wx != "":
 			parts.append(wx)
+
+	if _clock_label != null:
+		_clock_label.text = clock_txt
+		_clock_label.visible = (clock_txt != "")
+
+	if _tide_indicator != null:
+		var show_tide := fm != null and fm.has_method(&"is_current_spot_tidal") and bool(fm.call(&"is_current_spot_tidal"))
+		_tide_indicator.visible = show_tide
+		if show_tide and fm.has_method(&"get_tide_state"):
+			_tide_indicator.set_tide(fm.call(&"get_tide_state"))
 
 	var info: Dictionary = _get_primary_session_info(fm)
 	var rod_id := String(info.get("rod_id", ""))
@@ -258,7 +387,13 @@ func _refresh_status_pill(fm: Node) -> void:
 		else:
 			parts.append(bait_name)
 
-	_status_label.text = "  •  ".join(parts) if not parts.is_empty() else "Ready to Fish"
+	if not parts.is_empty():
+		var joined := "  •  ".join(parts)
+		_status_label.text = ("•  " + joined) if clock_txt != "" else joined
+	elif clock_txt != "":
+		_status_label.text = ""
+	else:
+		_status_label.text = "Ready to Fish"
 
 
 func _refresh_fishing_meters(fm: Node) -> void:
@@ -305,3 +440,124 @@ func _get_primary_session_info(fm: Node) -> Dictionary:
 		if not order.is_empty():
 			pid = int(order[0])
 	return fm.call(&"get_session_info", pid)
+
+
+func _is_marikina_tutorial_spot(fm: Node) -> bool:
+	if fm == null or bool(fm.get(&"_multiplayer")):
+		return false
+	var spot_id := ""
+	if fm.has_method(&"get_context"):
+		var ctx: Variant = fm.call(&"get_context")
+		if ctx is Dictionary:
+			spot_id = String((ctx as Dictionary).get("spot_id", ""))
+	if spot_id == "":
+		var gm := get_node_or_null("/root/GameManager")
+		if gm != null and String(gm.get(&"current_scene_id")) == "fishing_river_park":
+			return true
+	return spot_id == MARIKINA_SPOT_ID
+
+
+func _position_tutorial_panel(bottom_mode: bool) -> void:
+	if _tutorial_panel == null:
+		return
+	if bottom_mode:
+		_tutorial_panel.anchor_top = 1.0
+		_tutorial_panel.anchor_bottom = 1.0
+		_tutorial_panel.offset_top = -108.0
+		_tutorial_panel.offset_bottom = -20.0
+	elif _fight_panel != null and _fight_panel.visible:
+		_tutorial_panel.anchor_top = 0.0
+		_tutorial_panel.anchor_bottom = 0.0
+		_tutorial_panel.offset_top = 188.0
+		_tutorial_panel.offset_bottom = 266.0
+	else:
+		_tutorial_panel.anchor_top = 0.0
+		_tutorial_panel.anchor_bottom = 0.0
+		_tutorial_panel.offset_top = 74.0
+		_tutorial_panel.offset_bottom = 152.0
+
+
+func _refresh_tutorial_card(fm: Node, delta: float) -> void:
+	if _tutorial_panel == null:
+		return
+
+	var gm := get_node_or_null("/root/GameManager")
+	var story := get_node_or_null("/root/StoryManager")
+	var blocked_by_ui := (
+		(gm != null and bool(gm.get(&"is_changing_scene")))
+		or (story != null and story.has_method(&"is_playing") and bool(story.call(&"is_playing")))
+		or (hud != null and hud.is_any_menu_open())
+	)
+
+	if _tutorial_complete_timer > 0.0:
+		_tutorial_complete_timer = maxf(_tutorial_complete_timer - delta, 0.0)
+		if _tutorial_complete_timer <= 0.0:
+			_tutorial_panel.visible = false
+			return
+		_position_tutorial_panel(true)
+		_tutorial_panel.visible = not blocked_by_ui
+		return
+
+	var save := get_node_or_null("/root/SaveManager")
+	if save == null or not save.has_method(&"has_unlock_flag") or bool(save.call(&"has_unlock_flag", MARIKINA_TUTORIAL_FLAG)):
+		_tutorial_panel.visible = false
+		return
+
+	if blocked_by_ui or not _is_marikina_tutorial_spot(fm):
+		_tutorial_panel.visible = false
+		return
+
+	var info := _get_primary_session_info(fm)
+	if info.is_empty():
+		_tutorial_panel.visible = false
+		return
+
+	var state := int(info.get("state", 0))
+	var title_color := Color(1.0, 0.90, 0.48, 1.0)
+	var title_text := ""
+	var body_text := ""
+	var show_skip := true
+
+	match state:
+		0: # State.IDLE
+			title_text = "FISHING TUTORIAL (1/4)  —  AIM & CAST"
+			body_text = "Aim with [A]/[D] (or Tilt Phone). Hold & release [Space] (or Swing Phone) to cast."
+		1, 2: # State.CASTING, State.WAITING
+			title_text = "FISHING TUTORIAL (2/4)  —  WAIT FOR A BITE"
+			body_text = "Watch the bobber for a bite! Press [E] or [X] anytime to reel back early."
+		3: # State.REELING
+			var surging := bool(info.get("surging", false))
+			var tension := float(info.get("tension_ratio", 0.0))
+			if surging or tension >= 0.75:
+				title_text = "FISHING TUTORIAL (3/4)  —  EASE THE TENSION!"
+				title_color = Color(1.0, 0.38, 0.28, 1.0)
+				body_text = "Fish is surging! Hold [F] / [Up] (or Spin Phone CCW) so the line won't snap."
+			else:
+				title_text = "FISHING TUTORIAL (3/4)  —  REEL IT IN!"
+				title_color = Color(0.55, 0.96, 0.82, 1.0)
+				body_text = "Fish is calm — hold [R] / [Down] (or Spin Phone CW) to fill the Catch bar!"
+		6: # State.KNOTTING
+			title_text = "FISHING TUTORIAL  —  TIE A KNOT"
+			title_color = Color(1.0, 0.72, 0.35, 1.0)
+			body_text = "Line snapped! Trace the knot on your phone (or press [E] on PC) to repair it."
+		5: # State.ESCAPED
+			title_text = "FISHING TUTORIAL  —  TRY AGAIN"
+			title_color = Color(1.0, 0.65, 0.45, 1.0)
+			body_text = "It got away! Cast again and hold [F] / [Up] whenever the fish surges."
+		4: # State.CAUGHT
+			save.call(&"add_unlock_flag", MARIKINA_TUTORIAL_FLAG)
+			_tutorial_complete_timer = TUTORIAL_COMPLETE_SECONDS
+			show_skip = false
+			title_text = "TUTORIAL COMPLETE! (4/4)"
+			title_color = Color(1.0, 0.90, 0.48, 1.0)
+			body_text = "Nice catch! Catch every small fish in Marikina River — check Almanac & Quests anytime."
+		_:
+			_tutorial_panel.visible = false
+			return
+
+	_tutorial_title_label.text = title_text
+	_tutorial_title_label.add_theme_color_override("font_color", title_color)
+	_tutorial_body_label.text = body_text
+	_tutorial_skip_button.visible = show_skip
+	_position_tutorial_panel(_tutorial_complete_timer > 0.0)
+	_tutorial_panel.visible = true

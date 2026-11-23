@@ -87,4 +87,5 @@ script = ExtResource("2_utvat")
 fish_pool = Array[ExtResource("1_yome2")]([SubResource("Resource_kdqr3"), SubResource("Resource_jpymo"), SubResource("Resource_xj6q2"), SubResource("Resource_75ipr"), SubResource("Resource_v3nr8"), SubResource("Resource_ftmxa"), SubResource("Resource_u73qm"), SubResource("Resource_i5rgf"), SubResource("Resource_w7nmy"), SubResource("Resource_7mn51"), SubResource("Resource_5xuq5"), SubResource("Resource_p6exn"), SubResource("Resource_ohb6o")])
 id = "location_fortune_island"
 display_name = "Fortune Island"
+is_tidal = true
 metadata/_custom_type_script = "uid://bbts02hgiiwr"

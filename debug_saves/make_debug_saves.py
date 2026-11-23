@@ -131,6 +131,7 @@ def area_cutscenes(prefix):
 
 
 MARIKINA_CUTSCENES = ["marikina_room", "marikina_desk", "marikina_hallway", "marikina_street",
+                      "marikina_arrival", "marikina_fishing_intro", "marikina_fishing_tutorial",
                       "marikina_phone_store", "marikina_duplicate_fish", "marikina_complete"]
 
 

@@ -11,6 +11,7 @@ Local Name: Hito"
 base_price = 25
 pull_strength = 8.0
 stamina = 45.0
+is_nocturnal = true
 min_size = 26.0
 avg_size = 36.0
 max_size = 47.0

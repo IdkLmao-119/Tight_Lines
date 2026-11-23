@@ -45,4 +45,5 @@ script = ExtResource("2_kn83k")
 fish_pool = Array[ExtResource("1_pktfr")]([SubResource("Resource_0663g"), SubResource("Resource_bn50j"), SubResource("Resource_05ciy"), SubResource("Resource_e48fv"), SubResource("Resource_8rqh2"), SubResource("Resource_w2h18")])
 id = "location_kawit"
 display_name = "Kawit Seaside Park"
+is_tidal = true
 metadata/_custom_type_script = "uid://bbts02hgiiwr"

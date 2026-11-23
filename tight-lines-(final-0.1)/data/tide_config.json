@@ -1,0 +1,12 @@
+{
+  "tide": {
+    "cycle_hours": 12.42,
+    "slack_threshold": 0.25,
+    "multipliers": {
+      "rising": 1.25,
+      "high_slack": 0.90,
+      "falling": 1.30,
+      "low_slack": 0.85
+    }
+  }
+}

@@ -101,6 +101,10 @@ func _ready() -> void:
 	add_child(_sfx)
 	load_story()
 
+	var save := _autoload("SaveManager")
+	if save != null and save.has_method("get_player_name"):
+		variables["player"] = String(save.call("get_player_name"))
+
 	var gm := _autoload("GameManager")
 	if gm != null and gm.has_signal("scene_changed"):
 		gm.connect("scene_changed", _on_scene_changed)
@@ -294,7 +298,12 @@ func get_speaker_info(speaker_id: String, emotion: String = "") -> Dictionary:
 			if String(e) != "" and ResourceLoader.exists(path):
 				portrait = load(path) as Texture2D
 				break
-	return {"name": String(c.get("name", speaker_id.capitalize())), "portrait": portrait}
+	var display_name := String(c.get("name", speaker_id.capitalize()))
+	if speaker_id == "john":
+		var custom := String(variables.get("player", "")).strip_edges()
+		if custom != "":
+			display_name = custom
+	return {"name": display_name, "portrait": portrait}
 
 
 func shake_camera(strength: float = 8.0, duration: float = 0.4) -> void:
